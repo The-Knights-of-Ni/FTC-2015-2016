@@ -14,10 +14,8 @@ import com.qualcomm.robotcore.util.Range;
 
 public class PrototypeDrive extends LinearOpMode
 {
-    DcMotor left_front_drive;
-    DcMotor right_front_drive;
-    DcMotor left_back_drive;
-    DcMotor right_back_drive;
+    DcMotor left_drive;
+    DcMotor right_drive;
     
     public PrototypeDrive() {}
     
@@ -26,8 +24,8 @@ public class PrototypeDrive extends LinearOpMode
     {
         left_drive = hardwareMap.dcMotor.get("left_d");
         right_drive = hardwareMap.dcMotor.get("right_d");
-        left_front_drive.setDirection(DcMotor.Direction.REVERSE);
-        left_back_drive.setDirection(DcMotor.Direction.REVERSE);
+        left_drive.setDirection(DcMotor.Direction.REVERSE);
+        left_drive.setDirection(DcMotor.Direction.REVERSE);
         
         #define threshold 0.15f //TODO: figure out the real deadzone
         

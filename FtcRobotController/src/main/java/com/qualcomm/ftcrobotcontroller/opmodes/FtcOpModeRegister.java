@@ -55,27 +55,20 @@ public class FtcOpModeRegister implements OpModeRegister {
      * If two or more op modes are registered with the same name, the app will display an error.
      */
 
+      
     manager.register("NullOp", NullOp.class);
-
-<<<<<<< HEAD
-    /* manager.register("K9TeleOp", K9TeleOp.class); */
-    /* manager.register ("PushBotAuto", PushBotAuto.class); */
-    /* manager.register ("PushBotManual", PushBotManual.class); */
-
-    manager.register("Mk1Teleop", Mk1Teleop.class);
+    
+    manager.register("Mk2Teleop", Mk2Teleop.class);
     manager.register("PrototypeDrive", PrototypeDrive.class);
     manager.register("IntakeTest", IntakeTest.class);
     manager.register("ArmTest", ArmTest.class);
-=======
-    //manager.register("MatrixK9TeleOp", MatrixK9TeleOp.class);
-    manager.register("K9TeleOp", K9TeleOp.class);
-    manager.register("K9Line", K9Line.class);
-    manager.register ("PushBotAuto", PushBotAuto.class);
-    manager.register ("PushBotManual", PushBotManual.class);
->>>>>>> refs/remotes/ftctechnh/master
-
-
-
+    
+    /* /manager.register("MatrixK9TeleOp", MatrixK9TeleOp.class); */
+    /* manager.register("K9TeleOp", K9TeleOp.class); */
+    /* manager.register("K9Line", K9Line.class); */
+    /* manager.register ("PushBotAuto", PushBotAuto.class); */
+    /* manager.register ("PushBotManual", PushBotManual.class); */
+            
     /*
      * Uncomment any of the following lines if you want to register an op mode.
      */
@@ -104,21 +97,10 @@ public class FtcOpModeRegister implements OpModeRegister {
     //manager.register ("PushBotManualSensors", PushBotManualSensors.class);
     //manager.register ("PushBotOdsDetectEvent", PushBotOdsDetectEvent.class);
     //manager.register ("PushBotOdsFollowEvent", PushBotOdsFollowEvent.class);
-<<<<<<< HEAD
-    //manager.register ("PushBotTouchEvent", PushBotTouchEvent.class);    
-    
-    //manager.register("PushBotDriveTouch", PushBotDriveTouch.class);
-    //manager.register("PushBotIrSeek", PushBotIrSeek.class);
-    //manager.register("PushBotSquare", PushBotSquare.class);
-
-    
-    
-=======
     //manager.register ("PushBotTouchEvent", PushBotTouchEvent.class);
 
     //manager.register("PushBotDriveTouch", PushBotDriveTouch.java);
     //manager.register("PushBotIrSeek", PushBotIrSeek.java);
     //manager.register("PushBotSquare", PushBotSquare.java);
->>>>>>> refs/remotes/ftctechnh/master
   }
 }

@@ -17,6 +17,9 @@ public class PrototypeDrive extends LinearOpMode
         left_drive = hardwareMap.dcMotor.get("left_d");
         right_drive = hardwareMap.dcMotor.get("right_d");
         left_drive.setDirection(DcMotor.Direction.REVERSE);
+        left_drive.setDirection(DcMotor.Direction.REVERSE);
+
+
 
         waitForStart();
 

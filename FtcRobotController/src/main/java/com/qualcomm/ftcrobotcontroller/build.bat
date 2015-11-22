@@ -13,6 +13,6 @@ pushd ..\..\..\..\..\..\
 
 call gradlew.bat assembleDebug
 
-adb -d install -r ./build/outputs/apk/FtcRobotController-debug.apk
+REM adb -s 5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
 
 popd
