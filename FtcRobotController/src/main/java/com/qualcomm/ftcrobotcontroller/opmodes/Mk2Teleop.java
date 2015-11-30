@@ -17,8 +17,9 @@ public class Mk2Teleop extends LinearOpMode
     DcMotor left_drive;
     DcMotor right_drive;
     DcMotor shoulder;
-    DcMotor elbow;    
-    
+    DcMotor elbow;
+    DcMotor intake;
+
     Servo[] hand = new Servo[2];
     float[] hand_positions = new float[]{0.0f, 0.0f};
 
@@ -109,16 +110,19 @@ public class Mk2Teleop extends LinearOpMode
         right_drive = hardwareMap.dcMotor.get("right_d");
         shoulder    = hardwareMap.dcMotor.get("shoulder");
         elbow       = hardwareMap.dcMotor.get("elbow");
+        intake      = hardwareMap.dcMotor.get("intake");
         right_drive.setDirection(DcMotor.Direction.REVERSE);
-        shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        shoulder.setDirection(DcMotor.Direction.REVERSE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
+        //shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        //elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         //hand[0] = hardwareMap.servo.get("servo_1");
         //hand[1] = hardwareMap.servo.get("servo_2");
         
-        /*
-          PIDController shoulder_pid = new PIDController(1.0, 0.0, 0.4, arm_motor_targets[0]);
-          PIDController elbow_pid = new PIDController(1.0, 0.0, 0.4, arm_motor_targets[1]);
-        */
+
+          //PIDController shoulder_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[0]);
+          //PIDController elbow_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[1]);
+
         
         waitForStart();
         
@@ -128,7 +132,10 @@ public class Mk2Teleop extends LinearOpMode
         float dt;
         float new_time = 0;
         float old_time = 0;
-        
+
+        boolean intake_on = false;
+        boolean prev_intake = false;
+
         for(;;)
         {
             new_time = (float) timer.time();
@@ -154,18 +161,25 @@ public class Mk2Teleop extends LinearOpMode
             add(arm_pos_target, scale(arm_stick, 0.1f*dt));
             arm_motor_targets = IK_solver.getArmTargets(arm_pos_target);
             
-            /* //manual PID
-             * float shoulder_power = shoulder_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[0]
-             *                                                -shoulder.getCurrentPosition(), dt));
-             * float elbow_power = (elbow_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[1]
-             *                                           -elbow.getCurrentPosition(), dt));
-             * shoulder.setPower(shoulder_power);
-             * elbow.setPower(elbow_power);
-             */
+            //manual PID
+/*
+            float shoulder_power = shoulder_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[0]
+                                                            -shoulder.getCurrentPosition(), dt);
+            float elbow_power = (elbow_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[1]
+                                                       -elbow.getCurrentPosition(), dt));
+                                                       */
+            float shoulder_power = gamepad2.left_stick_y;
+            float elbow_power = gamepad2.right_stick_y;
+            elbow_power = Range.clip(elbow_power, -1, 1);
+            shoulder_power = Range.clip(shoulder_power, -1, 1);
+            shoulder.setPower(shoulder_power);
+            elbow.setPower(elbow_power);
+
+
             
             //TODO: uncomment to test the arm
-            /* shoulder.setTargetPosition(encoder_ticks_per_radian*arm_motor_targets[0]);
-               elbow.setTargetPosition(encoder_ticks_per_radian*arm_motor_targets[1]); */
+            //shoulder.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[0]));
+            //elbow.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[1]));
             
             //hand
             float stick_h1 = -gamepad2.right_stick_x;
@@ -175,7 +189,15 @@ public class Mk2Teleop extends LinearOpMode
             
             rotateHandServo(h1_power, 0, dt);
             rotateHandServo(h2_power, 1, dt);
-            
+
+            //intake
+            if(gamepad1.right_bumper && !prev_intake)
+                {
+                    intake_on = !intake_on;
+                }
+            prev_intake = gamepad1.right_bumper;
+            intake.setPower(intake_on ? 1.0: 0.0);
+
             telemetry.addData("Text", "*** Robot Data***");
             telemetry.addData("delta t", String.format("%.2f", dt) + "ms");
             telemetry.addData("Shoulder stick", "shoulder val:" + String.format("%.2f", arm_stick[0]));

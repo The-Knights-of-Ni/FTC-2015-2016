@@ -59,7 +59,7 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("NullOp", NullOp.class);
     
     manager.register("Mk2Teleop", Mk2Teleop.class);
-    manager.register("PrototypeDrive", PrototypeDrive.class);
+    //manager.register("PrototypeDrive", PrototypeDrive.class);
     manager.register("IntakeTest", IntakeTest.class);
     manager.register("ArmTest", ArmTest.class);
     
