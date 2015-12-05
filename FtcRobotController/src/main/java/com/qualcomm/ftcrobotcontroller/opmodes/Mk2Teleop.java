@@ -115,9 +115,9 @@ public class Mk2Teleop extends LinearOpMode
         shoulder.setDirection(DcMotor.Direction.REVERSE);
         intake.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        shoulder.setChannelMode(DcMotor_controller.RunMode.RESET_ENCODERS);
+        shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        elbow.setChannelMode(DcMotor_controller.RunMode.RESET_ENCODERS);
+        elbow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         
         //hand[0] = hardwareMap.servo.get("servo_1");
         //hand[1] = hardwareMap.servo.get("servo_2");
@@ -203,7 +203,7 @@ public class Mk2Teleop extends LinearOpMode
                 winch_power = Range.clip(winch_power, -1, 1);
                 shoulder_power = Range.clip(shoulder_power, -1, 1);
                 shoulder.setPower(shoulder_power);
-                elbow.setPower(elbow_power);
+                elbow.setPower(winch_power);
             }
             else
             {
