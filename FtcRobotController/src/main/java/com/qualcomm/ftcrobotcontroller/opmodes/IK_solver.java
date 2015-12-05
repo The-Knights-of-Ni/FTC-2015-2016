@@ -70,15 +70,16 @@ public class IK_solver
         arm_targets[1] = dist/winch_radius+elbow_0;
         float shoulder_target = arm_targets[0]+shoulder_offset;
         if(arm_targets[1] < elbow_1 && shoulder_target < shoulder_max)
-        {
-            arm_targets[0] += shoulder_target;
+        { //winch case
+            arm_targets[0] = shoulder_target;
         }
         else
-        {
+        { //pulley case
             float elbow_offset = (float) Math.acos((sq(upperarm_len)+sq(forearm_len)-sq(dist))/(2.0f*upperarm_len*forearm_len));
             arm_targets[1] = elbow_2-elbow_offset*elbow_radius/winch_radius;
             arm_targets[0] -= shoulder_offset;
         }
+        arm_targets[0] += arm_targets[1];
         
         /*
           outputs: arm_targets[1] and arm_targets[0] are the rotations of

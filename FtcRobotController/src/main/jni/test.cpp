@@ -38,16 +38,8 @@ struct gamepad
 //     rsid_size,
 // };
 
-#undef reserve_int
-#undef reserve_float
-
-struct RobotState
-{
-    byte * state;
-    bool8 is_copy;    
-};
-
-RobotState robot_state;
+// #undef reserve_int
+// #undef reserve_float
 
 // #define add_robot_state_element(type, name) type & name = ((type *) robot_state.state)[rsid_##name]
 // add_robot_state_element(float, left_drive_power);
@@ -57,7 +49,7 @@ RobotState robot_state;
 
 //add_robot_state_element(char, array_example);
 
-#undef add_robot_state_element
+// #undef add_robot_state_element
 
 extern "C"
 void JNI_main(JNIEnv * env, jobject self)

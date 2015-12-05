@@ -19,10 +19,10 @@ public class Mk2Teleop extends LinearOpMode
     DcMotor shoulder;
     DcMotor elbow;
     DcMotor intake;
-
+    
     Servo[] hand = new Servo[2];
     float[] hand_positions = new float[]{0.0f, 0.0f};
-
+    
     float[] arm_pos_target = new float[]{0.25f, 0.25f};
     float[] arm_motor_targets = IK_solver.getArmTargets(arm_pos_target);
     
@@ -114,15 +114,16 @@ public class Mk2Teleop extends LinearOpMode
         right_drive.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setDirection(DcMotor.Direction.REVERSE);
         intake.setDirection(DcMotor.Direction.REVERSE);
-        //shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        //elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        shoulder.setChannelMode(DcMotor_controller.RunMode.RESET_ENCODERS);
+        elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        elbow.setChannelMode(DcMotor_controller.RunMode.RESET_ENCODERS);
+        
         //hand[0] = hardwareMap.servo.get("servo_1");
         //hand[1] = hardwareMap.servo.get("servo_2");
         
-
-          //PIDController shoulder_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[0]);
-          //PIDController elbow_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[1]);
-
+        //PIDController shoulder_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[0]);
+        //PIDController elbow_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[1]);
         
         waitForStart();
         
@@ -132,72 +133,112 @@ public class Mk2Teleop extends LinearOpMode
         float dt;
         float new_time = 0;
         float old_time = 0;
-
+        
         boolean intake_on = false;
-        boolean prev_intake = false;
-
+        boolean prev_intake_toggle = false;
+        
+        boolean pullup_mode = false;
+        boolean prev_pullup_mode_toggle = false;
+        
         for(;;)
         {
+            //////////control mapping////////////////
+            //TODO: gamepad wrapper or helper library for easy toggle support and such
+            //drive
+            float[] drive_stick = new float[]{-gamepad1.left_stick_x, -gamepad1.left_stick_y};
+            
+            //arm
+            float[] arm_stick = new float[]{-gamepad1.right_stick_x, -gamepad1.right_stick_y};
+            
+            boolean pullup_mode_toggle = gamepad1.a;
+            
+            float shoulder_pullup_control = gamepad2.left_stick_y;
+            float winch_pullup_control = gamepad2.right_stick_y;
+            
+            //intake
+            boolean intake_toggle = gamepad1.right_bumper;
+            
+            //hand
+            float stick_h1 = -gamepad2.right_stick_x;
+            float stick_h2 = -gamepad2.right_stick_y;
+            
+            /////////end control mapping//////////////
+            
             new_time = (float) timer.time();
             dt = new_time-old_time;
             old_time = new_time;
-            
+
             //drive
-            float[] drive_stick = new float[]{-gamepad1.left_stick_x, -gamepad1.left_stick_y};
             deadZone(drive_stick);
-            
             float left_power = drive_stick[1]-drive_stick[0];
             float right_power = drive_stick[1]+drive_stick[0];
             right_power = Range.clip(right_power, -1, 1);
             left_power = Range.clip(left_power, -1, 1);
             right_drive.setPower(right_power);
             left_drive.setPower(left_power);
-            
-            //TODO: pullup mode, gyro/compass stabalization
+
             //arm
-            float[] arm_stick = new float[]{-gamepad1.right_stick_x, -gamepad1.right_stick_y};
-            deadZone(arm_stick);
+            if(pullup_mode_toggle && !prev_pullup_mode_toggle)
+            {
+                pullup_mode = !pullup_mode;
+                if(pullup_mode)
+                {
+                    shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+                    elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+                }
+                else
+                {
+                    shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+                    elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+                    //TODO: set arm position to wherever it is when the switch occurs
+                }
+            }
+            prev_pullup_mode_toggle = pullup_mode_toggle;
             
-            add(arm_pos_target, scale(arm_stick, 0.1f*dt));
-            arm_motor_targets = IK_solver.getArmTargets(arm_pos_target);
+            if(pullup_mode)
+            {
+                //manual arm control
+                float shoulder_power = shoulder_pullup_control;
+                float winch_power = winch_pullup_control;
+                winch_power = Range.clip(winch_power, -1, 1);
+                shoulder_power = Range.clip(shoulder_power, -1, 1);
+                shoulder.setPower(shoulder_power);
+                elbow.setPower(elbow_power);
+            }
+            else
+            {
+                //IK arm control
+                //TODO: gyro/compass stabalization, feedforward control(might not need it until after ndk transition)
+                deadZone(arm_stick);
             
-            //manual PID
-/*
-            float shoulder_power = shoulder_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[0]
-                                                            -shoulder.getCurrentPosition(), dt);
-            float elbow_power = (elbow_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[1]
-                                                       -elbow.getCurrentPosition(), dt));
-                                                       */
-            float shoulder_power = gamepad2.left_stick_y;
-            float elbow_power = gamepad2.right_stick_y;
-            elbow_power = Range.clip(elbow_power, -1, 1);
-            shoulder_power = Range.clip(shoulder_power, -1, 1);
-            shoulder.setPower(shoulder_power);
-            elbow.setPower(elbow_power);
-
-
+                add(arm_pos_target, scale(arm_stick, 0.1f*dt));
+                arm_motor_targets = IK_solver.getArmTargets(arm_pos_target);
             
-            //TODO: uncomment to test the arm
-            //shoulder.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[0]));
-            //elbow.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[1]));
+                //manual PID
+                /* float shoulder_power = shoulder_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[0]
+                /*                                                -shoulder.getCurrentPosition(), dt);
+                /* float elbow_power = (elbow_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[1]
+                /*                                           -elbow.getCurrentPosition(), dt)); */            
+                
+                shoulder.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[0]));
+                elbow.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[1]));
+            }
             
             //hand
-            float stick_h1 = -gamepad2.right_stick_x;
-            float stick_h2 = -gamepad2.right_stick_y;
             float h1_power = deadZone(stick_h1);
             float h2_power = deadZone(stick_h2);
             
             rotateHandServo(h1_power, 0, dt);
             rotateHandServo(h2_power, 1, dt);
-
+            
             //intake
-            if(gamepad1.right_bumper && !prev_intake)
-                {
-                    intake_on = !intake_on;
-                }
-            prev_intake = gamepad1.right_bumper;
+            if(intake_toggle && !prev_intake_toggle)
+            {
+                intake_on = !intake_on;
+            }
+            prev_intake_toggle = intake_toggle;
             intake.setPower(intake_on ? 1.0: 0.0);
-
+            
             telemetry.addData("Text", "*** Robot Data***");
             telemetry.addData("delta t", String.format("%.2f", dt) + "ms");
             telemetry.addData("Shoulder stick", "shoulder val:" + String.format("%.2f", arm_stick[0]));
