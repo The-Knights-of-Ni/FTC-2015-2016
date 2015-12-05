@@ -1,5 +1,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 /**
  * This is the Dead Reckoning Autonomous program.
  * It will drive to the beacon with the intake on,
@@ -10,7 +12,11 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
  *
  * Created by glchau on 12/4/15.
  */
-public class DeadReckoningAutonomous {
+public class DeadReckoningAutonomous extends LinearOpMode{
 
 
+    @Override
+    public void runOpMode() throws InterruptedException{
+
+    }
 }
