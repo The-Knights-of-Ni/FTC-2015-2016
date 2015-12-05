@@ -4,15 +4,15 @@ public class IK_solver
 {
     public static final float forearm_len = 0.508f;
     public static final float upperarm_len = 0.381f;
-
+    
     public static final float elbow_radius = .0254f;
     public static final float winch_radius = .0254f;
-
+    
     public static final float elbow_0 = 0.0f; //the winch rotation where the winch length is 0
     public static final float shoulder_0 = 0.0f; //the shoulder rotation where the shoulder is pointing in the +x axis
     public static final float shoulder_min = (shoulder_0);
     public static final float shoulder_max = (shoulder_0+(float)Math.PI);
-
+    
 //derived constants:
     public static final float elbow_1 = //the winch rotation where the arm switches modes
         (elbow_0+(float)Math.sqrt(sq(upperarm_len)-sq(elbow_radius))/winch_radius);

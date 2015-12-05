@@ -1,0 +1,3 @@
+APP_ABI := arm64-v8a
+TARGET_PLATFORM := android-19
+NDK_TOOLCHAIN_VERSION := clang
