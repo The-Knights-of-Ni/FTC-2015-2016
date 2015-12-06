@@ -2,14 +2,17 @@
 WARNING: this is a generated file
 changes made this file are not permanent
 */
-#include "jni_functions.h"
 enum robot_state_element
 {
-    left_drive_power, left_drive_power_end = left_drive_power + 4,
-    right_drive_power, right_drive_power_end = right_drive_power + 4,
-    gamepad1, gamepad1_end = gamepad1 + 8,
-    array_example, array_example_end = array_example + 100,
+    rsid_left_drive_power, rsid_left_drive_power_end = rsid_left_drive_power + 4,
+    rsid_right_drive_power, rsid_right_drive_power_end = rsid_right_drive_power + 4,
+    rsid_gamepad1, rsid_gamepad1_end = rsid_gamepad1 + 8,
+    rsid_array_example, rsid_array_example_end = rsid_array_example + 100,
+    rsid_size
 };
+
+#include "jni_functions.h"
+
 
 float & left_drive_power = ((float *) robot_state.state)[rsid_left_drive_power];
 float & right_drive_power = ((float *) robot_state.state)[rsid_right_drive_power];

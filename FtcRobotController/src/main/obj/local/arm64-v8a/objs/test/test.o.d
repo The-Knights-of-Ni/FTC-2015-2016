@@ -24,7 +24,8 @@
   C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/limits.h \
   C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/limits.h \
   C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/syslimits.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h
+  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h \
+  jni/test_robot_state_elements.h jni/jni_functions.h
 
 jni/misc.h:
 
@@ -79,3 +80,7 @@ C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/limits.h:
 C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/syslimits.h:
 
 C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h:
+
+jni/test_robot_state_elements.h:
+
+jni/jni_functions.h:

@@ -9,15 +9,14 @@ REM     clang -E -P -x c %%~nf.javac -o processed/%%~nf.java
 REM )
 REM popd
 
-REM the invalid flag makes it compile faster, at least on my machine. no idea how, but it definitely works
-clang++ -O2 --invalidflag -D DEBUG -Wc++11-extensions jni/generator/robot_state_element_generator.cpp --output jni/generator/robot_state_element_generator
+clang++ -O0 -D DEBUG -Wc++11-extensions jni/generator/robot_state_element_generator.cpp --output jni/generator/robot_state_element_generator
 
 .\jni\generator\robot_state_element_generator jni/test.cpp
-REM call ndk-build
+call ndk-build
 
 pushd ..\..\
 
-REM call gradlew.bat assembleDebug
+call gradlew.bat assembleDebug
 
 REM adb -s 5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
 

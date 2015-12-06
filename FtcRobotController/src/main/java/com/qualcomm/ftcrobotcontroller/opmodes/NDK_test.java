@@ -1,6 +1,5 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.ftcrobotcontroller.opmodes.IK_solver;
 import com.qualcomm.ftcrobotcontroller.opmodes.testRobotStateElements;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -49,11 +48,11 @@ public class NDK_test extends LinearOpMode
     
     void applyRobotState()
     {
-        setRobotStateFloat(test_rsid.gamepad1_left_stick_x, gamepad1.left_stick_x);
-        setRobotStateFloat(test_rsid.gamepad1_left_stick_y, gamepad1.left_stick_y);
+        setRobotStateFloat(rsid_gamepad1_left_stick_x, gamepad1.left_stick_x);
+        setRobotStateFloat(rsid_gamepad1_left_stick_y, gamepad1.left_stick_y);
         
-        left_drive.setPower(getRobotStateFloat(test_rsid.left_drive_power));
-        right_drive.setPower(getRobotStateFloat(test_rsid.right_drive_power));
+        left_drive.setPower(getRobotStateFloat(rsid_left_drive_power));
+        right_drive.setPower(getRobotStateFloat(rsid_right_drive_power));
     }
     
     @Override public void runOpMode()

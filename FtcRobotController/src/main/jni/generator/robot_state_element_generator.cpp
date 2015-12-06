@@ -504,7 +504,6 @@ int main(int n_args, char ** args)
 WARNING: this is a generated file\n\
 changes made this file are not permanent\n\
 */\n\
-#include \"jni_functions.h\"\n\
 enum robot_state_element\n\
 {\n");//TODO: include guards
     for(int e = 0; e < n_elements; e++)
@@ -512,7 +511,7 @@ enum robot_state_element\n\
         if(elements[e].type_id < n_types)
         {
             fprintf(output_file, "\
-    %.*s, %.*s_end = %.*s + %d,\n",
+    rsid_%.*s, rsid_%.*s_end = rsid_%.*s + %d,\n",
                     elements[e].name_len, elements[e].name,
                     elements[e].name_len, elements[e].name,
                     elements[e].name_len, elements[e].name,
@@ -526,7 +525,7 @@ enum robot_state_element\n\
                 user_type_size += type_sizes[primitives[p].type]*primitives[p].array_len;
             }
             fprintf(output_file, "\
-    %.*s, %.*s_end = %.*s + %d,\n",
+    rsid_%.*s, rsid_%.*s_end = rsid_%.*s + %d,\n",
                     elements[e].name_len, elements[e].name,
                     elements[e].name_len, elements[e].name,
                     elements[e].name_len, elements[e].name,
@@ -534,7 +533,11 @@ enum robot_state_element\n\
         }
     }
     fprintf(output_file, "\
+    rsid_size\n\
 };\n\
+\n\
+#include \"jni_functions.h\"\n\
+\n\
 \n");    
 
     for(int e = 0; e < n_elements; e++)
@@ -560,6 +563,17 @@ enum robot_state_element\n\
     }
 
     //TODO: generate java file
+    fprintf(java_output_file, "\
+/*\n\
+WARNING: this is a generated file\n\
+changes made this file are not permanent\n\
+*/\n\
+package com.qualcomm.ftcrobotcontroller.opmodes;\n\
+\n\
+public class testRobotStateElements\n\
+{\n\
+    testRobotStateElements(){}\n\
+}");
     
     fclose(input_file);
     fclose(output_file);
