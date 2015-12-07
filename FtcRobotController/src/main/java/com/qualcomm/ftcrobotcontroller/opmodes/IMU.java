@@ -5,11 +5,15 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.I2cController;
+import com.qualcomm.robotcore.util.TypeConversion;
+import java.util.concurrent.locks.Lock;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class IMU
+    implements I2cController.I2cPortReadyCallback
 {
     public int port;
     public int address = 0x28; //the default address
@@ -19,6 +23,11 @@ public class IMU
     {
         PORT = port;
         dim = DIM;
+        this.b = dim.getI2cReadCache(port);
+        this.c = dim.getI2cReadCacheLock(port);
+
+        dim.setI2cPortActionFlag(port);
+
     }
 
     public static final byte OPR_MODE = 0x3B;
@@ -60,7 +69,10 @@ public class IMU
     
     public static final byte units_pitch_convention_windows = (byte) 0b00000000;
     public static final byte units_pitch_convention_android = (byte) 0b10000000;
-    
+
+    private final byte[] b;
+    private final Lock c;
+
     
     void init(byte mode, byte unit_flags)
     {
@@ -73,13 +85,42 @@ public class IMU
         dim.copyBufferIntoWriteBuffer(port, unit_flags_buffer);
         
         dim.writeI2cCacheToController(port);
+        dim.registerForI2cPortReadyCallback((I2cController.I2cPortReadyCallback) this, port);
     }
-    
+
     short getEulerHeading()
     {
-        dim.enableI2cReadMode(port, address, EUL_DATA_X, 2);
+        short out;
+        try {
+            c.lock();
+            out = ByteBuffer.wrap(b, 0, 2).order(ByteOrder.nativeOrder()).getShort();
+        }
+        finally
+        {
+            c.unlock();
+        }
+        return out;
+    }
+
+    private int a(int n) {
+        byte by;
+        try {
+            this.c.lock();
+            by = this.b[n];
+        }
+        finally {
+            this.c.unlock();
+        }
+        return TypeConversion.unsignedByteToInt((byte)by);
+    }
+
+    public void portIsReady(int PORT)
+    {
+        dim.setI2cPortActionFlag(port);
         dim.readI2cCacheFromController(port);
-        byte[] result = dim.getI2cReadCache(port);
-        return ByteBuffer.wrap(result, 0, 2).order(ByteOrder.nativeOrder()).getShort();
+        {
+            dim.enableI2cReadMode(port, address, EUL_DATA_X, 2);
+            dim.writeI2cCacheToController(port);
+        }
     }
 }

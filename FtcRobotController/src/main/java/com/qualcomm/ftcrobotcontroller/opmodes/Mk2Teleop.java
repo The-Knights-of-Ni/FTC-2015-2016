@@ -113,7 +113,6 @@ public class Mk2Teleop extends LinearOpMode
         intake      = hardwareMap.dcMotor.get("intake");
         right_drive.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setDirection(DcMotor.Direction.REVERSE);
-        intake.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
@@ -157,7 +156,7 @@ public class Mk2Teleop extends LinearOpMode
             
             //intake
             boolean intake_toggle = gamepad1.right_bumper;
-            
+            boolean intake_reverse = gamepad1.left_bumper;
             //hand
             float stick_h1 = -gamepad2.right_stick_x;
             float stick_h2 = -gamepad2.right_stick_y;
@@ -169,6 +168,7 @@ public class Mk2Teleop extends LinearOpMode
             old_time = new_time;
 
             //drive
+            //TODO: Add traction control -> Need IMU integration and encoder set-up
             deadZone(drive_stick);
             float left_power = drive_stick[1]-drive_stick[0];
             float right_power = drive_stick[1]+drive_stick[0];
@@ -236,8 +236,13 @@ public class Mk2Teleop extends LinearOpMode
             {
                 intake_on = !intake_on;
             }
+        int reverse = 1;
+            if(intake_reverse)
+                {
+                    reverse = -1;
+                }
             prev_intake_toggle = intake_toggle;
-            intake.setPower(intake_on ? 1.0: 0.0);
+            intake.setPower(intake_on ? 1.0*reverse: 0.0);
             
             telemetry.addData("Text", "*** Robot Data***");
             telemetry.addData("delta t", String.format("%.2f", dt) + "ms");
