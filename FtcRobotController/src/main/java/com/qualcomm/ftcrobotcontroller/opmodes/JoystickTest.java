@@ -19,15 +19,25 @@ public class JoystickTest extends LinearOpMode
         boolean toggle = false;
         boolean press;
 
+        float heading = 90;
+
         for(;;)
         {
-            boolean press2 = joystick1.press(Button.Buttons.LEFT_STICK_BUTTON);
-            toggle = joystick1.toggle(Button.Buttons.X);
-            //press = joystick1.release(Button.Buttons.A);
-            telemetry.addData("X Toggle", toggle);
-            //telemetry.addData("PrevByte",);
-            telemetry.addData("Press 2", press2);
-            //System.out.println(joystick1.previousByte);
+            boolean reverseDrive = joystick1.toggle(Button.Buttons.LEFT_STICK_BUTTON);
+            double magnitude = Math.sqrt(gamepad1.left_stick_x*gamepad1.left_stick_x + gamepad1.left_stick_y*gamepad1.left_stick_y);
+            double theta = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+            float throttle = gamepad1.left_trigger * (reverseDrive ? -1 : 1);
+
+            if(theta > heading)
+                heading++;
+            if(heading > theta)
+                heading--;
+
+            telemetry.addData("Mag", magnitude);
+            telemetry.addData("Theta", theta);
+            telemetry.addData("Throttle", throttle);
+            telemetry.addData("Heading", heading);
+
             try
             {
                 joystick1.updateButtons(gamepad1.toByteArray());

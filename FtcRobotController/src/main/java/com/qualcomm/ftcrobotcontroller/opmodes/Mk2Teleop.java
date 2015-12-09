@@ -1,13 +1,16 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.ftcrobotcontroller.opmodes.IK_solver;
+import com.qualcomm.ftcrobotcontroller.opmodes.Button;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 
 public class Mk2Teleop extends LinearOpMode
 {
@@ -132,35 +135,38 @@ public class Mk2Teleop extends LinearOpMode
         float dt;
         float new_time = 0;
         float old_time = 0;
-        
-        boolean intake_on = false;
-        boolean prev_intake_toggle = false;
-        
-        boolean pullup_mode = false;
-        boolean prev_pullup_mode_toggle = false;
-        
+
+        Button joystick1 = new Button();
+        Button joystick2 = new Button();
+
+        /*try
+        {
+            byte[] joystick1 = gamepad1.toByteArray();
+        } catch (RobotCoreException e)
+        {
+            e.printStackTrace();
+        }*/
         for(;;)
         {
-            //////////control mapping////////////////
-            //TODO: gamepad wrapper or helper library for easy toggle support and such
+            //================================= Control Map =====================================
             //drive
             float[] drive_stick = new float[]{-gamepad1.left_stick_x, -gamepad1.left_stick_y};
             
             //arm
             float[] arm_stick = new float[]{-gamepad1.right_stick_x, -gamepad1.right_stick_y};
             
-            boolean pullup_mode_toggle = gamepad1.a;
-            
+            boolean pullup_mode = joystick1.toggle(Button.Buttons.A);
+
             float shoulder_pullup_control = gamepad2.left_stick_y;
             float winch_pullup_control = gamepad2.right_stick_y;
             
             //intake
-            boolean intake_toggle = gamepad1.right_bumper;
-            boolean intake_reverse = gamepad1.left_bumper;
+            boolean intakeOn = joystick1.toggle(Button.Buttons.RIGHT_BUMPER);
+            boolean intakeReverse = joystick1.toggle(Button.Buttons.LEFT_BUMPER);
             //hand
             float stick_h1 = -gamepad2.right_stick_x;
             float stick_h2 = -gamepad2.right_stick_y;
-            
+
             /////////end control mapping//////////////
             
             new_time = (float) timer.time();
@@ -178,23 +184,18 @@ public class Mk2Teleop extends LinearOpMode
             left_drive.setPower(left_power);
 
             //arm
-            if(pullup_mode_toggle && !prev_pullup_mode_toggle)
+            if(pullup_mode)
             {
-                pullup_mode = !pullup_mode;
-                if(pullup_mode)
-                {
-                    shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-                    elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-                }
-                else
-                {
-                    shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-                    elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-                    //TODO: set arm position to wherever it is when the switch occurs
-                }
+                shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+                elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
             }
-            prev_pullup_mode_toggle = pullup_mode_toggle;
-            
+            else
+            {
+                shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+                elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+                //TODO: set arm position to wherever it is when the switch occurs
+            }
+
             if(pullup_mode)
             {
                 //manual arm control
@@ -232,23 +233,22 @@ public class Mk2Teleop extends LinearOpMode
             rotateHandServo(h2_power, 1, dt);
             
             //intake
-            if(intake_toggle && !prev_intake_toggle)
-            {
-                intake_on = !intake_on;
-            }
-        int reverse = 1;
-            if(intake_reverse)
-                {
-                    reverse = -1;
-                }
-            prev_intake_toggle = intake_toggle;
-            intake.setPower(intake_on ? 1.0*reverse: 0.0);
+            intake.setPower(intakeOn ? 1.0 * (intakeReverse ? -1 : 1) : 0.0);
             
             telemetry.addData("Text", "*** Robot Data***");
             telemetry.addData("delta t", String.format("%.2f", dt) + "ms");
             telemetry.addData("Shoulder stick", "shoulder val:" + String.format("%.2f", arm_stick[0]));
             telemetry.addData("elbow power", "elbow pwr: " + String.format("%.2f", arm_stick[1]));
-            
+
+            //Refreshes
+            try
+            {
+                joystick1.updateButtons(gamepad1.toByteArray());
+                joystick2.updateButtons(gamepad2.toByteArray());
+            } catch (RobotCoreException e)
+            {
+                e.printStackTrace();
+            }
             waitOneFullHardwareCycle();
         }
     }
