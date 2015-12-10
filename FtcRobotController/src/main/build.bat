@@ -16,8 +16,10 @@ call ndk-build
 
 pushd ..\..\
 
+REM call gradlew.bat assemble
 call gradlew.bat assembleDebug
 
-REM adb -s 5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
+REM adb -d install -r ./build/outputs/apk/FtcRobotController-debug.apk
+adb -s 10.0.0.16:5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
 
 popd

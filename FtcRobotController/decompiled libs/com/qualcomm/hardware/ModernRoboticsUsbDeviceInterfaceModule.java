@@ -435,7 +435,7 @@ implements DeviceInterfaceModule {
         }
         this.readWriteRunnable.queueSegmentWrite(d[port]);
     }
-
+    
     public boolean isI2cPortInReadMode(int port) {
         this.e(port);
         boolean bl = false;

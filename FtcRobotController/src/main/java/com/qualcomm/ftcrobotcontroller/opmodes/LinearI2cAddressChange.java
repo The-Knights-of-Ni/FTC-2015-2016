@@ -175,7 +175,7 @@ public class LinearI2cAddressChange extends LinearOpMode {
     /***************************/
 
   }
-
+  
   private boolean foundExpectedBytes(int[] byteArray, Lock lock, byte[] cache) {
     try {
       lock.lock();
