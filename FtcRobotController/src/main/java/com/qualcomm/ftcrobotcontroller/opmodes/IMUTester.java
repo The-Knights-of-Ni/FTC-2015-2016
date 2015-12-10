@@ -16,10 +16,10 @@ public class IMUTester extends LinearOpMode
         dim = hardwareMap.deviceInterfaceModule.get("dim");
         I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
         
-        imu = new IMU(0, imu_i2c_device);
+        imu = new IMU(imu_i2c_device);
         
         byte[] registers_to_read = new byte[]{
-            IMU.EUL_DATA_X, IMU.EUL_DATA_X+2,
+            IMU.EUL_DATA_X, IMU.EUL_DATA_X+1,
         };
         int error = imu.init(IMU.mode_ndof,
                              (byte)(IMU.units_acc_m_per_s2|
@@ -33,9 +33,13 @@ public class IMUTester extends LinearOpMode
         {
             DbgLog.error("waiting for start");
             waitForStart();
+            short heading = 0;
             for(;;)
             {
-                short heading = imu.getEulerHeading();
+                if(imu.checkForUpdate())
+                {
+                    heading = imu.getEulerHeading();
+                }
                 int ls = dim.getAnalogInputValue(0);
                 telemetry.addData("limit switch:", ls);
                 telemetry.addData("IMU heading:", heading);
