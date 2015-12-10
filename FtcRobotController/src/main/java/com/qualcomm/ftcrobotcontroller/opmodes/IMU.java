@@ -22,20 +22,24 @@ public class IMU
 {
     //////////////////////constants//////////////////////////
     //register addresses
-    public static final byte PAGE_ID = 0x07;
-    public static final byte OPR_MODE = 0x3D;
-    public static final byte UNIT_SEL = 0x3B;
-    public static final byte SYS_TRIGGER = 0x3F;
-    public static final byte CHIP_ID = 0x00;
-    public static final byte PWR_MODE = 0x3E;
+    public static final byte PAGE_ID         = 0x07;
+    public static final byte OPR_MODE        = 0x3D;
+    public static final byte UNIT_SEL        = 0x3B;
+    public static final byte SYS_TRIGGER     = 0x3F;
+    public static final byte CHIP_ID         = 0x00;
+    public static final byte PWR_MODE        = 0x3E;
     public static final byte SELFTEST_RESULT = 0x36;
-
+    
+    public static final byte EUL_DATA_X      = 0x1A;
+    
+    public static final byte ACC_DATA_X      = 0x08;
+    public static final byte ACC_DATA_Y      = 0x0A;
+    public static final byte ACC_DATA_Z      = 0x0C;
+    
+    
     public static final byte power_mode_normal  = 0b00;
     public static final byte power_mode_low     = 0b01;
-    public static final byte power_mode_suspend = 0b10;
-    
-    
-    public static final byte EUL_DATA_X = 0x1A;
+    public static final byte power_mode_suspend = 0b10;    
     
     
     public static final byte mode_config       = 0b0000;
@@ -76,8 +80,8 @@ public class IMU
     public static final int action_flag = 31;
 
     public final static byte bCHIP_ID_VALUE = (byte) 0xA0;
-//////////////////////end constants//////////////////////
-
+    //////////////////////end constants//////////////////////
+    
     
     public int i2c_address = 0x28<<1; //the default address, modern robotics doubles the address for some reason
     public I2cDevice i2cd;
@@ -138,7 +142,7 @@ public class IMU
 
     */
     
-    //TODO: add preset option to enable all reads from all readable registers
+    //TODO: add pre-set option to enable all reads from all readable registers
     int init(byte mode, byte unit_flags, byte[] registers_to_read)
     {
         DbgLog.error("imu init");
@@ -165,7 +169,7 @@ public class IMU
         delay(30);
         
         //reset
-        write8(SYS_TRIGGER, (byte)0x20);    
+        write8(SYS_TRIGGER, (byte)0x20);
         DbgLog.error("waiting for reset");
         for(int i = 0;; i++)
         {
@@ -176,15 +180,15 @@ public class IMU
             }
             chip_id = slow_read8(CHIP_ID);
             if(chip_id == bCHIP_ID_VALUE) break;
-            delay(100);
+            delay(10);
         }
         delay(50);
         DbgLog.error("imu reset");
-
-        write8(PAGE_ID, (byte) 0);
         
         write8(PWR_MODE, power_mode_normal);
         delay(10);
+        
+        write8(PAGE_ID, (byte) 0);
         
         write8(UNIT_SEL, unit_flags);
         
@@ -192,12 +196,14 @@ public class IMU
         for(int self_test_result = 0; (self_test_result & 0x0F) != 0x0F;)
         {
             self_test_result = slow_read8(SELFTEST_RESULT);
-        }        
+        }
         DbgLog.error("imu self tested");
         
         write8(OPR_MODE, mode);
         delay(200);
-
+        
+        write8(PAGE_ID, (byte) 0);
+        
         lowest_read_address = (int) registers_to_read[0];
         highest_read_address = (int) registers_to_read[0];
         for(int r = 1; r < registers_to_read.length; r++)
@@ -210,7 +216,7 @@ public class IMU
             {
                 highest_read_address = (int) registers_to_read[r];
             }
-        }        
+        }
         if(highest_read_address-lowest_read_address > widest_read_range)
         {
             DbgLog.error(String.format("error: cannot read more than %d elements at a time", widest_read_range));
@@ -241,19 +247,18 @@ public class IMU
             i2cd.enableI2cReadMode(i2c_address, lowest_read_address, highest_read_address-lowest_read_address);
             i2cd.setI2cPortActionFlag();
             i2cd.writeI2cPortFlagOnlyToController();
-            i2cd.readI2cCacheFromController();
             ready_for_update = true;
         }
         else if(i2cd.isI2cPortReady())
         {
-            if(in_read_mode > 0)
+            if(in_read_mode > 2)
             {
                 i2cd.setI2cPortActionFlag();
                 i2cd.writeI2cPortFlagOnlyToController();
                 i2cd.readI2cCacheFromController();
                 return true;
             }
-            else if(i2cd.isI2cPortInReadMode())
+            else if(true)//i2cd.isI2cPortInReadMode())
             {
                 i2cd.setI2cPortActionFlag();
                 i2cd.writeI2cPortFlagOnlyToController();
@@ -267,13 +272,51 @@ public class IMU
         }
         return false;
     }
+
+    short getAccelerationX()
+    {
+        try
+        {
+            read_lock.lock();
+            return ByteBuffer.wrap(read_cache, ACC_DATA_X-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
+        }
+        finally
+        {
+            read_lock.unlock();
+        }
+    }
+    
+    short getAccelerationY()
+    {
+        try
+        {
+            read_lock.lock();
+            return ByteBuffer.wrap(read_cache, ACC_DATA_Y-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
+        }
+        finally
+        {
+            read_lock.unlock();
+        }
+    }
+
+    short getAccelerationZ()
+    {
+        try
+        {
+            read_lock.lock();
+            return ByteBuffer.wrap(read_cache, ACC_DATA_Z-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
+        }
+        finally
+        {
+            read_lock.unlock();
+        }
+    }
     
     short getEulerHeading()
     {
         try
         {
             read_lock.lock();
-            DbgLog.error("Heading low part: "+String.format("%d", read_cache[dib_cache_overhead]));
             return ByteBuffer.wrap(read_cache, EUL_DATA_X-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
         }
         finally
