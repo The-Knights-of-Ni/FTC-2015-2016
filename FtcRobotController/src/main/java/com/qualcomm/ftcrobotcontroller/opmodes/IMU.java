@@ -19,7 +19,7 @@ import java.nio.ByteOrder;
   when port is ready you can either read or write data, or just write a port flag only if there is nothing to do
 */
 
-public class IMU implements I2cController.I2cPortReadyCallback 
+public class IMU
 {
     //////////////////////constants//////////////////////////
     //register addresses
@@ -30,6 +30,9 @@ public class IMU implements I2cController.I2cPortReadyCallback
     public static final byte CHIP_ID         = 0x00;
     public static final byte PWR_MODE        = 0x3E;
     public static final byte SELFTEST_RESULT = 0x36;
+    public static final byte CALIB_STAT      = 0x35;
+    
+    public static final byte ACC_CONFIG      = 0x08;
     
     public static final byte EUL_DATA_X      = 0x1A;
     public static final byte EUL_DATA_Y      = 0x1C;
@@ -111,6 +114,10 @@ public class IMU implements I2cController.I2cPortReadyCallback
     public float acc_y = 0.0f;
     public float acc_z = 0.0f;
     
+    public float acc0_x = 0.0f;
+    public float acc0_y = 0.0f;
+    public float acc0_z = 0.0f;
+    
     public float vel_x = 0.0f;
     public float vel_y = 0.0f;
     public float vel_z = 0.0f;
@@ -131,7 +138,7 @@ public class IMU implements I2cController.I2cPortReadyCallback
     public int n_reads = 0;
     
     public long old_time;
-    public long dt = 0;
+    public double dt = 0;
     
     public IMU(I2cDevice I2CD)
     {
@@ -233,8 +240,14 @@ public class IMU implements I2cController.I2cPortReadyCallback
         
         write8(OPR_MODE, mode);
         delay(200);
+
+        write8(ACC_CONFIG, (byte) 0b00);
+        //write8(ACC_CONFIG, (byte) 0b00011100);
+        //write8(ACC_CONFIG, (byte) 0b00011100);
         
         write8(PAGE_ID, (byte) 0);
+
+        while((slow_read8(CALIB_STAT)&0xF) != 0xF){delay(100);}
         
         /* lowest_read_address = (int) registers_to_read[0]; */
         /* highest_read_address = (int) registers_to_read[0]; */
@@ -265,10 +278,10 @@ public class IMU implements I2cController.I2cPortReadyCallback
             i2cd.writeI2cPortFlagOnlyToController();
             i2cd.readI2cCacheFromController();
         }
+        
         n_reads = 0;        
         
         old_time = System.nanoTime();
-        i2cd.registerForI2cPortReadyCallback((I2cController.I2cPortReadyCallback)this);
         
         return 0;
     }
@@ -356,37 +369,60 @@ public class IMU implements I2cController.I2cPortReadyCallback
         write(address, data);
     }
     
-    public void portIsReady(int port)
+    float lerp(float a, float b, float t)
     {
-        i2cd.setI2cPortActionFlag();
-        i2cd.writeI2cPortFlagOnlyToController();
-        i2cd.readI2cCacheFromController();
-        
-        try
+        if(t > 1.0f) return b;
+        if(t < 0.0f) return a;
+        return a+(b-a)*t;
+    }
+    
+    public boolean checkForUpdate()
+    {
+        if(i2cd.isI2cPortReady())
         {
-            read_lock.lock();
-            eul_x = shortFromCache(EUL_DATA_X);
-            eul_y = shortFromCache(EUL_DATA_Y);
-            eul_z = shortFromCache(EUL_DATA_Z);
-   
-            qua_w = shortFromCache(QUA_DATA_W);
-            qua_x = shortFromCache(QUA_DATA_X);
-            qua_y = shortFromCache(QUA_DATA_Y);
-            qua_z = shortFromCache(QUA_DATA_Z);
+            i2cd.setI2cPortActionFlag();
+            i2cd.writeI2cPortFlagOnlyToController();
+            i2cd.readI2cCacheFromController();
+            
+            try
+            {
+                read_lock.lock();
 
-            lia_x = shortFromCache(LIA_DATA_X);
-            lia_y = shortFromCache(LIA_DATA_Y);
-            lia_z = shortFromCache(LIA_DATA_Z);
-            
-            long new_time = System.nanoTime();
-            dt = new_time-old_time;
-            old_time = new_time;
-            
-            n_reads++; //so you can check if there is a new value since you last checked
+                //timer
+                long new_time = System.nanoTime();
+                dt = 0.000000001*(float)(new_time-old_time);
+                old_time = new_time;
+
+                eul_x = shortFromCache(EUL_DATA_X);
+                eul_y = shortFromCache(EUL_DATA_Y);
+                eul_z = shortFromCache(EUL_DATA_Z);
+                
+                qua_w = shortFromCache(QUA_DATA_W);
+                qua_x = shortFromCache(QUA_DATA_X);
+                qua_y = shortFromCache(QUA_DATA_Y);
+                qua_z = shortFromCache(QUA_DATA_Z);
+                
+                lia_x = shortFromCache(LIA_DATA_X);
+                lia_y = shortFromCache(LIA_DATA_Y);
+                lia_z = shortFromCache(LIA_DATA_Z);
+                
+                acc_x = lerp(((float) lia_x)-acc0_x, acc_x, (float) Math.exp(-1.0*dt));
+                acc_y = lerp(((float) lia_y)-acc0_x, acc_y, (float) Math.exp(-1.0*dt));
+                acc_z = lerp(((float) lia_z)-acc0_x, acc_z, (float) Math.exp(-1.0*dt));
+                
+                vel_x += acc_x*dt;
+                vel_y += acc_y*dt;
+                vel_z += acc_z*dt;
+                                
+                n_reads++; //so you can check if there is a new value since you last checked,
+                           //might not be necessary with the manual update function
+            }
+            finally
+            {
+                read_lock.unlock();
+            }
+            return true;
         }
-        finally
-        {
-            read_lock.unlock();
-        }
+        return false;
     }
 }
