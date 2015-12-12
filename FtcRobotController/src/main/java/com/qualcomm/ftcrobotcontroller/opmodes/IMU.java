@@ -246,7 +246,7 @@ public class IMU
         //write8(ACC_CONFIG, (byte) 0b00011100);
         
         write8(PAGE_ID, (byte) 0);
-
+        
         while((slow_read8(CALIB_STAT)&0xF) != 0xF){delay(100);}
         
         /* lowest_read_address = (int) registers_to_read[0]; */
@@ -375,6 +375,16 @@ public class IMU
         if(t < 0.0f) return a;
         return a+(b-a)*t;
     }
+
+    public void rezero()
+    {
+        vel_x = 0.0f;
+        vel_y = 0.0f;
+        vel_z = 0.0f;
+        dt = 0.0f;
+        old_time = System.nanoTime();
+        n_reads = 0;//might not want to reset this, not sure
+    }
     
     public boolean checkForUpdate()
     {
@@ -392,7 +402,7 @@ public class IMU
                 long new_time = System.nanoTime();
                 dt = 0.000000001*(float)(new_time-old_time);
                 old_time = new_time;
-
+                
                 eul_x = shortFromCache(EUL_DATA_X);
                 eul_y = shortFromCache(EUL_DATA_Y);
                 eul_z = shortFromCache(EUL_DATA_Z);
@@ -405,15 +415,19 @@ public class IMU
                 lia_x = shortFromCache(LIA_DATA_X);
                 lia_y = shortFromCache(LIA_DATA_Y);
                 lia_z = shortFromCache(LIA_DATA_Z);
+
+                float old_acc_x = acc_x;
+                float old_acc_y = acc_y;
+                float old_acc_z = acc_z;
                 
                 acc_x = lerp(((float) lia_x)-acc0_x, acc_x, (float) Math.exp(-1.0*dt));
                 acc_y = lerp(((float) lia_y)-acc0_x, acc_y, (float) Math.exp(-1.0*dt));
                 acc_z = lerp(((float) lia_z)-acc0_x, acc_z, (float) Math.exp(-1.0*dt));
                 
-                vel_x += acc_x*dt;
-                vel_y += acc_y*dt;
-                vel_z += acc_z*dt;
-                                
+                vel_x += 0.5*(old_acc_x+acc_x)*dt;
+                vel_y += 0.5*(old_acc_y+acc_y)*dt;
+                vel_z += 0.5*(old_acc_z+acc_z)*dt;
+                
                 n_reads++; //so you can check if there is a new value since you last checked,
                            //might not be necessary with the manual update function
             }

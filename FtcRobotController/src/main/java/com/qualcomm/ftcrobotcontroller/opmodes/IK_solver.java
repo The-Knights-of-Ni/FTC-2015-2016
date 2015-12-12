@@ -48,12 +48,51 @@ public class IK_solver
         float normsq = v[0]*v[0]+v[1]*v[1];
         scale(v, invSqrt(normsq)*s);
     }
-    
+
     /*
       inputs: hand[0] and hand[1] are the cordinates of the wanted hand position in meters, relative to the robot
       hand will be clamped if it is outside of the range of motion of the arm
     */
     public static float[] getArmTargets(float[] hand)
+    {
+        float[] arm_targets = new float[2]; //[0] -> shoulder, [1] -> elbow
+        
+        float dist = (float) Math.sqrt(sq(hand[0])+sq(hand[1]));
+        //clamp hand motion
+        if(dist > forearm_len+upperarm_len) normalizeScale(hand, forearm_len+upperarm_len);
+        if(dist < forearm_len-upperarm_len) normalizeScale(hand, forearm_len-upperarm_len);
+        //TODO: clamp when the arm will hit the frame
+        
+        float shoulder_offset = (float) Math.acos((sq(upperarm_len)+sq(dist)-sq(forearm_len))/(2.0f*dist*upperarm_len));
+        //from law of cosines, forearm_len^2 = upperarm_len^2 + dist^2 - 2*dist*upperarm_len*cos(shoulder_offset)
+        arm_targets[0] = (float) Math.atan2(hand[1], hand[0])+shoulder_0;
+        
+        
+        float shoulder_target = arm_targets[0]+shoulder_offset;
+        if(shoulder_target < shoulder_max)
+        { //winch case
+            arm_targets[0] = shoulder_target;
+        }
+        else
+        { //pulley case
+            arm_targets[0] -= shoulder_offset;
+        }
+        float[] elbow_pos = new float[]{(float) Math.cos(arm_targets[0]), (float) Math.sin(arm_targets[0])};
+        arm_targets[1] = (float) Math.atan2(hand[1]-elbow_pos[1], hand[0]-elbow_pos[0])-arm_targets[0]+elbow_0;
+        //arm_targets[0] += arm_targets[1];
+        
+        /*
+          outputs: arm_targets[1] and arm_targets[0] are the rotations of
+          the elbow(from the potentiometer) and shoulder outputs in radians, respectively
+        */
+        return arm_targets;
+    }
+        
+    /*
+      inputs: hand[0] and hand[1] are the cordinates of the wanted hand position in meters, relative to the robot
+      hand will be clamped if it is outside of the range of motion of the arm
+    */
+    public static float[] getArmTargetsEncodersOnly(float[] hand)
     {
         float[] arm_targets = new float[2]; //[0] -> shoulder, [1] -> elbow
         

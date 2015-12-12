@@ -14,7 +14,7 @@ public class IMUTester extends LinearOpMode
 {
     DeviceInterfaceModule dim;
     IMU imu;
-
+    
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -49,7 +49,7 @@ public class IMUTester extends LinearOpMode
                 waitOneFullHardwareCycle();
             }
         }
-
+        
         int calibration_points = 2000;
         long calib_acc0_x = 0;
         long calib_acc0_y = 0;
@@ -99,12 +99,8 @@ public class IMUTester extends LinearOpMode
             
             DbgLog.error("waiting for start");
             waitForStart();
-            imu.vel_x = 0.0f;
-            imu.vel_y = 0.0f;
-            imu.vel_z = 0.0f;
-            imu.dt = 0.0f;
-            imu.old_time = System.nanoTime();
-            imu.n_reads = 0;
+            
+            imu.rezero();
             
             for(;imu.n_reads < 10000;)
             {

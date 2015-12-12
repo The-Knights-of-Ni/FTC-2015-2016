@@ -14,8 +14,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Mk2Teleop extends LinearOpMode
 {
-    static final float encoder_ticks_per_radian = 1440.0f/2.0f*((float)Math.PI); //TODO: might want to make this a global const
-    static final float threshold = 0.1f;
+    public static final float encoder_ticks_per_radian = 1440.0f/2.0f*((float)Math.PI); //TODO: might want to make this a global const
+    public static final float potentiometer_range = 343.0f/180.0*Math.PI;
+    public static final float threshold = 0.1f;
+    
+    DeviceInterfaceModule dim;
     
     DcMotor left_drive;
     DcMotor right_drive;
@@ -109,6 +112,9 @@ public class Mk2Teleop extends LinearOpMode
     @Override public void runOpMode()
         throws InterruptedException
     {
+        int elbow_potentiometer_port = 1;
+        dim = hardwareMap.deviceInterfaceModule.get("dim");
+        
         left_drive  = hardwareMap.dcMotor.get("left_d");
         right_drive = hardwareMap.dcMotor.get("right_d");
         shoulder    = hardwareMap.dcMotor.get("shoulder");
@@ -116,16 +122,17 @@ public class Mk2Teleop extends LinearOpMode
         intake      = hardwareMap.dcMotor.get("intake");
         right_drive.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setDirection(DcMotor.Direction.REVERSE);
-        shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         elbow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        //elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         
         //hand[0] = hardwareMap.servo.get("servo_1");
         //hand[1] = hardwareMap.servo.get("servo_2");
         
         //PIDController shoulder_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[0]);
-        //PIDController elbow_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[1]);
+        PIDController elbow_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[1]);
         
         waitForStart();
         
@@ -135,10 +142,10 @@ public class Mk2Teleop extends LinearOpMode
         float dt;
         float new_time = 0;
         float old_time = 0;
-
+        
         Button joystick1 = new Button();
         Button joystick2 = new Button();
-
+        
         /*try
         {
             byte[] joystick1 = gamepad1.toByteArray();
@@ -156,7 +163,7 @@ public class Mk2Teleop extends LinearOpMode
             float[] arm_stick = new float[]{-gamepad1.right_stick_x, -gamepad1.right_stick_y};
             
             boolean pullup_mode = joystick1.toggle(Button.Buttons.A);
-
+            
             float shoulder_pullup_control = gamepad2.left_stick_y;
             float winch_pullup_control = gamepad2.right_stick_y;
             
@@ -166,13 +173,13 @@ public class Mk2Teleop extends LinearOpMode
             //hand
             float stick_h1 = -gamepad2.right_stick_x;
             float stick_h2 = -gamepad2.right_stick_y;
-
+            
             /////////end control mapping//////////////
             
             new_time = (float) timer.time();
             dt = new_time-old_time;
             old_time = new_time;
-
+            
             //drive
             //TODO: Add traction control -> Need IMU integration and encoder set-up
             deadZone(drive_stick);
@@ -182,7 +189,7 @@ public class Mk2Teleop extends LinearOpMode
             left_power = Range.clip(left_power, -1, 1);
             right_drive.setPower(right_power);
             left_drive.setPower(left_power);
-
+            
             //arm
             if(pullup_mode)
             {
@@ -192,10 +199,11 @@ public class Mk2Teleop extends LinearOpMode
             else
             {
                 shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-                elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+                elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+                //elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
                 //TODO: set arm position to wherever it is when the switch occurs
             }
-
+            
             if(pullup_mode)
             {
                 //manual arm control
@@ -211,18 +219,21 @@ public class Mk2Teleop extends LinearOpMode
                 //IK arm control
                 //TODO: gyro/compass stabalization, feedforward control(might not need it until after ndk transition)
                 deadZone(arm_stick);
-            
+                
                 add(arm_pos_target, scale(arm_stick, 0.1f*dt));
                 arm_motor_targets = IK_solver.getArmTargets(arm_pos_target);
-            
+                
                 //manual PID
-                /* float shoulder_power = shoulder_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[0]
-                /*                                                -shoulder.getCurrentPosition(), dt);
-                /* float elbow_power = (elbow_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[1]
-                /*                                           -elbow.getCurrentPosition(), dt)); */            
+                /* float shoulder_power = shoulder_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[0]*/
+                /*                                                -shoulder.getCurrentPosition(), dt);*/
+                int elbow_potentiometer = dim.getAnalogInputValue(elbow_potentiometer_port);
+                float elbow_power = elbow_pid.getControl(arm_motor_targets[1]
+                                                         -potentiometer_range*((float) elbow_potentiometer), dt);
+                elbow.setPower(winch_power);
+                //might need different PID constants for winch mode and pulley mode
                 
                 shoulder.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[0]));
-                elbow.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[1]));
+                //elbow.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[1]));
             }
             
             //hand
@@ -239,7 +250,7 @@ public class Mk2Teleop extends LinearOpMode
             telemetry.addData("delta t", String.format("%.2f", dt) + "ms");
             telemetry.addData("Shoulder stick", "shoulder val:" + String.format("%.2f", arm_stick[0]));
             telemetry.addData("elbow power", "elbow pwr: " + String.format("%.2f", arm_stick[1]));
-
+            
             //Refreshes
             try
             {
