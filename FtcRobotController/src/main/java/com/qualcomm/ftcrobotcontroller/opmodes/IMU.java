@@ -5,6 +5,7 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.hardware.I2cDevice;
+import com.qualcomm.robotcore.hardware.I2cController;
 import java.util.concurrent.locks.Lock;
 import com.qualcomm.ftccommon.DbgLog;
 
@@ -18,7 +19,7 @@ import java.nio.ByteOrder;
   when port is ready you can either read or write data, or just write a port flag only if there is nothing to do
 */
 
-public class IMU
+public class IMU implements I2cController.I2cPortReadyCallback 
 {
     //////////////////////constants//////////////////////////
     //register addresses
@@ -31,11 +32,21 @@ public class IMU
     public static final byte SELFTEST_RESULT = 0x36;
     
     public static final byte EUL_DATA_X      = 0x1A;
+    public static final byte EUL_DATA_Y      = 0x1C;
+    public static final byte EUL_DATA_Z      = 0x1E;
     
-    public static final byte ACC_DATA_X      = 0x08;
-    public static final byte ACC_DATA_Y      = 0x0A;
-    public static final byte ACC_DATA_Z      = 0x0C;
+    public static final byte QUA_DATA_W      = 0x20;
+    public static final byte QUA_DATA_X      = 0x22;
+    public static final byte QUA_DATA_Y      = 0x24;
+    public static final byte QUA_DATA_Z      = 0x26;
     
+    public static final byte LIA_DATA_X      = 0x28;
+    public static final byte LIA_DATA_Y      = 0x2A;
+    public static final byte LIA_DATA_Z      = 0x2C;
+    
+    /* public static final byte GRV_DATA_X      = 0x2E; */
+    /* public static final byte GRV_DATA_Y      = 0x30; */
+    /* public static final byte GRV_DATA_Z      = 0x32; */
     
     public static final byte power_mode_normal  = 0b00;
     public static final byte power_mode_low     = 0b01;
@@ -60,48 +71,69 @@ public class IMU
     
     
     //bitwise or the units_ together to get unit_flags
-    public static final byte units_acc_m_per_s2             =               0b0;
-    public static final byte units_acc_g                    =               0b1;
+    public static final byte units_acc_m_per_s2             =              0b0;
+    public static final byte units_acc_g                    =              0b1;
     
-    public static final byte units_angular_vel_deg_per_s    =              0b00;
-    public static final byte units_angular_vel_rad_per_s    =              0b10;
+    public static final byte units_angular_vel_deg_per_s    =             0b00;
+    public static final byte units_angular_vel_rad_per_s    =             0b10;
     
-    public static final byte units_angle_deg                =             0b000;
-    public static final byte units_angle_rad                =             0b100;
+    public static final byte units_angle_deg                =            0b000;
+    public static final byte units_angle_rad                =            0b100;
     
-    public static final byte units_temp_C                   =           0b00000;
-    public static final byte units_temp_F                   =           0b10000;
+    public static final byte units_temp_C                   =          0b00000;
+    public static final byte units_temp_F                   =          0b10000;
     
-    public static final byte units_pitch_convention_windows = (byte) 0b00000000;
-    public static final byte units_pitch_convention_android = (byte) 0b10000000;
-
+    public static final byte units_pitch_convention_windows = (byte) 0b0000000;
+    public static final byte units_pitch_convention_android = (byte) 0b1000000;
+    
     //this many bytes at start of read_cache write_cache are system overhead,
     public static final int dib_cache_overhead = 4;
     public static final int action_flag = 31;
-
+    
     public final static byte bCHIP_ID_VALUE = (byte) 0xA0;
     //////////////////////end constants//////////////////////
     
+    public short eul_x = 0;
+    public short eul_y = 0;
+    public short eul_z = 0;
+    
+    public short qua_w = 0;
+    public short qua_x = 0;
+    public short qua_y = 0;
+    public short qua_z = 0;
+    
+    public short lia_x = 0;
+    public short lia_y = 0;
+    public short lia_z = 0;
+    
+    //derived values
+    public float acc_x = 0.0f;
+    public float acc_y = 0.0f;
+    public float acc_z = 0.0f;
+    
+    public float vel_x = 0.0f;
+    public float vel_y = 0.0f;
+    public float vel_z = 0.0f;
     
     public int i2c_address = 0x28<<1; //the default address, modern robotics doubles the address for some reason
     public I2cDevice i2cd;
     
-    //TODO: allow for the read ranges to be non-adjacent
-    //TODO: handle reading from registers on page 2
-    public static final int widest_read_range = 26;
+    public static final int widest_read_range = 27;
     
-    private final byte[] read_cache;
-    private final Lock read_lock;
-    private final byte[] write_cache;
-    private final Lock write_lock;
+    public final byte[] read_cache;
+    public final Lock read_lock;
+    public final byte[] write_cache;
+    public final Lock write_lock;
     
-    int highest_read_address;
-    int lowest_read_address;
+    public int highest_read_address = 0x2D;
+    public int lowest_read_address = 0x1A;
     
-    boolean ready_for_update = false;
-    int in_read_mode = 0;
+    public int n_reads = 0;
     
-    IMU(I2cDevice I2CD)
+    public long old_time;
+    public long dt = 0;
+    
+    public IMU(I2cDevice I2CD)
     {
         i2cd = I2CD;
         
@@ -113,7 +145,7 @@ public class IMU
         i2cd.setI2cPortActionFlag();
         i2cd.writeI2cCacheToController();
     }
-        
+    
     /*for manual checking with core device discovery:
 
       write8(0x07, (byte)0);
@@ -143,7 +175,7 @@ public class IMU
     */
     
     //TODO: add pre-set option to enable all reads from all readable registers
-    int init(byte mode, byte unit_flags, byte[] registers_to_read)
+    public int init(byte mode, byte unit_flags)
     {
         DbgLog.error("imu init");
         
@@ -204,29 +236,44 @@ public class IMU
         
         write8(PAGE_ID, (byte) 0);
         
-        lowest_read_address = (int) registers_to_read[0];
-        highest_read_address = (int) registers_to_read[0];
-        for(int r = 1; r < registers_to_read.length; r++)
-        {
-            if(registers_to_read[r] < lowest_read_address)
-            {
-                lowest_read_address = (int) registers_to_read[r];
-            }
-            if(registers_to_read[r] > highest_read_address)
-            {
-                highest_read_address = (int) registers_to_read[r];
-            }
-        }
-        if(highest_read_address-lowest_read_address > widest_read_range)
+        /* lowest_read_address = (int) registers_to_read[0]; */
+        /* highest_read_address = (int) registers_to_read[0]; */
+        /* for(int r = 1; r < registers_to_read.length; r++) */
+        /* { */
+        /*     if(registers_to_read[r] < lowest_read_address) */
+        /*     { */
+        /*         lowest_read_address = (int) registers_to_read[r]; */
+        /*     } */
+        /*     if(registers_to_read[r] > highest_read_address) */
+        /*     { */
+        /*         highest_read_address = (int) registers_to_read[r]; */
+        /*     } */
+        /* } */
+        if(highest_read_address+1-lowest_read_address > widest_read_range)
         {
             DbgLog.error(String.format("error: cannot read more than %d elements at a time", widest_read_range));
             return -1;
         }
         
+        i2cd.enableI2cReadMode(i2c_address, lowest_read_address, highest_read_address+1-lowest_read_address);
+        i2cd.setI2cPortActionFlag();
+        i2cd.writeI2cPortFlagOnlyToController();
+        for(int count = 0; count < 2; count++)
+        {
+            while(!i2cd.isI2cPortReady()){delay(5);}
+            i2cd.setI2cPortActionFlag();
+            i2cd.writeI2cPortFlagOnlyToController();
+            i2cd.readI2cCacheFromController();
+        }
+        n_reads = 0;        
+        
+        old_time = System.nanoTime();
+        i2cd.registerForI2cPortReadyCallback((I2cController.I2cPortReadyCallback)this);
+        
         return 0;
     }
     
-    void delay(int time)
+    public void delay(int time)
     {
         /* long start_time = System.nanoTime(); */
         /* while((System.nanoTime()-start_time)/1000 < time +50){} */
@@ -239,93 +286,14 @@ public class IMU
             //TODO:
         }
     }
-
-    boolean checkForUpdate()
+    
+    //read_lock must be obtained before calling this or any of the functions that use it
+    public short shortFromCache(byte register)
     {
-        if(!ready_for_update)
-        {
-            i2cd.enableI2cReadMode(i2c_address, lowest_read_address, highest_read_address-lowest_read_address);
-            i2cd.setI2cPortActionFlag();
-            i2cd.writeI2cPortFlagOnlyToController();
-            ready_for_update = true;
-        }
-        else if(i2cd.isI2cPortReady())
-        {
-            if(in_read_mode > 2)
-            {
-                i2cd.setI2cPortActionFlag();
-                i2cd.writeI2cPortFlagOnlyToController();
-                i2cd.readI2cCacheFromController();
-                return true;
-            }
-            else if(true)//i2cd.isI2cPortInReadMode())
-            {
-                i2cd.setI2cPortActionFlag();
-                i2cd.writeI2cPortFlagOnlyToController();
-                i2cd.readI2cCacheFromController();
-                in_read_mode++;
-            }
-            else
-            {
-                i2cd.readI2cCacheFromController();
-            }
-        }
-        return false;
-    }
-
-    short getAccelerationX()
-    {
-        try
-        {
-            read_lock.lock();
-            return ByteBuffer.wrap(read_cache, ACC_DATA_X-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
-        }
-        finally
-        {
-            read_lock.unlock();
-        }
+            return ByteBuffer.wrap(read_cache, register-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
     }
     
-    short getAccelerationY()
-    {
-        try
-        {
-            read_lock.lock();
-            return ByteBuffer.wrap(read_cache, ACC_DATA_Y-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
-        }
-        finally
-        {
-            read_lock.unlock();
-        }
-    }
-
-    short getAccelerationZ()
-    {
-        try
-        {
-            read_lock.lock();
-            return ByteBuffer.wrap(read_cache, ACC_DATA_Z-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
-        }
-        finally
-        {
-            read_lock.unlock();
-        }
-    }
-    
-    short getEulerHeading()
-    {
-        try
-        {
-            read_lock.lock();
-            return ByteBuffer.wrap(read_cache, EUL_DATA_X-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
-        }
-        finally
-        {
-            read_lock.unlock();
-        }
-    }
-    
-    byte slow_read8(int address)
+    public byte slow_read8(int address)
     {
         i2cd.enableI2cReadMode(i2c_address, address, 1);
         while(!i2cd.isI2cPortReady())
@@ -352,7 +320,7 @@ public class IMU
         }
     }
     
-    void write(int address, byte[] data)
+    public void write(int address, byte[] data)
     {
         while(!i2cd.isI2cPortReady())
         {
@@ -382,9 +350,43 @@ public class IMU
         i2cd.writeI2cCacheToController();
     }
     
-    void write8(int address, byte value)
+    public void write8(int address, byte value)
     {
         byte[] data = new byte[]{value};
         write(address, data);
+    }
+    
+    public void portIsReady(int port)
+    {
+        i2cd.setI2cPortActionFlag();
+        i2cd.writeI2cPortFlagOnlyToController();
+        i2cd.readI2cCacheFromController();
+        
+        try
+        {
+            read_lock.lock();
+            eul_x = shortFromCache(EUL_DATA_X);
+            eul_y = shortFromCache(EUL_DATA_Y);
+            eul_z = shortFromCache(EUL_DATA_Z);
+   
+            qua_w = shortFromCache(QUA_DATA_W);
+            qua_x = shortFromCache(QUA_DATA_X);
+            qua_y = shortFromCache(QUA_DATA_Y);
+            qua_z = shortFromCache(QUA_DATA_Z);
+
+            lia_x = shortFromCache(LIA_DATA_X);
+            lia_y = shortFromCache(LIA_DATA_Y);
+            lia_z = shortFromCache(LIA_DATA_Z);
+            
+            long new_time = System.nanoTime();
+            dt = new_time-old_time;
+            old_time = new_time;
+            
+            n_reads++; //so you can check if there is a new value since you last checked
+        }
+        finally
+        {
+            read_lock.unlock();
+        }
     }
 }

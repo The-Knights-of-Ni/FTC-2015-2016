@@ -4,7 +4,7 @@
 package com.qualcomm.robotcore.eventloop.opmode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+port com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robocol.Telemetry;
 import java.util.concurrent.TimeUnit;
 
