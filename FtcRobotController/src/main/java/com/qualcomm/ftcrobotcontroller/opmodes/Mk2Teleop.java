@@ -5,6 +5,7 @@ import com.qualcomm.ftcrobotcontroller.opmodes.Button;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.exception.RobotCoreException;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Mk2Teleop extends LinearOpMode
 {
     public static final float encoder_ticks_per_radian = 1440.0f/2.0f*((float)Math.PI); //TODO: might want to make this a global const
-    public static final float potentiometer_range = 343.0f/180.0*Math.PI;
+    public static final float potentiometer_range = (float)(343.0/180.0*Math.PI);
     public static final float threshold = 0.1f;
     
     DeviceInterfaceModule dim;
@@ -227,7 +228,7 @@ public class Mk2Teleop extends LinearOpMode
                 /* float shoulder_power = shoulder_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[0]*/
                 /*                                                -shoulder.getCurrentPosition(), dt);*/
                 int elbow_potentiometer = dim.getAnalogInputValue(elbow_potentiometer_port);
-                float elbow_power = elbow_pid.getControl(arm_motor_targets[1]
+                float winch_power = elbow_pid.getControl(arm_motor_targets[1]
                                                          -potentiometer_range*((float) elbow_potentiometer), dt);
                 elbow.setPower(winch_power);
                 //might need different PID constants for winch mode and pulley mode

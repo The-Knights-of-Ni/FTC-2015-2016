@@ -1,85 +1,85 @@
 ./obj/local/arm64-v8a/objs/test/test.o: jni/test.cpp jni/misc.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdint.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\machine/wchar_limits.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdio.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/cdefs.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/cdefs_elf.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\android/api-level.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/types.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/types.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/types.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/types.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/int-ll64.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/bitsperlong.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/bitsperlong.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/posix_types.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/stddef.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/compiler.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/posix_types.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/posix_types.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/sysmacros.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdint.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\machine/wchar_limits.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdio.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/cdefs.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/cdefs_elf.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\android/api-level.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/types.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/types.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/types.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/types.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/int-ll64.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/bitsperlong.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/bitsperlong.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/posix_types.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/stddef.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/compiler.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/posix_types.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/posix_types.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/sysmacros.h \
   jni/maths.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\math.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\limits.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/limits.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/limits.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/syslimits.h \
-  C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\math.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\limits.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/limits.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/limits.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/syslimits.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h \
   jni/test_robot_state_elements.h jni/jni_functions.h
 
 jni/misc.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdint.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdint.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\machine/wchar_limits.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\machine/wchar_limits.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdio.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdio.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/cdefs.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/cdefs.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/cdefs_elf.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/cdefs_elf.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\android/api-level.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\android/api-level.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/types.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/types.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/types.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/types.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/types.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/types.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/types.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/types.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/int-ll64.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/int-ll64.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/bitsperlong.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/bitsperlong.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/bitsperlong.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/bitsperlong.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/posix_types.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/posix_types.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/stddef.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/stddef.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/compiler.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/compiler.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/posix_types.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm/posix_types.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/posix_types.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\asm-generic/posix_types.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/sysmacros.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/sysmacros.h:
 
 jni/maths.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\math.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\math.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\limits.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\limits.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/limits.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/limits.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/limits.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/limits.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/syslimits.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/syslimits.h:
 
-C:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h:
+c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h:
 
 jni/test_robot_state_elements.h:
 

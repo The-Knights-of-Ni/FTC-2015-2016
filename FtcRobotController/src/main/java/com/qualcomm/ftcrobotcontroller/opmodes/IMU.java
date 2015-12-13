@@ -118,6 +118,10 @@ public class IMU
     public float acc0_y = 0.0f;
     public float acc0_z = 0.0f;
     
+    /* public float jerk_x = 0.0f; */
+    /* public float jerk_y = 0.0f; */
+    /* public float jerk_z = 0.0f; */
+    
     public float vel_x = 0.0f;
     public float vel_y = 0.0f;
     public float vel_z = 0.0f;
@@ -386,6 +390,50 @@ public class IMU
         n_reads = 0;//might not want to reset this, not sure
     }
     
+    /* public static float filter_k = 0.5f; */
+    /* public static float filter_c = 1.0f; */
+    /* public static float filter_m = 1.0f; */
+    
+    /* public static float lambda = -filter_c/(2.0f*filter_m); */
+    /* public static float omega = (float)Math.sqrt(4.0f*filter_k/filter_m-(filter_c*filter_c)/(filter_m*filter_m)); */
+    
+    /* public float[] filter(float x_1, float x_0, float v_0, float dt) */
+    /* { */
+    /*     float[] out = new float[2]; */
+
+    /*     float c_1 = x_0-x_1; */
+    /*     float c_2 = v_0/(omega*lambda); */
+        
+    /*     //NOTE: the small angle approx for sin and cos can probably be */
+    /*     //used here if speed is needed, it probably won't make that large */
+    /*     //of a difference since there's only 1 imu */
+    /*     out[0] = x_1+(float)(Math.exp(lambda*dt)*(c_1*Math.cos(omega*dt) + c_2*Math.sin(omega*dt))); */
+    /*     out[1] = (float)(omega*lambda*Math.exp(lambda*dt)*(-c_1*Math.sin(omega*dt) + c_2*Math.cos(omega*dt))); */
+    /*     return out; */
+    /* } */
+    
+    public static int n_reads_before_updating = 30;
+    
+    float[] past_acc_x = new float[n_reads_before_updating];
+    float[] past_acc_y = new float[n_reads_before_updating];
+    float[] past_acc_z = new float[n_reads_before_updating];
+    
+    public static float filter(float x, float old_x, float[] past_x, int n)
+    {
+        past_x[n%n_reads_before_updating] = x;
+        if(n%n_reads_before_updating == n_reads_before_updating-1)
+        {
+            float average = 0;
+            for(int i = 0; i < n_reads_before_updating; i++)
+            {
+                average += past_x[i];
+            }
+            average /= n_reads_before_updating;
+            return average;
+        }
+        return old_x;
+    }
+    
     public boolean checkForUpdate()
     {
         if(i2cd.isI2cPortReady())
@@ -400,7 +448,7 @@ public class IMU
 
                 //timer
                 long new_time = System.nanoTime();
-                dt = 0.000000001*(float)(new_time-old_time);
+                dt = 0.000000001f*(float)(new_time-old_time);
                 old_time = new_time;
                 
                 eul_x = shortFromCache(EUL_DATA_X);
@@ -420,9 +468,21 @@ public class IMU
                 float old_acc_y = acc_y;
                 float old_acc_z = acc_z;
                 
-                acc_x = lerp(((float) lia_x)-acc0_x, acc_x, (float) Math.exp(-1.0*dt));
-                acc_y = lerp(((float) lia_y)-acc0_x, acc_y, (float) Math.exp(-1.0*dt));
-                acc_z = lerp(((float) lia_z)-acc0_x, acc_z, (float) Math.exp(-1.0*dt));
+                acc_x = filter(((float) lia_x)-acc0_x, acc_x, past_acc_x, n_reads);
+                acc_y = filter(((float) lia_y)-acc0_y, acc_y, past_acc_y, n_reads);
+                acc_z = filter(((float) lia_z)-acc0_z, acc_z, past_acc_z, n_reads);
+                
+                /* float[] filtered_x = filter(((float) lia_x)-acc0_x, acc_x, jerk_x, (float) dt); */
+                /* acc_x = filtered_x[0]; */
+                /* jerk_x = filtered_x[1]; */
+                
+                /* float[] filtered_y = filter(((float) lia_y)-acc0_y, acc_y, jerk_y, (float) dt); */
+                /* acc_y = filtered_y[0]; */
+                /* jerk_y = filtered_y[1]; */
+                
+                /* float[] filtered_z = filter(((float) lia_z)-acc0_z, acc_z, jerk_z, (float) dt); */
+                /* acc_z = filtered_z[0]; */
+                /* jerk_z = filtered_z[1]; */
                 
                 vel_x += 0.5*(old_acc_x+acc_x)*dt;
                 vel_y += 0.5*(old_acc_y+acc_y)*dt;
