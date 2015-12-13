@@ -9,6 +9,71 @@
 
 #define constStrncmp(a, constant_string, max_len) (strncmp((a), constant_string, min(max_len, sizeof(constant_string)-1)))
 
+//from <http://aggregate.ee.engr.uky.edu/MAGIC/#Log2 of an Integer>
+uint ones32(register uint x)
+{
+        /* 32-bit recursive reduction using SWAR...
+	   but first step is mapping 2-bit values
+	   into sum of 2 1-bit values in sneaky way
+	*/
+        x -= ((x >> 1) & 0x55555555);
+        x = (((x >> 2) & 0x33333333) + (x & 0x33333333));
+        x = (((x >> 4) + x) & 0x0f0f0f0f);
+        x += (x >> 8);
+        x += (x >> 16);
+        return(x & 0x0000003f);
+}
+
+uint flog2(register uint x)
+{
+    x |= (x >> 1);
+    x |= (x >> 2);
+    x |= (x >> 4);
+    x |= (x >> 8);
+    x |= (x >> 16);
+    return ones32(x>>1);
+}
+
+//NOTE: the input is not preserved
+void haarWaveletTransform(int * in, int * out, int n)
+{
+    for(int length = (1<<n)>>1; ; length>>=1)
+    {
+        for(int i = 0; i < length; i++)
+        {
+            out[i] = (in[2*i]+in[2*i+1])>>1;
+            out[i+length] = (in[2*i]-in[2*i+1])>>1;
+            if(absi(out[i]) < 40) out[i] = 0;
+            if(absi(out[i+length]) < 40) out[i+length] = 0;
+        }
+        //return;//TEMP
+        if(length == 1)
+        {
+            return;
+        }
+        memcpy(in, out, sizeof(int)*(length<<1));
+    }
+}
+
+void inverseHaarWaveletTransform(int * in, int * out, int n)
+{
+    for(int length = 1; ; length<<=1)
+    {
+        //length = (1<<n)>>1;//TEMP
+        for(int i = 0; i < length; i++)
+        {
+            out[2*i] = in[i]+in[i+length];
+            out[2*i+1] = in[i]-in[i+length];
+        }
+        //return;//TEMP
+        if(length == (1<<n)>>1)
+        {
+            return;
+        }
+        memcpy(in, out, sizeof(int)*(length<<1));
+    }
+}
+
 struct data_point
 {
     float time;
@@ -17,54 +82,11 @@ struct data_point
     int z;
 };
 
-data_point * data;
+float * data_time;
+int * data_x;
+int * data_y;
+int * data_z;
 uint n_data_points = 0;
-
-struct filter_out
-{
-    float x;
-    float v;
-};
-
-inline float32 fast_cos(float32 x)
-{
-    x = fabs(x);
-    x -= floor(x);
-    x -= 0.5;
-    x = fabs(x);
-    x -= 0.25;
-    //x is converted to a triangle wave since the polynomial approxomation only works between -pi/4 and pi/4 radians
-    float32 out = -32.0;
-    out *= x;
-    out *= x;
-    out += 6.0;
-    out *= x;
-    return out;//x*(6.0-32.0*x*x);
-}
-
-inline float32 fast_sin(float32 x)
-{
-    return cos(x - 0.25);
-}
-
-const float k = 0.5;
-const float c = 1.0;
-const float m = 1.0;
-
-float lambda = -c/(2.0*m);
-float omega = sqrt(4.0*k/m-sq(c/m));
-
-filter_out filter(float x_1, float x_0, float v_0, float dt)
-{
-    float c_1 = x_0-x_1;
-    float c_2 = v_0/(omega*lambda);
-
-    filter_out out;
-    //small angle approx for sin and cos
-    out.x = x_1+exp(lambda*dt)*(c_1*cos(omega*dt) + c_2*sin(omega*dt));
-    out.v = omega*lambda*exp(lambda*dt)*(-c_1*sin(omega*dt) + c_2*cos(omega*dt));
-    return out;
-}
 
 void drawLine(int x0, int y0, int x1, int y1, byte color, byte * bitmap, int bitmap_width, int bitmap_height)
 {    
@@ -143,9 +165,9 @@ void getData(char * in, uint in_len)
         if(constStrncmp(in+i, "raw: ", in_len-i) == 0)
         {
             i += sizeof("raw:");
-            sscanf(in+i, "%d, %d, %d", &data[n_data_points].x, &data[n_data_points].y, &data[n_data_points].z);
-            data[n_data_points].time = time;
-            //printf("%f, %d, %d, %d\n", data[n_data_points].time, data[n_data_points].x, data[n_data_points].y, data[n_data_points].z);
+            sscanf(in+i, "%d, %d, %d", &data_x[n_data_points], &data_y[n_data_points], &data_z[n_data_points]);
+            data_time[n_data_points] = time;
+            //printf("%f, %d, %d, %d\n", data_time[n_data_points], data_x[n_data_points], data_y[n_data_points], data_z[n_data_points]);
             n_data_points++;
         }
         if(constStrncmp(in+i, "dt: ", in_len-i) == 0)
@@ -182,10 +204,61 @@ int main()
     
     void * free_memory = malloc(2000000);
     assert(free_memory);
+        
+    data_time = (float *) free_memory;
+    free_memory = (void*)((float *) free_memory+50000);
     
-    data = (data_point *) free_memory;
+    data_x = (int *) free_memory;
+    free_memory = (void*)((int *) free_memory+50000);
+    
+    data_y = (int *) free_memory;
+    free_memory = (void*)((int *) free_memory+50000);
+    
+    data_z = (int *) free_memory;
+    free_memory = (void*)((int *) free_memory+50000);
     getData(log, log_file_size);
-    free_memory = (void*)((data_point *) free_memory+n_data_points);
+    printf("n_data_points: %d\n", n_data_points);
+    
+    int transform_n = flog2(n_data_points);
+    
+    printf("about to transform\n");
+    
+    //x
+    int * transformed_x_in = (int *) free_memory;
+    free_memory = (void*)((int *) free_memory+(1<<transform_n));
+    memcpy(transformed_x_in, data_x, sizeof(int)*(1<<transform_n));
+    
+    int * transformed_x = (int *) free_memory;
+    free_memory = (void*)((int *) free_memory+(1<<transform_n));
+    
+    haarWaveletTransform(transformed_x_in, transformed_x, transform_n);
+
+    //y
+    int * transformed_y_in = (int *) free_memory;
+    free_memory = (void*)((int *) free_memory+(1<<transform_n));
+    memcpy(transformed_y_in, data_y, sizeof(int)*(1<<transform_n));
+    
+    int * transformed_y = (int *) free_memory;
+    free_memory = (void*)((int *) free_memory+(1<<transform_n));
+    
+    haarWaveletTransform(transformed_y_in, transformed_y, transform_n);
+
+    //z
+    int * transformed_z_in = (int *) free_memory;
+    free_memory = (void*)((int *) free_memory+(1<<transform_n));
+    memcpy(transformed_z_in, data_z, sizeof(int)*(1<<transform_n));
+    
+    int * transformed_z = (int *) free_memory;
+    free_memory = (void*)((int *) free_memory+(1<<transform_n));
+    
+    haarWaveletTransform(transformed_z_in, transformed_z, transform_n);
+    
+    printf("about to inverse transform\n");
+    
+    //inverse transform
+    inverseHaarWaveletTransform(transformed_x, transformed_x_in, transform_n);
+    inverseHaarWaveletTransform(transformed_y, transformed_y_in, transform_n);
+    inverseHaarWaveletTransform(transformed_z, transformed_z_in, transform_n);
     
     int bitmap_width = 4*n_data_points;
     int bitmap_height = 1024;
@@ -194,80 +267,75 @@ int main()
     memset(bitmap, 0x00, bitmap_width*bitmap_height*3);
     int b = 0;
     
-    int max_data_y = 200;
+    int max_data_y = 300;
     
-    int y0r = bitmap_height/2-(bitmap_height*data[0].x)/max_data_y;
-    int y0g = bitmap_height/2-(bitmap_height*data[0].y)/max_data_y;
-    int y0b = bitmap_height/2-(bitmap_height*data[0].z)/max_data_y;
-    int x0 = data[0].time;
-
-
-    int hpy0r = bitmap_height/2-(bitmap_height*data[0].x)/max_data_y;
-    int hpy0g = bitmap_height/2-(bitmap_height*data[0].y)/max_data_y;
-    int hpy0b = bitmap_height/2-(bitmap_height*data[0].z)/max_data_y;
-    float hpyr = 0.0;
-    float hpyg = 0.0;
-    float hpyb = 0.0;
-    float hpyrv = 0.0;
-    float hpygv = 0.0;
-    float hpybv = 0.0;
+    int y0r = bitmap_height/2-(bitmap_height*data_x[0])/max_data_y;
+    int y0g = bitmap_height/2-(bitmap_height*data_y[0])/max_data_y;
+    int y0b = bitmap_height/2-(bitmap_height*data_z[0])/max_data_y;
+    int x0 = data_time[0];
+    
+    
+    int fy0r = bitmap_height/2-(bitmap_height*data_x[0])/max_data_y;
+    int fy0g = bitmap_height/2-(bitmap_height*data_y[0])/max_data_y;
+    int fy0b = bitmap_height/2-(bitmap_height*data_z[0])/max_data_y;
+    
+    float fvx = 0.0;
+    
+    int fv0r = 0;
+    int fv0g = 0;
+    int fv0b = 0;
     
     for(int i = 1; i < n_data_points; i++)
     {
-        printf("graphing: %d%%\n", (100*i)/(n_data_points-1));        
-        int x1 = (bitmap_width*data[i].time)/data[n_data_points-1].time+0.5;
+        printf("graphing: %d%%\n", (100*i)/(n_data_points-1));
+        int x1 = (bitmap_width*data_time[i])/data_time[n_data_points-1];
         int y1;
         
-        y1 = bitmap_height/2-(bitmap_height*data[i].x)/max_data_y;
+        y1 = bitmap_height/2-(bitmap_height*data_x[i])/max_data_y;
         drawLine(x0, y0r, x1, y1, 0, bitmap, bitmap_width, bitmap_height);
         y0r = y1;
         
-        y1 = bitmap_height/2-(bitmap_height*data[i].y)/max_data_y;
-        drawLine(x0, y0g, x1, y1, 1, bitmap, bitmap_width, bitmap_height);
-        y0g = y1;
+        // y1 = bitmap_height/2-(bitmap_height*data_y[i])/max_data_y;
+        // drawLine(x0, y0g, x1, y1, 1, bitmap, bitmap_width, bitmap_height);
+        // y0g = y1;
         
-        y1 = bitmap_height/2-(bitmap_height*data[i].z)/max_data_y;
-        drawLine(x0, y0b, x1, y1, 2, bitmap, bitmap_width, bitmap_height);
-        y0b = y1;
-        
-        // filter_out r_out = filter((float) data[i].x, hpyr, hpyrv, data[i].time-data[i-1].time);
-        // hpyr = r_out.x;
-        // hpyrv = r_out.v;
-        
-        // filter_out g_out = filter((float) data[i].y, hpyg, hpygv, data[i].time-data[i-1].time);
-        // hpyg = g_out.x;
-        // hpygv = g_out.v;
-        
-        // filter_out b_out = filter((float) data[i].z, hpyb, hpybv, data[i].time-data[i-1].time);
-        // hpyb = b_out.x;
-        // hpybv = b_out.v;
-        
-        // int hpy1;
-        
-        // hpy1 = bitmap_height/2-(bitmap_height*hpyr)/max_data_y;
-        // drawLine(x0, hpy0r, x1, hpy1, 0, bitmap, bitmap_width, bitmap_height);
-        // hpy0r = hpy1;
+        // y1 = bitmap_height/2-(bitmap_height*data_z[i])/max_data_y;
+        // drawLine(x0, y0b, x1, y1, 2, bitmap, bitmap_width, bitmap_height);
+        // y0b = y1;
 
-        // hpy1 = bitmap_height/2-(bitmap_height*hpyg)/max_data_y;
-        // drawLine(x0, hpy0g, x1, hpy1, 1, bitmap, bitmap_width, bitmap_height);
-        // hpy0g = hpy1;
+        if(i%10 < 5)
+        {
+            bitmap[(i+(bitmap_height/2*bitmap_width))*3+0] = 0xFF;
+            bitmap[(i+(bitmap_height/2*bitmap_width))*3+1] = 0xFF;
+            bitmap[(i+(bitmap_height/2*bitmap_width))*3+2] = 0xFF;
+        }
         
-        // hpy1 = bitmap_height/2-(bitmap_height*hpyb)/max_data_y;
-        // drawLine(x0, hpy0b, x1, hpy1, 2, bitmap, bitmap_width, bitmap_height);
-        // hpy0b = hpy1;
+        if(i < (1<<transform_n))
+        {
+            int fy1;
+            fy1 = bitmap_height/2-(bitmap_height*transformed_x_in[i])/max_data_y/2;
+            drawLine(x0, fy0r, x1, fy1, 2, bitmap, bitmap_width, bitmap_height);
+            fy0r = fy1;
+
+            int fv1;
+            fvx += transformed_x_in[i];
+            //if(fvx < 1000 && transformed_x_in[i] < 20) fvx = 0;
+            fv1 = bitmap_height/2-(bitmap_height*fvx)/1000;
+            drawLine(x0, fv0r, x1, fv1, 1, bitmap, bitmap_width, bitmap_height);
+            fv0r = fv1;
+            
+            // fy1 = bitmap_height/2-(bitmap_height*transformed_y_in[i])/max_data_y;
+            // drawLine(x0, fy0g, x1, fy1, 1, bitmap, bitmap_width, bitmap_height);
+            // fy0g = fy1;
+
+            // fy1 = bitmap_height/2-(bitmap_height*transformed_z_in[i])/max_data_y;
+            // drawLine(x0, fy0b, x1, fy1, 2, bitmap, bitmap_width, bitmap_height);
+            // fy0b = fy1;
+        }
         
         x0 = x1;
     }
-    // for(int x = 10; x < 20; x++)
-    // {
-    //     for(int y = 10; y < 20; y++)
-    //     {
-    //         bitmap[(x+y*bitmap_width)*3] = 0xFF;
-    //         bitmap[(x+y*bitmap_width)*3+1] = 0xFF;
-    //         bitmap[(x+y*bitmap_width)*3+2] = 0xFF;
-    //     }
-    // }
-    stbi_write_png("graph3.png", bitmap_width, bitmap_height, 3, bitmap, bitmap_width*3);
+    stbi_write_png("graph3 with wavelet filter.png", bitmap_width, bitmap_height, 3, bitmap, bitmap_width*3);
     
     return 0;
 }

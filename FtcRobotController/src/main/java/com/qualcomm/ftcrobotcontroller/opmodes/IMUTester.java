@@ -127,6 +127,12 @@ public class IMUTester extends LinearOpMode
                 {
                     update_cycle_time = new_time-last_update_time;
                     last_update_time = new_time;
+                    
+                    log = log.concat(String.format("raw: %d, %d, %d\nhpa: %f, %f, %f\nvel: %f, %f, %f\ndt: %f\n",
+                                                   imu.lia_x, imu.lia_y, imu.lia_z,
+                                                   imu.acc_x, imu.acc_y, imu.acc_z,
+                                                   imu.vel_x, imu.vel_y, imu.vel_z,
+                                                   imu.dt));
                 }
                 
                 int ls = dim.getAnalogInputValue(0);
@@ -149,12 +155,6 @@ public class IMUTester extends LinearOpMode
                 telemetry.addData("velocity z", imu.vel_z/100.0f);
                 telemetry.addData("cycle time", dt);
                 telemetry.addData("file", logfile.toString());
-
-                log = log.concat(String.format("raw: %d, %d, %d\nhpa: %f, %f, %f\nvel: %f, %f, %f\ndt: %f\n",
-                                               imu.lia_x, imu.lia_y, imu.lia_z,
-                                               imu.acc_x, imu.acc_y, imu.acc_z,
-                                               imu.vel_x, imu.vel_y, imu.vel_z,
-                                               dt));
                 
                 waitForNextHardwareCycle();
             }
