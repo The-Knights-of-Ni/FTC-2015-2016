@@ -59,6 +59,14 @@ public class IMUTester extends LinearOpMode
         {
             if(imu.checkForUpdate())
             {
+                if(imu.lia_x > imu.acc_x_high) imu.acc_x_high = imu.lia_x;
+                if(imu.lia_y > imu.acc_y_high) imu.acc_y_high = imu.lia_y;
+                if(imu.lia_z > imu.acc_z_high) imu.acc_z_high = imu.lia_z;
+                
+                if(imu.lia_x < imu.acc_x_low) imu.acc_x_low = imu.lia_x;
+                if(imu.lia_y < imu.acc_y_low) imu.acc_y_low = imu.lia_y;
+                if(imu.lia_z < imu.acc_z_low) imu.acc_z_low = imu.lia_z;
+                
                 calib_acc0_x += imu.lia_x;
                 calib_acc0_y += imu.lia_y;
                 calib_acc0_z += imu.lia_z;
@@ -69,6 +77,14 @@ public class IMUTester extends LinearOpMode
         imu.acc0_x = (float) (((double) calib_acc0_x)/((double) calibration_points));
         imu.acc0_y = (float) (((double) calib_acc0_y)/((double) calibration_points));
         imu.acc0_z = (float) (((double) calib_acc0_z)/((double) calibration_points));
+        
+        imu.acc_x_high += 0.5f-imu.acc0_x;
+        imu.acc_y_high += 0.5f-imu.acc0_y;
+        imu.acc_z_high += 0.5f-imu.acc0_z;
+        imu.acc_x_low += -0.5f-imu.acc0_x;
+        imu.acc_y_low += -0.5f-imu.acc0_y;
+        imu.acc_z_low += -0.5f-imu.acc0_z;
+        
         imu.vel_x = 0.0f;
         imu.vel_y = 0.0f;
         imu.vel_z = 0.0f;

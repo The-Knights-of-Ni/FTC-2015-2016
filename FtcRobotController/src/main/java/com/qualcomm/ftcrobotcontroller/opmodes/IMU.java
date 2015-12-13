@@ -113,6 +113,14 @@ public class IMU
     public float acc_x = 0.0f;
     public float acc_y = 0.0f;
     public float acc_z = 0.0f;
+
+    public float acc_x_low = 0.0f;
+    public float acc_y_low = 0.0f;
+    public float acc_z_low = 0.0f;
+    
+    public float acc_x_high = 0.0f;
+    public float acc_y_high = 0.0f;
+    public float acc_z_high = 0.0f;
     
     public float acc0_x = 0.0f;
     public float acc0_y = 0.0f;
@@ -463,14 +471,10 @@ public class IMU
                 lia_x = shortFromCache(LIA_DATA_X);
                 lia_y = shortFromCache(LIA_DATA_Y);
                 lia_z = shortFromCache(LIA_DATA_Z);
-
-                float old_acc_x = acc_x;
-                float old_acc_y = acc_y;
-                float old_acc_z = acc_z;
                 
-                acc_x = filter(((float) lia_x)-acc0_x, acc_x, past_acc_x, n_reads);
-                acc_y = filter(((float) lia_y)-acc0_y, acc_y, past_acc_y, n_reads);
-                acc_z = filter(((float) lia_z)-acc0_z, acc_z, past_acc_z, n_reads);
+                acc_x = lia_x-acc0_x;
+                acc_y = lia_y-acc0_y;
+                acc_z = lia_z-acc0_z;
                 
                 /* float[] filtered_x = filter(((float) lia_x)-acc0_x, acc_x, jerk_x, (float) dt); */
                 /* acc_x = filtered_x[0]; */
@@ -484,9 +488,9 @@ public class IMU
                 /* acc_z = filtered_z[0]; */
                 /* jerk_z = filtered_z[1]; */
                 
-                vel_x += 0.5*(old_acc_x+acc_x)*dt;
-                vel_y += 0.5*(old_acc_y+acc_y)*dt;
-                vel_z += 0.5*(old_acc_z+acc_z)*dt;
+                if(acc_x > acc_x_high || acc_x < acc_x_low) vel_x += acc_x*dt;
+                if(acc_y > acc_y_high || acc_y < acc_y_low) vel_y += acc_y*dt;
+                if(acc_z > acc_z_high || acc_z < acc_z_low) vel_z += acc_z*dt;
                 
                 n_reads++; //so you can check if there is a new value since you last checked,
                            //might not be necessary with the manual update function

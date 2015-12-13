@@ -95,29 +95,33 @@ void drawLine(int x0, int y0, int x1, int y1, byte color, byte * bitmap, int bit
 
     if(y0 < 0)
     {
+        if(y1 < 0) return;
         float t = fabs(((float)y0-0)/((float)y1-y0));
         y0 = 0;
         x0 = lerp(x0, x1, t);
     }
     if(y0 >= bitmap_height)
     {
+        if(y1 >= bitmap_height) return;
         float t = fabs(((float)y0-bitmap_height+1)/((float)y1-y0));
         y0 = bitmap_height-1;
-        x0 = lerp(y0, x1, t);
+        x0 = lerp(x0, x1, t);
     }
     if(y1 < 0)
     {
+        if(y0 < 0) return;
         float t = fabs(((float)y1-0)/((float)y0-y1));
         y1 = 0;
         x1 = lerp(x1, x0, t);
     }
     if(y1 >= bitmap_height)
     {
+        if(y0 >= bitmap_height) return;
         float t = fabs(((float)y1-bitmap_height+1)/((float)y0-y1));
         y1 = bitmap_height-1;
         x1 = lerp(x1, x0, t);
     }
-    
+    if(x0 == x1 && y0 == y1) return;
     int n_points = max(absi(x0-x1), absi(y0-y1));
     if(n_points > 0)
     {
@@ -158,7 +162,7 @@ void getData(char * in, uint in_len)
 
 int main()
 {
-    FILE * log_file = fopen("imu_test_log.txt", "r");
+    FILE * log_file = fopen("imu_test_log3.txt", "r");
     assert(log_file);
     
     int error = fseek(log_file, 0, SEEK_END);
@@ -190,7 +194,7 @@ int main()
     memset(bitmap, 0x00, bitmap_width*bitmap_height*3);
     int b = 0;
     
-    int max_data_y = 40;
+    int max_data_y = 200;
     
     int y0r = bitmap_height/2-(bitmap_height*data[0].x)/max_data_y;
     int y0g = bitmap_height/2-(bitmap_height*data[0].y)/max_data_y;
@@ -226,31 +230,31 @@ int main()
         drawLine(x0, y0b, x1, y1, 2, bitmap, bitmap_width, bitmap_height);
         y0b = y1;
         
-        filter_out r_out = filter((float) data[i].x, hpyr, hpyrv, data[i].time-data[i-1].time);
-        hpyr = r_out.x;
-        hpyrv = r_out.v;
+        // filter_out r_out = filter((float) data[i].x, hpyr, hpyrv, data[i].time-data[i-1].time);
+        // hpyr = r_out.x;
+        // hpyrv = r_out.v;
         
-        filter_out g_out = filter((float) data[i].y, hpyg, hpygv, data[i].time-data[i-1].time);
-        hpyg = g_out.x;
-        hpygv = g_out.v;
+        // filter_out g_out = filter((float) data[i].y, hpyg, hpygv, data[i].time-data[i-1].time);
+        // hpyg = g_out.x;
+        // hpygv = g_out.v;
         
-        filter_out b_out = filter((float) data[i].z, hpyb, hpybv, data[i].time-data[i-1].time);
-        hpyb = b_out.x;
-        hpybv = b_out.v;
+        // filter_out b_out = filter((float) data[i].z, hpyb, hpybv, data[i].time-data[i-1].time);
+        // hpyb = b_out.x;
+        // hpybv = b_out.v;
         
-        int hpy1;
+        // int hpy1;
         
-        hpy1 = bitmap_height/2-(bitmap_height*hpyr)/max_data_y;
-        drawLine(x0, hpy0r, x1, hpy1, 0, bitmap, bitmap_width, bitmap_height);
-        hpy0r = hpy1;
+        // hpy1 = bitmap_height/2-(bitmap_height*hpyr)/max_data_y;
+        // drawLine(x0, hpy0r, x1, hpy1, 0, bitmap, bitmap_width, bitmap_height);
+        // hpy0r = hpy1;
 
-        hpy1 = bitmap_height/2-(bitmap_height*hpyg)/max_data_y;
-        drawLine(x0, hpy0g, x1, hpy1, 1, bitmap, bitmap_width, bitmap_height);
-        hpy0g = hpy1;
+        // hpy1 = bitmap_height/2-(bitmap_height*hpyg)/max_data_y;
+        // drawLine(x0, hpy0g, x1, hpy1, 1, bitmap, bitmap_width, bitmap_height);
+        // hpy0g = hpy1;
         
-        hpy1 = bitmap_height/2-(bitmap_height*hpyb)/max_data_y;
-        drawLine(x0, hpy0b, x1, hpy1, 2, bitmap, bitmap_width, bitmap_height);
-        hpy0b = hpy1;
+        // hpy1 = bitmap_height/2-(bitmap_height*hpyb)/max_data_y;
+        // drawLine(x0, hpy0b, x1, hpy1, 2, bitmap, bitmap_width, bitmap_height);
+        // hpy0b = hpy1;
         
         x0 = x1;
     }
@@ -263,7 +267,7 @@ int main()
     //         bitmap[(x+y*bitmap_width)*3+2] = 0xFF;
     //     }
     // }
-    stbi_write_png("graph.png", bitmap_width, bitmap_height, 3, bitmap, bitmap_width*3);
+    stbi_write_png("graph3.png", bitmap_width, bitmap_height, 3, bitmap, bitmap_width*3);
     
     return 0;
 }
