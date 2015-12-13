@@ -420,26 +420,89 @@ public class IMU
     /*     return out; */
     /* } */
     
-    public static int n_reads_before_updating = 30;
+    public static int n_reads_before_updating = 1<<6;
     
-    float[] past_acc_x = new float[n_reads_before_updating];
-    float[] past_acc_y = new float[n_reads_before_updating];
-    float[] past_acc_z = new float[n_reads_before_updating];
+    float[] past_dts = new float[n_reads_before_updating];
     
-    public static float filter(float x, float old_x, float[] past_x, int n)
+    int[] past_acc_x = new int[n_reads_before_updating];
+    int[] past_acc_y = new int[n_reads_before_updating];
+    int[] past_acc_z = new int[n_reads_before_updating];
+    
+    int[] wavelet_acc_x = new int[n_reads_before_updating];
+    int[] wavelet_acc_y = new int[n_reads_before_updating];
+    int[] wavelet_acc_z = new int[n_reads_before_updating];
+
+    float[] past_vel_x = new float[n_reads_before_updating];
+    float[] past_vel_y = new float[n_reads_before_updating];
+    float[] past_vel_z = new float[n_reads_before_updating];
+    
+    int n_past_acc = 0;
+    
+    int absi(int a)
     {
-        past_x[n%n_reads_before_updating] = x;
-        if(n%n_reads_before_updating == n_reads_before_updating-1)
+        if(a < 0) return -a;
+        return a;
+    }
+    
+    boolean filter(int acc, int[] past_acc, int[] wavelet_acc, float[] past_vel, float dt)
+    {
+        past_dts[n_past_acc] = dt;
+        past_acc[n_past_acc] = acc;
+        n_past_acc++;
+        
+        if(n_past_acc >= n_reads_before_updating)
         {
-            float average = 0;
-            for(int i = 0; i < n_reads_before_updating; i++)
+            haarWaveletTransform(past_acc, wavelet_acc, n_reads_before_updating);
+            inverseHaarWaveletTransform(wavelet_acc, past_acc, n_reads_before_updating);
+            for(int i = 1; i < n_reads_before_updating; i++)
             {
-                average += past_x[i];
+                past_vel[i] = past_vel[i-1]+past_acc[i]*past_dts[i];
             }
-            average /= n_reads_before_updating;
-            return average;
+            past_vel[0] = past_vel[n_reads_before_updating-1];
+            n_past_acc = 0;//TODO: make it more continuous
+            return true;
         }
-        return old_x;
+        return false;
+    }
+    
+    //NOTE: the input array is not preserved, n must be a power of 2
+    void haarWaveletTransform(int[] in, int[] out, int n)
+    {
+        for(int length = n>>1; ; length>>=1)
+        {
+            for(int i = 0; i < length; i++)
+            {
+                out[i] = (in[2*i]+in[2*i+1])>>1; //TODO: move the >>1's to the inverse transform unless it causes an int overflow
+                out[i+length] = (in[2*i]-in[2*i+1])>>1;
+                if(absi(out[i]) < 40) out[i] = 0; //TODO: try not filtering until the end
+                if(absi(out[i+length]) < 40) out[i+length] = 0;
+            }
+            //return;//TEMP
+            if(length == 1)
+            {
+                return;
+            }
+            System.arraycopy(out, 0, in, 0, length<<1);
+        }
+    }
+    
+    void inverseHaarWaveletTransform(int[] in, int[] out, int n)
+    {
+        for(int length = 1; ; length<<=1)
+        {
+            //length = n>>1;//TEMP
+            for(int i = 0; i < length; i++)
+            {
+                out[2*i] = in[i]+in[i+length];
+                out[2*i+1] = in[i]-in[i+length];
+            }
+            //return;//TEMP
+            if(length == n>>1)
+            {
+                return;
+            }
+            System.arraycopy(out, 0, in, 0, length<<1);
+        }
     }
     
     public boolean checkForUpdate()
@@ -472,10 +535,21 @@ public class IMU
                 lia_y = shortFromCache(LIA_DATA_Y);
                 lia_z = shortFromCache(LIA_DATA_Z);
                 
-                acc_x = lia_x-acc0_x;
-                acc_y = lia_y-acc0_y;
-                acc_z = lia_z-acc0_z;
-                
+                if(filter(lia_x, past_acc_x, wavelet_acc_x, past_vel_x, (float) dt))
+                {
+                    acc_x = past_acc_x[n_reads_before_updating-1];
+                    vel_x = past_vel_x[n_reads_before_updating-1];
+                }
+                if(filter(lia_y, past_acc_y, wavelet_acc_y, past_vel_y, (float) dt))
+                {
+                    acc_y = past_acc_y[n_reads_before_updating-1];
+                    vel_y = past_vel_y[n_reads_before_updating-1];
+                }
+                if(filter(lia_z, past_acc_z, wavelet_acc_z, past_vel_z, (float) dt))
+                {
+                    acc_z = past_acc_z[n_reads_before_updating-1];
+                    vel_z = past_vel_z[n_reads_before_updating-1];
+                }
                 /* float[] filtered_x = filter(((float) lia_x)-acc0_x, acc_x, jerk_x, (float) dt); */
                 /* acc_x = filtered_x[0]; */
                 /* jerk_x = filtered_x[1]; */
@@ -488,9 +562,9 @@ public class IMU
                 /* acc_z = filtered_z[0]; */
                 /* jerk_z = filtered_z[1]; */
                 
-                if(acc_x > acc_x_high || acc_x < acc_x_low) vel_x += acc_x*dt;
-                if(acc_y > acc_y_high || acc_y < acc_y_low) vel_y += acc_y*dt;
-                if(acc_z > acc_z_high || acc_z < acc_z_low) vel_z += acc_z*dt;
+                /* vel_x += acc_x*dt; */
+                /* vel_y += acc_y*dt; */
+                /* vel_z += acc_z*dt; */
                 
                 n_reads++; //so you can check if there is a new value since you last checked,
                            //might not be necessary with the manual update function
