@@ -79,7 +79,6 @@ public class IK_solver
         }
         float[] elbow_pos = new float[]{(float) Math.cos(arm_targets[0]), (float) Math.sin(arm_targets[0])};
         arm_targets[1] = (float) Math.atan2(hand[1]-elbow_pos[1], hand[0]-elbow_pos[0])-arm_targets[0]+elbow_0;
-        //arm_targets[0] += arm_targets[1];
         
         /*
           outputs: arm_targets[1] and arm_targets[0] are the rotations of

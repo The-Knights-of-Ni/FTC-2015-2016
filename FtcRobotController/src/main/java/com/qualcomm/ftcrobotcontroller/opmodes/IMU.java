@@ -113,18 +113,6 @@ public class IMU
     public float acc_x = 0.0f;
     public float acc_y = 0.0f;
     public float acc_z = 0.0f;
-
-    public float acc_x_low = 0.0f;
-    public float acc_y_low = 0.0f;
-    public float acc_z_low = 0.0f;
-    
-    public float acc_x_high = 0.0f;
-    public float acc_y_high = 0.0f;
-    public float acc_z_high = 0.0f;
-    
-    public float acc0_x = 0.0f;
-    public float acc0_y = 0.0f;
-    public float acc0_z = 0.0f;
     
     /* public float jerk_x = 0.0f; */
     /* public float jerk_y = 0.0f; */
@@ -243,12 +231,12 @@ public class IMU
         
         write8(UNIT_SEL, unit_flags);
         
-        write8(SYS_TRIGGER, (byte)(slow_read8(SYS_TRIGGER) | (byte)0x01));
-        for(int self_test_result = 0; (self_test_result & 0x0F) != 0x0F;)
-        {
-            self_test_result = slow_read8(SELFTEST_RESULT);
-        }
-        DbgLog.error("imu self tested");
+        /* write8(SYS_TRIGGER, (byte)(slow_read8(SYS_TRIGGER) | (byte)0x01)); */
+        /* for(int self_test_result = 0; (self_test_result & 0x0F) != 0x0F;) */
+        /* { */
+        /*     self_test_result = slow_read8(SELFTEST_RESULT); */
+        /* } */
+        /* DbgLog.error("imu self tested"); */
         
         write8(OPR_MODE, mode);
         delay(200);
@@ -259,21 +247,8 @@ public class IMU
         
         write8(PAGE_ID, (byte) 0);
         
-        while((slow_read8(CALIB_STAT)&0xF) != 0xF){delay(100);}
+        //while((slow_read8(CALIB_STAT)&0xF) != 0xF){delay(100);} //TODO: check if this is necessary
         
-        /* lowest_read_address = (int) registers_to_read[0]; */
-        /* highest_read_address = (int) registers_to_read[0]; */
-        /* for(int r = 1; r < registers_to_read.length; r++) */
-        /* { */
-        /*     if(registers_to_read[r] < lowest_read_address) */
-        /*     { */
-        /*         lowest_read_address = (int) registers_to_read[r]; */
-        /*     } */
-        /*     if(registers_to_read[r] > highest_read_address) */
-        /*     { */
-        /*         highest_read_address = (int) registers_to_read[r]; */
-        /*     } */
-        /* } */
         if(highest_read_address+1-lowest_read_address > widest_read_range)
         {
             DbgLog.error(String.format("error: cannot read more than %d elements at a time", widest_read_range));
@@ -291,9 +266,7 @@ public class IMU
             i2cd.readI2cCacheFromController();
         }
         
-        n_reads = 0;        
         
-        old_time = System.nanoTime();
         
         return 0;
     }
@@ -395,48 +368,37 @@ public class IMU
         vel_z = 0.0f;
         dt = 0.0f;
         old_time = System.nanoTime();
+        
         n_reads = 0;//might not want to reset this, not sure
+        
+        while(n_reads < n_to_filter)
+        {
+            checkForUpdate();
+        }
     }
     
-    /* public static float filter_k = 0.5f; */
-    /* public static float filter_c = 1.0f; */
-    /* public static float filter_m = 1.0f; */
+    public static int n_to_filter = 256; //must be a power of 2
+    public static int filter_threshold = 30;
     
-    /* public static float lambda = -filter_c/(2.0f*filter_m); */
-    /* public static float omega = (float)Math.sqrt(4.0f*filter_k/filter_m-(filter_c*filter_c)/(filter_m*filter_m)); */
+    float[] past_dts = new float[n_to_filter];
     
-    /* public float[] filter(float x_1, float x_0, float v_0, float dt) */
-    /* { */
-    /*     float[] out = new float[2]; */
-
-    /*     float c_1 = x_0-x_1; */
-    /*     float c_2 = v_0/(omega*lambda); */
-        
-    /*     //NOTE: the small angle approx for sin and cos can probably be */
-    /*     //used here if speed is needed, it probably won't make that large */
-    /*     //of a difference since there's only 1 imu */
-    /*     out[0] = x_1+(float)(Math.exp(lambda*dt)*(c_1*Math.cos(omega*dt) + c_2*Math.sin(omega*dt))); */
-    /*     out[1] = (float)(omega*lambda*Math.exp(lambda*dt)*(-c_1*Math.sin(omega*dt) + c_2*Math.cos(omega*dt))); */
-    /*     return out; */
-    /* } */
+    int[] past_acc_x = new int[n_to_filter];
+    int[] past_acc_y = new int[n_to_filter];
+    int[] past_acc_z = new int[n_to_filter];
     
-    public static int n_reads_before_updating = 1<<6;
+    int[] wavelet_acc_x = new int[n_to_filter];
+    int[] wavelet_acc_y = new int[n_to_filter];
+    int[] wavelet_acc_z = new int[n_to_filter];
     
-    float[] past_dts = new float[n_reads_before_updating];
+    int[] filtered_acc_x = new int[n_to_filter];
+    int[] filtered_acc_y = new int[n_to_filter];
+    int[] filtered_acc_z = new int[n_to_filter];
     
-    int[] past_acc_x = new int[n_reads_before_updating];
-    int[] past_acc_y = new int[n_reads_before_updating];
-    int[] past_acc_z = new int[n_reads_before_updating];
+    float[] past_vel_x = new float[n_to_filter];
+    float[] past_vel_y = new float[n_to_filter];
+    float[] past_vel_z = new float[n_to_filter];
     
-    int[] wavelet_acc_x = new int[n_reads_before_updating];
-    int[] wavelet_acc_y = new int[n_reads_before_updating];
-    int[] wavelet_acc_z = new int[n_reads_before_updating];
-
-    float[] past_vel_x = new float[n_reads_before_updating];
-    float[] past_vel_y = new float[n_reads_before_updating];
-    float[] past_vel_z = new float[n_reads_before_updating];
-    
-    int n_past_acc = 0;
+    int filter_write_location = 0;
     
     int absi(int a)
     {
@@ -444,25 +406,34 @@ public class IMU
         return a;
     }
     
-    boolean filter(int acc, int[] past_acc, int[] wavelet_acc, float[] past_vel, float dt)
+    void filter(int acc, int[] past_acc, int[] wavelet_acc, int[] filtered_acc, float[] past_vel, float dt)
     {
-        past_dts[n_past_acc] = dt;
-        past_acc[n_past_acc] = acc;
-        n_past_acc++;
+        past_dts[n_reads%n_to_filter] = dt;
+        //TODO: might want to add values multiple times when there is a larger dt
+        past_acc[n_reads%n_to_filter] = acc;
         
-        if(n_past_acc >= n_reads_before_updating)
+        if(n_reads >= n_to_filter-1)
         {
-            haarWaveletTransform(past_acc, wavelet_acc, n_reads_before_updating);
-            inverseHaarWaveletTransform(wavelet_acc, past_acc, n_reads_before_updating);
-            for(int i = 1; i < n_reads_before_updating; i++)
+            //haarWaveletTransform will destroy the input, so we make and use a copy of past_acc
+            //past_acc is a looped buffer, so we want to start copying from the middle
+            int start_of_buffer = (n_reads+1)%n_to_filter;
+            //first half, from middle(start_of_buffer) to end(n_to_filter)
+            System.arraycopy(past_acc, start_of_buffer,
+                             filtered_acc, 0,
+                             n_to_filter-start_of_buffer);
+            //second half, from beginning(0) to middle(start_of_buffer)
+            System.arraycopy(past_acc, 0,
+                             filtered_acc, n_to_filter-start_of_buffer,
+                             start_of_buffer);
+            
+            haarWaveletTransform(filtered_acc, wavelet_acc, n_to_filter);
+            inverseHaarWaveletTransform(wavelet_acc, filtered_acc, n_to_filter);
+            for(int i = 1; i < n_to_filter; i++)
             {
-                past_vel[i] = past_vel[i-1]+past_acc[i]*past_dts[i];
+                past_vel[i] = past_vel[i-1]+filtered_acc[i]*past_dts[i];
             }
-            past_vel[0] = past_vel[n_reads_before_updating-1];
-            n_past_acc = 0;//TODO: make it more continuous
-            return true;
+            past_vel[0] = past_vel[1];
         }
-        return false;
     }
     
     //NOTE: the input array is not preserved, n must be a power of 2
@@ -474,8 +445,8 @@ public class IMU
             {
                 out[i] = (in[2*i]+in[2*i+1])>>1; //TODO: move the >>1's to the inverse transform unless it causes an int overflow
                 out[i+length] = (in[2*i]-in[2*i+1])>>1;
-                if(absi(out[i]) < 40) out[i] = 0; //TODO: try not filtering until the end
-                if(absi(out[i+length]) < 40) out[i+length] = 0;
+                if(absi(out[i]) < filter_threshold) out[i] = 0;
+                if(absi(out[i+length]) < filter_threshold) out[i+length] = 0;
             }
             //return;//TEMP
             if(length == 1)
@@ -535,37 +506,18 @@ public class IMU
                 lia_y = shortFromCache(LIA_DATA_Y);
                 lia_z = shortFromCache(LIA_DATA_Z);
                 
-                if(filter(lia_x, past_acc_x, wavelet_acc_x, past_vel_x, (float) dt))
-                {
-                    acc_x = past_acc_x[n_reads_before_updating-1];
-                    vel_x = past_vel_x[n_reads_before_updating-1];
-                }
-                if(filter(lia_y, past_acc_y, wavelet_acc_y, past_vel_y, (float) dt))
-                {
-                    acc_y = past_acc_y[n_reads_before_updating-1];
-                    vel_y = past_vel_y[n_reads_before_updating-1];
-                }
-                if(filter(lia_z, past_acc_z, wavelet_acc_z, past_vel_z, (float) dt))
-                {
-                    acc_z = past_acc_z[n_reads_before_updating-1];
-                    vel_z = past_vel_z[n_reads_before_updating-1];
-                }
-                /* float[] filtered_x = filter(((float) lia_x)-acc0_x, acc_x, jerk_x, (float) dt); */
-                /* acc_x = filtered_x[0]; */
-                /* jerk_x = filtered_x[1]; */
+                filter(lia_x, past_acc_x, wavelet_acc_x, filtered_acc_x, past_vel_x, (float) dt);
+                acc_x = filtered_acc_x[n_to_filter-1];
+                vel_x = past_vel_x[n_to_filter-1];
                 
-                /* float[] filtered_y = filter(((float) lia_y)-acc0_y, acc_y, jerk_y, (float) dt); */
-                /* acc_y = filtered_y[0]; */
-                /* jerk_y = filtered_y[1]; */
+                filter(lia_y, past_acc_y, wavelet_acc_y, filtered_acc_y, past_vel_y, (float) dt);
+                acc_y = filtered_acc_y[n_to_filter-1];
+                vel_y = past_vel_y[n_to_filter-1];
                 
-                /* float[] filtered_z = filter(((float) lia_z)-acc0_z, acc_z, jerk_z, (float) dt); */
-                /* acc_z = filtered_z[0]; */
-                /* jerk_z = filtered_z[1]; */
-                
-                /* vel_x += acc_x*dt; */
-                /* vel_y += acc_y*dt; */
-                /* vel_z += acc_z*dt; */
-                
+                filter(lia_z, past_acc_z, wavelet_acc_z, filtered_acc_z, past_vel_z, (float) dt);
+                acc_z = filtered_acc_z[n_to_filter-1];
+                vel_z = past_vel_z[n_to_filter-1];
+                                
                 n_reads++; //so you can check if there is a new value since you last checked,
                            //might not be necessary with the manual update function
             }

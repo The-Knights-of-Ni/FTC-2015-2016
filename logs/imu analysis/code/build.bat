@@ -1,7 +1,7 @@
 @echo off
 
-mkdir "../build"
-pushd "../build"
+mkdir "../gitted_build"
+pushd "../gitted_build"
 
 del "analyze.exe"
 clang -O3 -g -o "analyze" -D DEBUG ../code/"main.cpp"

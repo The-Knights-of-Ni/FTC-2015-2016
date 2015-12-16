@@ -43,8 +43,8 @@ void haarWaveletTransform(int * in, int * out, int n)
         {
             out[i] = (in[2*i]+in[2*i+1])>>1;
             out[i+length] = (in[2*i]-in[2*i+1])>>1;
-            if(absi(out[i]) < 40) out[i] = 0;
-            if(absi(out[i+length]) < 40) out[i+length] = 0;
+            if(absi(out[i]) < 30) out[i] = 0;
+            if(absi(out[i+length]) < 30) out[i+length] = 0;
         }
         //return;//TEMP
         if(length == 1)
@@ -302,13 +302,6 @@ int main()
         // y1 = bitmap_height/2-(bitmap_height*data_z[i])/max_data_y;
         // drawLine(x0, y0b, x1, y1, 2, bitmap, bitmap_width, bitmap_height);
         // y0b = y1;
-
-        if(i%10 < 5)
-        {
-            bitmap[(i+(bitmap_height/2*bitmap_width))*3+0] = 0xFF;
-            bitmap[(i+(bitmap_height/2*bitmap_width))*3+1] = 0xFF;
-            bitmap[(i+(bitmap_height/2*bitmap_width))*3+2] = 0xFF;
-        }
         
         if(i < (1<<transform_n))
         {
@@ -316,7 +309,7 @@ int main()
             fy1 = bitmap_height/2-(bitmap_height*transformed_x_in[i])/max_data_y/2;
             drawLine(x0, fy0r, x1, fy1, 2, bitmap, bitmap_width, bitmap_height);
             fy0r = fy1;
-
+            
             int fv1;
             fvx += transformed_x_in[i];
             //if(fvx < 1000 && transformed_x_in[i] < 20) fvx = 0;
@@ -327,7 +320,7 @@ int main()
             // fy1 = bitmap_height/2-(bitmap_height*transformed_y_in[i])/max_data_y;
             // drawLine(x0, fy0g, x1, fy1, 1, bitmap, bitmap_width, bitmap_height);
             // fy0g = fy1;
-
+            
             // fy1 = bitmap_height/2-(bitmap_height*transformed_z_in[i])/max_data_y;
             // drawLine(x0, fy0b, x1, fy1, 2, bitmap, bitmap_width, bitmap_height);
             // fy0b = fy1;
@@ -335,6 +328,16 @@ int main()
         
         x0 = x1;
     }
+    
+    printf("drawing x-axis\n");
+    for(int i = 0; i < bitmap_width; (i%10 >= 5) ? i+=5 : i++)
+    {
+        bitmap[(i+(bitmap_height/2*bitmap_width))*3+0] = 0xFF;
+        bitmap[(i+(bitmap_height/2*bitmap_width))*3+1] = 0xFF;
+        bitmap[(i+(bitmap_height/2*bitmap_width))*3+2] = 0xFF;
+    }
+    printf("done drawing x-axis\n");
+    
     stbi_write_png("graph3 with wavelet filter.png", bitmap_width, bitmap_height, 3, bitmap, bitmap_width*3);
     
     return 0;

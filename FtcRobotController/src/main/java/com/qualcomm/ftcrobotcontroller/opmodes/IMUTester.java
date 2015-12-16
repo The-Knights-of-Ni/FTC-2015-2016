@@ -50,41 +50,6 @@ public class IMUTester extends LinearOpMode
             }
         }
         
-        int calibration_points = 2000;
-        long calib_acc0_x = 0;
-        long calib_acc0_y = 0;
-        long calib_acc0_z = 0;
-        
-        for(int i = 0; i < calibration_points; i++)
-        {
-            if(imu.checkForUpdate())
-            {
-                if(imu.lia_x > imu.acc_x_high) imu.acc_x_high = imu.lia_x;
-                if(imu.lia_y > imu.acc_y_high) imu.acc_y_high = imu.lia_y;
-                if(imu.lia_z > imu.acc_z_high) imu.acc_z_high = imu.lia_z;
-                
-                if(imu.lia_x < imu.acc_x_low) imu.acc_x_low = imu.lia_x;
-                if(imu.lia_y < imu.acc_y_low) imu.acc_y_low = imu.lia_y;
-                if(imu.lia_z < imu.acc_z_low) imu.acc_z_low = imu.lia_z;
-                
-                calib_acc0_x += imu.lia_x;
-                calib_acc0_y += imu.lia_y;
-                calib_acc0_z += imu.lia_z;
-                telemetry.addData("calibrating", i);
-            }
-            waitForNextHardwareCycle();
-        }
-        imu.acc0_x = (float) (((double) calib_acc0_x)/((double) calibration_points));
-        imu.acc0_y = (float) (((double) calib_acc0_y)/((double) calibration_points));
-        imu.acc0_z = (float) (((double) calib_acc0_z)/((double) calibration_points));
-        
-        imu.acc_x_high += 0.5f-imu.acc0_x;
-        imu.acc_y_high += 0.5f-imu.acc0_y;
-        imu.acc_z_high += 0.5f-imu.acc0_z;
-        imu.acc_x_low += -0.5f-imu.acc0_x;
-        imu.acc_y_low += -0.5f-imu.acc0_y;
-        imu.acc_z_low += -0.5f-imu.acc0_z;
-        
         imu.vel_x = 0.0f;
         imu.vel_y = 0.0f;
         imu.vel_z = 0.0f;
@@ -116,7 +81,7 @@ public class IMUTester extends LinearOpMode
             DbgLog.error("waiting for start");
             waitForStart();
             
-            imu.rezero();
+            imu.rezero(); //Make sure you call rezero before starting, it resets the velocity integration timers and values
             
             for(;imu.n_reads < 10000;)
             {
@@ -147,9 +112,6 @@ public class IMUTester extends LinearOpMode
                 telemetry.addData("high_passed_acceleration x", imu.acc_x/100.0f);
                 telemetry.addData("high_passed_acceleration y", imu.acc_y/100.0f);
                 telemetry.addData("high_passed_acceleration z", imu.acc_z/100.0f);
-                telemetry.addData("accelerometer calibration x", imu.acc0_x/100.0f);
-                telemetry.addData("accelerometer calibration y", imu.acc0_y/100.0f);
-                telemetry.addData("accelerometer calibration z", imu.acc0_z/100.0f);
                 telemetry.addData("velocity x", imu.vel_x/100.0f);
                 telemetry.addData("velocity y", imu.vel_y/100.0f);
                 telemetry.addData("velocity z", imu.vel_z/100.0f);
