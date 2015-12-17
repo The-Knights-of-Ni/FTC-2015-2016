@@ -11,6 +11,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import android.content.Context;
+import android.app.Activity;
+import android.view.View;
+import android.widget.SeekBar;
+import com.qualcomm.ftcrobotcontroller.R;
+import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
+
 public class Mk2Teleop extends LinearOpMode
 {
     public static final float encoder_ticks_per_radian = 1440.0f/2.0f*((float)Math.PI); //TODO: might want to make this a global const
@@ -44,9 +51,9 @@ public class Mk2Teleop extends LinearOpMode
     //TODO: can probably beat PID by actually solving the arms equations of motion (feedforward)
     class PIDController
     {
-        public final float k_p;
-        public final float k_i;
-        public final float k_d;
+        public float k_p;
+        public float k_i;
+        public float k_d;
         
         public float i = 0.0f;
         public float p_old;
@@ -57,6 +64,7 @@ public class Mk2Teleop extends LinearOpMode
         {
             i += p*dt; //might want to try different integrators
             float d = (p-p_old)/dt; //might need to put this through a filter
+            p_old = p;
             return k_p*p+k_i*i+k_d*d;
         }
     }
@@ -117,6 +125,10 @@ public class Mk2Teleop extends LinearOpMode
     @Override public void runOpMode()
         throws InterruptedException
     {
+        //gui stuff
+        
+        ///////////
+        
         int elbow_potentiometer_port = 7;
         dim = hardwareMap.deviceInterfaceModule.get("dim");
         
@@ -137,7 +149,7 @@ public class Mk2Teleop extends LinearOpMode
         //hand[1] = hardwareMap.servo.get("servo_2");
         
         //PIDController shoulder_pid = new PIDController(1.0f, 0.0f, 0.4f, arm_motor_targets[0]);
-        PIDController elbow_pid = new PIDController(0.5f, 0.7f, 0.2f, arm_motor_targets[1]);
+        PIDController elbow_pid = new PIDController(0.5f, 0.7f, 1.0f, arm_motor_targets[1]);
         
         waitForStart();
         
@@ -228,14 +240,18 @@ public class Mk2Teleop extends LinearOpMode
                 //manual PID
                 /* float shoulder_power = shoulder_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[0]*/
                 /*                                                -shoulder.getCurrentPosition(), dt);*/
+                
+                elbow_pid.k_p = FtcRobotControllerActivity.slider_0;
+                elbow_pid.k_i = FtcRobotControllerActivity.slider_1;
+                elbow_pid.k_d = FtcRobotControllerActivity.slider_2;
                 elbow_potentiometer_angle = lerp(
                     360.0f-(180.0f-potentiometer_range*0.5f+potentiometer_range*(((float)dim.getAnalogInputValue(elbow_potentiometer_port))/(1023.0f))),
                     elbow_potentiometer_angle,
-                    (float)Math.exp(-10.0*dt));
+                    (float)Math.exp(-200.0*dt));
                 float winch_power = elbow_pid.getControl(arm_motor_targets[1]*180.0f/(float)Math.PI
                                                          -elbow_potentiometer_angle, (float)dt);
                 winch_power = Range.clip(winch_power, -1, 1);
-                elbow.setPower(0.1*winch_power);
+                elbow.setPower(0.5*winch_power);
                 //might need different PID constants for winch mode and pulley mode
                 
                 //shoulder.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[0]));
@@ -262,6 +278,9 @@ public class Mk2Teleop extends LinearOpMode
             telemetry.addData("elbow stick", String.format("%.2f", arm_stick[1]));
             telemetry.addData("Shoulder target", String.format("%.2f", arm_motor_targets[0]*180.0f/(float)Math.PI));
             telemetry.addData("elbow target", String.format("%.2f", arm_motor_targets[1]*180.0f/(float)Math.PI));
+            telemetry.addData("slider 0", String.format("%d", FtcRobotControllerActivity.slider_0));
+            telemetry.addData("slider 1", String.format("%d", FtcRobotControllerActivity.slider_1));
+            telemetry.addData("slider 2", String.format("%d", FtcRobotControllerActivity.slider_2));
             
             //Refreshes
             try

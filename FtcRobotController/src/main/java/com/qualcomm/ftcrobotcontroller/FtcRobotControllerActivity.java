@@ -72,6 +72,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 
+//custom gui
+import android.widget.SeekBar;
+////////////
+
 public class FtcRobotControllerActivity extends Activity {
 
   private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;
@@ -132,13 +136,54 @@ public class FtcRobotControllerActivity extends Activity {
       DbgLog.msg("USB Device attached; app restart may be needed");
     }
   }
-
+  
+  //custom gui
+  public static int slider_0;
+  public static int slider_1;
+  public static int slider_2;
+  ////////////
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.activity_ftc_controller);
+    
+    //custom gui
+    SeekBar slider0 = (SeekBar) findViewById(R.id.slider_0);
+    slider0.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                                      {
+                                          public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
+                                          {
+                                              slider_0 = progress;
+                                          }
+                                          public void onStartTrackingTouch(SeekBar seek_bar){}
+                                          public void onStopTrackingTouch(SeekBar seek_bar){}
+                                      });
 
+    SeekBar slider1 = (SeekBar) findViewById(R.id.slider_1);
+    slider1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                                       {
+                                           public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
+                                           {
+                                               slider_1 = progress;
+                                           }
+                                           public void onStartTrackingTouch(SeekBar seek_bar){}
+                                           public void onStopTrackingTouch(SeekBar seek_bar){}
+                                       });
+
+    SeekBar slider2 = (SeekBar) findViewById(R.id.slider_2);
+    slider2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                                       {
+                                           public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
+                                           {
+                                               slider_2 = progress;
+                                           }
+                                           public void onStartTrackingTouch(SeekBar seek_bar){}
+                                           public void onStopTrackingTouch(SeekBar seek_bar){}
+                                       });
+    ////////////
+    
     utility = new Utility(this);
     context = this;
     entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
