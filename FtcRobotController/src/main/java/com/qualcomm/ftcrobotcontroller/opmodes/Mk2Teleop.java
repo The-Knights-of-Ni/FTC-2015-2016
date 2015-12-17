@@ -57,13 +57,16 @@ public class Mk2Teleop extends LinearOpMode
         
         public float i = 0.0f;
         public float p_old;
-        
+        public float d = 0.0f;
+            
         public PIDController(float p, float i, float d, float initial_val){k_p = p; k_i = i; k_d = d; p_old = initial_val;}
         
         float getControl(float p, float dt)
         {
             i += p*dt; //might want to try different integrators
-            float d = (p-p_old)/dt; //might need to put this through a filter
+            d = lerp((p-p_old)/dt,
+                     d,
+                     (float)Math.exp(-20.0*dt));
             p_old = p;
             return k_p*p+k_i*i+k_d*d;
         }
@@ -235,23 +238,25 @@ public class Mk2Teleop extends LinearOpMode
                 deadZone(arm_stick);
                 
                 add(arm_pos_target, scale(arm_stick, 0.1f*(float)dt));
-                arm_motor_targets = IK_solver.getArmTargets(arm_pos_target);
+                //arm_motor_targets = IK_solver.getArmTargets(arm_pos_target);
+                arm_motor_targets[1] = FtcRobotControllerActivity.slider_3*2.0f*(float)Math.PI/180.0f;
                 
                 //manual PID
                 /* float shoulder_power = shoulder_pid.getControl(encoder_ticks_per_radian*arm_motor_targets[0]*/
                 /*                                                -shoulder.getCurrentPosition(), dt);*/
                 
-                elbow_pid.k_p = FtcRobotControllerActivity.slider_0;
-                elbow_pid.k_i = FtcRobotControllerActivity.slider_1;
-                elbow_pid.k_d = FtcRobotControllerActivity.slider_2;
+                elbow_pid.k_p = FtcRobotControllerActivity.slider_0/10.0f;
+                elbow_pid.k_i = FtcRobotControllerActivity.slider_1/10.0f;
+                elbow_pid.k_d = FtcRobotControllerActivity.slider_2/10.0f;
                 elbow_potentiometer_angle = lerp(
                     360.0f-(180.0f-potentiometer_range*0.5f+potentiometer_range*(((float)dim.getAnalogInputValue(elbow_potentiometer_port))/(1023.0f))),
                     elbow_potentiometer_angle,
-                    (float)Math.exp(-200.0*dt));
-                float winch_power = elbow_pid.getControl(arm_motor_targets[1]*180.0f/(float)Math.PI
-                                                         -elbow_potentiometer_angle, (float)dt);
-                winch_power = Range.clip(winch_power, -1, 1);
-                elbow.setPower(0.5*winch_power);
+                    (float)Math.exp(-20.0*dt));
+                float winch_power = elbow_pid.getControl(arm_motor_targets[1]
+                                                         -elbow_potentiometer_angle*(float)Math.PI/180.0f, (float)dt);
+                winch_power = Range.clip(winch_power, -1.0f, 1.0f);
+                elbow.setPower(winch_power);
+                telemetry.addData("winch_power", String.format("%.2f", winch_power));
                 //might need different PID constants for winch mode and pulley mode
                 
                 //shoulder.setTargetPosition((int)(encoder_ticks_per_radian*arm_motor_targets[0]));
