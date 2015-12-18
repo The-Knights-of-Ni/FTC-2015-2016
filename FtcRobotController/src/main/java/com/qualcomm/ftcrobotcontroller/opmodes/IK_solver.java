@@ -53,33 +53,33 @@ public class IK_solver
       inputs: hand[0] and hand[1] are the cordinates of the wanted hand position in inches, relative to the robot
       hand will be clamped if it is outside of the range of motion of the arm
     */
-    public static float[] getArmTargets(float[] hand)
+    public static float[] getArmTargetsRectangular(float[] hand, boolean mode)
     {
         float[] arm_targets = new float[2]; //[0] -> shoulder, [1] -> elbow
         
         float dist = (float) Math.sqrt(sq(hand[0])+sq(hand[1]));
         //clamp hand motion
-        if(dist > forearm_len+upperarm_len) normalizeScale(hand, forearm_len+upperarm_len);
-        if(dist < forearm_len-upperarm_len) normalizeScale(hand, forearm_len-upperarm_len);
+        if(dist > forearm_len+upperarm_len) normalizeScale(hand, 0.9f*(forearm_len+upperarm_len));
+        if(dist < forearm_len-upperarm_len) normalizeScale(hand, 0.9f*(forearm_len-upperarm_len));
         //TODO: clamp when the arm will hit the frame
+        
+        arm_targets[0] = (float) Math.atan2(hand[1], hand[0]);
+        if(arm_targets[0] < 0.0f) arm_targets[0] += 2.0f*(float)Math.PI;
         
         float shoulder_offset = (float) Math.acos((sq(upperarm_len)+sq(dist)-sq(forearm_len))/(2.0f*dist*upperarm_len));
         //from law of cosines, forearm_len^2 = upperarm_len^2 + dist^2 - 2*dist*upperarm_len*cos(shoulder_offset)
-        arm_targets[0] = (float) Math.atan2(hand[1], hand[0]);
         
-        float shoulder_target = arm_targets[0]+shoulder_offset;
-        if(true)//shoulder_target < shoulder_max)
-        { //winch case
-            arm_targets[0] = shoulder_target;
+        arm_targets[1] = (float) Math.acos((sq(upperarm_len)+sq(forearm_len)-sq(dist))/(2.0f*upperarm_len*forearm_len));
+        if(mode)//shoulder_target < shoulder_max)
+        { //pulley case
+            
+            arm_targets[0] = arm_targets[0]-shoulder_offset;
+            arm_targets[1] = 2.0f*(float)Math.PI-arm_targets[1];
         }
         else
-        { //pulley case
-            arm_targets[0] -= shoulder_offset;
+        { //winch case
+            arm_targets[0] = arm_targets[0]+shoulder_offset;
         }
-        //if(arm_targets[0] < 0.0) arm_targets[0] += (float) Math.PI*2.0f;
-        float[] elbow_pos = new float[]{upperarm_len*(float) Math.cos(arm_targets[0]), upperarm_len*(float) Math.sin(arm_targets[0])};
-        arm_targets[1] = (float) Math.atan2(hand[1]-elbow_pos[1], hand[0]-elbow_pos[0])+(float)Math.PI-arm_targets[0];
-        if(arm_targets[1] < 0.0) arm_targets[1] += (float) Math.PI*2.0f;
         /*
           outputs: arm_targets[1] and arm_targets[0] are the rotations of
           the elbow(from the potentiometer) and shoulder outputs in radians, respectively
@@ -103,8 +103,6 @@ public class IK_solver
         
         float shoulder_offset = (float) Math.acos((sq(upperarm_len)+sq(dist)-sq(forearm_len))/(2.0f*dist*upperarm_len));
         //from law of cosines, forearm_len^2 = upperarm_len^2 + dist^2 - 2*dist*upperarm_len*cos(shoulder_offset)
-        
-        float shoulder_target = hand[1]+shoulder_offset;
         
         arm_targets[1] = (float) Math.acos((sq(upperarm_len)+sq(forearm_len)-sq(dist))/(2.0f*upperarm_len*forearm_len));
         if(mode)//shoulder_target < shoulder_max)

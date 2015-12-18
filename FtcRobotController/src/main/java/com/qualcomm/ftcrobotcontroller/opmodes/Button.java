@@ -68,7 +68,17 @@ public class Button //Might want to extend gamepad instead of passing to it late
             return true;
         return false;
     }
-
+    
+    /**
+     * Assign a button to press. Leave in loop.
+     * @param btn A button on the joystick.
+     * @return true when the button is first pressed, false while it's not
+     */
+    public boolean singlePress(Buttons btn)
+    {
+        return (getState(btn.location, currentByte) == true) && (getState(btn.location, previousByte) == false);
+    }
+    
     /**
      * Assign a button to toggle. Leave in loop.
      * @param btn A button on the joystick.
