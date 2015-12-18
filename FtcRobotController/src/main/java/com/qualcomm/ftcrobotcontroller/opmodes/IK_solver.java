@@ -91,30 +91,32 @@ public class IK_solver
       inputs: hand[0] and hand[1] are the polar cordinates of the wanted hand position in inches and radians, relative to the robot
       hand will be clamped if it is outside of the range of motion of the arm
     */
-    public static float[] getArmTargetsPolar(float[] hand)
+    public static float[] getArmTargetsPolar(float[] hand, boolean mode)
     {
         float[] arm_targets = new float[2]; //[0] -> shoulder, [1] -> elbow
         
-        float dist = hand[0];
         //clamp hand motion
-        if(dist > forearm_len+upperarm_len) normalizeScale(hand, forearm_len+upperarm_len);
-        if(dist < forearm_len-upperarm_len) normalizeScale(hand, forearm_len-upperarm_len);
+        if(hand[0] > forearm_len+upperarm_len) hand[0] = forearm_len+upperarm_len;
+        if(hand[0] < Math.abs(forearm_len-upperarm_len)) hand[0] = Math.abs(forearm_len-upperarm_len);
+        float dist = hand[0];
         //TODO: clamp when the arm will hit the frame
         
         float shoulder_offset = (float) Math.acos((sq(upperarm_len)+sq(dist)-sq(forearm_len))/(2.0f*dist*upperarm_len));
         //from law of cosines, forearm_len^2 = upperarm_len^2 + dist^2 - 2*dist*upperarm_len*cos(shoulder_offset)
         
         float shoulder_target = hand[1]+shoulder_offset;
-        if(true)//shoulder_target < shoulder_max)
+        
+        arm_targets[1] = (float) Math.acos((sq(upperarm_len)+sq(forearm_len)-sq(dist))/(2.0f*upperarm_len*forearm_len));
+        if(mode)//shoulder_target < shoulder_max)
+        { //pulley case
+            arm_targets[0] = hand[1]-shoulder_offset;
+            arm_targets[1] = 2.0f*(float)Math.PI-arm_targets[1];
+        }
+        else
         { //winch case
             arm_targets[0] = hand[1]+shoulder_offset;
         }
-        else
-        { //pulley case
-            arm_targets[0] = hand[1]-shoulder_offset;
-        }
-        //if(arm_targets[0] < 0.0) arm_targets[0] += (float) Math.PI*2.0f;
-        arm_targets[1] = (float) Math.acos((sq(upperarm_len)+sq(forearm_len)-sq(dist))/(2.0f*upperarm_len*forearm_len));
+        
         /*
           outputs: arm_targets[1] and arm_targets[0] are the rotations of
           the elbow(from the potentiometer) and shoulder outputs in radians, respectively
