@@ -246,6 +246,7 @@ public class Mk2Teleop extends LinearOpMode
                 -gamepad2.right_stick_y,
                 (-gamepad2.left_stick_y*(float)Math.cos(arm_pos_target[1])
                       -gamepad2.left_stick_x*(float)Math.sin(arm_pos_target[1]))};
+            float arm_x_control = gamepad2.right_stick_x;
             
             telemetry.addData("arm tangent vector", String.format("(%.2f, %.2f)",
                                                                   -(float)Math.cos(arm_pos_target[1]),
@@ -313,31 +314,15 @@ public class Mk2Teleop extends LinearOpMode
                 arm_stick[0] *= 10.0f;
                 arm_stick[1] *= 2.0f;
                 add(arm_pos_target, scale(arm_stick, (float) dt));
+                /* if(arm_mode) */
+                /* { */
+                /*     float y = arm_pos_target[0]*(float)Math.sin(arm_pos_target[1]); */
+                /*     float cosine = ((float)Math.cos(arm_pos_target[1])); */
+                /*     float new_x = 10.0f*arm_x_control*(float)dt+arm_pos_target[0]*((float)Math.cos(arm_pos_target[1])); */
+                /*     arm_pos_target[0] = (float)Math.sqrt(new_x*new_x+y*y); */
+                /*     arm_pos_target[1] = (float)Math.atan2(y, new_x); */
+                /* } */
                 
-                //smooth transition
-                float shoulder_angle = (float) shoulder.getCurrentPosition()/(2.0f*encoder_ticks_per_radian)+(float)Math.PI/2.0f;
-                float current_r = (float)Math.sqrt(sq(IK_solver.forearm_len)+sq(IK_solver.upperarm_len)
-                                                   +IK_solver.upperarm_len*IK_solver.forearm_len
-                                                   *(float)Math.cos(elbow_potentiometer_angle));
-                float[] current_position = new float[]{
-                    current_r,
-                    (float)shoulder_angle
-                    +(arm_mode?1.0f:-1.0f)*(float)Math.asin(Math.sin(elbow_potentiometer_angle)*IK_solver.forearm_len/current_r)};
-                /* float[] current_position = new float[]{ */
-                /*     IK_solver.forearm_len*(float)Math.cos(elbow_potentiometer_angle-(float)Math.PI+shoulder_angle) */
-                /*     +IK_solver.upperarm_len*(float)Math.cos(shoulder_angle), */
-                /*     IK_solver.forearm_len*(float)Math.sin(elbow_potentiometer_angle-(float)Math.PI+shoulder_angle) */
-                /*     +IK_solver.upperarm_len*(float)Math.sin(shoulder_angle)}; */
-                float[] difference_position = new float[]{arm_pos_target[0]-current_position[0],
-                                                          arm_pos_target[1]-current_position[1]};
-                float transition_scale = 2.0f;
-                if(difference_position[0]*difference_position[0]+difference_position[1]*difference_position[1]
-                   > transition_scale*transition_scale)
-                {
-                    normalizeScale(difference_position, transition_scale);
-                }
-                
-                add(current_position, difference_position);
                 arm_motor_targets = IK_solver.getArmTargetsPolar(arm_pos_target, arm_mode);
                 
                 /* k_p_winch = FtcRobotControllerActivity.slider_0/100.0f; */
