@@ -56,10 +56,10 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
     manager.register("NullOp", NullOp.class);
     manager.register("Mk2Teleop", Mk2Teleop.class);
-    manager.register("IntakeTest", IntakeTest.class);
-    manager.register("ArmTest", ArmTest.class);
-    manager.register("IMUTester", IMUTester.class);
-    manager.register("JoystickTest", JoystickTest.class);
-    manager.register("MR Gyro Test", MRGyroTest.class);
+    //manager.register("IntakeTest", IntakeTest.class);
+    //manager.register("ArmTest", ArmTest.class);
+    //manager.register("IMUTester", IMUTester.class);
+    //manager.register("JoystickTest", JoystickTest.class);
+    //manager.register("MR Gyro Test", MRGyroTest.class);
   }
 }
