@@ -26,12 +26,13 @@ public class Mk2Teleop extends LinearOpMode
     
     DeviceInterfaceModule dim;
     
-    /* DcMotor left_drive; */
-    /* DcMotor right_drive; */
+    DcMotor left_drive;
+    DcMotor right_drive;
     DcMotor shoulder;
     DcMotor elbow;
-    /* DcMotor intake; */
+    DcMotor intake;
     
+    Servo hand_servo;
     Servo[] hand = new Servo[2];
     float[] hand_positions = new float[]{0.0f, 0.0f};
     
@@ -184,12 +185,12 @@ public class Mk2Teleop extends LinearOpMode
         int elbow_potentiometer_port = 7;
         dim = hardwareMap.deviceInterfaceModule.get("dim");
         
-        //left_drive  = hardwareMap.dcMotor.get("left_d");
-        //right_drive = hardwareMap.dcMotor.get("right_d");
+        left_drive  = hardwareMap.dcMotor.get("left_d");
+        right_drive = hardwareMap.dcMotor.get("right_d");
         shoulder    = hardwareMap.dcMotor.get("shoulder");
         elbow       = hardwareMap.dcMotor.get("elbow");
-        //intake      = hardwareMap.dcMotor.get("intake");
-        //right_drive.setDirection(DcMotor.Direction.REVERSE);
+        intake      = hardwareMap.dcMotor.get("intake");
+        right_drive.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         waitOneFullHardwareCycle();
@@ -199,7 +200,7 @@ public class Mk2Teleop extends LinearOpMode
         //elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         
-        //hand[0] = hardwareMap.servo.get("servo_1");
+        hand_servo = hardwareMap.servo.get("servo_1");
         //hand[1] = hardwareMap.servo.get("servo_2");
         
         float k_p_winch = 0.77f;
@@ -222,6 +223,8 @@ public class Mk2Teleop extends LinearOpMode
 
         boolean arm_mode = false;
         
+        float hand_servo_position = 0.0f;
+        
         /*try
         {
             byte[] joystick1 = gamepad1.toByteArray();
@@ -243,7 +246,7 @@ public class Mk2Teleop extends LinearOpMode
             //arm
             
             boolean winch_mode = joystick2.singlePress(Button.Buttons.RIGHT_BUMPER);
-            boolean pulley_mode = joystick2.singlePress(Button.Buttons.LEFT_BUMPER);
+            boolean pulley_mode = true;//joystick2.singlePress(Button.Buttons.LEFT_BUMPER);
             float[] arm_stick = new float[]{
                 -gamepad2.right_stick_y,
                 (-gamepad2.left_stick_y*(float)Math.cos(arm_pos_target[1])
@@ -265,20 +268,21 @@ public class Mk2Teleop extends LinearOpMode
             boolean intakeOn = joystick1.toggle(Button.Buttons.RIGHT_BUMPER);
             boolean intakeReverse = joystick1.toggle(Button.Buttons.LEFT_BUMPER);
             //hand
-            float stick_h1 = -gamepad2.right_stick_x;
+            float stick_h1 = -gamepad1.right_stick_x;
             float stick_h2 = -gamepad2.right_stick_y;
+            float hand_servo_control = gamepad1.right_stick_y;
             
             //===================================================================================
             
             //drive
             //TODO: Add traction control -> Need IMU integration and encoder set-up
-            /* deadZone(drive_stick); */
-            /* float left_power = drive_stick[1]-drive_stick[0]; */
-            /* float right_power = drive_stick[1]+drive_stick[0]; */
-            /* right_power = Range.clip(right_power, -1, 1); */
-            /* left_power = Range.clip(left_power, -1, 1); */
-            /* right_drive.setPower(right_power); */
-            /* left_drive.setPower(left_power); */
+            deadZone(drive_stick);
+            float left_power = drive_stick[1]-drive_stick[0];
+            float right_power = drive_stick[1]+drive_stick[0];
+            right_power = Range.clip(right_power, -1, 1);
+            left_power = Range.clip(left_power, -1, 1);
+            right_drive.setPower(right_power);
+            left_drive.setPower(left_power);
             
             //arm
             if(winch_mode)
@@ -296,6 +300,7 @@ public class Mk2Teleop extends LinearOpMode
                 elbow_pid.i = 0.0f;
             }
             
+            pullup_mode = true;
             if(pullup_mode)
             {
                 shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
@@ -387,14 +392,18 @@ public class Mk2Teleop extends LinearOpMode
             }
             
             //hand
-            /* float h1_power = deadZone(stick_h1); */
+            float h1_power = deadZone(stick_h1);
             /* float h2_power = deadZone(stick_h2); */
             
-            /* rotateHandServo(h1_power, 0, dt); */
+            //rotateHandServo(h1_power, 0, (float)dt);
             /* rotateHandServo(h2_power, 1, dt); */
+
+            hand_servo_position += hand_servo_control*dt;            
+            hand_servo_position = (float)Range.clip(hand_servo_position, 0.0, 1.0);
+            hand_servo.setPosition(hand_servo_position);
             
             /* //intake */
-            /* intake.setPower(intakeOn ? 1.0 * (intakeReverse ? -1 : 1) : 0.0); */
+            intake.setPower(intakeOn ? 1.0 * (intakeReverse ? -1 : 1) : 0.0);
             
             telemetry.addData("target pos", String.format("(%.2f, %.2f)", arm_pos_target[0], arm_pos_target[1]));
             telemetry.addData("delta t", String.format("%.2f", dt*1000.0f) + "ms");
