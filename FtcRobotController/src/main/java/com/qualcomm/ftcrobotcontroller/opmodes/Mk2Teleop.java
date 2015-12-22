@@ -26,11 +26,11 @@ public class Mk2Teleop extends LinearOpMode
     
     DeviceInterfaceModule dim;
     
-    /* DcMotor left_drive; */
-    /* DcMotor right_drive; */
+    DcMotor left_drive;
+    DcMotor right_drive;
     DcMotor shoulder;
     DcMotor elbow;
-    /* DcMotor intake; */
+    DcMotor intake;
     
     Servo[] hand = new Servo[2];
     float[] hand_positions = new float[]{0.0f, 0.0f};
@@ -184,19 +184,19 @@ public class Mk2Teleop extends LinearOpMode
         int elbow_potentiometer_port = 7;
         dim = hardwareMap.deviceInterfaceModule.get("dim");
         
-        //left_drive  = hardwareMap.dcMotor.get("left_d");
-        //right_drive = hardwareMap.dcMotor.get("right_d");
+        left_drive  = hardwareMap.dcMotor.get("left_d");
+        right_drive = hardwareMap.dcMotor.get("right_d");
         shoulder    = hardwareMap.dcMotor.get("shoulder");
         elbow       = hardwareMap.dcMotor.get("elbow");
-        //intake      = hardwareMap.dcMotor.get("intake");
-        //right_drive.setDirection(DcMotor.Direction.REVERSE);
+        intake      = hardwareMap.dcMotor.get("intake");
+        right_drive.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setDirection(DcMotor.Direction.REVERSE);
         shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         waitOneFullHardwareCycle();
         shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         elbow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         waitOneFullHardwareCycle();
-        //elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         
         //hand[0] = hardwareMap.servo.get("servo_1");
@@ -272,13 +272,13 @@ public class Mk2Teleop extends LinearOpMode
             
             //drive
             //TODO: Add traction control -> Need IMU integration and encoder set-up
-            /* deadZone(drive_stick); */
-            /* float left_power = drive_stick[1]-drive_stick[0]; */
-            /* float right_power = drive_stick[1]+drive_stick[0]; */
-            /* right_power = Range.clip(right_power, -1, 1); */
-            /* left_power = Range.clip(left_power, -1, 1); */
-            /* right_drive.setPower(right_power); */
-            /* left_drive.setPower(left_power); */
+            deadZone(drive_stick);
+            float left_power = drive_stick[1]-drive_stick[0];
+            float right_power = drive_stick[1]+drive_stick[0];
+            right_power = Range.clip(right_power, -1, 1);
+            left_power = Range.clip(left_power, -1, 1);
+            right_drive.setPower(right_power);
+            left_drive.setPower(left_power);
             
             //arm
             if(winch_mode)
