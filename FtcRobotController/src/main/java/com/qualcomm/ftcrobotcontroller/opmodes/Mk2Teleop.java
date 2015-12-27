@@ -23,8 +23,8 @@ public class Mk2Teleop extends LinearOpMode
     public static final float encoder_ticks_per_radian = 1440.0f/(2.0f*(float)Math.PI); //TODO: might want to make this a global const
     public static final float potentiometer_range = 333.33333333333333333333333333333333333f;
     public static final float threshold = 0.1f;
-    DeviceInterfaceModule dim;
 
+    DeviceInterfaceModule dim;
     DcMotor left_drive;
     DcMotor right_drive;
     DcMotor shoulder;
