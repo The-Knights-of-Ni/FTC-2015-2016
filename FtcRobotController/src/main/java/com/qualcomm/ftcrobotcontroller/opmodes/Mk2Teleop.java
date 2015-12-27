@@ -25,6 +25,7 @@ public class Mk2Teleop extends LinearOpMode
     public static final float threshold = 0.1f;
 
     DeviceInterfaceModule dim;
+
     DcMotor left_drive;
     DcMotor right_drive;
     DcMotor shoulder;
@@ -173,7 +174,6 @@ public class Mk2Teleop extends LinearOpMode
     {
         int elbow_potentiometer_port = 7;
         dim = hardwareMap.deviceInterfaceModule.get("dim");
-
         left_drive  = hardwareMap.dcMotor.get("left_d");
         right_drive = hardwareMap.dcMotor.get("right_d");
         shoulder    = hardwareMap.dcMotor.get("shoulder");
@@ -185,8 +185,6 @@ public class Mk2Teleop extends LinearOpMode
         waitOneFullHardwareCycle();
         shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         elbow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        waitOneFullHardwareCycle();
-        elbow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         
         /* shoulder.setPower(1.0); */
