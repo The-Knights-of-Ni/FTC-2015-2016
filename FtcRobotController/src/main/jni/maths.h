@@ -121,4 +121,13 @@ struct m4x4f
 };
 #pragma pack(pop)
 
+float bound(float bounded, float lower, float upper)
+{
+    if(bounded > upper)
+        return upper;
+    if(bounded < lower)
+        return lower;
+    return bounded;
+}
+
 #endif
