@@ -9,10 +9,10 @@ set JAVA_HOME=c:\Progra~1\Java\jdk1.7.0_40
 # )
 # popd
 
-clang++ -O0 -D DEBUG -Wc++11-extensions jni/generator/robot_state_element_generator.cpp --output jni/generator/robot_state_element_generator
+clang++ -O0 -D DEBUG -Wc++11-extensions generator/robot_state_element_generator.cpp --output generator/robot_state_element_generator
 
 ./generator/robot_state_element_generator jni/test.cpp
-ndk-build
+ndk-build NDK_LIBS_OUT=./jniLibs
 
 pushd ../../
 

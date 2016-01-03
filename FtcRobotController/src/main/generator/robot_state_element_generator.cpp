@@ -517,7 +517,7 @@ enum robot_state_element\n\
                     elements[e].name_len, elements[e].name,
                     elements[e].name_len, elements[e].name,
                     elements[e].name_len, elements[e].name,
-                    type_sizes[elements[e].type_id]*elements[e].array_len);
+                    type_sizes[elements[e].type_id]*elements[e].array_len-1);
             robot_state_size += type_sizes[elements[e].type_id]*elements[e].array_len;
         }
         else
@@ -533,7 +533,7 @@ enum robot_state_element\n\
                     elements[e].name_len, elements[e].name,
                     elements[e].name_len, elements[e].name,
                     elements[e].name_len, elements[e].name,
-                    user_type_size*elements[e].array_len);
+                    user_type_size*elements[e].array_len-1);
         }
     }
     fprintf(output_file, "\
@@ -543,23 +543,28 @@ enum robot_state_element\n\
 #include \"jni_functions.h\"\n\
 \n\
 \n");    
-
+    
     for(int e = 0; e < n_elements; e++)
     {
         if(elements[e].type_id < n_types)
         {
             fprintf(output_file, "\
-%s & %.*s = ((%s *) robot_state.state)[rsid_%.*s];\n",
-                    type_names[elements[e].type_id],
-                    elements[e].name_len, elements[e].name,
+#define %.*s (",
+                    elements[e].name_len, elements[e].name);
+            if(elements[e].array_len <= 1)
+            {
+                fprintf(output_file, "\
+*");
+            }
+            fprintf(output_file, "\
+((%s *) (robot_state.state+rsid_%.*s)))\n",
                     type_names[elements[e].type_id],
                     elements[e].name_len, elements[e].name);
         }
         else
         {
             fprintf(output_file, "\
-%.*s & %.*s = ((%.*s *) robot_state.state)[rsid_%.*s];\n",
-                    user_type_table[elements[e].type_id-n_types].name_len, user_type_table[elements[e].type_id-n_types].name,
+#define %.*s (*((%.*s *) (robot_state.state+rsid_%.*s)))\n",
                     elements[e].name_len, elements[e].name,
                     user_type_table[elements[e].type_id-n_types].name_len, user_type_table[elements[e].type_id-n_types].name,
                     elements[e].name_len, elements[e].name);
@@ -597,7 +602,7 @@ public class %.*sRobotStateElements\n\
             if(elements[e].type_id < n_types)
             {
                 uint type_size = type_sizes[elements[e].type_id];
-            
+                
                 fprintf(java_output_file, "\
     public static void set_%.*s(%s value)\n\
     {\n\

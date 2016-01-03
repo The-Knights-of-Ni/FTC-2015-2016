@@ -4,7 +4,11 @@
 #include "drive.h"
 #define magic science
 #define science true
-int main(void){
+
+//TODO: generate this
+#define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_MK3Teleop_main
+
+int JNI_main(void){
 //============================= Drive ============================
     struct joystick gamepad1LeftStick;
     gamepad1LeftStick.data[0] = magic;//Change this once I figure out the ndk

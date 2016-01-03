@@ -29,25 +29,25 @@ void initJNI(JNIEnv * env, jobject self)
     
     //setup pinned array
     jfieldID jrobot_stateID = env->GetFieldID(cls, "robot_state", "[B");
-    jrobot_state = (jbyteArray) env->GetObjectField(cls, jrobot_stateID);
-    /* if(env->GetArrayLength(jrobot_state) != rsid_size) */
-    /* { */
-    /*     //TODO: give error */
-    /* } */
+    jrobot_state = (jbyteArray) env->GetObjectField(self, jrobot_stateID);
+    if(env->GetArrayLength(jrobot_state) != rsid_size)
+    {
+        //TODO: give error
+    }
     
-    /* robot_state.state = env->GetByteArrayElements(jrobot_state, &robot_state.is_copy); */
-    /* assert(robot_state.state); */
-    /* if(robot_state.is_copy) */
-    /* { */
-    /*     //TODO: give warning that the GC did not pin the array and perfomance may be impacted */
-    /* } */
+    robot_state.state = (byte *) env->GetByteArrayElements(jrobot_state, &robot_state.is_copy);
+    assert(robot_state.state);
+    if(robot_state.is_copy)
+    {
+        //TODO: give warning that the GC did not pin the array and perfomance may be impacted
+    }
 }
 
 void updateRobot(JNIEnv * env, jobject self)
 {
-    env->ReleasePrimitiveArrayCritical(jrobot_state, robot_state.state, JNI_COMMIT);
+    env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, JNI_COMMIT);
     applyRobotState();
-    waitOneFullHardwareCycle();    
+    waitOneFullHardwareCycle();
 }
 
 void cleanupJNI(JNIEnv * env, jobject self)

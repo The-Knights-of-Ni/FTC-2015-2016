@@ -46,7 +46,7 @@ public class NDK_test extends LinearOpMode
         throws InterruptedException
     {
         DbgLog.error("NDK test init");
-        waitForStart();
+        //waitForStart();
         main();
         for(;;)
         {
