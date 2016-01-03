@@ -1,4 +1,4 @@
-#include "../misc.h"
+#include "../jni/misc.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -449,7 +449,7 @@ int main(int n_args, char ** args)
             exit(EXIT_SUCCESS);
         }
     }
-
+    
     FILE * input_file = fopen(input_filename, "r");
     if(!input_file)
     {
@@ -498,6 +498,8 @@ int main(int n_args, char ** args)
         elements[e].name[elements[e].name_len] = 0;
         printf("name: %s\n\n", elements[e].name);
     }
+
+    uint robot_state_size = 0;
     
     fprintf(output_file, "\
 /*\n\
@@ -516,6 +518,7 @@ enum robot_state_element\n\
                     elements[e].name_len, elements[e].name,
                     elements[e].name_len, elements[e].name,
                     type_sizes[elements[e].type_id]*elements[e].array_len);
+            robot_state_size += type_sizes[elements[e].type_id]*elements[e].array_len;
         }
         else
         {
@@ -524,6 +527,7 @@ enum robot_state_element\n\
             {
                 user_type_size += type_sizes[primitives[p].type]*primitives[p].array_len;
             }
+            robot_state_size += user_type_size;
             fprintf(output_file, "\
     rsid_%.*s, rsid_%.*s_end = rsid_%.*s + %d,\n",
                     elements[e].name_len, elements[e].name,
@@ -563,6 +567,7 @@ enum robot_state_element\n\
     }
 
     //TODO: generate java file
+    
     fprintf(java_output_file, "\
 /*\n\
 WARNING: this is a generated file\n\
@@ -570,9 +575,129 @@ changes made this file are not permanent\n\
 */\n\
 package com.qualcomm.ftcrobotcontroller.opmodes;\n\
 \n\
-public class testRobotStateElements\n\
+import java.nio.ByteBuffer;\n\
+import java.nio.ByteOrder;\n\
+\n\
+public class %.*sRobotStateElements\n\
 {\n\
-    testRobotStateElements(){}\n\
+    public static byte[] robot_state;\n\
+    public static int robot_state_size = %d;\n\
+    \n\
+    %.*sRobotStateElements(){}\n",
+            input_name_part_len-input_path_part_len, input_filename+input_path_part_len,
+            robot_state_size,
+            input_name_part_len-input_path_part_len, input_filename+input_path_part_len);
+    //TODO: support non-default java output filenames
+    
+    uint current_index = 0;
+    for(int e = 0; e < n_elements; e++)
+    {
+        if(elements[e].array_len == 1)
+        {
+            if(elements[e].type_id < n_types)
+            {
+                uint type_size = type_sizes[elements[e].type_id];
+            
+                fprintf(java_output_file, "\
+    public static void set_%.*s(%s value)\n\
+    {\n\
+        ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).put%c%s(value);\n\
+    }\n\n",
+                        elements[e].name_len, elements[e].name,
+                        type_names[elements[e].type_id],
+                        current_index,
+                        type_size,
+                        type_names[elements[e].type_id][0]+(
+                            type_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_names[elements[e].type_id]+1);
+            
+                fprintf(java_output_file, "\
+    public static %s get_%.*s()\n\
+    {\n\
+        return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).get%c%s();\n\
+    }\n\n",
+                        type_names[elements[e].type_id],
+                        elements[e].name_len, elements[e].name,
+                        current_index,
+                        type_size,
+                        type_names[elements[e].type_id][0]+(
+                            type_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_names[elements[e].type_id]+1);
+            
+                current_index += type_size;
+            }
+            else
+            {
+                for(int p = user_type_table[elements[e].type_id-n_types].first_primitive; p < user_type_table[elements[e].type_id-n_types].last_primitive; p++)
+                {
+                    fprintf(java_output_file, "\
+    public static void set_%.*s_%.*s(%s value)\n\
+    {\n\
+        ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).put%c%s(value);\n\
+    }\n\n",
+                            elements[e].name_len, elements[e].name,
+                            primitives[p].name_len, primitives[p].name,
+                            type_names[primitives[p].type],
+                            current_index,
+                            type_sizes[primitives[p].type],
+                            type_names[primitives[p].type][0]+(
+                                type_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_names[primitives[p].type]+1);
+            
+                    fprintf(java_output_file, "\
+    public static %s get_%.*s_%.*s()\n\
+    {\n\
+        return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).get%c%s();\n\
+    }\n\n",
+                            type_names[primitives[p].type],
+                            elements[e].name_len, elements[e].name,
+                            primitives[p].name_len, primitives[p].name,
+                            current_index,
+                            type_sizes[primitives[p].type],
+                            type_names[primitives[p].type][0]+(
+                                type_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_names[primitives[p].type]+1);
+                
+                    current_index += type_sizes[primitives[p].type]*primitives[p].array_len;
+                }            
+            }
+        }
+        else //array
+        {
+            if(elements[e].type_id < n_types)
+            {
+                uint type_size = type_sizes[elements[e].type_id]*elements[e].array_len;
+
+                fprintf(java_output_file, "\
+    public static %s[] get_%.*s()\n\
+    {\n",
+                        type_names[elements[e].type_id],
+                        elements[e].name_len, elements[e].name);
+                
+                if(elements[e].type_id != type_byte)
+                {
+                    fprintf(java_output_file, "\
+        return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).as%c%sBuffer().array();\n",
+                            current_index,
+                            type_size,
+                            type_names[elements[e].type_id][0]+(
+                                type_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_names[elements[e].type_id]+1);
+                }
+                else
+                {
+                    fprintf(java_output_file, "\
+        return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).array();\n",
+                            current_index,
+                            type_size);
+                }
+                fprintf(java_output_file,"\
+    }\n\n");
+                
+                current_index += type_size;
+            }
+            else
+            {
+                printf("error, non-primitive arrays are not yet supported\n");
+            }
+        }
+    }
+    fprintf(java_output_file, "\
 }");
     
     fclose(input_file);

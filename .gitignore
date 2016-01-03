@@ -25,6 +25,11 @@ Thumbs.db
 build/
 backup/
 
+*.so
+*.a
+*.o
+*.d
+
 local.properties
 
 *ASUS_PC_01*

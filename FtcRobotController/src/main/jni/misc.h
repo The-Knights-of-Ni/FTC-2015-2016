@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#define private public
+#define class struct
+#define new 0; assert(0 && "don't use new/delete, use malloc/free or the direct system calls");//
+
 #define min(a, b) (((a) < (b))?(a):(b))
 #define max(a, b) (((a) > (b))?(a):(b))
 

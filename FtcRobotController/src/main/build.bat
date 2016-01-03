@@ -9,10 +9,10 @@ REM     clang -E -P -x c %%~nf.javac -o processed/%%~nf.java
 REM )
 REM popd
 
-clang++ -O0 -D DEBUG -Wc++11-extensions jni/generator/robot_state_element_generator.cpp --output jni/generator/robot_state_element_generator
+clang++ -O0 -D DEBUG -Wc++11-extensions generator/robot_state_element_generator.cpp --output generator/robot_state_element_generator
 
 .\generator\robot_state_element_generator jni/test.cpp
-call ndk-build
+call ndk-build NDK_LIBS_OUT=./jniLibs
 
 pushd ..\..\
 

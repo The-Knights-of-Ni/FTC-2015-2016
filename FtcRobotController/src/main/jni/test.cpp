@@ -1,7 +1,7 @@
 /*
   robot_state_elements
   {
-  gamepad{float joystick_1_x, float joystick_2_y};
+  gamepad{float joystick_1_x, float joystick_1_y};
   
   float left_drive_power;
   float right_drive_power;
@@ -23,20 +23,23 @@ struct gamepad
 {
     v2f left_stick;
 };
+
 #include "test_robot_state_elements.h"
+
+#define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_NDK_1test_main
 
 extern "C"
 void JNI_main(JNIEnv * env, jobject self)
 {
     initJNI(env, self);
     
-    waitForStart();
-    float time = 0;
-    for ever
-    {
-        left_drive_power = gamepad1.left_stick.y-gamepad1.left_stick.x;
-        right_drive_power = gamepad1.left_stick.y+gamepad1.left_stick.x;
-        updateRobot(env, self);
-    }
-    cleanupJNI(env, self);
+    //waitForStart();
+    // float time = 0;
+    // for ever
+    // {
+    //     left_drive_power = gamepad1.left_stick.y-gamepad1.left_stick.x;
+    //     right_drive_power = gamepad1.left_stick.y+gamepad1.left_stick.x;
+    //     updateRobot(env, self);
+    // }
+    // cleanupJNI(env, self);
 }

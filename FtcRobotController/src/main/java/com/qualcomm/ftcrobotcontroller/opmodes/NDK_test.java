@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.ftccommon.DbgLog;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,11 +17,12 @@ public class NDK_test extends LinearOpMode
 {
     byte[] robot_state;
     
-    DcMotor left_drive;
-    DcMotor right_drive;
+    /* DcMotor left_drive; */
+    /* DcMotor right_drive; */
     
     public NDK_test() {
-        robot_state = new byte[rsid_size];
+        robot_state = new byte[testRobotStateElements.robot_state_size];
+        testRobotStateElements.robot_state = robot_state;
     }
     
     native void main();
@@ -30,35 +32,27 @@ public class NDK_test extends LinearOpMode
         System.loadLibrary("test");
     }
     
-    public static final int rsid_left_drive_power = 0;
-    public static final int rsid_right_drive_power = 4;
-    public static final int rsid_gamepad1_left_stick_x = 8;
-    public static final int rsid_gamepad1_left_stick_y = 12;
-    public static final int rsid_size = 16;
-    
-    float getRobotStateFloat(int rsid)
-    {
-        return ByteBuffer.wrap(robot_state, rsid, 4).order(ByteOrder.nativeOrder()).getFloat();
-    }
-    
-    void setRobotStateFloat(int rsid, float value)
-    {
-        ByteBuffer.allocateDirect(4).putFloat(value).array();
-    }
     
     void applyRobotState()
     {
-        setRobotStateFloat(rsid_gamepad1_left_stick_x, gamepad1.left_stick_x);
-        setRobotStateFloat(rsid_gamepad1_left_stick_y, gamepad1.left_stick_y);
+        testRobotStateElements.set_gamepad1_joystick_1_x(gamepad1.left_stick_x);
+        testRobotStateElements.set_gamepad1_joystick_1_y(gamepad1.left_stick_y);
         
-        left_drive.setPower(getRobotStateFloat(rsid_left_drive_power));
-        right_drive.setPower(getRobotStateFloat(rsid_right_drive_power));
+        telemetry.addData("left_drive_power", String.format("%.2f", testRobotStateElements.get_left_drive_power()));
+        telemetry.addData("right_drive_power", String.format("%.2f", testRobotStateElements.get_right_drive_power()));
     }
     
     @Override public void runOpMode()
         throws InterruptedException
     {
+        DbgLog.error("NDK test init");
+        waitForStart();
         main();
+        for(;;)
+        {
+            telemetry.addData("waiting to die", "hi");
+            waitOneFullHardwareCycle();
+        }
         
         //Java equivalent
         

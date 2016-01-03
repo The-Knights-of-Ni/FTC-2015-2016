@@ -56,6 +56,7 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
     manager.register("NullOp", NullOp.class);
     manager.register("Mk2Teleop", Mk2Teleop.class);
+    manager.register("NDK_test", NDK_test.class);
     //manager.register("IntakeTest", IntakeTest.class);
     //manager.register("ArmTest", ArmTest.class);
     //manager.register("IMUTester", IMUTester.class);
