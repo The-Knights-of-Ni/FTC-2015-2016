@@ -1,3 +1,8 @@
+#ifndef JNI_FUNCTIONS
+#define JNI_FUNCTIONS
+
+#include <jni.h>
+
 jmethodID waitForStartID;
 jmethodID waitOneFullHardwareCycleID;
 jmethodID applyRobotStateID;
@@ -54,3 +59,5 @@ void cleanupJNI(JNIEnv * env, jobject self)
 {
     env->ReleasePrimitiveArrayCritical(jrobot_state, robot_state.state, 0);
 }
+
+#endif

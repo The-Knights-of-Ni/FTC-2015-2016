@@ -19,4 +19,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := test
 LOCAL_SRC_FILES := test.cpp
 
+LOCAL_MODULE    := camera_test
+LOCAL_SRC_FILES := camera_test.cpp
+
 include $(BUILD_SHARED_LIBRARY)

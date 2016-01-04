@@ -38,8 +38,6 @@ void JNI_main(JNIEnv * env, jobject self)
     for ever
     {
         //(*((float*)(robot_state.state+rsid_left_drive_power))) = 1.0f;//robot_state.state[rsid_gamepad1];
-        //left_drive_power = 5.206;
-        //right_drive_power = 5206.0;
         left_drive_power = gamepad1.left_stick.y-gamepad1.left_stick.x;
         right_drive_power = gamepad1.left_stick.y+gamepad1.left_stick.x;
         updateRobot(env, self);
