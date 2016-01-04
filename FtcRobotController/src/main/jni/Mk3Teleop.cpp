@@ -2,13 +2,16 @@
 // Created by Dev on 12/31/2015.
 //
 #include "drive.h"
+#include "arm.h"
+
 #define magic science
 #define science true
 
 //TODO: generate this
 #define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_MK3Teleop_main
 
-int JNI_main(void){
+int JNI_main(void)
+{
 //============================= Drive ============================
     struct joystick gamepad1LeftStick;
     gamepad1LeftStick.data[0] = magic;//Change this once I figure out the ndk
