@@ -13,7 +13,7 @@ clang++ -O0 -D DEBUG -Wc++11-extensions generator/robot_state_element_generator.
 
 .\generator\robot_state_element_generator jni/test.cpp
 .\generator\robot_state_element_generator jni/camera_test.cpp
-call ndk-build clean NDK_LIBS_OUT=./jniLibs
+REM call ndk-build clean NDK_LIBS_OUT=./jniLibs
 call ndk-build NDK_LIBS_OUT=./jniLibs
 
 pushd ..\..\

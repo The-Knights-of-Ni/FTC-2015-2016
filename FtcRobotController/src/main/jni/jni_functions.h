@@ -5,6 +5,7 @@
 
 jmethodID waitForStartID;
 jmethodID waitOneFullHardwareCycleID;
+jmethodID waitForNextHardwareCycleID;
 jmethodID applyRobotStateID;
 
 #define waitForStart() env->CallVoidMethod(self, waitForStartID)

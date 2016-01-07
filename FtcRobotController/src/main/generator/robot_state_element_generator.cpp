@@ -620,23 +620,23 @@ public class %.*sRobotStateElements\n\
         ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).put%c%s(value);\n\
     }\n\n",
                         elements[e].name_len, elements[e].name,
-                        type_names[elements[e].type_id],
+                        type_java_names[elements[e].type_id],
                         current_index,
                         type_size,
-                        type_names[elements[e].type_id][0]+(
-                            type_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_names[elements[e].type_id]+1);
+                        type_java_names[elements[e].type_id][0]+(
+                            type_java_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_java_names[elements[e].type_id]+1);
             
                 fprintf(java_output_file, "\
     public static %s get_%.*s()\n\
     {\n\
         return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).get%c%s();\n\
     }\n\n",
-                        type_names[elements[e].type_id],
+                        type_java_names[elements[e].type_id],
                         elements[e].name_len, elements[e].name,
                         current_index,
                         type_size,
-                        type_names[elements[e].type_id][0]+(
-                            type_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_names[elements[e].type_id]+1);
+                        type_java_names[elements[e].type_id][0]+(
+                            type_java_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_java_names[elements[e].type_id]+1);
             
                 current_index += type_size;
             }
@@ -651,24 +651,24 @@ public class %.*sRobotStateElements\n\
     }\n\n",
                             elements[e].name_len, elements[e].name,
                             primitives[p].name_len, primitives[p].name,
-                            type_names[primitives[p].type],
+                            type_java_names[primitives[p].type],
                             current_index,
                             type_sizes[primitives[p].type],
-                            type_names[primitives[p].type][0]+(
-                                type_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_names[primitives[p].type]+1);
+                            type_java_names[primitives[p].type][0]+(
+                                type_java_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_java_names[primitives[p].type]+1);
             
                     fprintf(java_output_file, "\
     public static %s get_%.*s_%.*s()\n\
     {\n\
         return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).get%c%s();\n\
     }\n\n",
-                            type_names[primitives[p].type],
+                            type_java_names[primitives[p].type],
                             elements[e].name_len, elements[e].name,
                             primitives[p].name_len, primitives[p].name,
                             current_index,
                             type_sizes[primitives[p].type],
-                            type_names[primitives[p].type][0]+(
-                                type_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_names[primitives[p].type]+1);
+                            type_java_names[primitives[p].type][0]+(
+                                type_java_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_java_names[primitives[p].type]+1);
                 
                     current_index += type_sizes[primitives[p].type]*primitives[p].array_len;
                 }            
@@ -683,7 +683,7 @@ public class %.*sRobotStateElements\n\
                 fprintf(java_output_file, "\
     public static %s[] get_%.*s()\n\
     {\n",
-                        type_names[elements[e].type_id],
+                        type_java_names[elements[e].type_id],
                         elements[e].name_len, elements[e].name);
                 
                 if(elements[e].type_id != type_byte)
@@ -692,8 +692,8 @@ public class %.*sRobotStateElements\n\
         return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).as%c%sBuffer().array();\n",
                             current_index,
                             type_size,
-                            type_names[elements[e].type_id][0]+(
-                                type_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_names[elements[e].type_id]+1);
+                            type_java_names[elements[e].type_id][0]+(
+                                type_java_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_java_names[elements[e].type_id]+1);
                 }
                 else
                 {

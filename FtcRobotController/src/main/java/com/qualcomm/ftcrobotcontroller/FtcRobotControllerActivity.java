@@ -75,11 +75,13 @@ import java.io.Serializable;
 //custom gui
 import android.widget.SeekBar;
 
+import android.hardware.Camera;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.widget.FrameLayout;
 import java.io.IOException;
 
+import android.graphics.PixelFormat;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 ////////////
@@ -170,7 +172,7 @@ public class FtcRobotControllerActivity extends Activity {
           try
           {
               camera.setPreviewDisplay(holder);
-              camera.startPreview();
+              //camera.startPreview();
           }
           catch(IOException e)
           {
@@ -186,7 +188,7 @@ public class FtcRobotControllerActivity extends Activity {
           {
               return;
           }
-            
+          
           try
           {
               camera.stopPreview();
@@ -198,12 +200,12 @@ public class FtcRobotControllerActivity extends Activity {
             
           try
           {
-              camera.setPreviewDisplay(surface_holder);
+              camera.setPreviewDisplay(/*surface_*/holder);
               camera.startPreview();
           }
           catch(Exception e)
           {
-              DbgLog.error("error starting camera preview: " + e.getMessage());
+              DbgLog.error("error changing camera preview: " + e.getMessage());
           }
       }
   }
@@ -218,6 +220,8 @@ public class FtcRobotControllerActivity extends Activity {
           surface_holder = getHolder();
           surface_holder.addCallback(this);
           setZOrderMediaOverlay(true);
+          surface_holder.setFormat(PixelFormat.TRANSLUCENT);
+          surface_holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
       }
       
       public void surfaceCreated(SurfaceHolder holder){}
@@ -230,7 +234,6 @@ public class FtcRobotControllerActivity extends Activity {
   public static Camera camera;
   public static CameraPreview camera_preview;
   public static CameraOverlay camera_overlay;
-  CameraManager camera_manager;
   ////////////
   
   @Override
@@ -240,7 +243,6 @@ public class FtcRobotControllerActivity extends Activity {
     setContentView(R.layout.activity_ftc_controller);
     
     //custom gui
-    camera_manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE)
     try
     {
         camera = Camera.open();
@@ -250,9 +252,9 @@ public class FtcRobotControllerActivity extends Activity {
         DbgLog.error("could not open camera, camera is in use or does not exist");
     }
     
-    camera_preview = new CameraPreview(this, camera);
-    FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
-    frame_layout_preview.addView(camera_preview);
+    /* camera_preview = new CameraPreview(this, camera); */
+    /* FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview); */
+    /* frame_layout_preview.addView(camera_preview); */
     
     camera_overlay = new CameraOverlay(this);
     FrameLayout frame_layout_overlay = (FrameLayout) findViewById(R.id.camera_overlay);
