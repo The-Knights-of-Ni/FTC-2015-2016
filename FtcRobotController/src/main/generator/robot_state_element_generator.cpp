@@ -1,3 +1,5 @@
+//TODO: add support for oppertors in array size eg 100*4
+
 #include "../jni/misc.h"
 
 #include <string.h>
@@ -54,6 +56,11 @@ bool8 isComment(char * in, uint i, uint input_size)
     return (constStrncmp(in+i, "//", input_size-i) == 0);
 }
 
+//TODO: support block comments, can't do it yet, because block comments don't nest
+bool8 isBlockComment(char * in, uint i, uint input_size)
+{
+    return (constStrncmp(in+i, "/*", input_size-i) == 0);
+}
 
 bool8 isNumber(char c)
 {
@@ -102,6 +109,10 @@ void skipOverWhitespaceAndComment(char * in, uint & i, uint input_size)
             while(i < input_size && in[i++] != '\n');
             continue;
         }
+        // if(isBlockComment(in, i, input_size))
+        // {
+        //     while(i < input_size && (in[i-1] != '*' || in[i] != '/'));
+        // }
         break;
     }
 }
@@ -506,6 +517,9 @@ int main(int n_args, char ** args)
 WARNING: this is a generated file\n\
 changes made this file are not permanent\n\
 */\n\
+\n\
+#include \"jni_functions.h\"\n\
+\n\
 enum robot_state_element\n\
 {\n");//TODO: include guards
     for(int e = 0; e < n_elements; e++)
@@ -539,9 +553,6 @@ enum robot_state_element\n\
     fprintf(output_file, "\
     rsid_size\n\
 };\n\
-\n\
-#include \"jni_functions.h\"\n\
-\n\
 \n");    
     
     for(int e = 0; e < n_elements; e++)

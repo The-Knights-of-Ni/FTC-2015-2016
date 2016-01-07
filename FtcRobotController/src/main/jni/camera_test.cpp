@@ -1,7 +1,9 @@
 /*
   robot_state_elements
   {
-  byte[100] camera_buffer; //TODO: figure out this size
+  //76800 = 160*120*4
+  byte[76800] camera_buffer; //TODO: allow for dynamic size
+  byte[76800] overlay_buffer;
   }
 */
 
@@ -19,9 +21,9 @@ void JNI_main(JNIEnv * env, jobject self)
     
     waitForStart();
     float time = 0;
-    for ever
+    do
     {
-        updateRobot(env, self);
-    }
+        
+    } while(updateRobot(env, self) == 0);
     cleanupJNI(env, self);
 }

@@ -74,6 +74,14 @@ import java.io.Serializable;
 
 //custom gui
 import android.widget.SeekBar;
+
+import android.view.SurfaceView;
+import android.view.SurfaceHolder;
+import android.widget.FrameLayout;
+import java.io.IOException;
+
+import android.graphics.Canvas;
+import android.graphics.Paint;
 ////////////
 
 public class FtcRobotControllerActivity extends Activity {
@@ -143,6 +151,86 @@ public class FtcRobotControllerActivity extends Activity {
   public static int slider_2;
   public static int slider_3;
   public static int slider_4;
+
+  public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
+  {
+      public SurfaceHolder surface_holder;
+      public Camera camera;
+        
+      public CameraPreview(Context context, Camera cam)
+      {
+          super(context);
+          camera = cam;
+          surface_holder = getHolder();
+          surface_holder.addCallback(this);
+      }
+        
+      public void surfaceCreated(SurfaceHolder holder)
+      {
+          try
+          {
+              camera.setPreviewDisplay(holder);
+              camera.startPreview();
+          }
+          catch(IOException e)
+          {
+              DbgLog.error("error setting camera preview: " + e.getMessage());
+          }
+      }
+        
+      public void surfaceDestroyed(SurfaceHolder holder){}
+        
+      public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
+      {
+          if(surface_holder.getSurface() == null)
+          {
+              return;
+          }
+            
+          try
+          {
+              camera.stopPreview();
+          }
+          catch(Exception e)
+          {
+              //Do nothing
+          }
+            
+          try
+          {
+              camera.setPreviewDisplay(surface_holder);
+              camera.startPreview();
+          }
+          catch(Exception e)
+          {
+              DbgLog.error("error starting camera preview: " + e.getMessage());
+          }
+      }
+  }
+  
+  public class CameraOverlay extends SurfaceView implements SurfaceHolder.Callback
+  {
+      public SurfaceHolder surface_holder;
+      
+      public CameraOverlay(Context context)
+      {
+          super(context);
+          surface_holder = getHolder();
+          surface_holder.addCallback(this);
+          setZOrderMediaOverlay(true);
+      }
+      
+      public void surfaceCreated(SurfaceHolder holder){}
+        
+      public void surfaceDestroyed(SurfaceHolder holder){}
+        
+      public void surfaceChanged(SurfaceHolder holder, int format, int w, int h){}
+  }
+  
+  public static Camera camera;
+  public static CameraPreview camera_preview;
+  public static CameraOverlay camera_overlay;
+  CameraManager camera_manager;
   ////////////
   
   @Override
@@ -152,6 +240,26 @@ public class FtcRobotControllerActivity extends Activity {
     setContentView(R.layout.activity_ftc_controller);
     
     //custom gui
+    camera_manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE)
+    try
+    {
+        camera = Camera.open();
+    }
+    catch(Exception e)
+    {
+        DbgLog.error("could not open camera, camera is in use or does not exist");
+    }
+    
+    camera_preview = new CameraPreview(this, camera);
+    FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
+    frame_layout_preview.addView(camera_preview);
+    
+    camera_overlay = new CameraOverlay(this);
+    FrameLayout frame_layout_overlay = (FrameLayout) findViewById(R.id.camera_overlay);
+    frame_layout_overlay.addView(camera_overlay);
+    
+    //TODO: see if we can do the findViewById stuff from each opmode
+    //sliders
     SeekBar slider0 = (SeekBar) findViewById(R.id.slider_0);
     slider0.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
                                       {
@@ -162,7 +270,7 @@ public class FtcRobotControllerActivity extends Activity {
                                           public void onStartTrackingTouch(SeekBar seek_bar){}
                                           public void onStopTrackingTouch(SeekBar seek_bar){}
                                       });
-
+    
     SeekBar slider1 = (SeekBar) findViewById(R.id.slider_1);
     slider1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
                                        {
@@ -173,7 +281,7 @@ public class FtcRobotControllerActivity extends Activity {
                                            public void onStartTrackingTouch(SeekBar seek_bar){}
                                            public void onStopTrackingTouch(SeekBar seek_bar){}
                                        });
-
+    
     SeekBar slider2 = (SeekBar) findViewById(R.id.slider_2);
     slider2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
                                        {
@@ -184,7 +292,7 @@ public class FtcRobotControllerActivity extends Activity {
                                            public void onStartTrackingTouch(SeekBar seek_bar){}
                                            public void onStopTrackingTouch(SeekBar seek_bar){}
                                        });
-
+    
     SeekBar slider3 = (SeekBar) findViewById(R.id.slider_3);
     slider3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
                                        {
@@ -195,7 +303,7 @@ public class FtcRobotControllerActivity extends Activity {
                                            public void onStartTrackingTouch(SeekBar seek_bar){}
                                            public void onStopTrackingTouch(SeekBar seek_bar){}
                                        });
-
+    
     SeekBar slider4 = (SeekBar) findViewById(R.id.slider_4);
     slider4.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
                                        {

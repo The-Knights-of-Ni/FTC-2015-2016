@@ -17,8 +17,6 @@
 #include "misc.h"
 #include "maths.h"
 
-#include <jni.h>
-
 struct gamepad
 {
     v2f left_stick;
@@ -35,12 +33,11 @@ void JNI_main(JNIEnv * env, jobject self)
     
     waitForStart();
     float time = 0;
-    for ever
+    do
     {
         //(*((float*)(robot_state.state+rsid_left_drive_power))) = 1.0f;//robot_state.state[rsid_gamepad1];
         left_drive_power = gamepad1.left_stick.y-gamepad1.left_stick.x;
         right_drive_power = gamepad1.left_stick.y+gamepad1.left_stick.x;
-        updateRobot(env, self);
-    }
+    } while(updateRobot(env, self) == 0);
     cleanupJNI(env, self);
 }

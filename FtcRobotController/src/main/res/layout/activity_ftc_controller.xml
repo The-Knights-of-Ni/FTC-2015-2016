@@ -39,13 +39,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     android:focusable="true"
     android:id="@+id/entire_screen"
     android:orientation="vertical">
-
+  
+  <RelativeLayout android:id="@+id/top_bar"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:background="@color/black">
+    <FrameLayout android:id="@+id/camera_preview"
+                 android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"
+                 android:layout_weight="1"/>
+    <FrameLayout android:id="@+id/camera_overlay"
+                 android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"
+                 android:layout_weight="1"/>
+  </RelativeLayout>
+  
   <!-- black bar on top -->
   <RelativeLayout
     android:id="@+id/top_bar"
     android:layout_width="fill_parent"
     android:layout_height="80dp"
     android:background="@color/black">
+    
     <ImageView
       android:id="@+id/robotIcon"
       android:layout_width="40dp"
@@ -84,10 +99,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   </RelativeLayout>
   <!-- end of black bar -->
-
+  
   <include layout="@layout/header"
            android:id="@+id/included_header"/>
-
+  
   <RelativeLayout
     android:id="@+id/RelativeLayout"
     android:layout_width="match_parent"
@@ -174,7 +189,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_marginBottom="10dp"
       android:minLines="3"
       android:text="" />
-
+    
     <TextView
       android:id="@+id/textGamepad2"
       android:layout_width="match_parent"
@@ -183,6 +198,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_alignParentBottom="true"
       android:layout_marginBottom="10dp"
       android:text="" />
-
+    
   </RelativeLayout>
 </LinearLayout>
