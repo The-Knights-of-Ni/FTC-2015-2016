@@ -22,6 +22,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.ImageFormat;
 
 public class CameraTest extends LinearOpMode
 {
@@ -32,30 +33,22 @@ public class CameraTest extends LinearOpMode
     int camera_h = 0;
     Paint paint = null;
     byte[] robot_state;
-    boolean prev_camera_waiting = false;
     CameraPreviewCallback camera_preview_callback;
 
-    byte[] camera_data = new byte[10];
+    byte[] camera_buffer = null;
     
     class CameraPreviewCallback implements Camera.PreviewCallback
     {
-        volatile boolean camera_waiting;
+        
+        
         CameraPreviewCallback(){}
         public void onPreviewFrame(byte[] data, Camera camera)
         {
-            camera_waiting = false;
-            
-            //TODO: try to get rid of this array copy
-            System.arraycopy(data, 0,
-                             camera_testRobotStateElements.get_current_buffer(), 76800*(1-camera_testRobotStateElements.get_current_buffer()),
-                             4915200);
-            
-            
-            camera.addCallbackBuffer(ByteBuffer.wrap(robot_state, 4915200*camera_testRobotStateElements.get_current_buffer(), 76800).order(ByteOrder.nativeOrder()).array());
-            camera_testRobotStateElements.set_current_buffer((camera_testRobotStateElements.get_current_buffer() == 1) ? 0:1);
+            camera.addCallbackBuffer(camera_buffer);
         }
     }
-    
+
+    //TODO: look into latency, it might just be a delay when it draws to the canvas
     public CameraTest()
     {
         camera = FtcRobotControllerActivity.camera;
@@ -65,16 +58,35 @@ public class CameraTest extends LinearOpMode
         paint = new Paint();
         paint.setARGB(255, 255, 255, 255);
         
-        Camera.Size camera_size = camera.getParameters().getPreviewSize();
+        Camera.Parameters parameters = camera.getParameters();
+        Camera.Size camera_size = parameters.getPreviewSize();
         camera_w = camera_size.width;
         camera_h = camera_size.height;
+        parameters.setPreviewFormat(ImageFormat.NV21);
+        parameters.setExposureCompensation(0);
+        parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);
+        parameters.set("iso", "ISO100");
+        parameters.set("max-exposure-time", 2000000);
+        parameters.set("min-exposure-time", 2000000);
+        DbgLog.error("Camera parameters: "+parameters.flatten());
+        /* int[][] fps_ranges = parameters.getSupportedPreviewFpsRange().toArray(new int[20][2]); */
+        /* for(int i = 0; i < fps_ranges.length; i++) */
+        /* { */
+        /*     DbgLog.error("fps range" + String.format("%d, %d", fps_ranges[i][0], fps_ranges[i][1])); */
+        /* } */
+        camera.setParameters(parameters);
         
         robot_state = new byte[camera_testRobotStateElements.robot_state_size];
         camera_testRobotStateElements.robot_state = robot_state;
+        camera_testRobotStateElements.set_camera_w(camera_w);
+        camera_testRobotStateElements.set_camera_h(camera_h);
         
+        camera_buffer = new byte[camera_w*camera_h*4];
         camera_preview_callback = new CameraPreviewCallback();
         
-        camera.setPreviewCallback/* WithBuffer */(camera_preview_callback);
+        camera.setPreviewCallbackWithBuffer(camera_preview_callback);
+        camera.addCallbackBuffer(camera_buffer);
+        //camera.startPreview();
     }
     
     native void main();
@@ -88,13 +100,7 @@ public class CameraTest extends LinearOpMode
     {
         telemetry.addData("width", String.format("%d", camera_w));
         telemetry.addData("height", String.format("%d", camera_h));
-        telemetry.addData("data_length", String.format("%d", camera_data.length));
-        
-        if(true || camera_preview_callback.camera_waiting && !prev_camera_waiting)
-        {
-            camera_preview_callback.camera_waiting = true;
-        }
-        prev_camera_waiting = camera_preview_callback.camera_waiting;
+        telemetry.addData("data_length", String.format("%d", camera_buffer.length));
         
         /* Canvas canvas = surface_holder.lockCanvas(); */
         /* canvas.drawColor(Color.TRANSPARENT, Mode.CLEAR); */

@@ -61,7 +61,7 @@ jthrowable updateRobot(JNIEnv * env, jobject self)
 
 void cleanupJNI(JNIEnv * env, jobject self)
 {
-    env->ReleasePrimitiveArrayCritical(jrobot_state, robot_state.state, 0);
+    env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, 0);
 }
 
 #endif

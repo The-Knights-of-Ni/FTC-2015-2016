@@ -10,6 +10,7 @@
 
 #define min(a, b) (((a) < (b))?(a):(b))
 #define max(a, b) (((a) > (b))?(a):(b))
+#define clamp(a, low, high) (max(low, min(a, high)))
 
 typedef unsigned int uint;
 

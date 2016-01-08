@@ -179,9 +179,14 @@ public class FtcRobotControllerActivity extends Activity {
               DbgLog.error("error setting camera preview: " + e.getMessage());
           }
       }
-        
-      public void surfaceDestroyed(SurfaceHolder holder){}
-        
+      
+      @Override
+      public void surfaceDestroyed(SurfaceHolder holder)
+      {
+          camera.stopPreview();
+          camera.release();
+      }
+      
       public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
       {
           if(surface_holder.getSurface() == null)
@@ -252,9 +257,9 @@ public class FtcRobotControllerActivity extends Activity {
         DbgLog.error("could not open camera, camera is in use or does not exist");
     }
     
-    /* camera_preview = new CameraPreview(this, camera); */
-    /* FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview); */
-    /* frame_layout_preview.addView(camera_preview); */
+    camera_preview = new CameraPreview(this, camera);
+    FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
+    frame_layout_preview.addView(camera_preview);
     
     camera_overlay = new CameraOverlay(this);
     FrameLayout frame_layout_overlay = (FrameLayout) findViewById(R.id.camera_overlay);

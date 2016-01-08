@@ -10,22 +10,27 @@ import java.nio.ByteOrder;
 public class camera_testRobotStateElements
 {
     public static byte[] robot_state;
-    public static int robot_state_size = 9830404;
+    public static int robot_state_size = 8;
     
     camera_testRobotStateElements(){}
-    public static byte[] get_camera_buffers()
+    public static void set_camera_w(int value)
     {
-        return ByteBuffer.wrap(robot_state, 0, 9830400).order(ByteOrder.nativeOrder()).array();
+        ByteBuffer.wrap(robot_state, 0, 4).order(ByteOrder.nativeOrder()).putInt(value);
     }
 
-    public static void set_current_buffer(int value)
+    public static int get_camera_w()
     {
-        ByteBuffer.wrap(robot_state, 9830400, 4).order(ByteOrder.nativeOrder()).putInt(value);
+        return ByteBuffer.wrap(robot_state, 0, 4).order(ByteOrder.nativeOrder()).getInt();
     }
 
-    public static int get_current_buffer()
+    public static void set_camera_h(int value)
     {
-        return ByteBuffer.wrap(robot_state, 9830400, 4).order(ByteOrder.nativeOrder()).getInt();
+        ByteBuffer.wrap(robot_state, 4, 4).order(ByteOrder.nativeOrder()).putInt(value);
+    }
+
+    public static int get_camera_h()
+    {
+        return ByteBuffer.wrap(robot_state, 4, 4).order(ByteOrder.nativeOrder()).getInt();
     }
 
 }
