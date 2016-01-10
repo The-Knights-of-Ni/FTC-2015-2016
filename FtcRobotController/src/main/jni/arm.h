@@ -1,16 +1,15 @@
-//
-// Created by Dev on 1/4/2016.
-//
-#include "maths.h"
-
 #ifndef ARM
 #define ARM
 
-//TODO: Feed Forward
-#define forearm_len 13.5
-#define upperarm_len 15.0
+#include "robotics.h"
 
-#define elbow_radius 1.0
+#define potentiometer_range 333.33333333333333333333333333333333333
+
+//TODO: Feed Forward
+#define forearm_len 18.38
+#define upperarm_len 16.56
+
+#define elbow_radius 2.5 //Check this
 #define winch_radius 1.0
 
 //public static final float elbow_0 = 0.0f; //the winch rotation where the winch length is 0
@@ -21,84 +20,89 @@
 //derived constants:
 #define elbow_1 sqrt(sq(upperarm_len)-sq(elbow_radius))/winch_radius); //the winch rotation where the arm switches modes
 #define elbow_2 ((2.0f*((pi-acos(elbow_radius/upperarm_len)-acos(elbow_radius/forearm_len))*elbow_radius/winch_radius);
-typedef struct v2f position;
-float *getArmTargetsRectangular(struct v2f hand, bool mode)
+
+
+/*
+inputs: hand[0] and hand[1] are the coordinates of the wanted hand position in inches, relative to the robot
+hand will be clamped if it is outside of the range of motion of the arm
+*/
+v2f getArmTargetsRectangular(v2f hand, bool mode)
 {
-    position arm_targets; //[0] -> shoulder, [1] -> elbow
+    v2f arm_targets; //0 -> shoulder, 1 -> elbow
 
-        float dist = sqrt(sq(hand[0]) + sq(hand[1]));
-        //clamp hand motion
-        if (dist > forearm_len + upperarm_len)
-            normalizeScale(hand, 0.9f * (forearm_len + upperarm_len));
-        if (dist < forearm_len - upperarm_len)
-            normalizeScale(hand, 0.9f * (forearm_len - upperarm_len));
-        //TODO: clamp when the arm will hit the frame
+    float dist = norm(hand);
+    //clamp hand motion
+    if (dist > forearm_len + upperarm_len)
+        hand * ((0.9 * (forearm_len + upperarm_len)) * invSqrt(dist));
+    if (dist < forearm_len - upperarm_len)
+        hand * ((0.9 * (forearm_len - upperarm_len)) * invSqrt(dist));
+    //TODO: clamp when the arm will hit the frame
 
-        arm_targets[0] = (float) Math.atan2(hand[1], hand[0]);
-        if (arm_targets[0] < 0.0f) arm_targets[0] += 2.0f * (float) Math.PI;
+    arm_targets[0] = atan2(hand[1], hand[0]);
+    if (arm_targets[0] < 0.0f)
+        arm_targets[0] += 2.0f * pi;
 
-        float shoulder_offset = (float) Math.acos(
-                (sq(upperarm_len) + sq(dist) - sq(forearm_len)) / (2.0f * dist * upperarm_len));
-        //from law of cosines, forearm_len^2 = upperarm_len^2 + dist^2 - 2*dist*upperarm_len*cos(shoulder_offset)
+    float shoulder_offset = acos((sq(upperarm_len) + sq(dist) - sq(forearm_len)) / (2.0f * dist * upperarm_len));
+    //from law of cosines, forearm_len^2 = upperarm_len^2 + dist^2 - 2*dist*upperarm_len*cos(shoulder_offset)
 
-        arm_targets[1] = (float) Math.acos((sq(upperarm_len) + sq(forearm_len) - sq(dist)) /
-                                           (2.0f * upperarm_len * forearm_len));
-        if (mode)//shoulder_target < shoulder_max)
-        { //pulley case
+    arm_targets[1] = acos(
+            (sq(upperarm_len) + sq(forearm_len) - sq(dist)) / (2.0f * upperarm_len * forearm_len));
+    if (mode)//shoulder_target < shoulder_max)
+    { //pulley case
 
-            arm_targets[0] = arm_targets[0] - shoulder_offset;
-            arm_targets[1] = 2.0f * (float) Math.PI - arm_targets[1];
-        }
-        else
-        { //winch case
-            arm_targets[0] = arm_targets[0] + shoulder_offset;
-        }
-        /*
-          outputs: arm_targets[1] and arm_targets[0] are the rotations of
-          the elbow(from the potentiometer) and shoulder outputs in radians, respectively
-        */
-        return arm_targets;
+        arm_targets[0] = arm_targets[0] - shoulder_offset;
+        arm_targets[1] = 2.0f * pi - arm_targets[1];
+    }
+    else
+    { //winch case
+        arm_targets[0] = arm_targets[0] + shoulder_offset;
+    }
+    /*
+      outputs: arm_target[1] and arm_targets[0] are the rotations of
+      the elbow(from the potentiometer) and shoulder outputs in radians, respectively
+    */
+    return arm_targets;
+}
+
+/*
+inputs: hand[0] and hand[1] are the polar coordinates of the wanted hand position in inches and radians, relative to the robot
+ hand will be clamped if it is outside of the range of motion of the arm
+*/
+v2f getArmTargetsPolar(v2f hand, bool mode)
+{
+    v2f arm_targets; //[0] -> shoulder, [1] -> elbow
+
+    //clamp hand motion
+    if (hand[0] > forearm_len + upperarm_len)
+        hand[0] = forearm_len + upperarm_len;
+    if (hand[0] < abs(forearm_len - upperarm_len))
+        hand[0] = abs(forearm_len - upperarm_len);
+    float dist = hand[0];
+    //TODO: clamp when the arm will hit the frame
+
+    float shoulder_offset = acos(
+            (sq(upperarm_len) + sq(dist) - sq(forearm_len)) / (2.0f * dist * upperarm_len));
+    //from law of cosines, forearm_len^2 = upperarm_len^2 + dist^2 - 2*dist*upperarm_len*cos(shoulder_offset)
+
+    arm_targets[1] = acos((sq(upperarm_len) + sq(forearm_len) - sq(dist)) / (2.0f * upperarm_len * forearm_len));
+    if (mode)//shoulder_target < shoulder_max)
+    { //pulley case
+        arm_targets[0] = hand[1] - shoulder_offset;
+        arm_targets[1] = 2.0f * pi- arm_targets[1];
+    }
+    else
+    { //winch case
+        arm_targets[0] = hand[1] + shoulder_offset;
     }
 
-
-//PID Control: UNTESTED, may not be ported correctly (In case the built in doesn't work)
-float k_p;
-float k_i;
-float k_d;
-float k_d2;
-
-float i = 0.0f;
-float p_old;
-float d = 0.0f;
-float p2_old;
-float d2 = 0.0f;
-
-void PIDController(float K_P, float K_I, float K_D, float K_D2, float initial_val,
-                   float initial_val2)
-{
-    k_p = K_P;
-    k_i = K_I;
-    k_d = K_D;
-    k_d2 = K_D2;
-    p_old = initial_val;
-    p2_old = initial_val2;
+    /*
+      outputs: arm_targets[1] and arm_targets[0] are the rotations of
+      the elbow(from the potentiometer) and shoulder outputs in radians, respectively
+    */
+    return arm_targets;
 }
 
-float getControl(float p, float p2, float dt)
-{
-    d2 = lerp((p2 - p2_old) / dt,
-              d2,
-              (float) Math.exp(-20.0 * dt));
-    p2_old = p2;
 
-    if (i != i) i = 0.0f; //this will trigger if i is NaN
-    i += p * dt; //might want to try different integrators
-    d = lerp((p - p_old) / dt,
-             d,
-             (float) Math.exp(-20.0 * dt));
-    p_old = p;
-    return k_p * p + k_i * i;//+k_d*d+k_d2*d2;
-}
 
 
 #endif
