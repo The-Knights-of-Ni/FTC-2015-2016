@@ -1,38 +1,28 @@
-//
-// Created by Dev on 1/3/2016.
-//
+#ifndef DRIVE
+#define DRIVE
 
-#ifndef FTCROBOTCONTROLLER_DRIVE_H
-#define FTCROBOTCONTROLLER_DRIVE_H
-
-#include "maths.h"
+#include "robotics.h"
 //TODO: Traction control
 //TODO: Negative Inertia
 //TODO: D-PAD Turn macros (90, 180, 270, simulated shift)
 //TODO: Drive on course (turn by bearing)
 //TODO: Stabilized driving (if we get slammed, we should correct)
 //TODO: Delete this comment
-typedef struct v2f joystick;
-
-void scale(joystick *v, float s)
-{
-    v->data[0] *= s;
-    v->data[1] *= s;
-}
 
 #define threshold 0.1
-void deadZone(joystick *stick)
+void deadZone(v2f * stick)
 {
-    float norm = (float)Math.sqrt(stick[0]*stick[0]+stick[1]*stick[1]);
+    float norm = norm(stick);
     if(norm < threshold)
     {
         stick->data[0] = 0;
         stick->data[1] = 0;
     }
-    else scale(stick, ((norm-threshold)/(1.0f-threshold))/norm);//Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
+    else
+        stick * ((norm-threshold)/(1.0f-threshold))/norm;//Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
 }
 
-void squareDeadZone(joystick *stick)
+void squareDeadZone(v2f * stick)
 {
     if(Math.abs(stick->data[0]) < threshold)
     {
@@ -51,7 +41,7 @@ void squareDeadZone(joystick *stick)
 #define Py_1 0.8 //Set this to something the driver likes
 #define Py_2 1
 //Bounds and Smooths joystick values for better handling.
-void smoothJoysticks(joystick *stick)
+void smoothJoysticks(v2f * stick) //TODO: Move to <robot_name>.h and have custom constants
 {
     stick->data[0] = bound(stick->data[0], -1, 1);//Clamp between -1 and 1, might just build the deadzone into here
     stick->data[1] = bound(stick->data[1], -1, 1);
@@ -61,7 +51,7 @@ void smoothJoysticks(joystick *stick)
             stick->data[1]*((1-stick->data[1])*Py_1 + stick->data[1]*Py_2));
 }
 #define smoothConstant 0.6 //Set this to something the driver likes
-float * smoothJoysticks254Style(float raw_x, float raw_y)
+v2f smoothJoysticks254Style(v2f stick)//TODO: Fix this
 {
     v2f smoothed;
     raw_x = bound(raw_x, -1, 1);//Clamp between -1 and 1
@@ -70,4 +60,4 @@ float * smoothJoysticks254Style(float raw_x, float raw_y)
     smoothed.data[1] = sin((pi*smoothConstant*raw_y/2.0)/(pi/2.0));
     return smoothed.data;//Give back smooth x and y values
 }
-#endif //FTCROBOTCONTROLLER_DRIVE_H
+#endif //DRIVE

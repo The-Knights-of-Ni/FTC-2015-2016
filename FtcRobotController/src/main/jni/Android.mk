@@ -22,4 +22,7 @@ LOCAL_SRC_FILES := test.cpp
 LOCAL_MODULE    := camera_test
 LOCAL_SRC_FILES := camera_test.cpp
 
+LOCAL_MODULE    := Mk3Teleop
+LOCAL_SRC_FILES := Mk3Teleop.cpp
+
 include $(BUILD_SHARED_LIBRARY)

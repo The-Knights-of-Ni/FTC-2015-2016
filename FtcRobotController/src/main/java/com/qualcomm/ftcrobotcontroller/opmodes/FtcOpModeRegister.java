@@ -55,8 +55,9 @@ public class FtcOpModeRegister implements OpModeRegister {
      * If two or more op modes are registered with the same name, the app will display an error.
      */
     manager.register("NullOp", NullOp.class);
-    manager.register("Mk2Teleop", Mk2Teleop.class);
+    manager.register("Mk3Teleop", Mk3Teleop.class);
     manager.register("NDK_test", NDK_test.class);
+
     //manager.register("IntakeTest", IntakeTest.class);
     //manager.register("ArmTest", ArmTest.class);
     //manager.register("IMUTester", IMUTester.class);

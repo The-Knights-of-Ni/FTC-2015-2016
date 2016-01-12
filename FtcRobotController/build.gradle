@@ -13,7 +13,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
     
-    sourceSets.main.jni.srcDirs = [] //disable automatic ndk-build call
+   // sourceSets.main.jni.srcDirs = [] //disable automatic ndk-build call
+
 }
 
 buildscript {
@@ -52,3 +53,4 @@ dependencies {
     compile(name: 'Analytics-release', ext: 'aar')
     compile(name: 'WirelessP2p-release', ext: 'aar')
 }
+
