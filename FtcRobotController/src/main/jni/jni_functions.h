@@ -5,10 +5,12 @@
 
 jmethodID waitForStartID;
 jmethodID waitOneFullHardwareCycleID;
+jmethodID waitForNextHardwareCycleID;
 jmethodID applyRobotStateID;
 
 #define waitForStart() env->CallVoidMethod(self, waitForStartID)
 #define waitOneFullHardwareCycle() env->CallVoidMethod(self, waitOneFullHardwareCycleID)
+#define waitForNextHardwareCycle() env->CallVoidMethod(self, waitForNextHardwareCycleID)
 #define applyRobotState() env->CallVoidMethod(self, applyRobotStateID)
 
 jbyteArray jrobot_state;
@@ -27,18 +29,19 @@ void initJNI(JNIEnv * env, jobject self)
     
     //functions
     waitForStartID = env->GetMethodID(cls, "waitForStart", "()V");
-    
+
     waitOneFullHardwareCycleID = env->GetMethodID(cls, "waitOneFullHardwareCycle", "()V");
+    waitForNextHardwareCycleID = env->GetMethodID(cls, "waitForNextHardwareCycle", "()V");
     
     applyRobotStateID = env->GetMethodID(cls, "applyRobotState", "()V");
     
     //setup pinned array
     jfieldID jrobot_stateID = env->GetFieldID(cls, "robot_state", "[B");
     jrobot_state = (jbyteArray) env->GetObjectField(self, jrobot_stateID);
-    if(env->GetArrayLength(jrobot_state) != rsid_size)
-    {
-        //TODO: give error
-    }
+    /* if(env->GetArrayLength(jrobot_state) != rsid_size) */
+    /* { */
+    /*     //TODO: give error */
+    /* } */
     
     robot_state.state = (byte *) env->GetByteArrayElements(jrobot_state, &robot_state.is_copy);
     assert(robot_state.state);
@@ -48,16 +51,17 @@ void initJNI(JNIEnv * env, jobject self)
     }
 }
 
-void updateRobot(JNIEnv * env, jobject self)
+jthrowable updateRobot(JNIEnv * env, jobject self)
 {
     env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, JNI_COMMIT);
     applyRobotState();
-    waitOneFullHardwareCycle();
+    waitForNextHardwareCycle();
+    return env->ExceptionOccurred();
 }
 
 void cleanupJNI(JNIEnv * env, jobject self)
 {
-    env->ReleasePrimitiveArrayCritical(jrobot_state, robot_state.state, 0);
+    env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, 0);
 }
 
 #endif

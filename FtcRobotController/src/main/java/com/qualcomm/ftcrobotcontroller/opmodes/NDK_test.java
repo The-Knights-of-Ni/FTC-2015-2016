@@ -46,13 +46,7 @@ public class NDK_test extends LinearOpMode
         throws InterruptedException
     {
         DbgLog.error("NDK test init");
-        //waitForStart();
         main();
-        for(;;)
-        {
-            telemetry.addData("waiting to die", "hi");
-            waitOneFullHardwareCycle();
-        }
         
         //Java equivalent
         

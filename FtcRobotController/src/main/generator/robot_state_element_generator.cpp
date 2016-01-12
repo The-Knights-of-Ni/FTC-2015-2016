@@ -1,3 +1,5 @@
+//TODO: add support for oppertors in array size eg 100*4
+
 #include "../jni/misc.h"
 
 #include <string.h>
@@ -54,6 +56,11 @@ bool8 isComment(char * in, uint i, uint input_size)
     return (constStrncmp(in+i, "//", input_size-i) == 0);
 }
 
+//TODO: support block comments, can't do it yet, because block comments don't nest
+bool8 isBlockComment(char * in, uint i, uint input_size)
+{
+    return (constStrncmp(in+i, "/*", input_size-i) == 0);
+}
 
 bool8 isNumber(char c)
 {
@@ -102,6 +109,10 @@ void skipOverWhitespaceAndComment(char * in, uint & i, uint input_size)
             while(i < input_size && in[i++] != '\n');
             continue;
         }
+        // if(isBlockComment(in, i, input_size))
+        // {
+        //     while(i < input_size && (in[i-1] != '*' || in[i] != '/'));
+        // }
         break;
     }
 }
@@ -506,6 +517,9 @@ int main(int n_args, char ** args)
 WARNING: this is a generated file\n\
 changes made this file are not permanent\n\
 */\n\
+\n\
+#include \"jni_functions.h\"\n\
+\n\
 enum robot_state_element\n\
 {\n");//TODO: include guards
     for(int e = 0; e < n_elements; e++)
@@ -539,9 +553,6 @@ enum robot_state_element\n\
     fprintf(output_file, "\
     rsid_size\n\
 };\n\
-\n\
-#include \"jni_functions.h\"\n\
-\n\
 \n");    
     
     for(int e = 0; e < n_elements; e++)
@@ -609,23 +620,23 @@ public class %.*sRobotStateElements\n\
         ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).put%c%s(value);\n\
     }\n\n",
                         elements[e].name_len, elements[e].name,
-                        type_names[elements[e].type_id],
+                        type_java_names[elements[e].type_id],
                         current_index,
                         type_size,
-                        type_names[elements[e].type_id][0]+(
-                            type_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_names[elements[e].type_id]+1);
+                        type_java_names[elements[e].type_id][0]+(
+                            type_java_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_java_names[elements[e].type_id]+1);
             
                 fprintf(java_output_file, "\
     public static %s get_%.*s()\n\
     {\n\
         return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).get%c%s();\n\
     }\n\n",
-                        type_names[elements[e].type_id],
+                        type_java_names[elements[e].type_id],
                         elements[e].name_len, elements[e].name,
                         current_index,
                         type_size,
-                        type_names[elements[e].type_id][0]+(
-                            type_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_names[elements[e].type_id]+1);
+                        type_java_names[elements[e].type_id][0]+(
+                            type_java_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_java_names[elements[e].type_id]+1);
             
                 current_index += type_size;
             }
@@ -640,24 +651,24 @@ public class %.*sRobotStateElements\n\
     }\n\n",
                             elements[e].name_len, elements[e].name,
                             primitives[p].name_len, primitives[p].name,
-                            type_names[primitives[p].type],
+                            type_java_names[primitives[p].type],
                             current_index,
                             type_sizes[primitives[p].type],
-                            type_names[primitives[p].type][0]+(
-                                type_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_names[primitives[p].type]+1);
+                            type_java_names[primitives[p].type][0]+(
+                                type_java_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_java_names[primitives[p].type]+1);
             
                     fprintf(java_output_file, "\
     public static %s get_%.*s_%.*s()\n\
     {\n\
         return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).get%c%s();\n\
     }\n\n",
-                            type_names[primitives[p].type],
+                            type_java_names[primitives[p].type],
                             elements[e].name_len, elements[e].name,
                             primitives[p].name_len, primitives[p].name,
                             current_index,
                             type_sizes[primitives[p].type],
-                            type_names[primitives[p].type][0]+(
-                                type_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_names[primitives[p].type]+1);
+                            type_java_names[primitives[p].type][0]+(
+                                type_java_names[primitives[p].type][0] >= 'A' ? 'A'-'a' : 0), type_java_names[primitives[p].type]+1);
                 
                     current_index += type_sizes[primitives[p].type]*primitives[p].array_len;
                 }            
@@ -672,7 +683,7 @@ public class %.*sRobotStateElements\n\
                 fprintf(java_output_file, "\
     public static %s[] get_%.*s()\n\
     {\n",
-                        type_names[elements[e].type_id],
+                        type_java_names[elements[e].type_id],
                         elements[e].name_len, elements[e].name);
                 
                 if(elements[e].type_id != type_byte)
@@ -681,8 +692,8 @@ public class %.*sRobotStateElements\n\
         return ByteBuffer.wrap(robot_state, %d, %d).order(ByteOrder.nativeOrder()).as%c%sBuffer().array();\n",
                             current_index,
                             type_size,
-                            type_names[elements[e].type_id][0]+(
-                                type_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_names[elements[e].type_id]+1);
+                            type_java_names[elements[e].type_id][0]+(
+                                type_java_names[elements[e].type_id][0] >= 'A' ? 'A'-'a' : 0), type_java_names[elements[e].type_id]+1);
                 }
                 else
                 {
