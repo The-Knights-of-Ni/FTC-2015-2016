@@ -16,8 +16,8 @@ import java.nio.ByteBuffer;
 public class Mk3Teleop extends LinearOpMode {
     /* Start NDK Stuff*/
     byte[] robot_state;
+    int elbow_potentiometer_port = 7;
 
-    //TODO: Write state element file
     public Mk3Teleop()
     {
         robot_state = new byte[Mk3TeleopRobotStateElements.robot_state_size];
@@ -33,7 +33,6 @@ public class Mk3Teleop extends LinearOpMode {
 
     void applyRobotState()
     {
-        //TODO: Add stuff we want to bring into C here. IMU, Gamepads, Buttons
         /*DATA OUT (To native)*/
         //Gamepad 1
         Mk3TeleopRobotStateElements.set_gamepad1_joystick1_x(gamepad1.left_stick_x);
@@ -59,7 +58,17 @@ public class Mk3Teleop extends LinearOpMode {
         } catch (RobotCoreException e) {
             e.printStackTrace();
         }
-
+        //Sensors
+        Mk3TeleopRobotStateElements.set_right_drive_encoder(right_drive.getCurrentPosition());
+        Mk3TeleopRobotStateElements.set_left_drive_encoder(left_drive.getCurrentPosition());
+        Mk3TeleopRobotStateElements.set_elbow_encoder(elbow.getCurrentPosition());
+        Mk3TeleopRobotStateElements.set_shoulder_encoder(shoulder.getCurrentPosition());
+        Mk3TeleopRobotStateElements.set_potentiometer(dim.getAnalogInputValue(elbow_potentiometer_port));
+        Mk3TeleopRobotStateElements.set_heading(6);//TODO: get these from the imu
+        Mk3TeleopRobotStateElements.set_tilt(6);
+        Mk3TeleopRobotStateElements.set_roll(6);
+        Mk3TeleopRobotStateElements.set_x_velocity(6);
+        Mk3TeleopRobotStateElements.set_y_velocity(6);
         /*DATA IN (From native)*/
         left_drive.setPower(Mk3TeleopRobotStateElements.get_left_drive());
         right_drive.setPower(Mk3TeleopRobotStateElements.get_right_drive());

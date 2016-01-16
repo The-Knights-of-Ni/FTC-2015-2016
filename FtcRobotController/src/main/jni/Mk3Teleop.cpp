@@ -4,6 +4,17 @@
   {
   gamepad{float joystick1_x, float joystick1_y, float joystick2_x, float joystick2_y, float trigger1, float trigger2, int buttons};
 
+  int right_drive_encoder;
+  int left_drive_encoder;
+  int elbow_encoder;
+  int shoulder_encoder;
+  int potentiometer;
+  float heading;
+  float tilt;
+  float roll;
+  float x_velocity;
+  float y_velocity;
+
   float left_drive;
   float right_drive;
   float elbow;
@@ -75,10 +86,10 @@ void JNI_main(JNIEnv * env, jobject self)
     {
 //============================ Controls ==========================
         
-        pad1stick1.x = gamepad1.joystick1.x; pad1stick1.y = gamepad1.joystick1.y;
-        pad1stick2.x = gamepad1.joystick2.x; pad1stick2.y = gamepad1.joystick2.y;
-        pad2stick1.x = gamepad2.joystick1.x; pad2stick1.y = gamepad2.joystick1.y;
-        pad2stick2.x = gamepad2.joystick2.x; pad2stick2.y = gamepad2.joystick2.y;
+        pad1stick1.x = gamepad1.joystick1_x; pad1stick1.y = gamepad1.joystick1_y;
+        pad1stick2.x = gamepad1.joystick2_x; pad1stick2.y = gamepad1.joystick2_y;
+        pad2stick1.x = gamepad2.joystick1_x; pad2stick1.y = gamepad2.joystick1_y;
+        pad2stick2.x = gamepad2.joystick2_x; pad2stick2.y = gamepad2.joystick2_y;
         
 //============================= Drive ============================
         deadZone(drive_stick);
@@ -90,7 +101,7 @@ void JNI_main(JNIEnv * env, jobject self)
 //============================== Arm =============================
         if(!arm_manual_toggle) //IK
         {
-            deadZone(arm_stick);//Also deadzoning shoulder_manual
+            deadZone(arm_stick);
             getArmTargetsPolar(arm_stick, arm_manual_toggle);
         }
         else //Manual

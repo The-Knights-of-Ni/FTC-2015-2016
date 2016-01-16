@@ -492,4 +492,12 @@ float lerp(float a, float b, float t)
     return a + (b - a) * t;
 }
 
+bool angleComparison(float a, float b)//TODO: Better name
+{
+    //going to hope the imu knows that 360 = 0
+    if(a < 180 && b > 180)
+        if(a < (b-360))
+            return
+}
+
 #endif

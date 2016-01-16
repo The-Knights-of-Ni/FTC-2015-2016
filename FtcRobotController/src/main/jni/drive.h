@@ -9,51 +9,162 @@
 //TODO: Stabilized driving (if we get slammed, we should correct)
 //TODO: Delete this comment
 
-#define threshold 0.1
-void deadZone(v2f & stick)
+#define threshold 0.
+
+#define sprocket_pitch_radius 3.13 //Inches
+#define encoderticks_per_inch sprocket_pitch_radius*encoderticks_per_radian
+#define encoderticks_per_cm sprocket_pitch_radius*2.54*encoderticks_per_radian
+
+
+void deadZone(v2f &stick)
 {
     float stick_norm = norm(stick);
-    if(stick_norm < threshold)
+    if (stick_norm < threshold)
     {
         stick.data[0] = 0;
         stick.data[1] = 0;
     }
     else
-        stick * ((stick_norm-threshold)/(1.0f-threshold))/stick_norm;//Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
+    {
+        stick * ((stick_norm - threshold) / (1.0f - threshold)) /
+        stick_norm;
+    }//Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
 }
 
-void squareDeadZone(v2f & stick)
+void squareDeadZone(v2f &stick)
 {
-    if(fabs(stick.data[0]) < threshold)
+    if (fabs(stick.data[0]) < threshold)
     {
         stick.data[0] = 0;
     }
-    if(fabs(stick.data[1]) < threshold)
+    if (fabs(stick.data[1]) < threshold)
     {
         stick.data[1] = 0;
     }
 }
-//Returns change in drive pwm for a given target heading (add this vector to both drive pwms while driving forward)
-v2f driveOnCourse(float target, float heading) //heading is relative to the driver box wall
+
+//TODO: go 0-100 for vis instead of 0-1, for clarity
+void driveDistIn(float dist, float vIs)
 {
-    v2f drivePWMChange;
-    float bearing = heading - target;
-    if(bearing == 0)
+    if (dist < 0)
     {
-        drivePWMChange[0] = 0;
-        drivePWMChange[1] = 0;
+        dist = abs(dist);
+        vIs = -vIs;
     }
-    else if(bearing > 0)
+
+    bool doInit = true;
+    int right_enc_net = 0;
+    int left_enc_net = 0;
+    int right_prev = 0;
+    int left_prev = 0;
+    while (right_enc_net < dist * encoderticks_per_inch ||
+           left_enc_net < dist * encoderticks_per_inch)
     {
-        drivePWMChange[0] = 1;
-        drivePWMChange[1] = 1;
+        if (doInit)
+        {
+            updateRobot(env, self); //Might not need this?
+            right_prev = right_drive_encoder;
+            left_prev = left_drive_encoder;
+            doInit = false;
+        }
+        right_enc_net = right_drive_encoder - right_prev;
+        left_enc_net = left_drive_encoder - left_prev;
+
+        if (right_enc_net < dist * encoderticks_per_inch)
+        {
+            right_drive = vIs;
+        }
+        if (left_enc_net < dist * encoderticks_per_inch)
+        {
+            left_drive = vIs;
+        }
+
+        updateRobot(env, self);
     }
-    else if(bearing < 0)
+}
+
+void driveDistCm(float dist, float vIs)
+{
+    if (dist < 0)
     {
-        drivePWMChange[0] = -1;
-        drivePWMChange[1] = -1;
+        dist = abs(dist);
+        vIs = -vIs;
     }
-    return drivePWMChange;
+
+    bool doInit = true;
+    int right_enc_net = 0;
+    int left_enc_net = 0;
+    int right_prev = 0;
+    int left_prev = 0;
+    while (right_enc_net < dist * encoderticks_per_cm || left_enc_net < dist * encoderticks_per_cm)
+    {
+        if (doInit)
+        {
+            updateRobot(env, self); //Might not need this?
+            right_prev = right_drive_encoder;
+            left_prev = left_drive_encoder;
+            doInit = false;
+        }
+        right_enc_net = right_drive_encoder - right_prev;
+        left_enc_net = left_drive_encoder - left_prev;
+
+        if (right_enc_net < dist * encoderticks_per_cm)
+        {
+            right_drive = vIs;
+        }
+        if (left_enc_net < dist * encoderticks_per_cm)
+        {
+            left_drive = vIs;
+        }
+
+        updateRobot(env, self);
+    }
+}
+
+#define side_slowing_constant 5
+void driveOnCourseIn(float dist, float vIs,
+                     float target_heading) //Assuming we start facing 180 degrees (intake side)
+{
+    if (dist < 0)
+    {
+        dist = abs(dist);
+        vIs = -vIs;
+    }
+
+    bool doInit = true;
+    int right_enc_net = 0;
+    int left_enc_net = 0;
+    int right_prev = 0;
+    int left_prev = 0;
+    while (right_enc_net < dist * encoderticks_per_inch ||
+           left_enc_net < dist * encoderticks_per_inch)
+    {
+        if (doInit)
+        {
+            updateRobot(env, self); //Might not need this?
+            right_prev = right_drive_encoder;
+            left_prev = left_drive_encoder;
+            doInit = false;
+        }
+        right_enc_net = right_drive_encoder - right_prev;
+        left_enc_net = left_drive_encoder - left_prev;
+        if (heading == target_heading)
+        {
+            if (right_enc_net < dist * encoderticks_per_inch)
+            {
+                right_drive = vIs;
+            }
+            if (left_enc_net < dist * encoderticks_per_inch)
+            {
+                left_drive = vIs;
+            }
+        }
+        else if(heading > target_heading) //TODO: make it so it ramps up if we're running at less than 100
+        {
+
+        }
+        updateRobot(env, self);
+    }
 }
 
 #define Px_0 0
@@ -62,28 +173,36 @@ v2f driveOnCourse(float target, float heading) //heading is relative to the driv
 #define Py_0 0
 #define Py_1 0.8 //Set this to something the driver likes
 #define Py_2 1
+
 //Bounds and Smooths joystick values for better handling.
-void smoothJoysticks(v2f * stick) //TODO: Move to <robot_name>.h and have custom constants
+void smoothJoysticks(v2f *stick) //TODO: Move to <robot_name>.h and have custom constants
 {
-    stick->data[0] = bound(stick->data[0], -1, 1);//Clamp between -1 and 1, might just build the deadzone into here
+    stick->data[0] = bound(stick->data[0], -1,
+                           1);//Clamp between -1 and 1, might just build the deadzone into here
     stick->data[1] = bound(stick->data[1], -1, 1);
-    stick->data[0] = (stick->data[0] < 0 ? -1 : 1)*((1-stick->data[0])*((1-stick->data[0])*Px_0 + stick->data[0]*Px_1) +
-            stick->data[0]*((1-stick->data[0])*Px_1 + stick->data[0]*Px_2)); //Quadratic Bezier, might want to make this a separate definition later
-    stick->data[1] = (stick->data[1] < 0 ? -1 : 1)*((1-stick->data[1])*((1-stick->data[1])*Py_0 + stick->data[1]*Py_1) +
-            stick->data[1]*((1-stick->data[1])*Py_1 + stick->data[1]*Py_2));
+    stick->data[0] = (stick->data[0] < 0 ? -1 : 1) *
+                     ((1 - stick->data[0]) * ((1 - stick->data[0]) * Px_0 + stick->data[0] * Px_1) +
+                      stick->data[0] * ((1 - stick->data[0]) * Px_1 + stick->data[0] *
+                                                                      Px_2)); //Quadratic Bezier, might want to make this a separate definition later
+    stick->data[1] = (stick->data[1] < 0 ? -1 : 1) *
+                     ((1 - stick->data[1]) * ((1 - stick->data[1]) * Py_0 + stick->data[1] * Py_1) +
+                      stick->data[1] * ((1 - stick->data[1]) * Py_1 + stick->data[1] * Py_2));
 }
 
 float raw_x;
 float raw_y;
 
 #define smoothConstant 0.6 //Set this to something the driver likes
+
 v2f smoothJoysticks254Style(v2f stick)//TODO: Fix this
 {
     v2f smoothed;
     raw_x = bound(raw_x, -1, 1);//Clamp between -1 and 1
     raw_y = bound(raw_y, -1, 1);
-    smoothed.data[0] = sin((pi*smoothConstant*raw_x/2.0)/(pi/2.0)); //Sin wave: https://www.desmos.com/calculator/4hd9ovg7el
-    smoothed.data[1] = sin((pi*smoothConstant*raw_y/2.0)/(pi/2.0));
+    smoothed.data[0] = sin((pi * smoothConstant * raw_x / 2.0) /
+                           (pi / 2.0)); //Sin wave: https://www.desmos.com/calculator/4hd9ovg7el
+    smoothed.data[1] = sin((pi * smoothConstant * raw_y / 2.0) / (pi / 2.0));
     return smoothed;//Give back smooth x and y values
 }
+
 #endif //DRIVE
