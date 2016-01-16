@@ -33,6 +33,28 @@ void squareDeadZone(v2f * stick)
         stick->data[1] = 0;
     }
 }
+//Returns change in drive pwm for a given target heading (add this vector to both drive pwms while driving forward)
+v2f driveOnCourse(float target, float heading) //heading is relative to the driver box wall
+{
+    v2f drivePWMChange;
+    float bearing = heading - target;
+    if(bearing == 0)
+    {
+        drivePWMChange[0] = 0;
+        drivePWMChange[1] = 0;
+    }
+    else if(bearing > 0)
+    {
+        drivePWMChange[0] = 1;
+        drivePWMChange[1] = 1;
+    }
+    else if(bearing < 0)
+    {
+        drivePWMChange[0] = -1;
+        drivePWMChange[1] = -1;
+    }
+    return drivePWMChange;
+}
 
 #define Px_0 0
 #define Px_1 0.2 //Set this to something the driver likes

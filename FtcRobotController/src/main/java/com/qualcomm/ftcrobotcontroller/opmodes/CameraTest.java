@@ -10,6 +10,11 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.ftccommon.DbgLog;
 
+import android.content.Context;
+import android.hardware.Camera;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
