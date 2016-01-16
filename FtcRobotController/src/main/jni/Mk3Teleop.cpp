@@ -25,6 +25,8 @@
 #include "arm.h"
 #include "Button.h"
 
+#include "Mk3Teleop_robot_state_elements.h"
+
 //TODO: generate this
 #define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_MK3Teleop_main
 extern "C"
@@ -46,18 +48,18 @@ extern "C"
 
 
 //Hopper
-#define intake_toggle pad1.toggle(Buttons::LEFT_BUMPER)
-#define intake_reverse pad1.press(Buttons::RIGHT_BUMPER)
-#define hopper_tilt pad1.toggle(Buttons::A) //Might make this a stick or something
+#define intake_toggle pad1.toggle(LEFT_BUMPER)
+#define intake_reverse pad1.press(RIGHT_BUMPER)
+#define hopper_tilt pad1.toggle(A) //Might make this a stick or something
 //Arm
 #define shoulder_manual pad2stick1
 #define elbow_manual pad2stick2
 #define arm_stick pad2stick1
-#define arm_manual_toggle pad2.toggle(Buttons::LEFT_STICK_BUTTON)
+#define arm_manual_toggle pad2.toggle(LEFT_STICK_BUTTON)
 //Slide
-#define slide_toggle pad1.toggle(Buttons::Y)
-#define slide_right pad1.press(Buttons::DPAD_RIGHT)
-#define slide_left pad1.press(Buttons::DPAD_LEFT)
+#define slide_toggle pad1.toggle(Y)
+#define slide_right pad1.press(DPAD_RIGHT)
+#define slide_left pad1.press(DPAD_LEFT)
 
 void JNI_main(JNIEnv * env, jobject self)
 {
@@ -68,15 +70,19 @@ void JNI_main(JNIEnv * env, jobject self)
     v2f pad1stick2;
     v2f pad2stick1;
     v2f pad2stick2;
+    
     for ever
     {
-        pad1stick1.x = gamepad1.joystick1_x; pad1stick1.y = gamepad1.joystick1_y;
-        pad1stick2.x = gamepad1.joystick2_x; pad1stick2.y = gamepad1.joystick2_y;
-        pad2stick1.x = gamepad2.joystick1_x; pad2stick1.y = gamepad2.joystick1_y;
-        pad2stick2.x = gamepad2.joystick2_x; pad2stick2.y = gamepad2.joystick2_y;
+//============================ Controls ==========================
+        
+        pad1stick1.x = gamepad1.joystick1.x; pad1stick1.y = gamepad1.joystick1.y;
+        pad1stick2.x = gamepad1.joystick2.x; pad1stick2.y = gamepad1.joystick2.y;
+        pad2stick1.x = gamepad2.joystick1.x; pad2stick1.y = gamepad2.joystick1.y;
+        pad2stick2.x = gamepad2.joystick2.x; pad2stick2.y = gamepad2.joystick2.y;
+        
 //============================= Drive ============================
         deadZone(drive_stick);
-        smoothJoysticks(drive_stick);
+        smoothJoysticks(&drive_stick);
         left_drive = drive_stick.y - drive_stick.x;
         right_drive = drive_stick.y + drive_stick.x;
         //Might need to add additional bounding in as a safety
@@ -91,8 +97,8 @@ void JNI_main(JNIEnv * env, jobject self)
         {
             deadZone(elbow_manual);
             deadZone(shoulder_manual);
-            smoothJoysticks(elbow_manual);//This needs to be fixed.
-            smoothJoysticks(shoulder_manual);
+            smoothJoysticks(&elbow_manual);//This needs to be fixed.
+            smoothJoysticks(&shoulder_manual);
             shoulder = shoulder_manual.y;
             elbow = elbow_manual.y;
         }
@@ -135,8 +141,8 @@ void JNI_main(JNIEnv * env, jobject self)
         if(slide_left)
             slide -= slide_speed;
 //============================ Updates ===========================
-        gamepad1.updateButtons(gamepad1.buttons);
-        gamepad2.updateButtons(gamepad2.buttons);
+        gamepad1.buttons.updateButtons();
+        gamepad2.buttons.updateButtons();
         updateRobot(env, self);
     }
 
