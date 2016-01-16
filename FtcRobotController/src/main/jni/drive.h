@@ -14,7 +14,7 @@
 #define sprocket_pitch_radius 3.13 //Inches
 #define encoderticks_per_inch sprocket_pitch_radius*encoderticks_per_radian
 #define encoderticks_per_cm sprocket_pitch_radius*2.54*encoderticks_per_radian
-
+#define acceptableAngleError 2
 
 void deadZone(v2f &stick)
 {
@@ -148,8 +148,9 @@ void driveOnCourseIn(float dist, float vIs,
         }
         right_enc_net = right_drive_encoder - right_prev;
         left_enc_net = left_drive_encoder - left_prev;
-        if (heading == target_heading)
+        if (tolerantEquals(heading, target_heading, acceptableAngleError))
         {
+            //TODO: Recovery code that makes sure we don't gain ticks by getting hit
             if (right_enc_net < dist * encoderticks_per_inch)
             {
                 right_drive = vIs;
@@ -159,9 +160,86 @@ void driveOnCourseIn(float dist, float vIs,
                 left_drive = vIs;
             }
         }
-        else if(heading > target_heading) //TODO: make it so it ramps up if we're running at less than 100
+        else if(isAngleGreater(heading, target_heading)) //TODO: make it so it ramps up if we're running at less than 100
         {
+            left_drive = vIs;
+            right_drive -= side_slowing_constant;
+        }
+        else
+        {
+            left_drive -= side_slowing_constant;
+            right_drive = vIs;
+        }
+        updateRobot(env, self);
+    }
+}
 
+void driveOnCourseCm(float dist, float vIs,
+                     float target_heading) //Assuming we start facing 180 degrees (intake side)
+{
+    if (dist < 0)
+    {
+        dist = abs(dist);
+        vIs = -vIs;
+    }
+
+    bool doInit = true;
+    int right_enc_net = 0;
+    int left_enc_net = 0;
+    int right_prev = 0;
+    int left_prev = 0;
+    while (right_enc_net < dist * encoderticks_per_cm ||
+           left_enc_net < dist * encoderticks_per_cm)
+    {
+        if (doInit)
+        {
+            updateRobot(env, self); //Might not need this?
+            right_prev = right_drive_encoder;
+            left_prev = left_drive_encoder;
+            doInit = false;
+        }
+        right_enc_net = right_drive_encoder - right_prev;
+        left_enc_net = left_drive_encoder - left_prev;
+        if (tolerantEquals(heading, target_heading, acceptableAngleError))
+        {
+            //TODO: Recovery code that makes sure we don't gain ticks by getting hit
+            if (right_enc_net < dist * encoderticks_per_cm)
+            {
+                right_drive = vIs;
+            }
+            if (left_enc_net < dist * encoderticks_per_cm)
+            {
+                left_drive = vIs;
+            }
+        }
+        else if(isAngleGreater(heading, target_heading)) //TODO: make it so it ramps up if we're running at less than 100
+        {
+            left_drive = vIs;
+            right_drive -= side_slowing_constant;
+        }
+        else
+        {
+            left_drive -= side_slowing_constant;
+            right_drive = vIs;
+        }
+        updateRobot(env, self);
+    }
+}
+
+void turnRelDeg(float angle, float vIs)
+{
+    updateRobot(env, self);
+    while(!tolerantEquals(heading, heading + angle, acceptableAngleError))
+    {
+        if(isAngleGreater(heading, heading + angle))
+        {
+            left_motor = vIs;
+            right_motor = -vIs;
+        }
+        else
+        {
+            left_motor = -vIs;
+            right_motor = vIs;
         }
         updateRobot(env, self);
     }

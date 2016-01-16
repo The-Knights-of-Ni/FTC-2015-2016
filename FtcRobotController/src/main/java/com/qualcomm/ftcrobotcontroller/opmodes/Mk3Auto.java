@@ -32,30 +32,6 @@ public class Mk3Auto extends LinearOpMode {
     void applyRobotState()
     {
         /*DATA OUT (To native)*/
-        //Gamepad 1
-        Mk3AutoRobotStateElements.set_gamepad1_joystick1_x(gamepad1.left_stick_x);
-        Mk3AutoRobotStateElements.set_gamepad1_joystick1_y(gamepad1.left_stick_y);
-        Mk3AutoRobotStateElements.set_gamepad1_joystick2_x(gamepad1.right_stick_x);
-        Mk3AutoRobotStateElements.set_gamepad1_joystick2_y(gamepad1.right_stick_y);
-        Mk3AutoRobotStateElements.set_gamepad1_trigger1(gamepad1.left_trigger);
-        Mk3AutoRobotStateElements.set_gamepad1_trigger2(gamepad1.right_trigger);
-        try {
-            Mk3AutoRobotStateElements.set_gamepad1_buttons(updateButtons(gamepad1.toByteArray()));
-        } catch (RobotCoreException e) {
-            e.printStackTrace();
-        }
-        //Gamepad 2
-        Mk3AutoRobotStateElements.set_gamepad2_joystick1_x(gamepad2.left_stick_x);
-        Mk3AutoRobotStateElements.set_gamepad2_joystick1_y(gamepad2.left_stick_y);
-        Mk3AutoRobotStateElements.set_gamepad2_joystick2_x(gamepad2.right_stick_x);
-        Mk3AutoRobotStateElements.set_gamepad2_joystick2_y(gamepad2.right_stick_y);
-        Mk3AutoRobotStateElements.set_gamepad2_trigger1(gamepad2.left_trigger);
-        Mk3AutoRobotStateElements.set_gamepad2_trigger2(gamepad2.right_trigger);
-        try {
-            Mk3AutoRobotStateElements.set_gamepad1_buttons(updateButtons(gamepad2.toByteArray()));
-        } catch (RobotCoreException e) {
-            e.printStackTrace();
-        }
         //Sensors
         Mk3AutoRobotStateElements.set_right_drive_encoder(right_drive.getCurrentPosition());
         Mk3AutoRobotStateElements.set_left_drive_encoder(left_drive.getCurrentPosition());
@@ -120,7 +96,7 @@ public class Mk3Auto extends LinearOpMode {
         slide_servo = hardwareMap.servo.get("servo_2");
 
         waitForStart();
-
+        //TODO: Add menu with checkboxes and blue/red
 
         main();
 
