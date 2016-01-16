@@ -10,27 +10,27 @@
 //TODO: Delete this comment
 
 #define threshold 0.1
-void deadZone(v2f * stick)
+void deadZone(v2f & stick)
 {
-    float norm = norm(stick);
-    if(norm < threshold)
+    float stick_norm = norm(stick);
+    if(stick_norm < threshold)
     {
-        stick->data[0] = 0;
-        stick->data[1] = 0;
+        stick.data[0] = 0;
+        stick.data[1] = 0;
     }
     else
-        stick * ((norm-threshold)/(1.0f-threshold))/norm;//Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
+        stick * ((stick_norm-threshold)/(1.0f-threshold))/stick_norm;//Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
 }
 
-void squareDeadZone(v2f * stick)
+void squareDeadZone(v2f & stick)
 {
-    if(Math.abs(stick->data[0]) < threshold)
+    if(fabs(stick.data[0]) < threshold)
     {
-        stick->data[0] = 0;
+        stick.data[0] = 0;
     }
-    if(Math.abs(stick->data[1]) < threshold)
+    if(fabs(stick.data[1]) < threshold)
     {
-        stick->data[1] = 0;
+        stick.data[1] = 0;
     }
 }
 
@@ -50,6 +50,10 @@ void smoothJoysticks(v2f * stick) //TODO: Move to <robot_name>.h and have custom
     stick->data[1] = (stick->data[1] < 0 ? -1 : 1)*((1-stick->data[1])*((1-stick->data[1])*Py_0 + stick->data[1]*Py_1) +
             stick->data[1]*((1-stick->data[1])*Py_1 + stick->data[1]*Py_2));
 }
+
+float raw_x;
+float raw_y;
+
 #define smoothConstant 0.6 //Set this to something the driver likes
 v2f smoothJoysticks254Style(v2f stick)//TODO: Fix this
 {
@@ -58,6 +62,6 @@ v2f smoothJoysticks254Style(v2f stick)//TODO: Fix this
     raw_y = bound(raw_y, -1, 1);
     smoothed.data[0] = sin((pi*smoothConstant*raw_x/2.0)/(pi/2.0)); //Sin wave: https://www.desmos.com/calculator/4hd9ovg7el
     smoothed.data[1] = sin((pi*smoothConstant*raw_y/2.0)/(pi/2.0));
-    return smoothed.data;//Give back smooth x and y values
+    return smoothed;//Give back smooth x and y values
 }
 #endif //DRIVE

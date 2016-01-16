@@ -14,6 +14,7 @@ clang++ -O0 -D DEBUG -Wc++11-extensions generator/robot_state_element_generator.
 .\generator\robot_state_element_generator jni/test.cpp
 .\generator\robot_state_element_generator jni/camera_test.cpp
 .\generator\robot_state_element_generator jni/Mk3Teleop.cpp
+.\generator\robot_state_element_generator jni/arm_test.cpp
 
 REM call ndk-build clean NDK_LIBS_OUT=./jniLibs
 call ndk-build NDK_LIBS_OUT=./jniLibs
@@ -23,7 +24,7 @@ pushd ..\..\
 REM call gradlew.bat assemble
 call gradlew.bat assembleDebug
 
-call adb -d install -r ./build/outputs/apk/FtcRobotController-debug.apk
+REM call adb -d install -r ./build/outputs/apk/FtcRobotController-debug.apk
 REM adb -s 10.0.0.4:5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
 
 popd

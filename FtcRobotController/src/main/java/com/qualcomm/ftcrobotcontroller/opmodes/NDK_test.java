@@ -35,8 +35,8 @@ public class NDK_test extends LinearOpMode
     
     void applyRobotState()
     {
-        testRobotStateElements.set_gamepad1_joystick_1_x(gamepad1.left_stick_x);
-        testRobotStateElements.set_gamepad1_joystick_1_y(gamepad1.left_stick_y);
+        testRobotStateElements.set_gamepad1_joystick1_x(gamepad1.left_stick_x);
+        testRobotStateElements.set_gamepad1_joystick1_y(gamepad1.left_stick_y);
         
         telemetry.addData("left_drive_power", String.format("%.2f", testRobotStateElements.get_left_drive_power()));
         telemetry.addData("right_drive_power", String.format("%.2f", testRobotStateElements.get_right_drive_power()));

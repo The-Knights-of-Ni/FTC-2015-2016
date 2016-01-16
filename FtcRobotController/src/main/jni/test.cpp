@@ -1,7 +1,7 @@
 /*
   robot_state_elements
   {
-  gamepad{float joystick_1_x, float joystick_1_y};
+  gamepad{float joystick1_x, float joystick1_y, float joystick2_x, float joystick2_y, float trigger1, float trigger2, int buttons};
   
   float left_drive_power;
   float right_drive_power;
@@ -16,11 +16,7 @@
 
 #include "misc.h"
 #include "maths.h"
-
-struct gamepad
-{
-    v2f left_stick;
-};
+#include "Button.h"
 
 #include "test_robot_state_elements.h"
 
@@ -36,8 +32,8 @@ void JNI_main(JNIEnv * env, jobject self)
     do
     {
         //(*((float*)(robot_state.state+rsid_left_drive_power))) = 1.0f;//robot_state.state[rsid_gamepad1];
-        left_drive_power = gamepad1.left_stick.y-gamepad1.left_stick.x;
-        right_drive_power = gamepad1.left_stick.y+gamepad1.left_stick.x;
+        left_drive_power = gamepad1.joystick1.y-gamepad1.joystick1.x;
+        right_drive_power = gamepad1.joystick1.y+gamepad1.joystick1.x;
     } while(updateRobot(env, self) == 0);
     cleanupJNI(env, self);
 }

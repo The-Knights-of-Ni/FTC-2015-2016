@@ -2,6 +2,9 @@
 WARNING: this is a generated file
 changes made this file are not permanent
 */
+
+#include "jni_functions.h"
+
 enum robot_state_element
 {
     rsid_left_drive, rsid_left_drive_end = rsid_left_drive + 3,
@@ -15,9 +18,6 @@ enum robot_state_element
     rsid_gamepad2, rsid_gamepad2_end = rsid_gamepad2 + 27,
     rsid_size
 };
-
-#include "jni_functions.h"
-
 
 #define left_drive (*((float *) (robot_state.state+rsid_left_drive)))
 #define right_drive (*((float *) (robot_state.state+rsid_right_drive)))

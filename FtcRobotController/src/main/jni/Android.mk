@@ -16,13 +16,46 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+    LOCAL_ARM_NEON := true
+    LOCAL_CFLAGS += -D __ARM_NEON
+endif
+
 LOCAL_MODULE    := test
 LOCAL_SRC_FILES := test.cpp
+
+include $(BUILD_SHARED_LIBRARY)
+include $(CLEAR_VARS)
+
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+    LOCAL_ARM_NEON := true
+    LOCAL_CFLAGS += -D __ARM_NEON
+endif
 
 LOCAL_MODULE    := camera_test
 LOCAL_SRC_FILES := camera_test.cpp
 
+include $(BUILD_SHARED_LIBRARY)
+include $(CLEAR_VARS)
+
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+    LOCAL_ARM_NEON := true
+    LOCAL_CFLAGS += -D __ARM_NEON
+endif
+
 LOCAL_MODULE    := Mk3Teleop
 LOCAL_SRC_FILES := Mk3Teleop.cpp
+
+include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+
+ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
+    LOCAL_ARM_NEON := true
+    LOCAL_CFLAGS += -D __ARM_NEON
+endif
+
+LOCAL_MODULE    := arm_test
+LOCAL_SRC_FILES := arm_test.cpp
 
 include $(BUILD_SHARED_LIBRARY)

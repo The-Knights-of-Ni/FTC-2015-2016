@@ -12,6 +12,7 @@
 #define encoder_ticks_per_radian 1440.0f/(2.0f*pi)
 
 //PID Control: UNTESTED, may not be ported correctly (In case the built in doesn't work)
+//TODO: de-OOP
 struct PID
 {
     float k_p;
@@ -19,11 +20,11 @@ struct PID
     float k_d;
     float k_d2;
 
-    float i = 0.0f;
+    float i;
     float p_old;
-    float d = 0.0f;
+    float d;
     float p2_old;
-    float d2 = 0.0f;
+    float d2;
 
     void PIDController(float K_P, float K_I, float K_D, float K_D2, float initial_val,
                        float initial_val2)
@@ -40,14 +41,14 @@ struct PID
     {
         d2 = lerp((p2 - p2_old) / dt,
                   d2,
-                  (float) Math.exp(-20.0 * dt));
+                  exp(-20.0 * dt));
         p2_old = p2;
 
         if (i != i) i = 0.0f; //this will trigger if i is NaN
         i += p * dt; //might want to try different integrators
         d = lerp((p - p_old) / dt,
                  d,
-                 (float) Math.exp(-20.0 * dt));
+                 exp(-20.0 * dt));
         p_old = p;
         return k_p * p + k_i * i;//+k_d*d+k_d2*d2;
     }

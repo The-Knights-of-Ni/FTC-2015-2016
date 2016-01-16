@@ -498,17 +498,17 @@ int main(int n_args, char ** args)
              primitives, n_primitives,
              user_type_table,
              elements, n_elements);
-
-    printf("elements:\n");
-    for(int e = 0; e < n_elements; e++)
-    {
-        printf("element %d\n", e);
-        printf("type_id: %d\n", elements[e].type_id);
-        printf("type: %.*s\n", (elements[e].type_id < n_types) ? strlen(type_names[elements[e].type_id]) : user_type_table[elements[e].type_id-n_types].name_len, (elements[e].type_id < n_types) ? type_names[elements[e].type_id] : user_type_table[elements[e].type_id-n_types].name);
-        printf("array_len: %d\n", elements[e].array_len);
-        elements[e].name[elements[e].name_len] = 0;
-        printf("name: %s\n\n", elements[e].name);
-    }
+    
+    // printf("elements:\n");
+    // for(int e = 0; e < n_elements; e++)
+    // {
+    //     printf("element %d\n", e);
+    //     printf("type_id: %d\n", elements[e].type_id);
+    //     printf("type: %.*s\n", (elements[e].type_id < n_types) ? strlen(type_names[elements[e].type_id]) : user_type_table[elements[e].type_id-n_types].name_len, (elements[e].type_id < n_types) ? type_names[elements[e].type_id] : user_type_table[elements[e].type_id-n_types].name);
+    //     printf("array_len: %d\n", elements[e].array_len);
+    //     elements[e].name[elements[e].name_len] = 0;
+    //     printf("name: %s\n\n", elements[e].name);
+    // }
 
     uint robot_state_size = 0;
     
