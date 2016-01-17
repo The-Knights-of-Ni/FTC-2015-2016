@@ -12,6 +12,7 @@
 #define threshold 0.
 
 #define sprocket_pitch_radius 3.13 //Inches
+#define encoderticks_per_radian 1440.0/(2*pi)
 #define encoderticks_per_inch sprocket_pitch_radius*encoderticks_per_radian
 #define encoderticks_per_cm sprocket_pitch_radius*2.54*encoderticks_per_radian
 #define acceptableAngleError 2
@@ -42,13 +43,13 @@ void squareDeadZone(v2f &stick)
         stick.data[1] = 0;
     }
 }
-
+#if 0
 //TODO: go 0-100 for vis instead of 0-1, for clarity
 void driveDistIn(float dist, float vIs)
 {
     if (dist < 0)
     {
-        dist = abs(dist);
+        dist = fabs(dist);
         vIs = -vIs;
     }
 
@@ -244,6 +245,7 @@ void turnRelDeg(float angle, float vIs)
         updateRobot(env, self);
     }
 }
+#endif
 
 #define Px_0 0
 #define Px_1 0.2 //Set this to something the driver likes

@@ -8,6 +8,7 @@
 #define ROBOTICS
 
 #include "maths.h"
+#include "jni_functions.h"
 //Constants
 #define encoder_ticks_per_radian 1440.0f/(2.0f*pi)
 

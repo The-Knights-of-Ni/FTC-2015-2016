@@ -86,10 +86,10 @@ void JNI_main(JNIEnv * env, jobject self)
     {
 //============================ Controls ==========================
         
-        pad1stick1.x = gamepad1.joystick1_x; pad1stick1.y = gamepad1.joystick1_y;
-        pad1stick2.x = gamepad1.joystick2_x; pad1stick2.y = gamepad1.joystick2_y;
-        pad2stick1.x = gamepad2.joystick1_x; pad2stick1.y = gamepad2.joystick1_y;
-        pad2stick2.x = gamepad2.joystick2_x; pad2stick2.y = gamepad2.joystick2_y;
+        pad1stick1.x = gamepad1.joystick1.x; pad1stick1.y = gamepad1.joystick1.y;
+        pad1stick2.x = gamepad1.joystick2.x; pad1stick2.y = gamepad1.joystick2.y;
+        pad2stick1.x = gamepad2.joystick1.x; pad2stick1.y = gamepad2.joystick1.y;
+        pad2stick2.x = gamepad2.joystick2.x; pad2stick2.y = gamepad2.joystick2.y;
         
 //============================= Drive ============================
         deadZone(drive_stick);

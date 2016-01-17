@@ -60,14 +60,17 @@ void JNI_main(JNIEnv * env, jobject self)
         v2f target_velocity = gamepad2.joystick2*40.0;
         #endif
         ///////////////////////////////////////////
+
+        float new_shoulder_theta = shoulder_encoder+pi*4.0/5.0;
+        float new_forearm_theta = elbow_potentiometer+shoulder_encoder-pi;
+        float new_winch_theta = winch_encoder;
+        s.shoulder_omega = lerp((new_shoulder_theta-s.shoulder_theta)/dt, s.shoulder_omega, exp(-0.1*dt));
+        s.forearm_omega = lerp((new_forearm_theta-s.forearm_theta)/dt, s.forearm_omega, exp(-0.1*dt));
+        s.winch_omega = lerp((new_winch_theta-s.winch_theta)/dt, s.winch_omega, exp(-0.1*dt));
         
-        s.shoulder_omega = lerp((shoulder_encoder-s.shoulder_theta)/dt, s.shoulder_omega, exp(-0.1*dt));
-        s.forearm_omega = lerp((elbow_potentiometer+shoulder_encoder-pi-s.forearm_theta)/dt, s.forearm_omega, exp(-0.1*dt));
-        s.winch_omega = lerp((winch_encoder-s.winch_theta)/dt, s.winch_omega, exp(-0.1*dt));
-        
-        s.shoulder_theta = shoulder_encoder;
-        s.forearm_theta = elbow_potentiometer+shoulder_encoder-pi;
-        s.winch_theta = winch_encoder;
+        s.shoulder_theta = new_shoulder_theta;
+        s.forearm_theta = new_forearm_theta;
+        s.winch_theta = new_winch_theta;
         
         if(intake_mode_button)
         {

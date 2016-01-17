@@ -12,6 +12,11 @@ set JAVA_HOME=c:\Progra~1\Java\jdk1.7.0_40
 clang++ -O0 -D DEBUG -Wc++11-extensions generator/robot_state_element_generator.cpp --output generator/robot_state_element_generator
 
 ./generator/robot_state_element_generator jni/test.cpp
+./generator/robot_state_element_generator jni/camera_test.cpp
+./generator/robot_state_element_generator jni/Mk3Teleop.cpp
+./generator/robot_state_element_generator jni/arm_test.cpp
+
+# ndk-build clean NDK_LIBS_OUT=./jniLibs
 ndk-build NDK_LIBS_OUT=./jniLibs
 
 pushd ../../
@@ -19,6 +24,6 @@ pushd ../../
 ./gradlew assembleDebug
 
 adb -d install -r ./build/outputs/apk/FtcRobotController-debug.apk
-# adb -s 10.0.0.20:5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
+# adb -s 10.0.0.19:5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
 
 popd

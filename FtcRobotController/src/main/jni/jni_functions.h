@@ -23,6 +23,9 @@ struct RobotState
 
 RobotState robot_state;
 
+JNIEnv * env;
+jobject self;
+
 void initJNI(JNIEnv * env, jobject self)
 {
     jclass cls = env->GetObjectClass(self);

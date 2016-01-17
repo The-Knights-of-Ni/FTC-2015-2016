@@ -18,8 +18,8 @@ float shoulder_gear_ratio = 6.75;
 float forearm_I = 81.0f*20; //the rotational inertia of the forearm
 float forearm_m = 200.0f;
 
-float forearm_length = 17.0f;
-float forearm_cm_dist = 9.0f;
+float forearm_length = 11.5f;
+float forearm_cm_dist = 6.0f;
 float shoulder_length = 16.5f;
 float shoulder_cm_dist = 9.0f;
 
@@ -35,7 +35,7 @@ float neverest_max_speed = 13.51; //in rad/s
 float neverest_k_i = dc_motor_voltage/neverest_max_speed;
 float neverest_k_t_over_R = neverest_max_torque/dc_motor_voltage;
 
-float string_length_0 = 29.908846+1;
+float string_length_0 = 7+1;
 
 union arm_derivatives
 {
