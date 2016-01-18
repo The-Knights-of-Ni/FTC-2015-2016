@@ -28,11 +28,11 @@ struct Button
     int currentByte;
     int previousByte;
     //int prevStatus = 0;
-    bool toggles[SIZEOF_BUTTON];//TODO: Make this a bit array
+    int toggleByte;
     
     static bool getState(int btn, int allBits)
     {
-        if((allBits >> (btn-1)) & 1)
+        if((allBits >> (btn)) & 1)
             return 1;
         else
             return 0;
@@ -50,18 +50,18 @@ struct Button
     
     bool toggle(int btn)
     {
-        if(getState(btn, currentByte) && getState(btn, previousByte))//If there's a change and it's from low to high, flip it, if not, keep toggle the same.
-            toggles[btn] = !toggles[btn];
-        return toggles[btn];
+        return getState(btn, toggleByte);
     }
     
-    void updateButtons()
+    void updateButtons(int stickArray)
     {
         previousByte = currentByte;
-        //currentByte = stickArray;
+        currentByte = stickArray;
+        toggleByte = toggleByte^(currentByte & ~previousByte);
     }
 };
 
+#pragma pack(push, 4)
 struct gamepad
 {
     v2f joystick1;
@@ -70,7 +70,8 @@ struct gamepad
     float left_trigger;
     float right_trigger;
     
-    Button buttons;
+    int buttons;
 };
+#pragma pack(pop)
 
 #endif

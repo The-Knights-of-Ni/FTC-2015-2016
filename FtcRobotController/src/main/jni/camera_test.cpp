@@ -13,15 +13,18 @@
 #define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_CameraTest_main
 
 extern "C"
-void JNI_main(JNIEnv * env, jobject self)
+void JNI_main(JNIEnv * _env, jobject _self)
 {
-    initJNI(env, self);
+    env = _env;
+    self = _self;
+    
+    initJNI();
     
     waitForStart();
     float time = 0;
     for ever
     {
-        updateRobot(env, self);
+        updateRobot();
     }
-    cleanupJNI(env, self);
+    cleanupJNI();
 }

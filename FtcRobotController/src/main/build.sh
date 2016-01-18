@@ -24,6 +24,6 @@ pushd ../../
 ./gradlew assembleDebug
 
 adb -d install -r ./build/outputs/apk/FtcRobotController-debug.apk
-# adb -s 10.0.0.19:5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
+# adb -s 10.0.0.17:5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
 
 popd

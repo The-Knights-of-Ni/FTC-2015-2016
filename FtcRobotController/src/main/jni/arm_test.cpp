@@ -7,6 +7,7 @@
   
   float arm_shoulder_power;
   float arm_winch_power;
+  float arm_intake_power;
   
   gamepad gamepad1;
   gamepad gamepad2;
@@ -27,20 +28,26 @@ arm_state s = {};
 arm_state stable_s = {};
 bool8 score_mode = true;
 
+#define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_NdkArmTest_main
+
 extern "C"
-void JNI_main(JNIEnv * env, jobject self)
+void JNI_main(JNIEnv * _env, jobject _self)
 {
-    initJNI(env, self);
+    env = _env;
+    self = _self;
+    
+    initJNI();
+    
+    Button pad1;
+    Button pad2;
     
     waitForStart();
     
-    score_mode = false;
-    stable_s.shoulder_theta = 2.75;
-    stable_s.forearm_theta = pi;
-    stable_s.winch_theta = 5.5;
+    score_mode = true;
+    stable_s.shoulder_theta = 0.75;
+    stable_s.forearm_theta = 0;
+    stable_s.winch_theta = 1;
     
-    //TODO: make this run in a seperate thread, so it can run in a
-    //      loop without the init code running every frame
     float dt;
     float old_time = time;
     do
@@ -60,7 +67,7 @@ void JNI_main(JNIEnv * env, jobject self)
         v2f target_velocity = gamepad2.joystick2*40.0;
         #endif
         ///////////////////////////////////////////
-
+        
         float new_shoulder_theta = shoulder_encoder+pi*4.0/5.0;
         float new_forearm_theta = elbow_potentiometer+shoulder_encoder-pi;
         float new_winch_theta = winch_encoder;
@@ -99,6 +106,11 @@ void JNI_main(JNIEnv * env, jobject self)
         
         arm_shoulder_power = clamp(arm_shoulder_power, -1.0, 1.0);
         arm_winch_power = clamp(arm_winch_power, -1.0, 1.0);
-    } while(updateRobot(env, self) != 0);
-    cleanupJNI(env, self);
+        arm_intake_power = gamepad1.joystick1.y;
+
+        //Buttons
+        pad1.updateButtons(gamepad1.buttons);
+        pad2.updateButtons(gamepad2.buttons);
+    } while(updateRobot() == 0);
+    cleanupJNI();
 }

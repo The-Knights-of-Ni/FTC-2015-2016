@@ -26,7 +26,7 @@ RobotState robot_state;
 JNIEnv * env;
 jobject self;
 
-void initJNI(JNIEnv * env, jobject self)
+void initJNI()
 {
     jclass cls = env->GetObjectClass(self);
     
@@ -54,7 +54,7 @@ void initJNI(JNIEnv * env, jobject self)
     }
 }
 
-jthrowable updateRobot(JNIEnv * env, jobject self)
+jthrowable updateRobot()
 {
     env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, JNI_COMMIT);
     applyRobotState();
@@ -62,7 +62,7 @@ jthrowable updateRobot(JNIEnv * env, jobject self)
     return env->ExceptionOccurred();
 }
 
-void cleanupJNI(JNIEnv * env, jobject self)
+void cleanupJNI()
 {
     env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, 0);
 }

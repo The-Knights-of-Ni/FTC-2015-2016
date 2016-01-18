@@ -35,7 +35,7 @@ float neverest_max_speed = 13.51; //in rad/s
 float neverest_k_i = dc_motor_voltage/neverest_max_speed;
 float neverest_k_t_over_R = neverest_max_torque/dc_motor_voltage;
 
-float string_length_0 = 7+1;
+float string_length_0 = 7;
 
 union arm_derivatives
 {
@@ -318,7 +318,7 @@ void armAtVelocity(float & out_shoulder_power, float & out_winch_power, v2f targ
 
 void armToState(float & out_shoulder_power, float & out_winch_power, arm_state stable_s, arm_state s, bool8 score_mode, float dt)
 {
-    if(!score_mode)
+    if(false && !score_mode)
     {
         float target_shoulder_alpha = 0.0;//-10000*s.shoulder_omega+2000*(stable_s.shoulder_theta-s.shoulder_theta);
         float target_winch_alpha = 0.0;//-10000*s.forearm_omega+10*(stable_s.winch_theta-s.winch_theta);
@@ -362,8 +362,8 @@ void armToState(float & out_shoulder_power, float & out_winch_power, arm_state s
     }
     else
     {
-        out_shoulder_power = 50*(stable_s.shoulder_theta-s.shoulder_theta);
-        out_winch_power = 10*(stable_s.winch_theta-s.winch_theta);
+        out_shoulder_power = 0.5*(stable_s.shoulder_theta-s.shoulder_theta);
+        out_winch_power = 0.1*(stable_s.forearm_theta-s.forearm_theta);//-10*s.winch_omega;
     }
 }
 

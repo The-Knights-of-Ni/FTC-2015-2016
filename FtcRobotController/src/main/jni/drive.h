@@ -43,6 +43,8 @@ void squareDeadZone(v2f &stick)
         stick.data[1] = 0;
     }
 }
+
+//this doesn't compile right now
 #if 0
 //TODO: go 0-100 for vis instead of 0-1, for clarity
 void driveDistIn(float dist, float vIs)
