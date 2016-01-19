@@ -9,8 +9,9 @@
 
 #include "maths.h"
 #include "jni_functions.h"
+#include <stdlib.h>
 //Constants
-#define encoder_ticks_per_radian (1440.0f/(2.0f*pi))
+#define encoderticks_per_radian (1440.0f/(2.0f*pi))
 
 //PID Control: UNTESTED, may not be ported correctly (In case the built in doesn't work)
 //TODO: de-OOP

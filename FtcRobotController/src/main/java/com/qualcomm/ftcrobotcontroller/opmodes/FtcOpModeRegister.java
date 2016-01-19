@@ -39,13 +39,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
  */
 public class FtcOpModeRegister implements OpModeRegister {
 
-  /**
-   * The Op Mode Manager will call this method when it wants a list of all
-   * available op modes. Add your op mode to the list to enable it.
-   *
-   * @param manager op mode manager
-   */
-  public void register(OpModeManager manager) {
+    /**
+     * The Op Mode Manager will call this method when it wants a list of all
+     * available op modes. Add your op mode to the list to enable it.
+     *
+     * @param manager op mode manager
+     */
+    public void register(OpModeManager manager) {
 
     /*
      * register your op modes here.
@@ -54,15 +54,16 @@ public class FtcOpModeRegister implements OpModeRegister {
      *
      * If two or more op modes are registered with the same name, the app will display an error.
      */
-    manager.register("NullOp", NullOp.class);
-    manager.register("Mk3Teleop", Mk3Teleop.class);
-    manager.register("NDK_test", NDK_test.class);
-    manager.register("NdkArmTest", NdkArmTest.class);
-    
-    //manager.register("IntakeTest", IntakeTest.class);
-    //manager.register("ArmTest", ArmTest.class);
-    //manager.register("IMUTester", IMUTester.class);
-    //manager.register("JoystickTest", JoystickTest.class);
-    //manager.register("MR Gyro Test", MRGyroTest.class);
-  }
+        manager.register("NullOp", NullOp.class);
+        manager.register("Mk3Teleop", Mk3Teleop.class);
+        manager.register("NDK_test", NDK_test.class);
+        manager.register("NdkArmTest", NdkArmTest.class);
+        manager.register("Mk3Auto", Mk3Auto.class);
+
+        //manager.register("IntakeTest", IntakeTest.class);
+        //manager.register("ArmTest", ArmTest.class);
+        //manager.register("IMUTester", IMUTester.class);
+        //manager.register("JoystickTest", JoystickTest.class);
+        //manager.register("MR Gyro Test", MRGyroTest.class);
+    }
 }
