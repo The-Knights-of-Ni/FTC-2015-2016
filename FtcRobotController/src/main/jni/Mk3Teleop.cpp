@@ -111,23 +111,27 @@ void JNI_main(JNIEnv * _env, jobject _self)
     
     float elbow_potentiometer_angle = 0.0;
     
-    do
+    for ever
     {
-        dt = time-old_time;
+        dt = time - old_time;
         old_time = time;
-        
+
 //============================ Controls ==========================
-        
-        pad1stick1.x = gamepad1.joystick1.x; pad1stick1.y = gamepad1.joystick1.y;
-        pad1stick2.x = gamepad1.joystick2.x; pad1stick2.y = gamepad1.joystick2.y;
-        pad2stick1.x = gamepad2.joystick1.x; pad2stick1.y = gamepad2.joystick1.y;
-        pad2stick2.x = gamepad2.joystick2.x; pad2stick2.y = gamepad2.joystick2.y;
-        
+
+        pad1stick1.x = gamepad1.joystick1.x;
+        pad1stick1.y = gamepad1.joystick1.y;
+        pad1stick2.x = gamepad1.joystick2.x;
+        pad1stick2.y = gamepad1.joystick2.y;
+        pad2stick1.x = gamepad2.joystick1.x;
+        pad2stick1.y = gamepad2.joystick1.y;
+        pad2stick2.x = gamepad2.joystick2.x;
+        pad2stick2.y = gamepad2.joystick2.y;
+
 //============================= Drive ============================
         deadZone(drive_stick);
         //smoothJoysticks(&drive_stick);
         left_drive = drive_stick.y - drive_stick.x;
-        right_drive = drive_stick.y +  drive_stick.x;
+        right_drive = drive_stick.y + drive_stick.x;
         left_drive = clamp(left_drive, -1.0, 1.0);
         right_drive = clamp(right_drive, -1.0, 1.0);
         //Might need to add additional bounding in as a safety
@@ -136,71 +140,77 @@ void JNI_main(JNIEnv * _env, jobject _self)
         float potentiometer_range = 333.33333333333333333333333333333333333f;
         //TODO: correctly convert to angle
         elbow_potentiometer_angle = lerp(
-            (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+12.0f))*pi/180.0f,
-            elbow_potentiometer_angle,
-            exp(-20.0*dt));
+                (360 - ((180.0f - potentiometer_range * 0.5f +
+                         potentiometer_range * (elbow_potentiometer / (1023.0f))) + 12.0f)) * pi /
+                180.0f,
+                elbow_potentiometer_angle,
+                exp(-20.0 * dt));
 
-        float new_shoulder_theta = shoulder_encoder/shoulder_gear_ratio/encoder_ticks_per_radian+pi*150/180.0;
-        float new_forearm_theta = elbow_potentiometer_angle+new_shoulder_theta-pi;
-        float new_winch_theta = winch_encoder/winch_gear_ratio/encoder_ticks_per_radian;
-        s.shoulder_omega = lerp((new_shoulder_theta-s.shoulder_theta)/dt, s.shoulder_omega, exp(-0.1*dt));
-        s.forearm_omega = lerp((new_forearm_theta-s.forearm_theta)/dt, s.forearm_omega, exp(-0.1*dt));
-        s.winch_omega = lerp((new_winch_theta-s.winch_theta)/dt, s.winch_omega, exp(-0.1*dt));
-        
+        float new_shoulder_theta =
+                shoulder_encoder / shoulder_gear_ratio / encoder_ticks_per_radian +
+                                 pi * 150 / 180.0;
+        float new_forearm_theta = elbow_potentiometer_angle + new_shoulder_theta - pi;
+        float new_winch_theta = winch_encoder / winch_gear_ratio / encoder_ticks_per_radian;
+        s.shoulder_omega = lerp((new_shoulder_theta - s.shoulder_theta) / dt, s.shoulder_omega,
+                                exp(-0.1 * dt));
+        s.forearm_omega = lerp((new_forearm_theta - s.forearm_theta) / dt, s.forearm_omega,
+                               exp(-0.1 * dt));
+        s.winch_omega = lerp((new_winch_theta - s.winch_theta) / dt, s.winch_omega, exp(-0.1 * dt));
+
         shoulder_print_theta = new_shoulder_theta;
         forearm_print_theta = new_forearm_theta;
-        
+
         s.shoulder_theta = new_shoulder_theta;
         s.forearm_theta = new_forearm_theta;
         s.winch_theta = new_winch_theta;
 
-        if(arm_manual_toggle) //IK
+        if (arm_manual_toggle) //IK
         {
-            
+
             //deadZone(arm_stick);
-            v2f target_arm_velocity = arm_stick*40;
-                        
-            if(arm_intake_mode_button)
+            v2f target_arm_velocity = arm_stick * 40;
+
+            if (arm_intake_mode_button)
             {
                 score_mode = false;
                 stable_s.shoulder_theta = 2.75;
                 stable_s.forearm_theta = pi;
                 stable_s.winch_theta = 5.5;
             }
-            if(arm_score_mode_button)
+            if (arm_score_mode_button)
             {
                 score_mode = true;
                 stable_s.shoulder_theta = 0.75;
                 stable_s.forearm_theta = 0;
                 stable_s.winch_theta = 1;
             }
-            
-            if(normSq(target_arm_velocity) > 1.0)
+
+            if (normSq(target_arm_velocity) > 1.0)
             {
                 stable_s = s;
-                stable_s.shoulder_theta = clamp(stable_s.shoulder_theta, pi/6, 5*pi/6);
+                stable_s.shoulder_theta = clamp(stable_s.shoulder_theta, pi / 6, 5 * pi / 6);
                 armAtVelocity(shoulder, winch, target_arm_velocity, s, score_mode, dt);
             }
             else
             {
                 armToState(shoulder, winch, stable_s, s, score_mode, dt);
             }
-            
+
             shoulder = clamp(shoulder, -1.0, 1.0);
             winch = clamp(winch, -1.0, 1.0);
         }
         else //Manual
         {
             stable_s = s;
-            stable_s.shoulder_theta = clamp(stable_s.shoulder_theta, pi/6, 5*pi/6);
-            
+            stable_s.shoulder_theta = clamp(stable_s.shoulder_theta, pi / 6, 5 * pi / 6);
+
             deadZone(elbow_manual);
             deadZone(shoulder_manual);
             // smoothJoysticks(&elbow_manual);//This needs to be fixed.
             // smoothJoysticks(&shoulder_manual);
-            shoulder = shoulder_manual.y*(precision_mode ? 0.6 : 1);
-            winch = elbow_manual.y*(precision_mode ? 0.6 : 1);
-            
+            shoulder = shoulder_manual.y * (precision_mode ? 0.6 : 1);
+            winch = elbow_manual.y * (precision_mode ? 0.6 : 1);
+
             shoulder = clamp(shoulder, -1.0, 1.0);
             winch = clamp(winch, -1.0, 1.0);
         }
@@ -212,50 +222,50 @@ void JNI_main(JNIEnv * _env, jobject _self)
 //TODO: Rope tension
 //TODO: Locks
 //============================= Hopper ===========================
-        if(intake_toggle) intake = intake_reverse ? -1 : 1;
-        else intake = 0;
-        if(hopper_tilt)
+        if (intake_toggle) intake = intake_reverse ? -1 : 1;
+        else
+            intake = 0;
+        if (hopper_tilt)
         {
-            if(current_color)
+            if (current_color)
                 hand = hand_blue_position;
             else
                 hand = hand_red_position;
         }
         else
             hand = hand_level_position;
-        
+
         hand = clamp(hand, 0.0, 1.0);
 
         //for finding servo values
         // if(pad1.singlePress(B)) hand_level_position += 0.1;
         // if(pad1.singlePress(X)) hand_level_position -= 0.1;
         // hand_print_position = hand_level_position;
-        
+
 //TODO: Auto-score
 //TODO: Block count
         //TODO: Tilt
 //============================ Slide ===========================
-        if(slide_toggle)
+        if (slide_toggle)
         {
-            if(current_color)
+            if (current_color)
                 slide = slide_blue_position;
             else
                 slide = slide_red_position;
         }
         else
             slide = slide_stored_position;
-        
+
         //These aren't working yet, I'll need to write a release condition (the toggle is forcing it closed)
-        if(slide_right)
+        if (slide_right)
             slide += slide_speed;
-        if(slide_left)
+        if (slide_left)
             slide -= slide_speed;
-        
+
         slide = clamp(slide, 0.0, 1.0);
 //============================ Updates ===========================
         pad1.updateButtons(gamepad1.buttons);
         pad2.updateButtons(gamepad2.buttons);
-    } while(updateRobot() == 0);
-    
-    cleanupJNI();
+        updateRobot();
+    }
 }

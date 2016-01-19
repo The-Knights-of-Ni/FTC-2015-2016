@@ -54,12 +54,16 @@ void initJNI()
     }
 }
 
-jthrowable updateRobot()
+void updateRobot()
 {
     env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, JNI_COMMIT);
     applyRobotState();
     waitForNextHardwareCycle();
-    return env->ExceptionOccurred();
+    if(env->ExceptionOccurred() != 0)
+    {
+        cleanupJNI();
+        exit(EXIT_SUCCESS);
+    }
 }
 
 void cleanupJNI()

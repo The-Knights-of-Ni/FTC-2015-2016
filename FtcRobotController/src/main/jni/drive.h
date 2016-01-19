@@ -76,12 +76,12 @@ void driveDistIn(float dist, float vIs)
         {
             right_drive = vIs;
         }
-        if (left_enc_net < dist * encoderticks_per_inch)
+        if (left_encs_net < dist * encoderticks_per_inch)
         {
             left_drive = vIs;
         }
 
-        updateRobot(env, self);
+        updateRobot();
     }
 }
 
@@ -102,7 +102,7 @@ void driveDistCm(float dist, float vIs)
     {
         if (doInit)
         {
-            updateRobot(env, self); //Might not need this?
+            updateRobot(); //Might not need this?
             right_prev = right_drive_encoder;
             left_prev = left_drive_encoder;
             doInit = false;
@@ -119,7 +119,7 @@ void driveDistCm(float dist, float vIs)
             left_drive = vIs;
         }
 
-        updateRobot(env, self);
+        updateRobot();
     }
 }
 
@@ -143,7 +143,7 @@ void driveOnCourseIn(float dist, float vIs,
     {
         if (doInit)
         {
-            updateRobot(env, self); //Might not need this?
+            updateRobot(); //Might not need this?
             right_prev = right_drive_encoder;
             left_prev = left_drive_encoder;
             doInit = false;
@@ -172,7 +172,7 @@ void driveOnCourseIn(float dist, float vIs,
             left_drive -= side_slowing_constant;
             right_drive = vIs;
         }
-        updateRobot(env, self);
+        updateRobot();
     }
 }
 
@@ -195,7 +195,7 @@ void driveOnCourseCm(float dist, float vIs,
     {
         if (doInit)
         {
-            updateRobot(env, self); //Might not need this?
+            updateRobot(); //Might not need this?
             right_prev = right_drive_encoder;
             left_prev = left_drive_encoder;
             doInit = false;
@@ -224,13 +224,13 @@ void driveOnCourseCm(float dist, float vIs,
             left_drive -= side_slowing_constant;
             right_drive = vIs;
         }
-        updateRobot(env, self);
+        updateRobot();
     }
 }
-
+#endif
 void turnRelDeg(float angle, float vIs)
 {
-    updateRobot(env, self);
+    updateRobot();
     while(!tolerantEquals(heading, heading + angle, acceptableAngleError))
     {
         if(isAngleGreater(heading, heading + angle))
@@ -243,10 +243,9 @@ void turnRelDeg(float angle, float vIs)
             left_motor = -vIs;
             right_motor = vIs;
         }
-        updateRobot(env, self);
+        updateRobot();
     }
 }
-#endif
 #define Px_0 0
 #define Px_1 0.2 //Set this to something the driver likes
 #define Px_2 1.0

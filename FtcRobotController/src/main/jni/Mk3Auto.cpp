@@ -51,8 +51,9 @@ void JNI_main(JNIEnv * env, jobject self)
     //Config
     //hopper down
     intake = 1;
-    if(updateRobot() != 0) exit(EXIT_SUCCESS);
-    /*turnBot(45, 0.8);
+    updateRobot();
+    turnRelDeg(45, 0.8);
+    /*
     driveOnCourseIn(80, 0.8, 45);
     intake = 0;
     update
