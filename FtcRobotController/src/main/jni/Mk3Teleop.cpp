@@ -140,9 +140,9 @@ void JNI_main(JNIEnv * _env, jobject _self)
             elbow_potentiometer_angle,
             exp(-20.0*dt));
 
-        float new_shoulder_theta = shoulder_encoder/shoulder_gear_ratio/encoder_ticks_per_radian+pi*150/180.0;
+        float new_shoulder_theta = shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
         float new_forearm_theta = elbow_potentiometer_angle+new_shoulder_theta-pi;
-        float new_winch_theta = winch_encoder/winch_gear_ratio/encoder_ticks_per_radian;
+        float new_winch_theta = winch_encoder/winch_gear_ratio/encoderticks_per_radian;
         s.shoulder_omega = lerp((new_shoulder_theta-s.shoulder_theta)/dt, s.shoulder_omega, exp(-0.1*dt));
         s.forearm_omega = lerp((new_forearm_theta-s.forearm_theta)/dt, s.forearm_omega, exp(-0.1*dt));
         s.winch_omega = lerp((new_winch_theta-s.winch_theta)/dt, s.winch_omega, exp(-0.1*dt));

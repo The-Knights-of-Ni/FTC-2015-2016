@@ -15,6 +15,8 @@ clang++ -O0 -D DEBUG -Wc++11-extensions generator/robot_state_element_generator.
 ./generator/robot_state_element_generator jni/camera_test.cpp
 ./generator/robot_state_element_generator jni/Mk3Teleop.cpp
 ./generator/robot_state_element_generator jni/arm_test.cpp
+./generator/robot_state_element_generator jni/Mk3Auto.cpp
+
 
 # ndk-build clean NDK_LIBS_OUT=./jniLibs
 ndk-build NDK_LIBS_OUT=./jniLibs

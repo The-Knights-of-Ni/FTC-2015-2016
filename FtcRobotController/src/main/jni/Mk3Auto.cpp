@@ -1,26 +1,25 @@
 //This is not a comment
 /*
   robot_state_elements
-  {
+  {  
+  int right_drive_encoder;
+  int left_drive_encoder;
+  int elbow_encoder;
+  int shoulder_encoder;
+  int potentiometer;
+  float heading;
+  float tilt;
+  float roll;
+  float x_velocity;
+  float y_velocity;
 
-//  int right_drive_encoder;
-//  int left_drive_encoder;
-//  int elbow_encoder;
-//  int shoulder_encoder;
-//  int potentiometer;
-//  float heading;
-//  float tilt;
-//  float roll;
-//  float x_velocity;
-//  float y_velocity;
-//
-//  float left_drive;
-//  float right_drive;
-//  float elbow;
-//  float shoulder;
-//  float intake;
-//  float hand;
-//  float slide;
+  float left_drive;
+  float right_drive;
+  float elbow;
+  float shoulder;
+  float intake;
+  float hand;
+  float slide;
 
   int indicator;
   //general syntax
@@ -50,8 +49,10 @@ void JNI_main(JNIEnv * env, jobject self)
 
     //Config
     //hopper down
+    while(true){
     intake = 1;
     if(updateRobot() != 0) exit(EXIT_SUCCESS);
+    }
     /*turnBot(45, 0.8);
     driveOnCourseIn(80, 0.8, 45);
     intake = 0;
