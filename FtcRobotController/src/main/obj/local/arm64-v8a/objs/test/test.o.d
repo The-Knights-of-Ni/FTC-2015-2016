@@ -32,7 +32,9 @@
   /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/xlocale.h \
   /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/alloca.h \
   /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/strings.h \
-  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/memory.h
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/memory.h \
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/setjmp.h \
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/machine/setjmp.h
 
 jni/misc.h:
 
@@ -107,3 +109,7 @@ jni/jni_functions.h:
 /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/strings.h:
 
 /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/memory.h:
+
+/Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/setjmp.h:
+
+/Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/machine/setjmp.h:

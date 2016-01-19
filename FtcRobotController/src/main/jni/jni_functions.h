@@ -3,6 +3,7 @@
 
 #include <jni.h>
 #include <stdlib.h>
+#include <setjmp.h>
 
 jmethodID waitForStartID;
 jmethodID waitOneFullHardwareCycleID;
@@ -57,6 +58,8 @@ void initJNI()
 
 void cleanupJNI();
 
+static jmp_buf exit_jump;
+
 void updateRobot()
 {
     env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, JNI_COMMIT);
@@ -65,7 +68,7 @@ void updateRobot()
     if(env->ExceptionOccurred() != 0)
     {
         cleanupJNI();
-        exit(EXIT_SUCCESS);
+        longjmp(exit_jump, 1);
     }
 }
 

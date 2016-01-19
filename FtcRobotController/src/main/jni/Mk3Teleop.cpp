@@ -66,7 +66,8 @@ float hand_level_position = 0.6;
 //Hopper
 #define intake_toggle pad1.toggle(LEFT_BUMPER)
 #define intake_reverse pad1.press(RIGHT_BUMPER)
-#define hopper_tilt pad1.toggle(A) //Might make this a stick or something
+#define hopper_tilt pad2.toggle(RIGHT_BUMPER) //Might make this a stick or something
+#define hand_manual_control pad1stick2.x
 
 //Arm
 #define shoulder_manual pad2stick1
@@ -111,7 +112,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
     
     float elbow_potentiometer_angle = 0.0;
     
-    for ever
+    if(!setjmp(exit_jump)) for ever
     {
         dt = time - old_time;
         old_time = time;
@@ -216,9 +217,14 @@ void JNI_main(JNIEnv * _env, jobject _self)
 //TODO: Rope tension
 //TODO: Locks
 //============================= Hopper ===========================
-        if (intake_toggle) intake = intake_reverse ? -1 : 1;
+        if (intake_toggle)
+        {
+            intake = intake_reverse ? -1 : 1;
+        }
         else
+        {
             intake = 0;
+        }
         if (hopper_tilt)
         {
             if (current_color)
@@ -227,8 +233,10 @@ void JNI_main(JNIEnv * _env, jobject _self)
                 hand = hand_red_position;
         }
         else
-            hand = hand_level_position;
-
+        {
+            hand = hand_level_position+hand_manual_control;
+        }
+        
         hand = clamp(hand, 0.0, 1.0);
 
         //for finding servo values
