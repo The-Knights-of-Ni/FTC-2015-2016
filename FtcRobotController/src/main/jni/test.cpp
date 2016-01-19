@@ -40,7 +40,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
     
     waitForStart();
     float time = 0;
-    do
+    for ever
     {
         //(*((float*)(robot_state.state+rsid_left_drive_power))) = 1.0f;//robot_state.state[rsid_gamepad1];
         left_drive_power = gamepad1.joystick1.y-gamepad1.joystick1.x;
@@ -53,6 +53,6 @@ void JNI_main(JNIEnv * _env, jobject _self)
         
         pad1.updateButtons(gamepad1.buttons);
         //pad2.updateButtons(gamepad2.buttons);
-    } while(updateRobot() == 0);
-    cleanupJNI();
+        updateRobot();
+    }
 }

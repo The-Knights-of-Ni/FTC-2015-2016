@@ -50,26 +50,25 @@ void JNI_main(JNIEnv * env, jobject self)
     //Config
     //hopper down
     while(true){
-    intake = 1;
-    if(updateRobot() != 0) exit(EXIT_SUCCESS);
+        intake = 1;
+        updateRobot();
+        turnRelDeg(left_drive, right_drive, 45, 0.8, &heading);
+        /*
+          driveOnCourseIn(80, 0.8, 45);
+          intake = 0;
+          update
+          turnBot(45, 0.8);
+          //vision
+          if (visionColor == currentColor)
+          {
+          slide = slide_position_right;
+          }
+          else
+          slide = slide_position_left;
+          update
+          driveDistIn(5, 0.4);
+          //score climbers, ideally without turning
+          //drive to nearest mountain, park low
+          */
     }
-    /*turnBot(45, 0.8);
-    driveOnCourseIn(80, 0.8, 45);
-    intake = 0;
-    update
-    turnBot(45, 0.8);
-    //vision
-    if (visionColor == currentColor)
-    {
-        slide = slide_position_right;
-    }
-    else
-        slide = slide_position_left;
-    update
-    driveDistIn(5, 0.4);
-    //score climbers, ideally without turning
-    //drive to nearest mountain, park low
-*/
-
-    cleanupJNI();
 }

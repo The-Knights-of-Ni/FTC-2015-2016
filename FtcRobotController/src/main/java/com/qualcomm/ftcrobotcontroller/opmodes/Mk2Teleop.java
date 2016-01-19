@@ -162,7 +162,7 @@ public class Mk2Teleop extends LinearOpMode
         a[1] += b[1];
     }
     static final float P_0 = 0.0f;
-    static final float P_1 = FtcRobotControllerActivity.slider_0/100.0f;
+    static final float P_1 = 10/100.0f;
     static final float P_2 = 1.0f;
     
     static float qBezier(float t){

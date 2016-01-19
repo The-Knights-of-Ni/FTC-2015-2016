@@ -2,6 +2,7 @@
 #define JNI_FUNCTIONS
 
 #include <jni.h>
+#include <stdlib.h>
 
 jmethodID waitForStartID;
 jmethodID waitOneFullHardwareCycleID;
@@ -54,12 +55,18 @@ void initJNI()
     }
 }
 
-jthrowable updateRobot()
+void cleanupJNI();
+
+void updateRobot()
 {
     env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, JNI_COMMIT);
     applyRobotState();
     waitForNextHardwareCycle();
-    return env->ExceptionOccurred();
+    if(env->ExceptionOccurred() != 0)
+    {
+        cleanupJNI();
+        exit(EXIT_SUCCESS);
+    }
 }
 
 void cleanupJNI()

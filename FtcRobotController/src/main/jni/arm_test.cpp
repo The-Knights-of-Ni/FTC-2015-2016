@@ -50,7 +50,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
     
     float dt;
     float old_time = time;
-    do
+    for ever
     {
         //NOTE: time will only change when updateRobot() is called
         dt = time-old_time;
@@ -111,6 +111,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
         //Buttons
         pad1.updateButtons(gamepad1.buttons);
         pad2.updateButtons(gamepad2.buttons);
-    } while(updateRobot() == 0);
+        cleanupJNI();
+    }
     cleanupJNI();
 }

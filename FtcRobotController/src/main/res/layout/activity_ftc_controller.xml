@@ -117,54 +117,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_height="wrap_content"
       android:layout_below="@+id/textRobotStatus"
       android:text="" />
-    
-    <SeekBar
-      android:id="@+id/slider_0"
-      android:progress="25"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_below="@+id/textOpMode"
-      android:text="" />
 
-    <SeekBar
-      android:id="@+id/slider_1"
-      android:progress="25"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_below="@+id/slider_0"
-      android:text="" />
-
-    <SeekBar
-      android:id="@+id/slider_2"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_below="@+id/slider_1"
-      android:text="" />
-
-    <SeekBar
-      android:id="@+id/slider_3"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_below="@+id/slider_2"
-      android:text="" />
-
-    <SeekBar
-      android:id="@+id/slider_4"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_below="@+id/slider_3"
-      android:text="" />
-        
     <TextView
       android:id="@+id/textErrorMessage"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_below="@+id/slider_4"
       android:textColor="#990000"
       android:textStyle="bold"
       android:minLines="2"
       android:maxLines="4"
-      android:text="" />
+      android:layout_above="@+id/textGamepad1"
+      android:layout_centerHorizontal="true"/>
     
     <TextView
       android:id="@+id/textGamepad1"
@@ -183,6 +146,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_alignParentBottom="true"
       android:layout_marginBottom="10dp"
       android:text="" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aligned"
+        android:id="@+id/alignedBox"
+        android:checked="false"
+        android:layout_above="@+id/redBox"
+        android:layout_centerHorizontal="true"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Red"
+        android:id="@+id/redBox"
+        android:checked="false"
+        android:layout_marginLeft="79dp"
+        android:layout_marginStart="79dp"
+        android:layout_alignBaseline="@+id/textErrorMessage"
+        android:layout_alignBottom="@+id/textErrorMessage"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Blue"
+        android:id="@+id/blueBox"
+        android:checked="false"
+        android:layout_marginRight="79dp"
+        android:layout_marginEnd="79dp"
+        android:layout_below="@+id/alignedBox"
+        android:layout_alignRight="@+id/textErrorMessage"
+        android:layout_alignEnd="@+id/textErrorMessage"/>
 
   </RelativeLayout>
 </LinearLayout>

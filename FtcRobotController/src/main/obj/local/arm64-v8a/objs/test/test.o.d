@@ -25,7 +25,14 @@
   /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/linux/limits.h \
   /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/sys/syslimits.h \
   jni/Button.h jni/test_robot_state_elements.h jni/jni_functions.h \
-  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/jni.h
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/jni.h \
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/stdlib.h \
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/string.h \
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/malloc.h \
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/xlocale.h \
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/alloca.h \
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/strings.h \
+  /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/memory.h
 
 jni/misc.h:
 
@@ -86,3 +93,17 @@ jni/test_robot_state_elements.h:
 jni/jni_functions.h:
 
 /Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/jni.h:
+
+/Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/stdlib.h:
+
+/Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/string.h:
+
+/Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/malloc.h:
+
+/Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/xlocale.h:
+
+/Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/alloca.h:
+
+/Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/strings.h:
+
+/Users/kyler/Library/Android/sdk/ndk-bundle/platforms/android-21/arch-arm64/usr/include/memory.h:
