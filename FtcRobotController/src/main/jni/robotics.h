@@ -16,6 +16,14 @@
 //PID Control: UNTESTED, may not be ported correctly (In case the built in doesn't work)
 //TODO: de-OOP
 
+#define deadzone_radius 0.1
+
+float deadzoneAdjust(float a)
+{
+    if(a > deadzone_radius) return (a-deadzone_radius)/(1-deadzone_radius);
+    if(a < -deadzone_radius) return (a+deadzone_radius)/(1-deadzone_radius);
+    return 0;
+}
 
 struct PID
 {

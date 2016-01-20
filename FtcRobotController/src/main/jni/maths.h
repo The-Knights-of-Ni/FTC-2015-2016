@@ -507,4 +507,14 @@ bool tolerantEquals(float a, float b, float tolerance)
     return (a + tolerance) >= b && (a - tolerance) <= b;
 }
 
+float cubicBezier(float t, float p0, float p1, float p2, float p3)
+{
+    return (1-t)*(1-t)*(1-t)*p0 + 3*t*(1-t)*(1-t)*p1 + 3*t*t*(1-t)*p2 + t*t*t*p3;
+}
+
+float quadraticBezier(float t, float p0, float p1, float p2)
+{
+    return (1-t)*(1-t)*p0 + 2*t*(1-t)*p1 + t*t*p2;
+}
+
 #endif
