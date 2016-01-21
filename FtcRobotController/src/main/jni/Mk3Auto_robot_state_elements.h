@@ -7,19 +7,19 @@ changes made this file are not permanent
 
 enum robot_state_element
 {
+    rsid_time, rsid_time_end = rsid_time + 7,
     rsid_right_drive_encoder, rsid_right_drive_encoder_end = rsid_right_drive_encoder + 3,
     rsid_left_drive_encoder, rsid_left_drive_encoder_end = rsid_left_drive_encoder + 3,
-    rsid_elbow_encoder, rsid_elbow_encoder_end = rsid_elbow_encoder + 3,
+    rsid_winch_encoder, rsid_winch_encoder_end = rsid_winch_encoder + 3,
     rsid_shoulder_encoder, rsid_shoulder_encoder_end = rsid_shoulder_encoder + 3,
-    rsid_potentiometer, rsid_potentiometer_end = rsid_potentiometer + 3,
-    rsid_heading, rsid_heading_end = rsid_heading + 3,
-    rsid_tilt, rsid_tilt_end = rsid_tilt + 3,
-    rsid_roll, rsid_roll_end = rsid_roll + 3,
-    rsid_x_velocity, rsid_x_velocity_end = rsid_x_velocity + 3,
-    rsid_y_velocity, rsid_y_velocity_end = rsid_y_velocity + 3,
+    rsid_elbow_potentiometer, rsid_elbow_potentiometer_end = rsid_elbow_potentiometer + 3,
+    rsid_imu_heading, rsid_imu_heading_end = rsid_imu_heading + 3,
+    rsid_imu_tilt, rsid_imu_tilt_end = rsid_imu_tilt + 3,
+    rsid_imu_roll, rsid_imu_roll_end = rsid_imu_roll + 3,
+    rsid_imu_velocity, rsid_imu_velocity_end = rsid_imu_velocity + 11,
     rsid_left_drive, rsid_left_drive_end = rsid_left_drive + 3,
     rsid_right_drive, rsid_right_drive_end = rsid_right_drive + 3,
-    rsid_elbow, rsid_elbow_end = rsid_elbow + 3,
+    rsid_winch, rsid_winch_end = rsid_winch + 3,
     rsid_shoulder, rsid_shoulder_end = rsid_shoulder + 3,
     rsid_intake, rsid_intake_end = rsid_intake + 3,
     rsid_hand, rsid_hand_end = rsid_hand + 3,
@@ -28,19 +28,19 @@ enum robot_state_element
     rsid_size
 };
 
+#define time (*((double *) (robot_state.state+rsid_time)))
 #define right_drive_encoder (*((int *) (robot_state.state+rsid_right_drive_encoder)))
 #define left_drive_encoder (*((int *) (robot_state.state+rsid_left_drive_encoder)))
-#define elbow_encoder (*((int *) (robot_state.state+rsid_elbow_encoder)))
+#define winch_encoder (*((int *) (robot_state.state+rsid_winch_encoder)))
 #define shoulder_encoder (*((int *) (robot_state.state+rsid_shoulder_encoder)))
-#define potentiometer (*((int *) (robot_state.state+rsid_potentiometer)))
-#define heading (*((float *) (robot_state.state+rsid_heading)))
-#define tilt (*((float *) (robot_state.state+rsid_tilt)))
-#define roll (*((float *) (robot_state.state+rsid_roll)))
-#define x_velocity (*((float *) (robot_state.state+rsid_x_velocity)))
-#define y_velocity (*((float *) (robot_state.state+rsid_y_velocity)))
+#define elbow_potentiometer (*((int *) (robot_state.state+rsid_elbow_potentiometer)))
+#define imu_heading (*((float *) (robot_state.state+rsid_imu_heading)))
+#define imu_tilt (*((float *) (robot_state.state+rsid_imu_tilt)))
+#define imu_roll (*((float *) (robot_state.state+rsid_imu_roll)))
+#define imu_velocity (*((v3f *) (robot_state.state+rsid_imu_velocity)))
 #define left_drive (*((float *) (robot_state.state+rsid_left_drive)))
 #define right_drive (*((float *) (robot_state.state+rsid_right_drive)))
-#define elbow (*((float *) (robot_state.state+rsid_elbow)))
+#define winch (*((float *) (robot_state.state+rsid_winch)))
 #define shoulder (*((float *) (robot_state.state+rsid_shoulder)))
 #define intake (*((float *) (robot_state.state+rsid_intake)))
 #define hand (*((float *) (robot_state.state+rsid_hand)))

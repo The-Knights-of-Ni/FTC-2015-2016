@@ -10,8 +10,15 @@
 #include "maths.h"
 #include "jni_functions.h"
 #include <stdlib.h>
+
+//interruptable blocks are exited when update robot detects an interuptted exception
+//NOTE: only the most recent interuptable block will be exited, only one is intended for use
+#define interruptable if(!setjmp(exit_jump))
+
 //Constants
 #define encoderticks_per_radian (1440.0f/(2.0f*pi))
+
+float potentiometer_range = 333.33333333333333333333333333333333333f;
 
 //PID Control: UNTESTED, may not be ported correctly (In case the built in doesn't work)
 //TODO: de-OOP

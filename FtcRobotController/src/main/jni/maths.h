@@ -153,6 +153,12 @@ struct v3f
             float j;
             float k;
         };
+        struct //euler angles
+        {
+            float heading;
+            float tilt;
+            float roll;
+        };
         float data[3];
     };
 
@@ -492,7 +498,7 @@ float lerp(float a, float b, float t)
     return a + (b - a) * t;
 }
 
-bool isAngleGreater(float a, float b)//TODO: Better name
+bool isAngleGreaterDeg(float a, float b)//TODO: Better name
 {
     //going to hope the imu knows that 360 = 0
     if((b-a) < 180)
@@ -500,6 +506,11 @@ bool isAngleGreater(float a, float b)//TODO: Better name
     else
         return a > (b-360);
 
+}
+
+float signedCanonicalizeAngleDeg(float a)
+{
+    return a-360*floor(a/360+0.5); //NOTE: this can return both -180 and +180, the sign will be unchanged for these angles
 }
 
 bool tolerantEquals(float a, float b, float tolerance)

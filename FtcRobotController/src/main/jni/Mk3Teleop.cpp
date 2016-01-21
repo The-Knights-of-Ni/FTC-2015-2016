@@ -97,25 +97,16 @@ void JNI_main(JNIEnv * _env, jobject _self)
     v2f pad2stick1;
     v2f pad2stick2;
     
-    float shoulder_theta = 0;
-    float inside_elbow_theta = 0;
-    float winch_theta = 0;
-    bool8 score_mode = true;
-    float shoulder_omega = 0.0;
-    float winch_omega = 0.0;
-    
-    float target_arm_theta = pi*7/12;
-    float target_shoulder_theta = pi*150/180;
-    float target_inside_elbow_theta = pi/6;
+    target_arm_theta = pi*7/12;
+    target_shoulder_theta = pi*150/180;
+    target_inside_elbow_theta = pi/6;
     
     waitForStart();
     
     float dt;
     float old_time = time;
     
-    float elbow_potentiometer_angle = 0.0;
-    
-    if(!setjmp(exit_jump)) for ever
+    interruptable for ever
     {
         dt = time - old_time;
         old_time = time;
@@ -141,13 +132,12 @@ void JNI_main(JNIEnv * _env, jobject _self)
         //Might need to add additional bounding in as a safety
 
 //============================== Arm =============================            
-        float potentiometer_range = 333.33333333333333333333333333333333333f;
         //TODO: correctly convert to angle
         elbow_potentiometer_angle = lerp(
             (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+12.0f))*pi/180.0f,
             elbow_potentiometer_angle,
             exp(-20.0*dt));
-
+        
         float new_shoulder_theta = shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
         float new_inside_elbow_theta = elbow_potentiometer_angle;
         float new_winch_theta = winch_encoder/winch_gear_ratio/encoderticks_per_radian;

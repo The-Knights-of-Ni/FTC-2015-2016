@@ -1,6 +1,8 @@
 #ifndef JNI_FUNCTIONS
 #define JNI_FUNCTIONS
 
+#include "misc.h"
+
 #include <jni.h>
 #include <stdlib.h>
 #include <setjmp.h>

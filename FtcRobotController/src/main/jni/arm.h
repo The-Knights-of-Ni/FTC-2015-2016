@@ -1,6 +1,9 @@
 #ifndef ROBOT_ARM //because it is possible that some compilers will have ARM predefined for the chip archutecture
 #define ROBOT_ARM
 
+#include "maths.h"
+#include "robotics.h"
+
 //TODO: tune values
 float g = 384; //gravity in " per sec
 
@@ -36,6 +39,21 @@ float neverest_k_i = dc_motor_voltage/neverest_max_speed;
 float neverest_k_t_over_R = neverest_max_torque/dc_motor_voltage;
 
 float string_length_0 = 7;
+
+//current values
+float elbow_potentiometer_angle = 0.0;
+
+float shoulder_theta = 0;
+float inside_elbow_theta = 0;
+float winch_theta = 0;
+bool8 score_mode = true;
+float shoulder_omega = 0.0;
+float winch_omega = 0.0;
+
+//target values
+float target_arm_theta;
+float target_shoulder_theta;
+float target_inside_elbow_theta;
 
 union arm_derivatives
 {
