@@ -108,9 +108,10 @@ void JNI_main(JNIEnv * env, jobject self)
         wait(1);
         intake = 1;
         autonomousUpdate();
+        //driveOnCourseIn(-10, 0.8, 45);
         turnRelDeg(45, 0.8);
         #if 0
-        driveOnCourseIn(80, 0.8, 45);
+        driveOnCourseIn(-80, 0.8, 45);
         intake = 0;
         (colorAdjustedAngle(45), 0.8);
         //vision
@@ -121,14 +122,16 @@ void JNI_main(JNIEnv * env, jobject self)
         else
             slide = slide_position_left;
         wait(1);
-        driveDistIn(5, 0.4);
+        driveDistIn(-5, 0.4);
         //score climbers, ideally without turning
         target_arm_theta = 150;
         target_inside_elbow_theta = 180;
         wait(1);
-        driveDistIn(-10, 0.8);
-        turnRelDeg(colorAdjustedAngle(-45), 0.8);
-        
+        driveDistIn(24, 0.8);
+        turnRelDeg(colorAdjustedAngle(45), 0.8);
+        driveDistIn(24);
+        turnRelDeg(colorAdjustedAngle(90), 0.8);
+        //driveDistIn(60);
         #endif
         //drive to nearest mountain, park low
     }
