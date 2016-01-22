@@ -40,13 +40,11 @@ void customAutonomousUpdate();
 
 #include "Mk3Auto_robot_state_elements.h"
 
-float old_time;
-
 //stuff that need to be constantly updated in the background but is not intensive enough to deserve a seperate thread
 void customAutonomousUpdate()
 {
-    float dt = time-old_time;
-    old_time = time;
+    dt = time-current_time;
+    current_time = time;
     
     //TODO: make this sensor filter stuff a function in arm.h
     elbow_potentiometer_angle = lerp(
@@ -69,6 +67,15 @@ void customAutonomousUpdate()
                target_arm_theta, target_inside_elbow_theta,
                shoulder_theta, inside_elbow_theta,
                score_mode, dt);
+
+    winch = clamp(winch, -1.0, 1.0);
+    shoulder = clamp(shoulder, -1.0, 1.0);
+    left_drive = clamp(left_drive, -1.0, 1.0);
+    right_drive = clamp(right_drive, -1.0, 1.0);
+    intake = clamp(intake, -1.0, 1.0);
+
+    hand = clamp(hand, 0.0, 1.0);
+    slide = clamp(slide, 0.0, 1.0);
 }
 
 #define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk3Auto_main
@@ -85,32 +92,44 @@ void JNI_main(JNIEnv * env, jobject self)
 {
     initJNI();
     
-    waitForStart();
-
-    old_time = 0;
+    setDriveMotors(&left_drive, &right_drive, &imu_heading, &left_drive_encoder, &right_drive_encoder);
+    
+    //waitForStart(); //needs to be called in java until IMU code is ported
+    
+    current_time = 0;
     //Config
     //hopper down
+    #define colorAdjustedAngle(a) (currentColor ? a : -a)
+    
     interruptable for ever
     {
+        target_arm_theta = 150;
+        target_inside_elbow_theta = 210;
+        wait(1);
         intake = 1;
         autonomousUpdate();
-        turnRelDeg(left_drive, right_drive, 45, 0.8, &imu_heading);
-        /*
-          driveOnCourseIn(80, 0.8, 45);
-          intake = 0;
-          update
-          turnBot(45, 0.8);
-          //vision
-          if (visionColor == currentColor)
-          {
-          slide = slide_position_right;
-          }
-          else
-          slide = slide_position_left;
-          update
-          driveDistIn(5, 0.4);
-          //score climbers, ideally without turning
-          //drive to nearest mountain, park low
-          */
+        turnRelDeg(45, 0.8);
+        #if 0
+        driveOnCourseIn(80, 0.8, 45);
+        intake = 0;
+        (colorAdjustedAngle(45), 0.8);
+        //vision
+        if (visionColor == currentColor)
+        {
+            slide = slide_position_right;
+        }
+        else
+            slide = slide_position_left;
+        wait(1);
+        driveDistIn(5, 0.4);
+        //score climbers, ideally without turning
+        target_arm_theta = 150;
+        target_inside_elbow_theta = 180;
+        wait(1);
+        driveDistIn(-10, 0.8);
+        turnRelDeg(colorAdjustedAngle(-45), 0.8);
+        
+        #endif
+        //drive to nearest mountain, park low
     }
 }

@@ -20,6 +20,10 @@
 
 float potentiometer_range = 333.33333333333333333333333333333333333f;
 
+//globals
+float dt;
+float current_time;
+
 //PID Control: UNTESTED, may not be ported correctly (In case the built in doesn't work)
 //TODO: de-OOP
 

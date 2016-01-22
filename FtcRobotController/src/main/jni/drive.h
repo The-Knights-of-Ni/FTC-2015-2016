@@ -9,6 +9,22 @@
 //TODO: Stabilized driving (if we get slammed, we should correct)
 //TODO: Delete this comment
 
+//TODO:
+float * left_drive;
+float * right_drive;
+float * heading;
+int * left_drive_encoder;
+int * right_drive_encoder;
+
+void setDriveMotors(float * left, float * right, float * imu_heading, int * left_encoder, int * right_encoder)
+{
+    left_drive = left;
+    right_drive = right;
+    heading = imu_heading;
+    left_drive_encoder = left_encoder;
+    right_drive_encoder = right_encoder;
+}
+
 #define threshold 0.
 
 #define sprocket_pitch_radius 3.13 //Inches
