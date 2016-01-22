@@ -383,8 +383,8 @@ void armToAngle(float & out_shoulder_power, float & out_winch_power,
     
     float arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
     
-    out_shoulder_power += 10*(target_arm_theta-arm_theta);
-    out_winch_power += 10*(target_inside_elbow_theta-inside_elbow_theta);
+    out_shoulder_power += 2*(target_arm_theta-arm_theta);
+    out_winch_power += 1*(target_inside_elbow_theta-inside_elbow_theta);
 }
 
 void armJointsToAngle(float & out_shoulder_power, float & out_winch_power,
@@ -392,8 +392,8 @@ void armJointsToAngle(float & out_shoulder_power, float & out_winch_power,
                       float shoulder_theta,        float inside_elbow_theta,
                       bool8 score_mode, float dt)
 {
-    out_shoulder_power += 10*(target_shoulder_theta-shoulder_theta);
-    out_winch_power += 10*(target_inside_elbow_theta-inside_elbow_theta);
+    out_shoulder_power += 2*(target_shoulder_theta-shoulder_theta);
+    out_winch_power += 1*(target_inside_elbow_theta-inside_elbow_theta);
 }
 
 /*
@@ -403,7 +403,7 @@ void armJointsToAngle(float & out_shoulder_power, float & out_winch_power,
 v2f getArmTargetsRectangular(v2f hand, bool mode)
 {
     v2f arm_targets; //0 -> shoulder, 1 -> elbow
-
+    
     float dist = norm(hand);
     //clamp hand motion
     if (dist > forearm_length + shoulder_length)
@@ -415,7 +415,7 @@ v2f getArmTargetsRectangular(v2f hand, bool mode)
         hand * ((0.9 * (forearm_length - shoulder_length)) * invSqrt(dist));
     }
     //TODO: clamp when the arm will hit the frame
-
+    
     arm_targets[0] = atan2(hand[1], hand[0]);
     if (arm_targets[0] < 0.0f)
         arm_targets[0] += 2.0f * pi;

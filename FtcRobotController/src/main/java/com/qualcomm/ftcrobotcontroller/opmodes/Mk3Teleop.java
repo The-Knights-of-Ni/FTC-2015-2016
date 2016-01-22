@@ -127,7 +127,7 @@ public class Mk3Teleop extends LinearOpMode {
         elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         waitOneFullHardwareCycle();
         //shoulder.setDirection(DcMotor.Direction.REVERSE);
-        elbow.setDirection(DcMotor.Direction.REVERSE);
+        //elbow.setDirection(DcMotor.Direction.REVERSE);
         
         hand_servo = hardwareMap.servo.get("hand");
         slide_servo = hardwareMap.servo.get("slide");

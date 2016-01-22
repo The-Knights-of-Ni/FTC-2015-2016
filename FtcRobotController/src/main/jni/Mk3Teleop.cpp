@@ -72,7 +72,7 @@ float hand_level_position = 0.6;
 //Arm
 #define shoulder_manual pad2stick1
 #define elbow_manual pad2stick2
-#define arm_stick ((v2f){-pad2stick1.y, pad2stick2.y})
+#define arm_stick ((v2f){-pad2stick1.y, -pad2stick2.y})
 #define arm_manual_toggle pad2.toggle(Y)
 #define arm_score_mode_button pad2.press(DPAD_UP)
 #define arm_intake_mode_button pad2.press(DPAD_DOWN)
@@ -136,7 +136,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
         elbow_potentiometer_angle = lerp(
             (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+12.0f))*pi/180.0f,
             elbow_potentiometer_angle,
-            exp(-20.0*dt));
+            exp(-500.0*dt));
         
         float new_shoulder_theta = shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
         float new_inside_elbow_theta = elbow_potentiometer_angle;
@@ -145,22 +145,21 @@ void JNI_main(JNIEnv * _env, jobject _self)
         winch_omega = lerp((new_winch_theta-winch_theta)/dt, winch_omega, 0.1);
         float inside_elbow_omega = (new_inside_elbow_theta-inside_elbow_theta)/dt;
         
-        shoulder_print_theta = new_shoulder_theta;
+        shoulder_print_theta = target_inside_elbow_theta;
         forearm_print_theta = new_inside_elbow_theta;
         
         shoulder_theta = new_shoulder_theta;
         inside_elbow_theta = new_inside_elbow_theta;
         winch_theta = new_winch_theta;
         
-        if(!arm_manual_toggle) //IK
+        if(arm_manual_toggle) //IK
         {
             v2f target_arm_velocity = arm_stick;
-
             if(arm_score_mode_button)
             {
                 score_mode = true;
                 //target_shoulder_theta = 0.75;
-                target_inside_elbow_theta = pi*1/3;
+                target_inside_elbow_theta = pi*3/4;
                 
                 shoulder = -clamp(2-0.6*(inside_elbow_theta-target_inside_elbow_theta), 0.0, 1.0);
                 float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
@@ -173,7 +172,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
             {
                 score_mode = false;
                 //target_shoulder_theta = 2.75;
-                target_inside_elbow_theta = pi*4/3;
+                target_inside_elbow_theta = 4.3;
                 
                 shoulder = clamp(2-0.6*(target_inside_elbow_theta-inside_elbow_theta), 0.0, 1.0);
                 target_shoulder_theta = shoulder_theta;
@@ -197,7 +196,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
                                         target_shoulder_theta, target_inside_elbow_theta, target_arm_velocity,
                                         shoulder_theta, inside_elbow_theta,
                                         shoulder_omega, dt);
-                
+                    
                     float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                                       -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
                     target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));

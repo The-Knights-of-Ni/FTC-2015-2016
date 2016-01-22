@@ -27,7 +27,7 @@ float current_time;
 //PID Control: UNTESTED, may not be ported correctly (In case the built in doesn't work)
 //TODO: de-OOP
 
-#define deadzone_radius 0.1
+#define deadzone_radius 0.2
 
 float deadzoneAdjust(float a)
 {
