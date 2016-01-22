@@ -10,12 +10,14 @@
 jmethodID waitForStartID;
 jmethodID waitOneFullHardwareCycleID;
 jmethodID waitForNextHardwareCycleID;
-jmethodID applyRobotStateID;
+jmethodID robotStateInID;
+jmethodID robotStateOutID;
 
 #define waitForStart() env->CallVoidMethod(self, waitForStartID)
 #define waitOneFullHardwareCycle() env->CallVoidMethod(self, waitOneFullHardwareCycleID)
 #define waitForNextHardwareCycle() env->CallVoidMethod(self, waitForNextHardwareCycleID)
-#define applyRobotState() env->CallVoidMethod(self, applyRobotStateID)
+#define robotStateIn() env->CallVoidMethod(self, robotStateInID)
+#define robotStateOut() env->CallVoidMethod(self, robotStateOutID)
 
 jbyteArray jrobot_state;
 
@@ -36,11 +38,12 @@ void initJNI()
     
     //functions
     waitForStartID = env->GetMethodID(cls, "waitForStart", "()V");
-
+    
     waitOneFullHardwareCycleID = env->GetMethodID(cls, "waitOneFullHardwareCycle", "()V");
     waitForNextHardwareCycleID = env->GetMethodID(cls, "waitForNextHardwareCycle", "()V");
     
-    applyRobotStateID = env->GetMethodID(cls, "applyRobotState", "()V");
+    robotStateInID = env->GetMethodID(cls, "robotStateIn", "()V");
+    robotStateOutID = env->GetMethodID(cls, "robotStateOut", "()V");
     
     //setup pinned array
     jfieldID jrobot_stateID = env->GetFieldID(cls, "robot_state", "[B");
@@ -65,13 +68,14 @@ static jmp_buf exit_jump;
 void updateRobot()
 {
     env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, JNI_COMMIT);
-    applyRobotState();
+    robotStateOut();
     waitForNextHardwareCycle();
     if(env->ExceptionOccurred() != 0)
     {
         cleanupJNI();
         longjmp(exit_jump, 1);
     }
+    robotStateIn();
 }
 
 void cleanupJNI()

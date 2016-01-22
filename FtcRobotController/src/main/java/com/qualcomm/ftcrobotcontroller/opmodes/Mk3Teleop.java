@@ -31,9 +31,24 @@ public class Mk3Teleop extends LinearOpMode {
         System.loadLibrary("Mk3Teleop");
     }
     
-    void applyRobotState()
+    void robotStateOut()
     {
-        /*DATA OUT (To native)*/
+        /*DATA OUT (to electronics&driver station)*/
+        left_drive.setPower(Mk3TeleopRobotStateElements.get_left_drive());
+        right_drive.setPower(Mk3TeleopRobotStateElements.get_right_drive());
+        elbow.setPower(Mk3TeleopRobotStateElements.get_winch());
+        shoulder.setPower(Mk3TeleopRobotStateElements.get_shoulder());
+        intake.setPower(Mk3TeleopRobotStateElements.get_intake());
+        hand_servo.setPosition(Mk3TeleopRobotStateElements.get_hand());
+        slide_servo.setPosition(Mk3TeleopRobotStateElements.get_slide());
+        telemetry.addData("shoulder_theta", Mk3TeleopRobotStateElements.get_shoulder_print_theta());
+        telemetry.addData("forearm_theta", Mk3TeleopRobotStateElements.get_forearm_print_theta());
+        //telemetry.addData("hand position", Mk3TeleopRobotStateElements.get_hand_print_position());
+    }
+
+    void robotStateIn()
+    {
+        /*DATA IN (from electronics&driver station)*/
         //Gamepad 1
         Mk3TeleopRobotStateElements.set_gamepad1_joystick1_x(gamepad1.left_stick_x);
         Mk3TeleopRobotStateElements.set_gamepad1_joystick1_y(gamepad1.left_stick_y);
@@ -70,18 +85,6 @@ public class Mk3Teleop extends LinearOpMode {
         Mk3TeleopRobotStateElements.set_roll(6);
         Mk3TeleopRobotStateElements.set_x_velocity(6);
         Mk3TeleopRobotStateElements.set_y_velocity(6);
-        
-        /*DATA IN (From native)*/
-        left_drive.setPower(Mk3TeleopRobotStateElements.get_left_drive());
-        right_drive.setPower(Mk3TeleopRobotStateElements.get_right_drive());
-        elbow.setPower(Mk3TeleopRobotStateElements.get_winch());
-        shoulder.setPower(Mk3TeleopRobotStateElements.get_shoulder());
-        intake.setPower(Mk3TeleopRobotStateElements.get_intake());
-        hand_servo.setPosition(Mk3TeleopRobotStateElements.get_hand());
-        slide_servo.setPosition(Mk3TeleopRobotStateElements.get_slide());
-        telemetry.addData("shoulder_theta", Mk3TeleopRobotStateElements.get_shoulder_print_theta());
-        telemetry.addData("forearm_theta", Mk3TeleopRobotStateElements.get_forearm_print_theta());
-        //telemetry.addData("hand position", Mk3TeleopRobotStateElements.get_hand_print_position());
     }
     /* End NDK Stuff*/
 

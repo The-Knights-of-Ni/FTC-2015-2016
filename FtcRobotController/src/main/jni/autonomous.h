@@ -6,8 +6,8 @@
 
 void autonomousUpdate()
 {
-    customAutonomousUpdate();
     updateRobot();
+    customAutonomousUpdate();
 }
 
 void wait(float wait_time)
@@ -48,7 +48,7 @@ void driveDistIn(float dist, float vIs)
         }
         right_enc_net = *right_drive_encoder - right_prev;
         left_enc_net = *left_drive_encoder - left_prev;
-
+        
         if (right_enc_net < dist * encoderticks_per_inch)
         {
             *right_drive = vIs;

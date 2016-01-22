@@ -28,8 +28,9 @@ public class Mk3Auto extends LinearOpMode {
         System.loadLibrary("Mk3Auto");
     }
     
-    void applyRobotState() {
-        /*DATA OUT (To native)*/
+    void robotStateIn()
+    {
+        /*DATA IN (from electronics&driver station)*/
         //Sensors
         Mk3AutoRobotStateElements.set_time(time);
         Mk3AutoRobotStateElements.set_right_drive_encoder(right_drive.getCurrentPosition());
@@ -47,8 +48,11 @@ public class Mk3Auto extends LinearOpMode {
             Mk3AutoRobotStateElements.set_imu_velocity_y(imu.vel_y);
             Mk3AutoRobotStateElements.set_imu_velocity_z(imu.vel_z);
         }
-       
-        /*DATA IN (From native)*/
+    }
+    
+    void robotStateOut()
+    {
+        /*DATA OUT (to electronics&driver station)*/
         left_drive.setPower(Mk3AutoRobotStateElements.get_left_drive());
         right_drive.setPower(Mk3AutoRobotStateElements.get_right_drive());
         winch.setPower(Mk3AutoRobotStateElements.get_winch());
@@ -75,7 +79,7 @@ public class Mk3Auto extends LinearOpMode {
     Servo hand_servo;
     Servo slide_servo;
     /* End Motor Definitions*/
-
+    
     public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
     {
         ByteBuffer stick = ByteBuffer.allocate(45);

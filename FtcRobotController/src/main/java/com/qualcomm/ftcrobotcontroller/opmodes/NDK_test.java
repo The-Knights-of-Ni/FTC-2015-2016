@@ -40,8 +40,8 @@ public class NDK_test extends LinearOpMode
         stick.put(joystick);
         return stick.getInt(40);//Offset value
     }
-    
-    void applyRobotState()
+
+    void robotStateIn()
     {
         //Gamepad 1
         testRobotStateElements.set_gamepad1_joystick1_x(gamepad1.left_stick_x);
@@ -55,11 +55,14 @@ public class NDK_test extends LinearOpMode
         }
         catch (RobotCoreException e) {
             e.printStackTrace();
-        }
-        
+        }   
+    }
+    
+    void robotStateOut()
+    {        
         telemetry.addData("left_bumper", testRobotStateElements.get_left_bumper()!=0 ? "on": "off");
         telemetry.addData("right_bumper", testRobotStateElements.get_right_bumper()!=0 ? "on": "off");
-
+        
         telemetry.addData("toggle_left_bumper", testRobotStateElements.get_toggle_left_bumper()!=0 ? "on": "off");
         telemetry.addData("toggle_right_bumper", testRobotStateElements.get_toggle_right_bumper()!=0 ? "on": "off");
         
