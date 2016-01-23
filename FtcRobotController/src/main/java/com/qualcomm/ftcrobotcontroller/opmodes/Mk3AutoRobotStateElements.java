@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 public class Mk3AutoRobotStateElements
 {
     public static byte[] robot_state;
-    public static int robot_state_size = 88;
+    public static int robot_state_size = 100;
     
     Mk3AutoRobotStateElements(){}
     public static void set_time(double value)
@@ -221,6 +221,36 @@ public class Mk3AutoRobotStateElements
     public static int get_indicator()
     {
         return ByteBuffer.wrap(robot_state, 84, 4).order(ByteOrder.nativeOrder()).getInt();
+    }
+
+    public static void set_camera_w(int value)
+    {
+        ByteBuffer.wrap(robot_state, 88, 4).order(ByteOrder.nativeOrder()).putInt(value);
+    }
+
+    public static int get_camera_w()
+    {
+        return ByteBuffer.wrap(robot_state, 88, 4).order(ByteOrder.nativeOrder()).getInt();
+    }
+
+    public static void set_camera_h(int value)
+    {
+        ByteBuffer.wrap(robot_state, 92, 4).order(ByteOrder.nativeOrder()).putInt(value);
+    }
+
+    public static int get_camera_h()
+    {
+        return ByteBuffer.wrap(robot_state, 92, 4).order(ByteOrder.nativeOrder()).getInt();
+    }
+
+    public static void set_beacon_right(int value)
+    {
+        ByteBuffer.wrap(robot_state, 96, 4).order(ByteOrder.nativeOrder()).putInt(value);
+    }
+
+    public static int get_beacon_right()
+    {
+        return ByteBuffer.wrap(robot_state, 96, 4).order(ByteOrder.nativeOrder()).getInt();
     }
 
 }

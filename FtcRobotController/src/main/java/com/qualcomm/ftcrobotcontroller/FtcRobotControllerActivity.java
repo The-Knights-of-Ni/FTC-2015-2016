@@ -153,7 +153,73 @@ public class FtcRobotControllerActivity extends Activity {
     public static boolean aligned;
     public static boolean red;
     public static boolean blue;
+
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
+    {
+        //public SurfaceHolder surface_holder;
+        public Camera camera;
+        
+        public CameraPreview(Context context, Camera cam)
+        {
+            super(context);
+            camera = cam;
+            /* surface_holder = getHolder(); */
+            /* surface_holder.addCallback(this); */
+        }
+        
+        public void surfaceCreated(SurfaceHolder holder)
+        {
+            /*try
+            {
+                //camera.setPreviewDisplay(holder);
+
+            }
+            catch(IOException e)
+            {
+                DbgLog.error("error setting camera preview: " + e.getMessage());
+            }*/
+            camera.startPreview();
+        }
+        
+        @Override
+            public void surfaceDestroyed(SurfaceHolder holder)
+        {
+            camera.stopPreview();
+            camera.release();
+        }
+        
+        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
+        {
+            /* if(surface_holder.getSurface() == null) */
+            /* { */
+            /*     return; */
+            /* } */
+            
+            /* try */
+            /* { */
+            /*     camera.stopPreview(); */
+            /* } */
+            /* catch(Exception e) */
+            /* { */
+            /*     //Do nothing */
+            /* } */
+            
+            /* try */
+            /* { */
+            /*     camera.setPreviewDisplay(/\*surface_*\/holder); */
+            /*     camera.startPreview(); */
+            /* } */
+            /* catch(Exception e) */
+            /* { */
+            /*     DbgLog.error("error changing camera preview: " + e.getMessage()); */
+            /* } */
+        }
+    }
+    
+    public static Camera camera;
+    public static CameraPreview camera_preview;
     ////////////
+    
     CheckBox redBox, blueBox, alignedBox;
 
     private void addListenerOnRed() {
@@ -201,52 +267,6 @@ public class FtcRobotControllerActivity extends Activity {
 
     //custom gui
 
-    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-        public SurfaceHolder surface_holder;
-        public Camera camera;
-
-        public CameraPreview(Context context, Camera cam) {
-            super(context);
-            camera = cam;
-            surface_holder = getHolder();
-            surface_holder.addCallback(this);
-        }
-
-        public void surfaceCreated(SurfaceHolder holder) {
-            try {
-                camera.setPreviewDisplay(holder);
-                //camera.startPreview();
-            } catch (IOException e) {
-                DbgLog.error("error setting camera preview: " + e.getMessage());
-            }
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            camera.stopPreview();
-            camera.release();
-        }
-
-        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-            if (surface_holder.getSurface() == null) {
-                return;
-            }
-
-            try {
-                camera.stopPreview();
-            } catch (Exception e) {
-                //Do nothing
-            }
-
-            try {
-                camera.setPreviewDisplay(/*surface_*/holder);
-                camera.startPreview();
-            } catch (Exception e) {
-                DbgLog.error("error changing camera preview: " + e.getMessage());
-            }
-        }
-    }
-
     public class CameraOverlay extends SurfaceView implements SurfaceHolder.Callback {
         public SurfaceHolder surface_holder;
 
@@ -269,10 +289,6 @@ public class FtcRobotControllerActivity extends Activity {
         }
     }
 
-    public static Camera camera;
-    public static CameraPreview camera_preview;
-    public static CameraOverlay camera_overlay;
-    ////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -291,12 +307,9 @@ public class FtcRobotControllerActivity extends Activity {
         }
 
         camera_preview = new CameraPreview(this, camera);
-        FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
-        frame_layout_preview.addView(camera_preview);
+        //FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
+        //frame_layout_preview.addView(camera_preview);
 
-        camera_overlay = new CameraOverlay(this);
-        FrameLayout frame_layout_overlay = (FrameLayout) findViewById(R.id.camera_overlay);
-        frame_layout_overlay.addView(camera_overlay);
 // End of Custom Stuff
         utility = new Utility(this);
         context = this;

@@ -23,8 +23,8 @@ pushd ..\..\
 
 REM call gradlew.bat assemble
 call gradlew.bat assembleDebug
-
+popd
 call adb -d install -r ./build/outputs/apk/FtcRobotController-debug.apk
 REM adb -s 10.0.0.4:5555 install -r ./build/outputs/apk/FtcRobotController-debug.apk
 
-popd
+
