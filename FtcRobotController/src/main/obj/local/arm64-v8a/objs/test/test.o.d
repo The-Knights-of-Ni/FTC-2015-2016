@@ -24,6 +24,7 @@
   c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/limits.h \
   c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/limits.h \
   c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/syslimits.h \
+<<<<<<< HEAD
   jni/Button.h jni/test_robot_state_elements.h jni/jni_functions.h \
   c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h \
   c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdlib.h \
@@ -35,6 +36,10 @@
   c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\memory.h \
   c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\setjmp.h \
   c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\machine/setjmp.h
+=======
+  jni/test_robot_state_elements.h jni/jni_functions.h \
+  c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h
+>>>>>>> camera
 
 jni/misc.h:
 
@@ -87,14 +92,18 @@ c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/limits.h:
 c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\linux/limits.h:
 
 c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\sys/syslimits.h:
+<<<<<<< HEAD
 
 jni/Button.h:
+=======
+>>>>>>> camera
 
 jni/test_robot_state_elements.h:
 
 jni/jni_functions.h:
 
 c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\jni.h:
+<<<<<<< HEAD
 
 c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\stdlib.h:
 
@@ -113,3 +122,5 @@ c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\memory.h:
 c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\setjmp.h:
 
 c:/android-ndk-r10e/platforms/android-21/arch-arm64/usr/include\machine/setjmp.h:
+=======
+>>>>>>> camera

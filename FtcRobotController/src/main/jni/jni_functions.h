@@ -12,19 +12,22 @@ jmethodID waitOneFullHardwareCycleID;
 jmethodID waitForNextHardwareCycleID;
 jmethodID robotStateInID;
 jmethodID robotStateOutID;
+jmethodID applyRobotStateID;
+
 
 #define waitForStart() env->CallVoidMethod(self, waitForStartID)
 #define waitOneFullHardwareCycle() env->CallVoidMethod(self, waitOneFullHardwareCycleID)
 #define waitForNextHardwareCycle() env->CallVoidMethod(self, waitForNextHardwareCycleID)
 #define robotStateIn() env->CallVoidMethod(self, robotStateInID)
 #define robotStateOut() env->CallVoidMethod(self, robotStateOutID)
+#define applyRobotState() env->CallVoidMethod(self, applyRobotStateID)
 
 jbyteArray jrobot_state;
 
 struct RobotState
 {
     byte * state;
-    bool8 is_copy;    
+    bool8 is_copy;
 };
 
 RobotState robot_state;
@@ -35,16 +38,16 @@ jobject self;
 void initJNI()
 {
     jclass cls = env->GetObjectClass(self);
-    
+
     //functions
     waitForStartID = env->GetMethodID(cls, "waitForStart", "()V");
-    
+
     waitOneFullHardwareCycleID = env->GetMethodID(cls, "waitOneFullHardwareCycle", "()V");
     waitForNextHardwareCycleID = env->GetMethodID(cls, "waitForNextHardwareCycle", "()V");
-    
+
     robotStateInID = env->GetMethodID(cls, "robotStateIn", "()V");
     robotStateOutID = env->GetMethodID(cls, "robotStateOut", "()V");
-    
+
     //setup pinned array
     jfieldID jrobot_stateID = env->GetFieldID(cls, "robot_state", "[B");
     jrobot_state = (jbyteArray) env->GetObjectField(self, jrobot_stateID);
@@ -52,7 +55,7 @@ void initJNI()
     /* { */
     /*     //TODO: give error */
     /* } */
-    
+
     robot_state.state = (byte *) env->GetByteArrayElements(jrobot_state, &robot_state.is_copy);
     assert(robot_state.state);
     if(robot_state.is_copy)

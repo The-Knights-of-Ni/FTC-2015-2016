@@ -40,12 +40,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     android:id="@+id/entire_screen"
     android:orientation="vertical">
 
+  <RelativeLayout android:id="@+id/top_bar"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:background="@color/black">
+    <FrameLayout android:id="@+id/camera_preview"
+                 android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"
+                 android:layout_weight="1"/>
+    <FrameLayout android:id="@+id/camera_overlay"
+                 android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"
+                 android:layout_weight="1"/>
+  </RelativeLayout>
+
   <!-- black bar on top -->
   <RelativeLayout
     android:id="@+id/top_bar"
     android:layout_width="fill_parent"
     android:layout_height="80dp"
     android:background="@color/black">
+
     <ImageView
       android:id="@+id/robotIcon"
       android:layout_width="40dp"
@@ -128,7 +143,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:maxLines="4"
       android:layout_above="@+id/textGamepad1"
       android:layout_centerHorizontal="true"/>
-    
+
     <TextView
       android:id="@+id/textGamepad1"
       android:layout_width="match_parent"
@@ -180,6 +195,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         android:layout_below="@+id/alignedBox"
         android:layout_alignRight="@+id/textErrorMessage"
         android:layout_alignEnd="@+id/textErrorMessage"/>
-
   </RelativeLayout>
 </LinearLayout>

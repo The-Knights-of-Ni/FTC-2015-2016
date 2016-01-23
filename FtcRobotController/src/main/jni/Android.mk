@@ -31,7 +31,7 @@ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
     LOCAL_ARM_NEON := true
     LOCAL_CFLAGS += -D __ARM_NEON
 endif
-
+LOCAL_LDLIBS += -landroid
 LOCAL_MODULE    := camera_test
 LOCAL_SRC_FILES := camera_test.cpp
 

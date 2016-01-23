@@ -59,7 +59,7 @@ public class FtcOpModeRegister implements OpModeRegister {
         manager.register("NDK_test", NDK_test.class);
         manager.register("Mk3Auto", Mk3Auto.class);
         manager.register("Menu Test", MenuTest.class);
-        
+
         //manager.register("IntakeTest", IntakeTest.class);
         //manager.register("IMUTester", IMUTester.class);
         //manager.register("JoystickTest", JoystickTest.class);
