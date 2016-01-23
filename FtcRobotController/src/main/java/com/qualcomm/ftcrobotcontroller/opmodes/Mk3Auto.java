@@ -83,7 +83,7 @@ public class Mk3Auto extends LinearOpMode {
             Mk3AutoRobotStateElements.set_imu_velocity_y(imu.vel_y);
             Mk3AutoRobotStateElements.set_imu_velocity_z(imu.vel_z);
         }
-
+        
     }
     
     void robotStateOut()
@@ -97,7 +97,7 @@ public class Mk3Auto extends LinearOpMode {
         hand_servo.setPosition(Mk3AutoRobotStateElements.get_hand());
         slide_servo.setPosition(Mk3AutoRobotStateElements.get_slide());
         telemetry.addData("Indicator:", Mk3AutoRobotStateElements.get_indicator());
-        telemetry.addData("beacon right:", (Mk3AutoRobotStateElements.get_beacon_right() ? "red" : "blue"));
+        telemetry.addData("beacon right:", (Mk3AutoRobotStateElements.get_beacon_right() == 1 ? "red" : "blue"));
     }
     
     /* End NDK Stuff*/
@@ -124,8 +124,7 @@ public class Mk3Auto extends LinearOpMode {
         return stick.getInt(40);//Offset value
     }
 
-    @Override
-        public void runOpMode() throws InterruptedException {
+    @Override public void runOpMode() throws InterruptedException {
         int elbow_potentiometer_port = 7;
         dim = hardwareMap.deviceInterfaceModule.get("dim");
         
@@ -159,14 +158,19 @@ public class Mk3Auto extends LinearOpMode {
         shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         winch.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         winch.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-
+        
         hand_servo = hardwareMap.servo.get("hand");
         slide_servo = hardwareMap.servo.get("slide");
-        while (!FtcRobotControllerActivity.aligned && (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue)) {/*TODO: Add Warning Sign to Driver*/}
+        while (!FtcRobotControllerActivity.aligned || (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue))
+        {
+            /*TODO: Add Warning Sign to Driver*/
+            telemetry.addData("unchecked boxes", "fix it");
+            waitForNextHardwareCycle();
+        }
         waitForStart();
         //TODO: Add menu with checkboxes and blue/red
         imu.rezero(); //Make sure you call rezero before starting, it resets the velocity integration timers and values
-
+        
         main();
     }
 }

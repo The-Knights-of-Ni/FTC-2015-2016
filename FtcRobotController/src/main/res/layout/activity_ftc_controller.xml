@@ -32,14 +32,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".FtcRobotControllerActivity"
-    android:focusable="true"
-    android:id="@+id/entire_screen"
-    android:orientation="vertical">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context=".FtcRobotControllerActivity"
+              android:focusable="true"
+              android:id="@+id/entire_screen"
+              android:orientation="vertical">
 
+  <RelativeLayout android:id="@+id/top_bar"
+                  android:layout_width="100px"
+                  android:layout_height="100px"
+                  android:background="@color/black">
+    <FrameLayout android:id="@+id/camera_preview"
+                 android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"
+                 android:layout_weight="1"/>
+  </RelativeLayout>
+  
   <!-- black bar on top -->
   <RelativeLayout
     android:id="@+id/top_bar"

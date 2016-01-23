@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 public class Mk3TeleopRobotStateElements
 {
     public static byte[] robot_state;
-    public static int robot_state_size = 140;
+    public static int robot_state_size = 152;
     
     Mk3TeleopRobotStateElements(){}
     public static void set_time(double value)
@@ -123,234 +123,264 @@ public class Mk3TeleopRobotStateElements
         return ByteBuffer.wrap(robot_state, 44, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
+    public static void set_current_color(int value)
+    {
+        ByteBuffer.wrap(robot_state, 48, 4).order(ByteOrder.nativeOrder()).putInt(value);
+    }
+
+    public static int get_current_color()
+    {
+        return ByteBuffer.wrap(robot_state, 48, 4).order(ByteOrder.nativeOrder()).getInt();
+    }
+
     public static void set_left_drive(float value)
-    {
-        ByteBuffer.wrap(robot_state, 48, 4).order(ByteOrder.nativeOrder()).putFloat(value);
-    }
-
-    public static float get_left_drive()
-    {
-        return ByteBuffer.wrap(robot_state, 48, 4).order(ByteOrder.nativeOrder()).getFloat();
-    }
-
-    public static void set_right_drive(float value)
     {
         ByteBuffer.wrap(robot_state, 52, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_right_drive()
+    public static float get_left_drive()
     {
         return ByteBuffer.wrap(robot_state, 52, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_winch(float value)
+    public static void set_right_drive(float value)
     {
         ByteBuffer.wrap(robot_state, 56, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_winch()
+    public static float get_right_drive()
     {
         return ByteBuffer.wrap(robot_state, 56, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_shoulder(float value)
+    public static void set_winch(float value)
     {
         ByteBuffer.wrap(robot_state, 60, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_shoulder()
+    public static float get_winch()
     {
         return ByteBuffer.wrap(robot_state, 60, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_intake(float value)
+    public static void set_shoulder(float value)
     {
         ByteBuffer.wrap(robot_state, 64, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_intake()
+    public static float get_shoulder()
     {
         return ByteBuffer.wrap(robot_state, 64, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_hand(float value)
+    public static void set_intake(float value)
     {
         ByteBuffer.wrap(robot_state, 68, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_hand()
+    public static float get_intake()
     {
         return ByteBuffer.wrap(robot_state, 68, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_slide(float value)
+    public static void set_hand(float value)
     {
         ByteBuffer.wrap(robot_state, 72, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_slide()
+    public static float get_hand()
     {
         return ByteBuffer.wrap(robot_state, 72, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_shoulder_print_theta(float value)
+    public static void set_slide(float value)
     {
         ByteBuffer.wrap(robot_state, 76, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_shoulder_print_theta()
+    public static float get_slide()
     {
         return ByteBuffer.wrap(robot_state, 76, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_forearm_print_theta(float value)
+    public static void set_hook_left(float value)
     {
         ByteBuffer.wrap(robot_state, 80, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_forearm_print_theta()
+    public static float get_hook_left()
     {
         return ByteBuffer.wrap(robot_state, 80, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad1_joystick1_x(float value)
+    public static void set_hook_right(float value)
     {
         ByteBuffer.wrap(robot_state, 84, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad1_joystick1_x()
+    public static float get_hook_right()
     {
         return ByteBuffer.wrap(robot_state, 84, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad1_joystick1_y(float value)
+    public static void set_shoulder_print_theta(float value)
     {
         ByteBuffer.wrap(robot_state, 88, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad1_joystick1_y()
+    public static float get_shoulder_print_theta()
     {
         return ByteBuffer.wrap(robot_state, 88, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad1_joystick2_x(float value)
+    public static void set_forearm_print_theta(float value)
     {
         ByteBuffer.wrap(robot_state, 92, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad1_joystick2_x()
+    public static float get_forearm_print_theta()
     {
         return ByteBuffer.wrap(robot_state, 92, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad1_joystick2_y(float value)
+    public static void set_gamepad1_joystick1_x(float value)
     {
         ByteBuffer.wrap(robot_state, 96, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad1_joystick2_y()
+    public static float get_gamepad1_joystick1_x()
     {
         return ByteBuffer.wrap(robot_state, 96, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad1_trigger1(float value)
+    public static void set_gamepad1_joystick1_y(float value)
     {
         ByteBuffer.wrap(robot_state, 100, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad1_trigger1()
+    public static float get_gamepad1_joystick1_y()
     {
         return ByteBuffer.wrap(robot_state, 100, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad1_trigger2(float value)
+    public static void set_gamepad1_joystick2_x(float value)
     {
         ByteBuffer.wrap(robot_state, 104, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad1_trigger2()
+    public static float get_gamepad1_joystick2_x()
     {
         return ByteBuffer.wrap(robot_state, 104, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad1_buttons(int value)
+    public static void set_gamepad1_joystick2_y(float value)
     {
-        ByteBuffer.wrap(robot_state, 108, 4).order(ByteOrder.nativeOrder()).putInt(value);
+        ByteBuffer.wrap(robot_state, 108, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static int get_gamepad1_buttons()
+    public static float get_gamepad1_joystick2_y()
     {
-        return ByteBuffer.wrap(robot_state, 108, 4).order(ByteOrder.nativeOrder()).getInt();
+        return ByteBuffer.wrap(robot_state, 108, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad2_joystick1_x(float value)
+    public static void set_gamepad1_trigger1(float value)
     {
         ByteBuffer.wrap(robot_state, 112, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad2_joystick1_x()
+    public static float get_gamepad1_trigger1()
     {
         return ByteBuffer.wrap(robot_state, 112, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad2_joystick1_y(float value)
+    public static void set_gamepad1_trigger2(float value)
     {
         ByteBuffer.wrap(robot_state, 116, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad2_joystick1_y()
+    public static float get_gamepad1_trigger2()
     {
         return ByteBuffer.wrap(robot_state, 116, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad2_joystick2_x(float value)
+    public static void set_gamepad1_buttons(int value)
     {
-        ByteBuffer.wrap(robot_state, 120, 4).order(ByteOrder.nativeOrder()).putFloat(value);
+        ByteBuffer.wrap(robot_state, 120, 4).order(ByteOrder.nativeOrder()).putInt(value);
     }
 
-    public static float get_gamepad2_joystick2_x()
+    public static int get_gamepad1_buttons()
     {
-        return ByteBuffer.wrap(robot_state, 120, 4).order(ByteOrder.nativeOrder()).getFloat();
+        return ByteBuffer.wrap(robot_state, 120, 4).order(ByteOrder.nativeOrder()).getInt();
     }
 
-    public static void set_gamepad2_joystick2_y(float value)
+    public static void set_gamepad2_joystick1_x(float value)
     {
         ByteBuffer.wrap(robot_state, 124, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad2_joystick2_y()
+    public static float get_gamepad2_joystick1_x()
     {
         return ByteBuffer.wrap(robot_state, 124, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad2_trigger1(float value)
+    public static void set_gamepad2_joystick1_y(float value)
     {
         ByteBuffer.wrap(robot_state, 128, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad2_trigger1()
+    public static float get_gamepad2_joystick1_y()
     {
         return ByteBuffer.wrap(robot_state, 128, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_gamepad2_trigger2(float value)
+    public static void set_gamepad2_joystick2_x(float value)
     {
         ByteBuffer.wrap(robot_state, 132, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_gamepad2_trigger2()
+    public static float get_gamepad2_joystick2_x()
     {
         return ByteBuffer.wrap(robot_state, 132, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
+    public static void set_gamepad2_joystick2_y(float value)
+    {
+        ByteBuffer.wrap(robot_state, 136, 4).order(ByteOrder.nativeOrder()).putFloat(value);
+    }
+
+    public static float get_gamepad2_joystick2_y()
+    {
+        return ByteBuffer.wrap(robot_state, 136, 4).order(ByteOrder.nativeOrder()).getFloat();
+    }
+
+    public static void set_gamepad2_trigger1(float value)
+    {
+        ByteBuffer.wrap(robot_state, 140, 4).order(ByteOrder.nativeOrder()).putFloat(value);
+    }
+
+    public static float get_gamepad2_trigger1()
+    {
+        return ByteBuffer.wrap(robot_state, 140, 4).order(ByteOrder.nativeOrder()).getFloat();
+    }
+
+    public static void set_gamepad2_trigger2(float value)
+    {
+        ByteBuffer.wrap(robot_state, 144, 4).order(ByteOrder.nativeOrder()).putFloat(value);
+    }
+
+    public static float get_gamepad2_trigger2()
+    {
+        return ByteBuffer.wrap(robot_state, 144, 4).order(ByteOrder.nativeOrder()).getFloat();
+    }
+
     public static void set_gamepad2_buttons(int value)
     {
-        ByteBuffer.wrap(robot_state, 136, 4).order(ByteOrder.nativeOrder()).putInt(value);
+        ByteBuffer.wrap(robot_state, 148, 4).order(ByteOrder.nativeOrder()).putInt(value);
     }
 
     public static int get_gamepad2_buttons()
     {
-        return ByteBuffer.wrap(robot_state, 136, 4).order(ByteOrder.nativeOrder()).getInt();
+        return ByteBuffer.wrap(robot_state, 148, 4).order(ByteOrder.nativeOrder()).getInt();
     }
 
 }

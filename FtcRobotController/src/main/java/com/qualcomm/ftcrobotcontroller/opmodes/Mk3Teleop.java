@@ -42,7 +42,8 @@ public class Mk3Teleop extends LinearOpMode {
         intake.setPower(Mk3TeleopRobotStateElements.get_intake());
         hand_servo.setPosition(Mk3TeleopRobotStateElements.get_hand());
         slide_servo.setPosition(Mk3TeleopRobotStateElements.get_slide());
-        hook_servo.setPosition(Mk3TeleopRobotStateElements.get_hook());
+        hook_left_servo.setPosition(Mk3TeleopRobotStateElements.get_hook_left());
+        hook_right_servo.setPosition(Mk3TeleopRobotStateElements.get_hook_right());
         telemetry.addData("shoulder_theta", Mk3TeleopRobotStateElements.get_shoulder_print_theta());
         telemetry.addData("forearm_theta", Mk3TeleopRobotStateElements.get_forearm_print_theta());
         //telemetry.addData("hand position", Mk3TeleopRobotStateElements.get_hand_print_position());
@@ -103,7 +104,8 @@ public class Mk3Teleop extends LinearOpMode {
 
     Servo hand_servo;
     Servo slide_servo;
-    Servo hook_servo;
+    Servo hook_left_servo;
+    Servo hook_right_servo;
     /* End Motor Definitions */
 
     public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
@@ -135,11 +137,13 @@ public class Mk3Teleop extends LinearOpMode {
         waitOneFullHardwareCycle();
         //shoulder.setDirection(DcMotor.Direction.REVERSE);
         //elbow.setDirection(DcMotor.Direction.REVERSE);
-
+        
         hand_servo = hardwareMap.servo.get("hand");
-        slide_servo = hardwareMap.servo.get("slide");
-        hook_servo = hardwareMap.servo.get("hook");
-
+        slide_servo = hardwareMap.servo.get("slide");        
+        hook_left_servo = hardwareMap.servo.get("hook_left");
+        hook_right_servo = hardwareMap.servo.get("hook_right");
+        hook_left_servo.setDirection(Servo.Direction.REVERSE);
+        
         main();
 
     }

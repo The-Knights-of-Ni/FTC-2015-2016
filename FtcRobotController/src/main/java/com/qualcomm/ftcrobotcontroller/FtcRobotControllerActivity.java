@@ -153,31 +153,31 @@ public class FtcRobotControllerActivity extends Activity {
     public static boolean aligned;
     public static boolean red;
     public static boolean blue;
-
+    
     public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     {
-        //public SurfaceHolder surface_holder;
+        public SurfaceHolder surface_holder;
         public Camera camera;
         
         public CameraPreview(Context context, Camera cam)
         {
             super(context);
             camera = cam;
-            /* surface_holder = getHolder(); */
-            /* surface_holder.addCallback(this); */
+            surface_holder = getHolder();
+            surface_holder.addCallback(this);
         }
         
         public void surfaceCreated(SurfaceHolder holder)
         {
-            /*try
+            try
             {
-                //camera.setPreviewDisplay(holder);
+                camera.setPreviewDisplay(holder);
 
             }
             catch(IOException e)
             {
                 DbgLog.error("error setting camera preview: " + e.getMessage());
-            }*/
+            }
             camera.startPreview();
         }
         
@@ -190,29 +190,29 @@ public class FtcRobotControllerActivity extends Activity {
         
         public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
         {
-            /* if(surface_holder.getSurface() == null) */
-            /* { */
-            /*     return; */
-            /* } */
+            if(surface_holder.getSurface() == null)
+            {
+                return;
+            }
             
-            /* try */
-            /* { */
-            /*     camera.stopPreview(); */
-            /* } */
-            /* catch(Exception e) */
-            /* { */
-            /*     //Do nothing */
-            /* } */
+            try
+            {
+                camera.stopPreview();
+            }
+            catch(Exception e)
+            {
+                //Do nothing
+            }
             
-            /* try */
-            /* { */
-            /*     camera.setPreviewDisplay(/\*surface_*\/holder); */
-            /*     camera.startPreview(); */
-            /* } */
-            /* catch(Exception e) */
-            /* { */
-            /*     DbgLog.error("error changing camera preview: " + e.getMessage()); */
-            /* } */
+            try
+            {
+                camera.setPreviewDisplay(/*surface_*/holder);
+                camera.startPreview();
+            }
+            catch(Exception e)
+            {
+                DbgLog.error("error changing camera preview: " + e.getMessage());
+            }
         }
     }
     
@@ -263,39 +263,15 @@ public class FtcRobotControllerActivity extends Activity {
             }
         });
     }
-
-
+    
     //custom gui
-
-    public class CameraOverlay extends SurfaceView implements SurfaceHolder.Callback {
-        public SurfaceHolder surface_holder;
-
-        public CameraOverlay(Context context) {
-            super(context);
-            surface_holder = getHolder();
-            surface_holder.addCallback(this);
-            setZOrderMediaOverlay(true);
-            surface_holder.setFormat(PixelFormat.TRANSLUCENT);
-            surface_holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        }
-
-        public void surfaceCreated(SurfaceHolder holder) {
-        }
-
-        public void surfaceDestroyed(SurfaceHolder holder) {
-        }
-
-        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        }
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
         setContentView(R.layout.activity_ftc_controller);
-
+        
         //custom gui
         addListenerOnRed();
         addListenerOnBlue();
@@ -305,11 +281,11 @@ public class FtcRobotControllerActivity extends Activity {
         } catch (Exception e) {
             DbgLog.error("could not open camera, camera is in use or does not exist");
         }
-
+        
         camera_preview = new CameraPreview(this, camera);
-        //FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
-        //frame_layout_preview.addView(camera_preview);
-
+        FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
+        frame_layout_preview.addView(camera_preview);
+        
 // End of Custom Stuff
         utility = new Utility(this);
         context = this;
@@ -321,7 +297,7 @@ public class FtcRobotControllerActivity extends Activity {
                 openOptionsMenu();
             }
         });
-
+        
         textDeviceName = (TextView) findViewById(R.id.textDeviceName);
         textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
         textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
@@ -333,7 +309,7 @@ public class FtcRobotControllerActivity extends Activity {
         dimmer = new Dimmer(this);
         dimmer.longBright();
         Restarter restarter = new RobotRestarter();
-
+        
         updateUI = new UpdateUI(this, dimmer);
         updateUI.setRestarter(restarter);
         updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
@@ -349,17 +325,17 @@ public class FtcRobotControllerActivity extends Activity {
             HardwareFactory.enableDeviceEmulation();
         }
     }
-
+    
     @Override
     protected void onStart() {
         super.onStart();
-
+        
         // save 4MB of logcat to the SD card
         RobotLog.writeLogcatToDisk(this, 4 * 1024);
-
+        
         Intent intent = new Intent(this, FtcRobotControllerService.class);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
-
+        
         utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
 
         callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
