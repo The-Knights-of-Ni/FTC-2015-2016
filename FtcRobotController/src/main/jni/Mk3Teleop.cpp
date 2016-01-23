@@ -24,6 +24,7 @@
   float intake;
   float hand;
   float slide;
+  float hook;
 
   //float hand_print_position; //for checking servo values
   float shoulder_print_theta;
@@ -58,10 +59,14 @@ float hand_level_position = 0.6;
 #define slide_blue_position 1
 #define slide_red_position -1
 #define slide_stored_position 0
+
+float hook_level_position = 0.3f; 
+float hook_locked_position = 0.9f;
 //KEYBINDS
 
 //Drive
 #define drive_stick pad1stick1
+#define drive_toggle pad1.toggle(LEFT_STICK_BUTTON);
 
 //Hopper
 #define intake_toggle pad1.toggle(LEFT_BUMPER)
@@ -82,6 +87,9 @@ float hand_level_position = 0.6;
 #define slide_toggle pad1.toggle(Y)
 #define slide_right pad1.press(DPAD_RIGHT)
 #define slide_left pad1.press(DPAD_LEFT)
+
+//Hook
+ #define hook_toggle pad2.toggle(B);
 
 extern "C"
 void JNI_main(JNIEnv * _env, jobject _self)
@@ -125,8 +133,16 @@ void JNI_main(JNIEnv * _env, jobject _self)
 //============================= Drive ============================
         deadZone(drive_stick);
         //smoothJoysticks(&drive_stick);
-        left_drive = drive_stick.y - drive_stick.x;
-        right_drive = drive_stick.y + drive_stick.x;
+        if(drive_toggle)
+        {
+            left_drive = -drive_stick.y - drive_stick.x;
+            right_drive = -drive_stick.y + drive_stick.x;
+        }
+        else
+        {
+            left_drive = drive_stick.y - drive_stick.x;
+            right_drive = drive_stick.y + drive_stick.x;
+        }
         left_drive = clamp(left_drive, -1.0, 1.0);
         right_drive = clamp(right_drive, -1.0, 1.0);
         //Might need to add additional bounding in as a safety
@@ -294,6 +310,18 @@ void JNI_main(JNIEnv * _env, jobject _self)
             slide -= slide_speed;
 
         slide = clamp(slide, 0.0, 1.0);
+//============================ Hook ===========================
+        if(hook_toggle)
+        {
+            if(Math.abs(hook - hook_level_position) < 0.00000001)
+            {
+                hook = hook_locked_position;
+            }
+            else
+            {
+                hook = hook_level_position;
+            }
+        }
 //============================ Updates ===========================
         pad1.updateButtons(gamepad1.buttons);
         pad2.updateButtons(gamepad2.buttons);
