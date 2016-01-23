@@ -153,6 +153,7 @@ public class FtcRobotControllerActivity extends Activity {
     public static boolean aligned;
     public static boolean red;
     public static boolean blue;
+    public static int color;
 
     public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     {

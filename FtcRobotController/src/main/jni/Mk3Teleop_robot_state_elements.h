@@ -18,6 +18,7 @@ enum robot_state_element
     rsid_roll, rsid_roll_end = rsid_roll + 3,
     rsid_x_velocity, rsid_x_velocity_end = rsid_x_velocity + 3,
     rsid_y_velocity, rsid_y_velocity_end = rsid_y_velocity + 3,
+    rsid_current_color, rsid_current_color_end = rsid_current_color + 3,
     rsid_left_drive, rsid_left_drive_end = rsid_left_drive + 3,
     rsid_right_drive, rsid_right_drive_end = rsid_right_drive + 3,
     rsid_winch, rsid_winch_end = rsid_winch + 3,
@@ -25,6 +26,7 @@ enum robot_state_element
     rsid_intake, rsid_intake_end = rsid_intake + 3,
     rsid_hand, rsid_hand_end = rsid_hand + 3,
     rsid_slide, rsid_slide_end = rsid_slide + 3,
+    rsid_hook, rsid_hook_end = rsid_hook + 3,
     rsid_shoulder_print_theta, rsid_shoulder_print_theta_end = rsid_shoulder_print_theta + 3,
     rsid_forearm_print_theta, rsid_forearm_print_theta_end = rsid_forearm_print_theta + 3,
     rsid_gamepad1, rsid_gamepad1_end = rsid_gamepad1 + 27,
@@ -43,6 +45,7 @@ enum robot_state_element
 #define roll (*((float *) (robot_state.state+rsid_roll)))
 #define x_velocity (*((float *) (robot_state.state+rsid_x_velocity)))
 #define y_velocity (*((float *) (robot_state.state+rsid_y_velocity)))
+#define current_color (*((int *) (robot_state.state+rsid_current_color)))
 #define left_drive (*((float *) (robot_state.state+rsid_left_drive)))
 #define right_drive (*((float *) (robot_state.state+rsid_right_drive)))
 #define winch (*((float *) (robot_state.state+rsid_winch)))
@@ -50,6 +53,7 @@ enum robot_state_element
 #define intake (*((float *) (robot_state.state+rsid_intake)))
 #define hand (*((float *) (robot_state.state+rsid_hand)))
 #define slide (*((float *) (robot_state.state+rsid_slide)))
+#define hook (*((float *) (robot_state.state+rsid_hook)))
 #define shoulder_print_theta (*((float *) (robot_state.state+rsid_shoulder_print_theta)))
 #define forearm_print_theta (*((float *) (robot_state.state+rsid_forearm_print_theta)))
 #define gamepad1 (*((gamepad *) (robot_state.state+rsid_gamepad1)))

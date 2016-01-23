@@ -273,9 +273,9 @@ void JNI_main(JNIEnv * _env, jobject _self)
         if (hopper_tilt)
         {
             if (current_color)
-                hand = hand_blue_position;
-            else
                 hand = hand_red_position;
+            else
+                hand = hand_blue_position;
         }
         else
         {
@@ -296,9 +296,9 @@ void JNI_main(JNIEnv * _env, jobject _self)
         if (slide_toggle)
         {
             if (current_color)
-                slide = slide_blue_position;
-            else
                 slide = slide_red_position;
+            else
+                slide = slide_blue_position;
         }
         else
             slide = slide_stored_position;
@@ -313,7 +313,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
 //============================ Hook ===========================
         if(hook_toggle)
         {
-            if(Math.abs(hook - hook_level_position) < 0.00000001)
+            if(abs(hook - hook_level_position) < 0.00000001)
             {
                 hook = hook_locked_position;
             }
