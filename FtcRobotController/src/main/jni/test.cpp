@@ -1,3 +1,4 @@
+#if 0
 /*
   robot_state_elements
   {
@@ -43,7 +44,6 @@ void JNI_main(JNIEnv * _env, jobject _self)
     do
     {
         //(*((float*)(robot_state.state+rsid_left_drive_power))) = 1.0f;//robot_state.state[rsid_gamepad1];
-<<<<<<< HEAD
         left_drive_power = gamepad1.joystick1.y-gamepad1.joystick1.x;
         right_drive_power = gamepad1.joystick1.y+gamepad1.joystick1.x;
 
@@ -57,3 +57,4 @@ void JNI_main(JNIEnv * _env, jobject _self)
         updateRobot();
     }
 }
+#endif

@@ -57,7 +57,7 @@ void customAutonomousUpdate()
     elbow_potentiometer_angle = lerp(
         (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+12.0f))*pi/180.0f,
         elbow_potentiometer_angle,
-        exp(-20.0*dt));
+        exp(-500.0*dt));
     
     float new_shoulder_theta = shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
     float new_inside_elbow_theta = elbow_potentiometer_angle;
@@ -69,24 +69,25 @@ void customAutonomousUpdate()
     shoulder_theta = new_shoulder_theta;
     inside_elbow_theta = new_inside_elbow_theta;
     winch_theta = new_winch_theta;
-    
-    armToAngle(shoulder, winch,
-               target_arm_theta, target_inside_elbow_theta,
+
+    shoulder = 0;
+    winch = 0;
+    armJointsToAngle(shoulder, winch,
+               target_shoulder_theta, target_inside_elbow_theta,
                shoulder_theta, inside_elbow_theta,
                score_mode, dt);
-
-    winch = clamp(winch, -1.0, 1.0);
+    
     shoulder = clamp(shoulder, -1.0, 1.0);
+    winch = clamp(winch, -1.0, 1.0);
     left_drive = clamp(left_drive, -1.0, 1.0);
     right_drive = clamp(right_drive, -1.0, 1.0);
     intake = clamp(intake, -1.0, 1.0);
-
+    
     hand = clamp(hand, 0.0, 1.0);
     slide = clamp(slide, 0.0, 1.0);
 }
 
 #define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk3Auto_main
-extern "C"
 
 //#define update (if(updateRobot() == 0) exit(EXIT_SUCCESS););
 #define currentColor 0
@@ -95,10 +96,15 @@ extern "C"
 #define slide_position_left -70
 #define slide_position_safe 90
 
-void JNI_main(JNIEnv * env, jobject self)
+extern "C"
+void JNI_main(JNIEnv * _env, jobject _self)
 {
-    initJNI();
+    //NOTE: DON'T FORGET THESE //TODO: make is so you don't need these
+    env = _env;
+    self = _self;
     
+    initJNI();
+    waitForStart();
     initCamera(camera_w, camera_h);
     
     setDriveMotors(&left_drive, &right_drive, &imu_heading, &left_drive_encoder, &right_drive_encoder);
@@ -110,15 +116,20 @@ void JNI_main(JNIEnv * env, jobject self)
     //hopper down
     #define colorAdjustedAngle(a) (currentColor ? a : -a)
     
-    interruptable for ever
+    interruptable
     {
-        {
-            beacon_right = getBeaconColor();
-            continue;
-        }
+        // for ever
+        // {
+        //     beacon_right = getBeaconColor();
+        //     updateRobot();
+        // }
         
-        target_arm_theta = 150;
-        target_inside_elbow_theta = 210;
+        target_shoulder_theta = pi*140/180;
+        target_inside_elbow_theta = pi*210/180;
+        for ever
+        {
+            autonomousUpdate();
+        }
         wait(1);
         intake = 1;
         autonomousUpdate();

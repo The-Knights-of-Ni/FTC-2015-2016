@@ -25,7 +25,8 @@
   float intake;
   float hand;
   float slide;
-  float hook;
+  float hook_left;
+  float hook_right;
 
   //float hand_print_position; //for checking servo values
   float shoulder_print_theta;
@@ -61,8 +62,8 @@ float hand_level_position = 0.6;
 #define slide_red_position -1
 #define slide_stored_position 0
 
-float hook_level_position = 0.3f;
-float hook_locked_position = 0.9f;
+float hook_level_position = 0.0f;
+float hook_locked_position = 1.0f;
 //KEYBINDS
 
 //Drive
@@ -78,19 +79,19 @@ float hook_locked_position = 0.9f;
 //Arm
 #define shoulder_manual pad2stick1
 #define elbow_manual pad2stick2
-#define arm_stick ((v2f){-pad2stick1.y, -pad2stick2.y})
+#define arm_stick ((v2f){pad2stick1.y, -pad2stick2.y})
 #define arm_manual_toggle pad2.toggle(Y)
 #define arm_score_mode_button pad2.press(DPAD_UP)
 #define arm_intake_mode_button pad2.press(DPAD_DOWN)
 #define precision_mode pad2.toggle(A)
 
 //Slide
-#define slide_toggle pad1.toggle(Y)
+//#define slide_toggle pad1.toggle(Y)
 #define slide_right pad1.press(DPAD_RIGHT)
 #define slide_left pad1.press(DPAD_LEFT)
 
 //Hook
-#define hook_toggle pad2.toggle(B)
+#define hook_toggle pad1.toggle(B)
 extern "C"
 void JNI_main(JNIEnv * _env, jobject _self)
 {
@@ -118,9 +119,9 @@ void JNI_main(JNIEnv * _env, jobject _self)
     {
         dt = time - old_time;
         old_time = time;
-
+        
 //============================ Controls ==========================
-
+        
         pad1stick1.x = gamepad1.joystick1.x;
         pad1stick1.y = gamepad1.joystick1.y;
         pad1stick2.x = gamepad1.joystick2.x;
@@ -129,7 +130,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
         pad2stick1.y = gamepad2.joystick1.y;
         pad2stick2.x = gamepad2.joystick2.x;
         pad2stick2.y = gamepad2.joystick2.y;
-
+        
 //============================= Drive ============================
         deadZone(drive_stick);
         //smoothJoysticks(&drive_stick);
@@ -146,7 +147,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
         left_drive = clamp(left_drive, -1.0, 1.0);
         right_drive = clamp(right_drive, -1.0, 1.0);
         //Might need to add additional bounding in as a safety
-
+        
 //============================== Arm =============================            
         //TODO: correctly convert to angle
         elbow_potentiometer_angle = lerp(
@@ -175,7 +176,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
             {
                 score_mode = true;
                 //target_shoulder_theta = 0.75;
-                target_inside_elbow_theta = pi*3/4;
+                target_inside_elbow_theta = pi*2/5;
                 
                 shoulder = -clamp(2-0.6*(inside_elbow_theta-target_inside_elbow_theta), 0.0, 1.0);
                 float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
@@ -188,7 +189,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
             {
                 score_mode = false;
                 //target_shoulder_theta = 2.75;
-                target_inside_elbow_theta = 4.3;
+                target_inside_elbow_theta = 4.0;
                 
                 shoulder = clamp(2-0.6*(target_inside_elbow_theta-inside_elbow_theta), 0.0, 1.0);
                 target_shoulder_theta = shoulder_theta;
@@ -250,7 +251,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
             // smoothJoysticks(&elbow_manual);//This needs to be fixed.
             // smoothJoysticks(&shoulder_manual);
             shoulder = shoulder_manual.y*(precision_mode ? 0.6 : 1);
-            winch = elbow_manual.y*(precision_mode ? 0.6 : 1);
+            winch = -elbow_manual.y*(precision_mode ? 0.6 : 1);
             
             shoulder = clamp(shoulder, -1.0, 1.0);
             winch = clamp(winch, -1.0, 1.0);
@@ -293,35 +294,26 @@ void JNI_main(JNIEnv * _env, jobject _self)
 //TODO: Block count
         //TODO: Tilt
 //============================ Slide ===========================
-        if (slide_toggle)
-        {
-            if (current_color)
-                slide = slide_red_position;
-            else
-                slide = slide_blue_position;
-        }
-        else
-            slide = slide_stored_position;
-
-        //These aren't working yet, I'll need to write a release condition (the toggle is forcing it closed)
+        slide = 0.5;
         if (slide_right)
-            slide += slide_speed;
+            slide = +slide_speed;
         if (slide_left)
-            slide -= slide_speed;
-
+            slide = -slide_speed;
+        
         slide = clamp(slide, 0.0, 1.0);
 //============================ Hook ===========================
         if(hook_toggle)
         {
-            if(abs(hook - hook_level_position) < 0.00000001)
-            {
-                hook = hook_locked_position;
-            }
-            else
-            {
-                hook = hook_level_position;
-            }
+            hook_left = hook_locked_position;
+            hook_right = hook_locked_position;
         }
+        else
+        {
+            hook_left = hook_level_position;
+            hook_right = hook_level_position;
+        }
+        hook_left = clamp(hook_left, 0.0, 1.0);
+        hook_right = clamp(hook_right, 0.0, 1.0);
 //============================ Updates ===========================
         pad1.updateButtons(gamepad1.buttons);
         pad2.updateButtons(gamepad2.buttons);
