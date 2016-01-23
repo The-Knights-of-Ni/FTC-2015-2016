@@ -16,7 +16,8 @@
   float roll;
   float x_velocity;
   float y_velocity;
-  
+  int current_color;
+
   float left_drive;
   float right_drive;
   float winch;
@@ -60,7 +61,7 @@ float hand_level_position = 0.6;
 #define slide_red_position -1
 #define slide_stored_position 0
 
-float hook_level_position = 0.3f; 
+float hook_level_position = 0.3f;
 float hook_locked_position = 0.9f;
 //KEYBINDS
 

@@ -1,5 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -86,6 +87,7 @@ public class Mk3Teleop extends LinearOpMode {
         Mk3TeleopRobotStateElements.set_roll(6);
         Mk3TeleopRobotStateElements.set_x_velocity(6);
         Mk3TeleopRobotStateElements.set_y_velocity(6);
+        Mk3TeleopRobotStateElements.set_current_color((FtcRobotControllerActivity.red ? 1 : 0));
     }
     /* End NDK Stuff*/
 
