@@ -26,12 +26,8 @@ enum robot_state_element
     rsid_intake, rsid_intake_end = rsid_intake + 3,
     rsid_hand, rsid_hand_end = rsid_hand + 3,
     rsid_slide, rsid_slide_end = rsid_slide + 3,
-<<<<<<< HEAD
-    rsid_hook, rsid_hook_end = rsid_hook + 3,
-=======
     rsid_hook_left, rsid_hook_left_end = rsid_hook_left + 3,
     rsid_hook_right, rsid_hook_right_end = rsid_hook_right + 3,
->>>>>>> acfd4f480eaded132c10ea9e1ab7e814c03f3962
     rsid_shoulder_print_theta, rsid_shoulder_print_theta_end = rsid_shoulder_print_theta + 3,
     rsid_forearm_print_theta, rsid_forearm_print_theta_end = rsid_forearm_print_theta + 3,
     rsid_gamepad1, rsid_gamepad1_end = rsid_gamepad1 + 27,
@@ -58,12 +54,8 @@ enum robot_state_element
 #define intake (*((float *) (robot_state.state+rsid_intake)))
 #define hand (*((float *) (robot_state.state+rsid_hand)))
 #define slide (*((float *) (robot_state.state+rsid_slide)))
-<<<<<<< HEAD
-#define hook (*((float *) (robot_state.state+rsid_hook)))
-=======
 #define hook_left (*((float *) (robot_state.state+rsid_hook_left)))
 #define hook_right (*((float *) (robot_state.state+rsid_hook_right)))
->>>>>>> acfd4f480eaded132c10ea9e1ab7e814c03f3962
 #define shoulder_print_theta (*((float *) (robot_state.state+rsid_shoulder_print_theta)))
 #define forearm_print_theta (*((float *) (robot_state.state+rsid_forearm_print_theta)))
 #define gamepad1 (*((gamepad *) (robot_state.state+rsid_gamepad1)))

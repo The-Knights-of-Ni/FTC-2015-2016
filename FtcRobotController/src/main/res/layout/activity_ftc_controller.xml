@@ -40,17 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               android:id="@+id/entire_screen"
               android:orientation="vertical">
 
-  <RelativeLayout android:id="@+id/top_bar"
-                  android:layout_width="100px"
-                  android:layout_height="100px"
-                  android:background="@color/black">
-    <FrameLayout android:id="@+id/camera_preview"
-                 android:layout_width="fill_parent"
-                 android:layout_height="fill_parent"
-                 android:layout_weight="1"/>
-  </RelativeLayout>
-  
-  <!-- black bar on top -->
+    <!-- black bar on top -->
   <RelativeLayout
     android:id="@+id/top_bar"
     android:layout_width="fill_parent"
@@ -92,6 +82,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_centerInParent="true"
       android:layout_centerHorizontal="true"
       android:layout_margin="10dp"/>
+
+      <FrameLayout android:id="@+id/camera_preview"
+                   android:layout_width="fill_parent"
+                   android:layout_height="fill_parent"
+                   android:layout_weight="1"
+                   android:layout_alignParentTop="true"
+                   android:layout_toLeftOf="@+id/menu_buttons"
+                   android:layout_toRightOf="@+id/textDeviceName"
+                   android:layout_toEndOf="@+id/textDeviceName"/>
 
   </RelativeLayout>
   <!-- end of black bar -->
@@ -137,8 +136,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:textStyle="bold"
       android:minLines="2"
       android:maxLines="4"
-      android:layout_above="@+id/textGamepad1"
-      android:layout_centerHorizontal="true"/>
+      android:layout_below="@+id/textOpMode"
+      android:layout_alignParentRight="true"
+      android:layout_alignParentEnd="true"/>
 
     <TextView
       android:id="@+id/textGamepad1"
@@ -164,7 +164,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         android:text="Aligned"
         android:id="@+id/alignedBox"
         android:checked="false"
-        android:layout_below="@+id/textOpMode"
+        android:layout_below="@+id/textErrorMessage"
         android:layout_centerHorizontal="true"/>
 
     <CheckBox

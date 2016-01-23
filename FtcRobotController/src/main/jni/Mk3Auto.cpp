@@ -92,9 +92,9 @@ void customAutonomousUpdate()
 //#define update (if(updateRobot() == 0) exit(EXIT_SUCCESS););
 #define currentColor 0
 #define visionColor 0 //Right side of the beacon
-#define slide_position_right 50
-#define slide_position_left -70
-#define slide_position_safe 90
+#define slide_position_right 1
+#define slide_position_left 0
+#define slide_position_safe 0.5
 
 extern "C"
 void JNI_main(JNIEnv * _env, jobject _self)
@@ -124,19 +124,21 @@ void JNI_main(JNIEnv * _env, jobject _self)
         //     updateRobot();
         // }
         
-        target_shoulder_theta = pi*140/180;
-        target_inside_elbow_theta = pi*210/180;
+        //target_shoulder_theta = pi*140/180; don't think I need it to change pos
+        /*target_inside_elbow_theta = pi*30/180;
         for ever
         {
             autonomousUpdate();
-        }
+        }*/
         wait(1);
-        intake = 1;
+        //intake = 1;
+        slide = slide_position_safe;
         autonomousUpdate();
         //driveOnCourseIn(-10, 0.8, 45);
-        turnRelDeg(45, 0.8);
+        //turnRelDeg(45, 0.8);
+        //#if 0
+        driveDistIn(80, -0.8);
         #if 0
-        driveOnCourseIn(-80, 0.8, 45);
         intake = 0;
         (colorAdjustedAngle(45), 0.8);
         //vision

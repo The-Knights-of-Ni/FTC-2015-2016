@@ -163,12 +163,10 @@ public class Mk3Auto extends LinearOpMode {
         slide_servo = hardwareMap.servo.get("slide");
         while (!FtcRobotControllerActivity.aligned || (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue))
         {
-            /*TODO: Add Warning Sign to Driver*/
             telemetry.addData("unchecked boxes", "fix it");
             waitForNextHardwareCycle();
         }
         waitForStart();
-        //TODO: Add menu with checkboxes and blue/red
         imu.rezero(); //Make sure you call rezero before starting, it resets the velocity integration timers and values
         
         main();

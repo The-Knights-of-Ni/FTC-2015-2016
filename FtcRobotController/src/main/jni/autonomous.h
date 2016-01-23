@@ -82,8 +82,8 @@ void driveOnCourseIn(float dist, float vIs, float target_heading) //Assuming we 
     int left_enc_net = 0;
     int right_prev = 0;
     int left_prev = 0;
-    while (right_enc_net < dist * encoderticks_per_cm ||
-           left_enc_net < dist * encoderticks_per_cm)
+    while (right_enc_net < dist * encoderticks_per_inch ||
+           left_enc_net < dist * encoderticks_per_inch)
     {
         if (doInit)
         {

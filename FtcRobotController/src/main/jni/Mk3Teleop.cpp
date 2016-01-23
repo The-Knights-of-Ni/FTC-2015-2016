@@ -54,8 +54,8 @@
 // #define current_color 0 //0 = red, 1 = blue
 
 #define slide_rotations 20 //TODO: Move this to <robotname>.h
-float hand_blue_position = 0.3;
-float hand_red_position = 0.9;
+float hand_red_position = 0.3;
+float hand_blue_position = 0.9;
 float hand_level_position = 0.6;
 #define slide_speed 5
 #define slide_blue_position 1
