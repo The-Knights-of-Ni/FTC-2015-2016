@@ -29,6 +29,11 @@
   float slide;
   
   int indicator;
+
+  int camera_w;
+  int camera_h;
+
+  int beacon_right;
   //general syntax
   //type{primitive_type name in java, ...};
   //type name;
@@ -37,6 +42,7 @@
 
 void customAutonomousUpdate();
 #include "autonomous.h" //NOTE: needs customAutonomousUpdate must be declared before including this
+#include "vision.h"
 
 #include "Mk3Auto_robot_state_elements.h"
 
@@ -92,6 +98,8 @@ void JNI_main(JNIEnv * env, jobject self)
 {
     initJNI();
     
+    initCamera(camera_w, camera_h);
+    
     setDriveMotors(&left_drive, &right_drive, &imu_heading, &left_drive_encoder, &right_drive_encoder);
     
     //waitForStart(); //needs to be called in java until IMU code is ported
@@ -103,6 +111,11 @@ void JNI_main(JNIEnv * env, jobject self)
     
     interruptable for ever
     {
+        {
+            beacon_right = getBeaconColor();
+            continue;
+        }
+        
         target_arm_theta = 150;
         target_inside_elbow_theta = 210;
         wait(1);

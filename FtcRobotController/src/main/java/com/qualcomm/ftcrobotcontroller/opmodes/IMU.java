@@ -99,6 +99,7 @@ public class IMU
     public short eul_x = 0;
     public short eul_y = 0;
     public short eul_z = 0;
+    public eul_x_offset = 0;
     
     public short qua_w = 0;
     public short qua_x = 0;
@@ -363,11 +364,20 @@ public class IMU
 
     public void rezero()
     {
+        n_reads = 0;//might not want to reset this, not sure
+        
+        while(n_reads < 1)
+        {
+            checkForUpdate();
+        }
+        
         vel_x = 0.0f;
         vel_y = 0.0f;
         vel_z = 0.0f;
         dt = 0.0f;
         old_time = System.nanoTime();
+
+        eul_x_offset = eul_x;
         
         n_reads = 0;//might not want to reset this, not sure
         

@@ -11,15 +11,55 @@ import com.qualcomm.ftcrobotcontroller.opmodes.Mk3AutoRobotStateElements;
 
 import java.nio.ByteBuffer;
 
+import android.hardware.Camera;
+import android.view.SurfaceHolder;
+import android.view.Surface;
+import android.graphics.Canvas;
+import android.graphics.ImageFormat;
 
 public class Mk3Auto extends LinearOpMode {
+    Camera camera = null;
+    int camera_w = 0;
+    int camera_h = 0;
+    Paint paint = null;
+    byte[] robot_state;
+    CameraPreviewCallback camera_preview_callback;
+    
+    byte[] camera_buffer = null;
+    
+    class CameraPreviewCallback implements Camera.PreviewCallback
+    {
+        
+        
+        CameraPreviewCallback(){}
+        public void onPreviewFrame(byte[] data, Camera camera)
+        {
+            camera.addCallbackBuffer(camera_buffer);
+        }
+    }
+    
     /* Start NDK Stuff*/
     byte[] robot_state;
     int elbow_potentiometer_port = 7;
     
     public Mk3Auto() {
+        camera = FtcRobotControllerActivity.camera;
+        
+        Camera.Size camera_size = parameters.getPreviewSize();
+        camera_w = camera_size.width;
+        camera_h = camera_size.height;
+        
         robot_state = new byte[Mk3AutoRobotStateElements.robot_state_size];
         Mk3AutoRobotStateElements.robot_state = robot_state;
+        
+        Mk3AutoRobotStateElements.set_camera_w(camera_w);
+        Mk3AutoRobotStateElements.set_camera_h(camera_h);
+        
+        camera_buffer = new byte[camera_w*camera_h*4];
+        camera_preview_callback = new CameraPreviewCallback();
+        
+        camera.setPreviewCallbackWithBuffer(camera_preview_callback);
+        camera.addCallbackBuffer(camera_buffer);
     }
     
     native void main();
@@ -38,10 +78,10 @@ public class Mk3Auto extends LinearOpMode {
         Mk3AutoRobotStateElements.set_winch_encoder(winch.getCurrentPosition());
         Mk3AutoRobotStateElements.set_shoulder_encoder(shoulder.getCurrentPosition());
         Mk3AutoRobotStateElements.set_elbow_potentiometer(dim.getAnalogInputValue(elbow_potentiometer_port));
-       
+        
         if(imu.checkForUpdate())
         {
-            Mk3AutoRobotStateElements.set_imu_heading(imu.eul_x);
+            Mk3AutoRobotStateElements.set_imu_heading(imu.eul_x-imu.eul_x_offset);
             Mk3AutoRobotStateElements.set_imu_tilt(imu.eul_y);
             Mk3AutoRobotStateElements.set_imu_roll(imu.eul_z);
             Mk3AutoRobotStateElements.set_imu_velocity_x(imu.vel_x);
@@ -61,6 +101,7 @@ public class Mk3Auto extends LinearOpMode {
         hand_servo.setPosition(Mk3AutoRobotStateElements.get_hand());
         slide_servo.setPosition(Mk3AutoRobotStateElements.get_slide());
         telemetry.addData("Indicator:", Mk3AutoRobotStateElements.get_indicator());
+        telemetry.addData("beacon right:", (Mk3AutoRobotStateElements.get_beacon_right() ? "red" : "blue"));
     }
     
     /* End NDK Stuff*/
@@ -91,7 +132,7 @@ public class Mk3Auto extends LinearOpMode {
         public void runOpMode() throws InterruptedException {
         int elbow_potentiometer_port = 7;
         dim = hardwareMap.deviceInterfaceModule.get("dim");
-
+        
         I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
         imu = new IMU(imu_i2c_device);
         int error = imu.init(IMU.mode_ndof,
@@ -111,7 +152,7 @@ public class Mk3Auto extends LinearOpMode {
         imu.vel_x = 0.0f;
         imu.vel_y = 0.0f;
         imu.vel_z = 0.0f;
-
+        
         left_drive = hardwareMap.dcMotor.get("leftd");
         right_drive = hardwareMap.dcMotor.get("rightd");
         shoulder = hardwareMap.dcMotor.get("shoulder");

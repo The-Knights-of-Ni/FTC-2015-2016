@@ -152,15 +152,93 @@ public class FtcRobotControllerActivity extends Activity {
     public static boolean aligned;
     public static boolean red;
     public static boolean blue;
+
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
+    {
+        //public SurfaceHolder surface_holder;
+        public Camera camera;
+        
+        public CameraPreview(Context context, Camera cam)
+        {
+            super(context);
+            camera = cam;
+            /* surface_holder = getHolder(); */
+            /* surface_holder.addCallback(this); */
+        }
+        
+        public void surfaceCreated(SurfaceHolder holder)
+        {
+            try
+            {
+                //camera.setPreviewDisplay(holder);
+                camera.startPreview();
+            }
+            catch(IOException e)
+            {
+                DbgLog.error("error setting camera preview: " + e.getMessage());
+            }
+        }
+        
+        @Override
+            public void surfaceDestroyed(SurfaceHolder holder)
+        {
+            camera.stopPreview();
+            camera.release();
+        }
+        
+        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
+        {
+            /* if(surface_holder.getSurface() == null) */
+            /* { */
+            /*     return; */
+            /* } */
+            
+            /* try */
+            /* { */
+            /*     camera.stopPreview(); */
+            /* } */
+            /* catch(Exception e) */
+            /* { */
+            /*     //Do nothing */
+            /* } */
+            
+            /* try */
+            /* { */
+            /*     camera.setPreviewDisplay(/\*surface_*\/holder); */
+            /*     camera.startPreview(); */
+            /* } */
+            /* catch(Exception e) */
+            /* { */
+            /*     DbgLog.error("error changing camera preview: " + e.getMessage()); */
+            /* } */
+        }
+    }
+    
+    public static Camera camera;
+    public static CameraPreview camera_preview;
     ////////////
+    
     CheckBox redBox, blueBox, alignedBox;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
         setContentView(R.layout.activity_ftc_controller);
-
+        
         //custom gui
+        try
+        {
+            camera = Camera.open(1);
+        }
+        catch(Exception e)
+        {
+            DbgLog.error("could not open camera, camera is in use or does not exist");
+        }
+        
+        camera_preview = new CameraPreview(this, camera);
+        //FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
+        //frame_layout_preview.addView(camera_preview);
+        
         addListenerOnRed();
         addListenerOnBlue();
         addListenerOnAligned();

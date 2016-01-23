@@ -25,6 +25,9 @@ enum robot_state_element
     rsid_hand, rsid_hand_end = rsid_hand + 3,
     rsid_slide, rsid_slide_end = rsid_slide + 3,
     rsid_indicator, rsid_indicator_end = rsid_indicator + 3,
+    rsid_camera_w, rsid_camera_w_end = rsid_camera_w + 3,
+    rsid_camera_h, rsid_camera_h_end = rsid_camera_h + 3,
+    rsid_beacon_right, rsid_beacon_right_end = rsid_beacon_right + 3,
     rsid_size
 };
 
@@ -46,3 +49,6 @@ enum robot_state_element
 #define hand (*((float *) (robot_state.state+rsid_hand)))
 #define slide (*((float *) (robot_state.state+rsid_slide)))
 #define indicator (*((int *) (robot_state.state+rsid_indicator)))
+#define camera_w (*((int *) (robot_state.state+rsid_camera_w)))
+#define camera_h (*((int *) (robot_state.state+rsid_camera_h)))
+#define beacon_right (*((int *) (robot_state.state+rsid_beacon_right)))
