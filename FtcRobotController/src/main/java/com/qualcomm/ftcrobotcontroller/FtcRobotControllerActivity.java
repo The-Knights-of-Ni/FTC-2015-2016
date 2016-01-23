@@ -80,6 +80,7 @@ import android.hardware.Camera;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.widget.FrameLayout;
+
 import java.io.IOException;
 
 import android.graphics.PixelFormat;
@@ -154,6 +155,125 @@ public class FtcRobotControllerActivity extends Activity {
     public static boolean blue;
     ////////////
     CheckBox redBox, blueBox, alignedBox;
+
+    private void addListenerOnRed() {
+        redBox = (CheckBox) findViewById(R.id.redBox);
+        redBox.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    red = true;
+                    if (blue)
+                        blueBox.performClick();
+                } else red = false;
+            }
+        });
+    }
+
+    private void addListenerOnBlue() {
+        blueBox = (CheckBox) findViewById(R.id.blueBox);
+        blueBox.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    blue = true;
+                    if (red)
+                        redBox.performClick();
+                } else blue = false;
+            }
+        });
+    }
+
+    private void addListenerOnAligned() {
+        alignedBox = (CheckBox) findViewById(R.id.alignedBox);
+        alignedBox.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) aligned = true;
+                else aligned = false;
+            }
+        });
+    }
+
+
+    //custom gui
+
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+        public SurfaceHolder surface_holder;
+        public Camera camera;
+
+        public CameraPreview(Context context, Camera cam) {
+            super(context);
+            camera = cam;
+            surface_holder = getHolder();
+            surface_holder.addCallback(this);
+        }
+
+        public void surfaceCreated(SurfaceHolder holder) {
+            try {
+                camera.setPreviewDisplay(holder);
+                //camera.startPreview();
+            } catch (IOException e) {
+                DbgLog.error("error setting camera preview: " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            camera.stopPreview();
+            camera.release();
+        }
+
+        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+            if (surface_holder.getSurface() == null) {
+                return;
+            }
+
+            try {
+                camera.stopPreview();
+            } catch (Exception e) {
+                //Do nothing
+            }
+
+            try {
+                camera.setPreviewDisplay(/*surface_*/holder);
+                camera.startPreview();
+            } catch (Exception e) {
+                DbgLog.error("error changing camera preview: " + e.getMessage());
+            }
+        }
+    }
+
+    public class CameraOverlay extends SurfaceView implements SurfaceHolder.Callback {
+        public SurfaceHolder surface_holder;
+
+        public CameraOverlay(Context context) {
+            super(context);
+            surface_holder = getHolder();
+            surface_holder.addCallback(this);
+            setZOrderMediaOverlay(true);
+            surface_holder.setFormat(PixelFormat.TRANSLUCENT);
+            surface_holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
+
+        public void surfaceCreated(SurfaceHolder holder) {
+        }
+
+        public void surfaceDestroyed(SurfaceHolder holder) {
+        }
+
+        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+        }
+    }
+
+    public static Camera camera;
+    public static CameraPreview camera_preview;
+    public static CameraOverlay camera_overlay;
+    ////////////
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,8 +284,20 @@ public class FtcRobotControllerActivity extends Activity {
         addListenerOnRed();
         addListenerOnBlue();
         addListenerOnAligned();
-        ////////////
+        try {
+            camera = Camera.open(1);
+        } catch (Exception e) {
+            DbgLog.error("could not open camera, camera is in use or does not exist");
+        }
 
+        camera_preview = new CameraPreview(this, camera);
+        FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
+        frame_layout_preview.addView(camera_preview);
+
+        camera_overlay = new CameraOverlay(this);
+        FrameLayout frame_layout_overlay = (FrameLayout) findViewById(R.id.camera_overlay);
+        frame_layout_overlay.addView(camera_overlay);
+// End of Custom Stuff
         utility = new Utility(this);
         context = this;
         entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
@@ -192,7 +324,7 @@ public class FtcRobotControllerActivity extends Activity {
         updateUI = new UpdateUI(this, dimmer);
         updateUI.setRestarter(restarter);
         updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
-        textGamepad, textOpMode, textErrorMessage, textDeviceName);
+                textGamepad, textOpMode, textErrorMessage, textDeviceName);
         callback = updateUI.new Callback();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -205,463 +337,211 @@ public class FtcRobotControllerActivity extends Activity {
         }
     }
 
-    private void addListenerOnRed(){
-        redBox = (CheckBox) findViewById(R.id.redBox);
-        redBox.setOnClickListener(new View.OnClickListener() {
+    @Override
+    protected void onStart() {
+        super.onStart();
 
+        // save 4MB of logcat to the SD card
+        RobotLog.writeLogcatToDisk(this, 4 * 1024);
+
+        Intent intent = new Intent(this, FtcRobotControllerService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+        utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+
+        callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
+
+        entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                if (((CheckBox) v).isChecked())
-                {
-                    red = true;
-                    if(blue)
-                    blueBox.performClick();
-                }
-                else red = false;
+            public boolean onTouch(View v, MotionEvent event) {
+                dimmer.handleDimTimer();
+                return false;
             }
         });
-    }
-    private void addListenerOnBlue(){
-        blueBox = (CheckBox) findViewById(R.id.blueBox);
-        blueBox.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                if (((CheckBox) v).isChecked())
-                {
-                    blue = true;
-                    if(red)
-                    redBox.performClick();
-                }
-                else blue = false;
-            }
-        });
-    }
-    private void addListenerOnAligned(){
-        alignedBox = (CheckBox) findViewById(R.id.alignedBox);
-        alignedBox.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (((CheckBox) v).isChecked()) aligned = true;
-                else aligned = false;
-            }
-        });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
-    //custom gui
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
-    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
-    {
-        public SurfaceHolder surface_holder;
-        public Camera camera;
+    @Override
+    protected void onStop() {
+        super.onStop();
 
-        public CameraPreview(Context context, Camera cam)
-        {
-            super(context);
-            camera = cam;
-            surface_holder = getHolder();
-            surface_holder.addCallback(this);
-        }
-        
-        public void surfaceCreated(SurfaceHolder holder)
-        {
-            try
-            {
-                camera.setPreviewDisplay(holder);
-                //camera.startPreview();
-            }
-            catch(IOException e)
-            {
-                DbgLog.error("error setting camera preview: " + e.getMessage());
-            }
-        }
+        if (controllerService != null) unbindService(connection);
 
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder)
-        {
-            camera.stopPreview();
-            camera.release();
-        }
+        RobotLog.cancelWriteLogcatToDisk(this);
+    }
 
-        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
-        {
-            if(surface_holder.getSurface() == null)
-            {
-                return;
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        // When the window loses focus (e.g., the action overflow is shown),
+        // cancel any pending hide action. When the window gains focus,
+        // hide the system UI.
+        if (hasFocus) {
+            if (ImmersiveMode.apiOver19()) {
+                // Immersive flag only works on API 19 and above.
+                immersion.hideSystemUI();
             }
-
-            try
-            {
-                camera.stopPreview();
-            }
-            catch(Exception e)
-            {
-                //Do nothing
-            }
-
-            try
-            {
-                camera.setPreviewDisplay(/*surface_*/holder);
-                camera.startPreview();
-            }
-            catch(Exception e)
-            {
-                DbgLog.error("error changing camera preview: " + e.getMessage());
-            }
+        } else {
+            immersion.cancelSystemUIHide();
         }
     }
 
-    public class CameraOverlay extends SurfaceView implements SurfaceHolder.Callback
-    {
-        public SurfaceHolder surface_holder;
 
-        public CameraOverlay(Context context)
-        {
-            super(context);
-            surface_holder = getHolder();
-            surface_holder.addCallback(this);
-            setZOrderMediaOverlay(true);
-            surface_holder.setFormat(PixelFormat.TRANSLUCENT);
-            surface_holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_restart_robot:
+                dimmer.handleDimTimer();
+                Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
+                requestRobotRestart();
+                return true;
+            case R.id.action_settings:
+                // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
+                Intent settingsIntent = new Intent("com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity.intent.action.Launch");
+                startActivityForResult(settingsIntent, LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT);
+                return true;
+            case R.id.action_about:
+                // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
+                Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
+                startActivity(intent);
+                return true;
+            case R.id.action_exit_app:
+                finish();
+                return true;
+            case R.id.action_view_logs:
+                // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
+                Intent viewLogsIntent = new Intent("com.qualcomm.ftccommon.ViewLogsActivity.intent.action.Launch");
+                viewLogsIntent.putExtra(LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME, RobotLog.getLogFilename(this));
+                startActivity(viewLogsIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
+    }
 
-        public void surfaceCreated(SurfaceHolder holder){}
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // don't destroy assets on screen rotation
+    }
 
-            public void surfaceDestroyed(SurfaceHolder holder){}
-
-                public void surfaceChanged(SurfaceHolder holder, int format, int w, int h){}
-                }
-
-                public static Camera camera;
-                public static CameraPreview camera_preview;
-                public static CameraOverlay camera_overlay;
-                ////////////
-
-                @Override
-                protected void onCreate(Bundle savedInstanceState) {
-                    super.onCreate(savedInstanceState);
-
-                    setContentView(R.layout.activity_ftc_controller);
-
-                    //custom gui
-                    try
-                    {
-                        camera = Camera.open();
-                    }
-                    catch(Exception e)
-                    {
-                        DbgLog.error("could not open camera, camera is in use or does not exist");
-                    }
-
-                    camera_preview = new CameraPreview(this, camera);
-                    FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
-                    frame_layout_preview.addView(camera_preview);
-
-                    camera_overlay = new CameraOverlay(this);
-                    FrameLayout frame_layout_overlay = (FrameLayout) findViewById(R.id.camera_overlay);
-                    frame_layout_overlay.addView(camera_overlay);
-
-                    utility = new Utility(this);
-                    context = this;
-                    entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
-                    buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
-                    buttonMenu.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            openOptionsMenu();
-                        }
-                    });
-
-                    textDeviceName = (TextView) findViewById(R.id.textDeviceName);
-                    textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
-                    textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
-                    textOpMode = (TextView) findViewById(R.id.textOpMode);
-                    textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
-                    textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
-                    textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
-                    immersion = new ImmersiveMode(getWindow().getDecorView());
-                    dimmer = new Dimmer(this);
-                    dimmer.longBright();
-                    Restarter restarter = new RobotRestarter();
-
-                    updateUI = new UpdateUI(this, dimmer);
-                    updateUI.setRestarter(restarter);
-                    updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
-                    textGamepad, textOpMode, textErrorMessage, textDeviceName);
-                    callback = updateUI.new Callback();
-
-                    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-                    preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-                    hittingMenuButtonBrightensScreen();
-
-                    if (USE_DEVICE_EMULATION) { HardwareFactory.enableDeviceEmulation(); }
-                }
-
-                @Override
-                protected void onStart() {
-                    super.onStart();
-
-                    // save 4MB of logcat to the SD card
-                    RobotLog.writeLogcatToDisk(this, 4 * 1024);
-
-                    Intent intent = new Intent(this, FtcRobotControllerService.class);
-                    bindService(intent, connection, Context.BIND_AUTO_CREATE);
-
+    @Override
+    protected void onActivityResult(int request, int result, Intent intent) {
+        if (request == REQUEST_CONFIG_WIFI_CHANNEL) {
+            if (result == RESULT_OK) {
+                Toast toast = Toast.makeText(context, "Configuration Complete", Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                showToast(toast);
+            }
+        }
+        if (request == LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT) {
+            if (result == RESULT_OK) {
+                Serializable extra = intent.getSerializableExtra(FtcRobotControllerActivity.CONFIGURE_FILENAME);
+                if (extra != null) {
+                    utility.saveToPreferences(extra.toString(), R.string.pref_hardware_config_filename);
                     utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-
-                    callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
-
-                    entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            dimmer.handleDimTimer();
-                            return false;
-                        }
-                    });
-
                 }
+            }
+        }
+    }
 
+    public void onServiceBind(FtcRobotControllerService service) {
+        DbgLog.msg("Bound to Ftc Controller Service");
+        controllerService = service;
+        updateUI.setControllerService(controllerService);
+
+        callback.wifiDirectUpdate(controllerService.getWifiDirectStatus());
+        callback.robotUpdate(controllerService.getRobotStatus());
+        requestRobotSetup();
+    }
+
+    private void requestRobotSetup() {
+        if (controllerService == null) return;
+
+        FileInputStream fis = fileSetup();
+        // if we can't find the file, don't try and build the robot.
+        if (fis == null) {
+            return;
+        }
+
+        HardwareFactory factory;
+
+        // Modern Robotics Factory for use with Modern Robotics hardware
+        HardwareFactory modernRoboticsFactory = new HardwareFactory(context);
+        modernRoboticsFactory.setXmlInputStream(fis);
+        factory = modernRoboticsFactory;
+
+        eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
+
+        controllerService.setCallback(callback);
+        controllerService.setupRobot(eventLoop);
+    }
+
+    private FileInputStream fileSetup() {
+
+        final String filename = Utility.CONFIG_FILES_DIR
+                + utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
+
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(filename);
+        } catch (FileNotFoundException e) {
+            String msg = "Cannot open robot configuration file - " + filename;
+            utility.complainToast(msg, context);
+            DbgLog.msg(msg);
+            utility.saveToPreferences(Utility.NO_FILE, R.string.pref_hardware_config_filename);
+            fis = null;
+        }
+        utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+        return fis;
+    }
+
+    private void requestRobotShutdown() {
+        if (controllerService == null) return;
+        controllerService.shutdownRobot();
+    }
+
+    private void requestRobotRestart() {
+        requestRobotShutdown();
+        requestRobotSetup();
+    }
+
+    protected void hittingMenuButtonBrightensScreen() {
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
                 @Override
-                protected void onResume() {
-                    super.onResume();
-                }
-
-                @Override
-                public void onPause() {
-                    super.onPause();
-                }
-
-                @Override
-                protected void onStop() {
-                    super.onStop();
-
-                    if (controllerService != null) unbindService(connection);
-
-                    RobotLog.cancelWriteLogcatToDisk(this);
-                }
-
-                @Override
-                public void onWindowFocusChanged(boolean hasFocus){
-                    super.onWindowFocusChanged(hasFocus);
-                    // When the window loses focus (e.g., the action overflow is shown),
-                    // cancel any pending hide action. When the window gains focus,
-                    // hide the system UI.
-                    if (hasFocus) {
-                        if (ImmersiveMode.apiOver19()){
-                            // Immersive flag only works on API 19 and above.
-                            immersion.hideSystemUI();
-                        }
-                    } else {
-                        @Override
-                        immersion.cancelSystemUIHide();
-
-                        protected void onStart() {
-                            super.onStart();
-
-                            // save 4MB of logcat to the SD card
-                            RobotLog.writeLogcatToDisk(this, 4 * 1024);
-
-                            Intent intent = new Intent(this, FtcRobotControllerService.class);
-                            bindService(intent, connection, Context.BIND_AUTO_CREATE);
-
-                            utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-
-                            callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
-
-                            entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
-                                @Override
-                                public boolean onTouch(View v, MotionEvent event) {
-                                    dimmer.handleDimTimer();
-                                    return false;
-                                }
-                            });
-
-                        }
-
-                        @Override
-                        protected void onResume() {
-                            super.onResume();
-                        }
-
-                        @Override
-                        public void onPause() {
-                            super.onPause();
-                        }
-
-                        @Override
-                        protected void onStop() {
-                            super.onStop();
-
-                            if (controllerService != null) unbindService(connection);
-
-                            RobotLog.cancelWriteLogcatToDisk(this);
-                        }
-
-                        @Override
-                        public void onWindowFocusChanged(boolean hasFocus) {
-                            super.onWindowFocusChanged(hasFocus);
-                            // When the window loses focus (e.g., the action overflow is shown),
-                            // cancel any pending hide action. When the window gains focus,
-                            // hide the system UI.
-                            if (hasFocus) {
-                                if (ImmersiveMode.apiOver19()) {
-                                    // Immersive flag only works on API 19 and above.
-                                    immersion.hideSystemUI();
-                                }
-                            } else {
-                                immersion.cancelSystemUIHide();
-                            }
-                        }
-
-
-                        @Override
-                        public boolean onCreateOptionsMenu(Menu menu) {
-                            getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
-                            return true;
-                        }
-
-                        @Override
-                        public boolean onOptionsItemSelected(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.action_restart_robot:
-                                dimmer.handleDimTimer();
-                                Toast.makeText(context, "Restarting Robot", Toast.LENGTH_SHORT).show();
-                                requestRobotRestart();
-                                return true;
-                                case R.id.action_settings:
-                                // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
-                                Intent settingsIntent = new Intent("com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity.intent.action.Launch");
-                                startActivityForResult(settingsIntent, LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT);
-                                return true;
-                                case R.id.action_about:
-                                // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
-                                Intent intent = new Intent("com.qualcomm.ftccommon.configuration.AboutActivity.intent.action.Launch");
-                                startActivity(intent);
-                                return true;
-                                case R.id.action_exit_app:
-                                finish();
-                                return true;
-                                case R.id.action_view_logs:
-                                // The string to launch this activity must match what's in AndroidManifest of FtcCommon for this activity.
-                                Intent viewLogsIntent = new Intent("com.qualcomm.ftccommon.ViewLogsActivity.intent.action.Launch");
-                                viewLogsIntent.putExtra(LaunchActivityConstantsList.VIEW_LOGS_ACTIVITY_FILENAME, RobotLog.getLogFilename(this));
-                                startActivity(viewLogsIntent);
-                                return true;
-                                default:
-                                return super.onOptionsItemSelected(item);
-                            }
-                        }
-
-                        @Override
-                        public void onConfigurationChanged(Configuration newConfig) {
-                            super.onConfigurationChanged(newConfig);
-                            // don't destroy assets on screen rotation
-                        }
-
-                        @Override
-                        protected void onActivityResult(int request, int result, Intent intent) {
-                            if (request == REQUEST_CONFIG_WIFI_CHANNEL) {
-                                if (result == RESULT_OK) {
-                                    Toast toast = Toast.makeText(context, "Configuration Complete", Toast.LENGTH_LONG);
-                                    toast.setGravity(Gravity.CENTER, 0, 0);
-                                    showToast(toast);
-                                }
-                            }
-                            if (request == LaunchActivityConstantsList.FTC_ROBOT_CONTROLLER_ACTIVITY_CONFIGURE_ROBOT) {
-                                if (result == RESULT_OK) {
-                                    Serializable extra = intent.getSerializableExtra(FtcRobotControllerActivity.CONFIGURE_FILENAME);
-                                    if (extra != null) {
-                                        utility.saveToPreferences(extra.toString(), R.string.pref_hardware_config_filename);
-                                        utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-                                    }
-                                }
-                            }
-                        }
-
-                        public void onServiceBind(FtcRobotControllerService service) {
-                            DbgLog.msg("Bound to Ftc Controller Service");
-                            controllerService = service;
-                            updateUI.setControllerService(controllerService);
-
-                            callback.wifiDirectUpdate(controllerService.getWifiDirectStatus());
-                            callback.robotUpdate(controllerService.getRobotStatus());
-                            requestRobotSetup();
-                        }
-
-                        private void requestRobotSetup() {
-                            if (controllerService == null) return;
-
-                            FileInputStream fis = fileSetup();
-                            // if we can't find the file, don't try and build the robot.
-                            if (fis == null) {
-                                return;
-                            }
-
-                            HardwareFactory factory;
-
-                            // Modern Robotics Factory for use with Modern Robotics hardware
-                            HardwareFactory modernRoboticsFactory = new HardwareFactory(context);
-                            modernRoboticsFactory.setXmlInputStream(fis);
-                            factory = modernRoboticsFactory;
-
-                            eventLoop = new FtcEventLoop(factory, new FtcOpModeRegister(), callback, this);
-
-                            controllerService.setCallback(callback);
-                            controllerService.setupRobot(eventLoop);
-                        }
-
-                        private FileInputStream fileSetup() {
-
-                            final String filename = Utility.CONFIG_FILES_DIR
-                            + utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
-
-                            FileInputStream fis;
-                            try {
-                                fis = new FileInputStream(filename);
-                            } catch (FileNotFoundException e) {
-                                String msg = "Cannot open robot configuration file - " + filename;
-                                utility.complainToast(msg, context);
-                                DbgLog.msg(msg);
-                                utility.saveToPreferences(Utility.NO_FILE, R.string.pref_hardware_config_filename);
-                                fis = null;
-                            }
-                            utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-                            return fis;
-                        }
-
-                        private void requestRobotShutdown() {
-                            if (controllerService == null) return;
-                            controllerService.shutdownRobot();
-                        }
-
-                        private void requestRobotRestart() {
-                            requestRobotShutdown();
-                            requestRobotSetup();
-                        }
-
-                        protected void hittingMenuButtonBrightensScreen() {
-                            ActionBar actionBar = getActionBar();
-                            if (actionBar != null) {
-                                actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
-                                    @Override
-                                    public void onMenuVisibilityChanged(boolean isVisible) {
-                                        if (isVisible) {
-                                            dimmer.handleDimTimer();
-                                        }
-                                    }
-                                });
-                            }
-                        }
-
-                        public void showToast(final Toast toast) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    toast.show();
-                                }
-                            });
-                        }
+                public void onMenuVisibilityChanged(boolean isVisible) {
+                    if (isVisible) {
+                        dimmer.handleDimTimer();
                     }
+                }
+            });
+        }
+    }
+
+    public void showToast(final Toast toast) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                toast.show();
+            }
+        });
+    }
+}

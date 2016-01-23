@@ -19,6 +19,7 @@
   float imu_tilt;
   float imu_roll;
   v3f imu_velocity;
+  int color;
   
   float left_drive;
   float right_drive;

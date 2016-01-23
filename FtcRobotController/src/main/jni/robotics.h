@@ -77,4 +77,10 @@ struct PID
     }
 };
 
+enum Colors
+{
+    BLUE,
+    RED
+};
+
 #endif //ROBOTICS

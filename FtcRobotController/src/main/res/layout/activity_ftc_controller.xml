@@ -40,20 +40,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     android:id="@+id/entire_screen"
     android:orientation="vertical">
 
-  <RelativeLayout android:id="@+id/top_bar"
-                  android:layout_width="fill_parent"
-                  android:layout_height="fill_parent"
-                  android:background="@color/black">
-    <FrameLayout android:id="@+id/camera_preview"
-                 android:layout_width="fill_parent"
-                 android:layout_height="fill_parent"
-                 android:layout_weight="1"/>
-    <FrameLayout android:id="@+id/camera_overlay"
-                 android:layout_width="fill_parent"
-                 android:layout_height="fill_parent"
-                 android:layout_weight="1"/>
-  </RelativeLayout>
-
   <!-- black bar on top -->
   <RelativeLayout
     android:id="@+id/top_bar"
@@ -168,7 +154,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         android:text="Aligned"
         android:id="@+id/alignedBox"
         android:checked="false"
-        android:layout_above="@+id/redBox"
+        android:layout_below="@+id/textOpMode"
         android:layout_centerHorizontal="true"/>
 
     <CheckBox
@@ -177,12 +163,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         android:text="Red"
         android:id="@+id/redBox"
         android:checked="false"
-        android:layout_marginLeft="79dp"
-        android:layout_marginStart="79dp"
-        android:layout_alignBaseline="@+id/textErrorMessage"
-        android:layout_alignBottom="@+id/textErrorMessage"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_below="@+id/alignedBox"
+        android:layout_toLeftOf="@+id/alignedBox"
+        android:layout_toStartOf="@+id/alignedBox"/>
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -190,10 +173,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         android:text="Blue"
         android:id="@+id/blueBox"
         android:checked="false"
-        android:layout_marginRight="79dp"
-        android:layout_marginEnd="79dp"
-        android:layout_below="@+id/alignedBox"
-        android:layout_alignRight="@+id/textErrorMessage"
-        android:layout_alignEnd="@+id/textErrorMessage"/>
+        android:layout_alignTop="@+id/redBox"
+        android:layout_toRightOf="@+id/alignedBox"
+        android:layout_toEndOf="@+id/alignedBox"/>
   </RelativeLayout>
 </LinearLayout>

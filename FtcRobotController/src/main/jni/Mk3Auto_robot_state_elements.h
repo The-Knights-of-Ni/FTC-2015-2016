@@ -17,6 +17,7 @@ enum robot_state_element
     rsid_imu_tilt, rsid_imu_tilt_end = rsid_imu_tilt + 3,
     rsid_imu_roll, rsid_imu_roll_end = rsid_imu_roll + 3,
     rsid_imu_velocity, rsid_imu_velocity_end = rsid_imu_velocity + 11,
+    rsid_color, rsid_color_end = rsid_color + 3,
     rsid_left_drive, rsid_left_drive_end = rsid_left_drive + 3,
     rsid_right_drive, rsid_right_drive_end = rsid_right_drive + 3,
     rsid_winch, rsid_winch_end = rsid_winch + 3,
@@ -38,6 +39,7 @@ enum robot_state_element
 #define imu_tilt (*((float *) (robot_state.state+rsid_imu_tilt)))
 #define imu_roll (*((float *) (robot_state.state+rsid_imu_roll)))
 #define imu_velocity (*((v3f *) (robot_state.state+rsid_imu_velocity)))
+#define color (*((int *) (robot_state.state+rsid_color)))
 #define left_drive (*((float *) (robot_state.state+rsid_left_drive)))
 #define right_drive (*((float *) (robot_state.state+rsid_right_drive)))
 #define winch (*((float *) (robot_state.state+rsid_winch)))

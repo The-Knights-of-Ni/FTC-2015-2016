@@ -1,5 +1,6 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -38,9 +39,8 @@ public class Mk3Auto extends LinearOpMode {
         Mk3AutoRobotStateElements.set_winch_encoder(winch.getCurrentPosition());
         Mk3AutoRobotStateElements.set_shoulder_encoder(shoulder.getCurrentPosition());
         Mk3AutoRobotStateElements.set_elbow_potentiometer(dim.getAnalogInputValue(elbow_potentiometer_port));
-       
-        if(imu.checkForUpdate())
-        {
+        Mk3AutoRobotStateElements.set_color((FtcRobotControllerActivity.red ? 1 : 0));
+        if(imu.checkForUpdate()) {
             Mk3AutoRobotStateElements.set_imu_heading(imu.eul_x);
             Mk3AutoRobotStateElements.set_imu_tilt(imu.eul_y);
             Mk3AutoRobotStateElements.set_imu_roll(imu.eul_z);
@@ -48,6 +48,7 @@ public class Mk3Auto extends LinearOpMode {
             Mk3AutoRobotStateElements.set_imu_velocity_y(imu.vel_y);
             Mk3AutoRobotStateElements.set_imu_velocity_z(imu.vel_z);
         }
+
     }
     
     void robotStateOut()
@@ -95,15 +96,13 @@ public class Mk3Auto extends LinearOpMode {
         I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
         imu = new IMU(imu_i2c_device);
         int error = imu.init(IMU.mode_ndof,
-                             (byte)(IMU.units_acc_m_per_s2|
-                                    IMU.units_angle_deg |
-                                    IMU.units_angular_vel_deg_per_s |
-                                    IMU.units_temp_C |
-                                    IMU.units_pitch_convention_android));
-        if(error != 0)
-        {
-            for(;;)
-            {
+                (byte) (IMU.units_acc_m_per_s2 |
+                        IMU.units_angle_deg |
+                        IMU.units_angular_vel_deg_per_s |
+                        IMU.units_temp_C |
+                        IMU.units_pitch_convention_android));
+        if (error != 0) {
+            for (; ; ) {
                 telemetry.addData("error initializing imu", 0);
                 waitOneFullHardwareCycle();
             }
@@ -124,10 +123,10 @@ public class Mk3Auto extends LinearOpMode {
         shoulder.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         winch.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         winch.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        
+
         hand_servo = hardwareMap.servo.get("hand");
         slide_servo = hardwareMap.servo.get("slide");
-        
+        while (!FtcRobotControllerActivity.aligned && (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue)) {/*TODO: Add Warning Sign to Driver*/}
         waitForStart();
         //TODO: Add menu with checkboxes and blue/red
         imu.rezero(); //Make sure you call rezero before starting, it resets the velocity integration timers and values

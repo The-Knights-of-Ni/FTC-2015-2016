@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 public class Mk3AutoRobotStateElements
 {
     public static byte[] robot_state;
-    public static int robot_state_size = 84;
+    public static int robot_state_size = 88;
     
     Mk3AutoRobotStateElements(){}
     public static void set_time(double value)
@@ -133,84 +133,94 @@ public class Mk3AutoRobotStateElements
         return ByteBuffer.wrap(robot_state, 48, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
+    public static void set_color(int value)
+    {
+        ByteBuffer.wrap(robot_state, 52, 4).order(ByteOrder.nativeOrder()).putInt(value);
+    }
+
+    public static int get_color()
+    {
+        return ByteBuffer.wrap(robot_state, 52, 4).order(ByteOrder.nativeOrder()).getInt();
+    }
+
     public static void set_left_drive(float value)
-    {
-        ByteBuffer.wrap(robot_state, 52, 4).order(ByteOrder.nativeOrder()).putFloat(value);
-    }
-
-    public static float get_left_drive()
-    {
-        return ByteBuffer.wrap(robot_state, 52, 4).order(ByteOrder.nativeOrder()).getFloat();
-    }
-
-    public static void set_right_drive(float value)
     {
         ByteBuffer.wrap(robot_state, 56, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_right_drive()
+    public static float get_left_drive()
     {
         return ByteBuffer.wrap(robot_state, 56, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_winch(float value)
+    public static void set_right_drive(float value)
     {
         ByteBuffer.wrap(robot_state, 60, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_winch()
+    public static float get_right_drive()
     {
         return ByteBuffer.wrap(robot_state, 60, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_shoulder(float value)
+    public static void set_winch(float value)
     {
         ByteBuffer.wrap(robot_state, 64, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_shoulder()
+    public static float get_winch()
     {
         return ByteBuffer.wrap(robot_state, 64, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_intake(float value)
+    public static void set_shoulder(float value)
     {
         ByteBuffer.wrap(robot_state, 68, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_intake()
+    public static float get_shoulder()
     {
         return ByteBuffer.wrap(robot_state, 68, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_hand(float value)
+    public static void set_intake(float value)
     {
         ByteBuffer.wrap(robot_state, 72, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_hand()
+    public static float get_intake()
     {
         return ByteBuffer.wrap(robot_state, 72, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
-    public static void set_slide(float value)
+    public static void set_hand(float value)
     {
         ByteBuffer.wrap(robot_state, 76, 4).order(ByteOrder.nativeOrder()).putFloat(value);
     }
 
-    public static float get_slide()
+    public static float get_hand()
     {
         return ByteBuffer.wrap(robot_state, 76, 4).order(ByteOrder.nativeOrder()).getFloat();
     }
 
+    public static void set_slide(float value)
+    {
+        ByteBuffer.wrap(robot_state, 80, 4).order(ByteOrder.nativeOrder()).putFloat(value);
+    }
+
+    public static float get_slide()
+    {
+        return ByteBuffer.wrap(robot_state, 80, 4).order(ByteOrder.nativeOrder()).getFloat();
+    }
+
     public static void set_indicator(int value)
     {
-        ByteBuffer.wrap(robot_state, 80, 4).order(ByteOrder.nativeOrder()).putInt(value);
+        ByteBuffer.wrap(robot_state, 84, 4).order(ByteOrder.nativeOrder()).putInt(value);
     }
 
     public static int get_indicator()
     {
-        return ByteBuffer.wrap(robot_state, 80, 4).order(ByteOrder.nativeOrder()).getInt();
+        return ByteBuffer.wrap(robot_state, 84, 4).order(ByteOrder.nativeOrder()).getInt();
     }
 
 }
