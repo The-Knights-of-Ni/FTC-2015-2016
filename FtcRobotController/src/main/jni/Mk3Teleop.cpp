@@ -50,7 +50,7 @@
 #define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk3Teleop_main
 
 //TODO: Get RED/BLUE Status
-#define current_color 0 //0 = red, 1 = blue
+// #define current_color 0 //0 = red, 1 = blue
 
 #define slide_rotations 20 //TODO: Move this to <robotname>.h
 float hand_blue_position = 0.3;
@@ -67,7 +67,7 @@ float hook_locked_position = 0.9f;
 
 //Drive
 #define drive_stick pad1stick1
-#define drive_toggle pad1.toggle(LEFT_STICK_BUTTON);
+#define drive_toggle pad1.toggle(LEFT_STICK_BUTTON)
 
 //Hopper
 #define intake_toggle pad1.toggle(LEFT_BUMPER)
@@ -90,8 +90,7 @@ float hook_locked_position = 0.9f;
 #define slide_left pad1.press(DPAD_LEFT)
 
 //Hook
- #define hook_toggle pad2.toggle(B);
-
+#define hook_toggle pad2.toggle(B)
 extern "C"
 void JNI_main(JNIEnv * _env, jobject _self)
 {

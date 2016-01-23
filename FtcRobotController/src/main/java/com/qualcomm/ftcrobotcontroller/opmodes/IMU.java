@@ -99,7 +99,7 @@ public class IMU
     public short eul_x = 0;
     public short eul_y = 0;
     public short eul_z = 0;
-    public eul_x_offset = 0;
+    public short eul_x_offset = 0;
     
     public short qua_w = 0;
     public short qua_x = 0;
