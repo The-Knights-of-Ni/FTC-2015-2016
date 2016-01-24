@@ -108,7 +108,8 @@ void JNI_main(JNIEnv * _env, jobject _self)
     initCamera(camera_w, camera_h);
     
     setDriveMotors(&left_drive, &right_drive, &imu_heading, &left_drive_encoder, &right_drive_encoder);
-    
+
+    slide = 0.5;
     //waitForStart(); //needs to be called in java until IMU code is ported
     
     current_time = 0;
@@ -132,12 +133,19 @@ void JNI_main(JNIEnv * _env, jobject _self)
         }*/
         wait(1);
         //intake = 1;
-        slide = slide_position_safe;
+        // slide moves at 3.25 in/sec
+        /*slide = 1.0;
+        wait(0.5);
+        slide = 0.5;
+        for ever
+        {
+            autonomousUpdate();
+        }*/
         autonomousUpdate();
         //driveOnCourseIn(-10, 0.8, 45);
         //turnRelDeg(45, 0.8);
         //#if 0
-        driveDistIn(80, -0.8);
+        driveOnCourseIn(80, -0.8, *heading);
         #if 0
         intake = 0;
         (colorAdjustedAngle(45), 0.8);
@@ -161,5 +169,10 @@ void JNI_main(JNIEnv * _env, jobject _self)
         //driveDistIn(60);
         #endif
         //drive to nearest mountain, park low
+
+        for ever
+        {
+            autonomousUpdate();
+        }
     }
 }

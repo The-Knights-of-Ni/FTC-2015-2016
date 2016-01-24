@@ -98,6 +98,7 @@ public class Mk3Auto extends LinearOpMode {
         slide_servo.setPosition(Mk3AutoRobotStateElements.get_slide());
         telemetry.addData("Indicator:", Mk3AutoRobotStateElements.get_indicator());
         telemetry.addData("beacon right:", (Mk3AutoRobotStateElements.get_beacon_right() == 1 ? "red" : "blue"));
+        telemetry.addData("heading:", Mk3AutoRobotStateElements.get_imu_heading());
     }
     
     /* End NDK Stuff*/
