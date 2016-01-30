@@ -14,50 +14,18 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
-import android.hardware.Camera;
+import java.nio.ByteBuffer;
 
 
-public class Mk3Auto extends LinearOpMode {
+public class test extends LinearOpMode {
 byte[] robot_state;
 int rsid_current = 0;
-public Mk3Auto()
+public test()
 {
-    robot_state = new byte[100];
-
-camera = FtcRobotControllerActivity.camera;
-Camera.Parameters parameters = camera.getParameters();
-Camera.Size camera_size = parameters.getPreviewSize();
-camera_w = camera_size.width;
-camera_h = camera_size.height;
-
-camera_buffer = new byte[camera_w*camera_h*4];
-camera_preview_callback = new CameraPreviewCallback();
-
-camera.setPreviewCallbackWithBuffer(camera_preview_callback);
-camera.addCallbackBuffer(camera_buffer);
-
+    robot_state = new byte[44];
 }
 
-
-Camera camera = null;
-int camera_w = 0;
-int camera_h = 0;
-CameraPreviewCallback camera_preview_callback;
-
-byte[] camera_buffer = null;
-
-class CameraPreviewCallback implements Camera.PreviewCallback
-{
-    
-    
-    CameraPreviewCallback(){}
-    public void onPreviewFrame(byte[] data, Camera camera)
-    {
-        camera.addCallbackBuffer(camera_buffer);
-    }
-}
 
 public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
 {
@@ -147,85 +115,56 @@ void robotStateIn()
 {
 rsid_current = 0;
 {
-setDouble(time);
+setInt(left_drive.getCurrentPosition());
 
-rsid_current = 8;
+rsid_current = 4;
 }
 {
 setInt(right_drive.getCurrentPosition());
 
-rsid_current = 12;
+rsid_current = 8;
 }
 {
-setInt(left_drive.getCurrentPosition());
-
-rsid_current = 16;
-}
+int gamepad1_buttons = 0;
+try
 {
-setInt(winch.getCurrentPosition());
-
-rsid_current = 20;
+    gamepad1_buttons = updateButtons(gamepad1.toByteArray());
 }
+catch (RobotCoreException e)
 {
-setInt(shoulder.getCurrentPosition());
-
-rsid_current = 24;
+    e.printStackTrace();
 }
-{
-setInt(dim.getAnalogInputValue(elbow_potentiometer_port));
-
-rsid_current = 28;
-}
-{
-if(imu.checkForUpdate()) {
-    set(imu.eul_x);
-set( imu.eul_y);
-set( imu.eul_z);
-set( imu.vel_x);
-set( imu.vel_y);
-set( imu.vel_z);
+set(gamepad1.left_stick_x);
+set( gamepad1.left_stick_y);
+set( gamepad1.left_trigger);
+set( gamepad1.right_trigger);
+set( gamepad1_buttons);
 ;
-}
-
-}
-{
-setInt((FtcRobotControllerActivity.red ? 1 : 0));
-
-rsid_current = 56;
 }
 
 }
 
 void robotStateOut()
 {
-left_drive.setPower(getFloat());
-right_drive.setPower(getFloat());
-winch.setPower(getFloat());
-shoulder.setPower(getFloat());
-intake.setPower(getFloat());
-hand.setPosition(getFloat());
-slide.setPosition(getFloat());
-hook_left.setPosition(getFloat());
-hook_right.setPosition(getFloat());
-telemetry.addData("Indicator:", getInt());
-telemetry.addData("beacon right:", (getInt() == 1 ? "red" : "blue"));
-telemetry.addData("heading:", getExistingFloat(28));
+telemetry.addData("left drive",getFloat());
+
+telemetry.addData("right drive",getFloat());
+
 
 }
 /* Start Motor Definitions */
 DeviceInterfaceModule dim;
-IMU imu;int elbow_potentiometer_port = 7;
 
 DcMotor left_drive;
 DcMotor right_drive;
 DcMotor shoulder;
-DcMotor winch;
+DcMotor elbow;
 DcMotor intake;
 
-Servo hand;
-Servo slide;
-Servo hook_left;
-Servo hook_right;
+Servo hand_servo;
+Servo slide_servo;
+Servo hook_left_servo;
+Servo hook_right_servo;
 /* End Motor Definitions */
 native void main();
 
@@ -236,29 +175,12 @@ static
 
 @Override public void runOpMode() throws InterruptedException
 {
+int elbow_potentiometer_port = 7;
 dim = hardwareMap.deviceInterfaceModule.get("dim");
-I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
-imu = new IMU(imu_i2c_device);
-int error = imu.init(IMU.mode_ndof,
-        (byte) (IMU.units_acc_m_per_s2 |
-                IMU.units_angle_deg |
-                IMU.units_angular_vel_deg_per_s |
-                IMU.units_temp_C |
-                IMU.units_pitch_convention_android));
-if (error != 0) {
-    for (; ; ) {
-        telemetry.addData("error initializing imu", 0);
-        waitOneFullHardwareCycle();
-    }
-}
-imu.vel_x = 0.0f;
-imu.vel_y = 0.0f;
-imu.vel_z = 0.0f; 
-
 left_drive  = hardwareMap.dcMotor.get("leftd");
 right_drive = hardwareMap.dcMotor.get("rightd");
 shoulder    = hardwareMap.dcMotor.get("shoulder");
-winch       = hardwareMap.dcMotor.get("winch");
+elbow       = hardwareMap.dcMotor.get("winch");
 intake      = hardwareMap.dcMotor.get("intake");
 right_drive.setDirection(DcMotor.Direction.REVERSE);
 left_drive.setDirection(DcMotor.Direction.REVERSE);
@@ -267,25 +189,18 @@ shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 waitOneFullHardwareCycle();
 intake.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-winch.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+elbow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 waitOneFullHardwareCycle();
-winch.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 waitOneFullHardwareCycle();
 //shoulder.setDirection(DcMotor.Direction.REVERSE);
 //elbow.setDirection(DcMotor.Direction.REVERSE);
 
-hand = hardwareMap.servo.get("hand");
-slide = hardwareMap.servo.get("slide");
-hook_left = hardwareMap.servo.get("hook_left");
-hook_right = hardwareMap.servo.get("hook_right");
-hook_left.setDirection(Servo.Direction.REVERSE);while (!FtcRobotControllerActivity.aligned || (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue))
-{
-    telemetry.addData("unchecked boxes", "fix it");
-    waitForNextHardwareCycle();
-}
-waitForStart();
-imu.rezero();
-
+hand_servo = hardwareMap.servo.get("hand");
+slide_servo = hardwareMap.servo.get("slide");
+hook_left_servo = hardwareMap.servo.get("hook_left");
+hook_right_servo = hardwareMap.servo.get("hook_right");
+hook_left_servo.setDirection(Servo.Direction.REVERSE);
 main();
 }
 }

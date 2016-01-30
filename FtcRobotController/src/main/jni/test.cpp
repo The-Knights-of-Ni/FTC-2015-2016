@@ -1,60 +1,109 @@
-#if 0
-/*
-  robot_state_elements
-  {
-  gamepad{float joystick1_x, float joystick1_y, float joystick2_x, float joystick2_y, float left_trigger, float right_trigger, int buttons};
-  float left_drive_power;
-  float right_drive_power;
-  gamepad gamepad1;
-  byte[100] array_example;
+#include "jni_functions.h"
+#include "button.h"
+#include "drive.h"
 
-  int left_bumper;
-  int right_bumper;
+#ifndef GENERATE
+#undef JNI_main
+#define jniMain Java_com_qualcomm_ftcrobotcontroller_opmodes_test_main
+#endif
 
-  int toggle_left_bumper;
-  int toggle_right_bumper;
-
-  //general syntax
-  //type{primitive_type name in java, ...};
-  //type name;
-  }
-*/
-
-#include "misc.h"
-#include "maths.h"
-#include "Button.h"
-
-#include "test_robot_state_elements.h"
-
-#define JNI_main Java_com_qualcomm_ftcrobotcontroller_opmodes_NDK_1test_main
-
-extern "C"
-void JNI_main(JNIEnv * _env, jobject _self)
+extern "C" void jniMain(JNIEnv * _env, jobject _self)
 {
     env = _env;
     self = _self;
-
     initJNI();
-
-    Button pad1;
-    Button pad2;
-
+    
+    jni_import_string = ("import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;\n"
+                         "import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\n"
+                         "import com.qualcomm.robotcore.exception.RobotCoreException;\n"
+                         "import com.qualcomm.robotcore.hardware.DcMotor;\n"
+                         "import com.qualcomm.robotcore.hardware.DcMotorController;\n"
+                         "import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;\n"
+                         "import com.qualcomm.robotcore.hardware.Servo;\n"
+                         "import java.nio.ByteBuffer;\n");
+    
+    //TODO: shortcut for defining and declaring motors, servos, etc.
+    jni_variables_string = ("/* Start Motor Definitions */\n"
+                            "DeviceInterfaceModule dim;\n"
+                            "\n"
+                            "DcMotor left_drive;\n"
+                            "DcMotor right_drive;\n"
+                            "DcMotor shoulder;\n"
+                            "DcMotor elbow;\n"
+                            "DcMotor intake;\n"
+                            "\n"
+                            "Servo hand_servo;\n"
+                            "Servo slide_servo;\n"
+                            "Servo hook_left_servo;\n"
+                            "Servo hook_right_servo;\n"
+                            "/* End Motor Definitions */");
+    
+    jni_run_opmode_string = ("int elbow_potentiometer_port = 7;\n"
+                             "dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
+                             "left_drive  = hardwareMap.dcMotor.get(\"leftd\");\n"
+                             "right_drive = hardwareMap.dcMotor.get(\"rightd\");\n"
+                             "shoulder    = hardwareMap.dcMotor.get(\"shoulder\");\n"
+                             "elbow       = hardwareMap.dcMotor.get(\"winch\");\n"
+                             "intake      = hardwareMap.dcMotor.get(\"intake\");\n"
+                             "right_drive.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "left_drive.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);\n"
+                             "waitOneFullHardwareCycle();\n"
+                             "intake.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);\n"
+                             "elbow.setMode(DcMotorController.RunMode.RESET_ENCODERS);\n"
+                             "waitOneFullHardwareCycle();\n"
+                             "elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);\n"
+                             "waitOneFullHardwareCycle();\n"
+                             "//shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "//elbow.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "\n"
+                             "hand_servo = hardwareMap.servo.get(\"hand\");\n"
+                             "slide_servo = hardwareMap.servo.get(\"slide\");\n"
+                             "hook_left_servo = hardwareMap.servo.get(\"hook_left\");\n"
+                             "hook_right_servo = hardwareMap.servo.get(\"hook_right\");\n"
+                             "hook_left_servo.setDirection(Servo.Direction.REVERSE);");
+    
+    jni_misc_string = (
+        "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
+        "{\n"
+        "    ByteBuffer stick = ByteBuffer.allocate(45);\n"
+        "    stick.put(joystick);\n"
+        "    return stick.getInt(40);//Offset value\n"
+        "}\n");
+    
+    pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
+    pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
+    
+    //NOTE: this only works for tightly packed structs
+    pgamepad1 = jniStructIn(
+        gamepad,
+        "int gamepad1_buttons = 0;\n"
+        "try\n"
+        "{\n"
+        "    gamepad1_buttons = updateButtons(gamepad1.toByteArray());\n"
+        "}\n"
+        "catch (RobotCoreException e)\n"
+        "{\n"
+        "    e.printStackTrace();\n"
+        "}\n"
+        "return {gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.left_trigger, gamepad1.right_trigger, gamepad1_buttons};");
+    
+    jniOut("telemetry.addData(\"left drive\",", pleft_drive, ");\n");
+    jniOut("telemetry.addData(\"right drive\",", pright_drive, ");\n");
+    jniGenerate();
+    
+    Button pad1 = {};
+    
     waitForStart();
-    float time = 0;
-    do
+    
+    interruptable for ever
     {
-        //(*((float*)(robot_state.state+rsid_left_drive_power))) = 1.0f;//robot_state.state[rsid_gamepad1];
-        left_drive_power = gamepad1.joystick1.y-gamepad1.joystick1.x;
-        right_drive_power = gamepad1.joystick1.y+gamepad1.joystick1.x;
-
-        toggle_left_bumper = pad1.toggle(LEFT_BUMPER);
-        toggle_right_bumper = pad1.toggle(A);
-        left_bumper = pad1.press(LEFT_BUMPER);
-        right_bumper = pad1.press(A);
-
+        left_drive = gamepad1.joystick1.y-gamepad1.joystick1.x;
+        right_drive = gamepad1.joystick1.y+gamepad1.joystick1.x;
+        
         pad1.updateButtons(gamepad1.buttons);
-        //pad2.updateButtons(gamepad2.buttons);
         updateRobot();
     }
 }
-#endif

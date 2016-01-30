@@ -11,9 +11,21 @@
 #include "jni_functions.h"
 #include <stdlib.h>
 
-//interruptable blocks are exited when update robot detects an interuptted exception
-//NOTE: only the most recent interuptable block will be exited, only one is intended for use
-#define interruptable if(!setjmp(exit_jump))
+//TODO: maybe move this
+float * pintake = 0;
+#define intake (*pintake)
+
+float * phand = 0;
+#define hand (*phand)
+
+float * pslide = 0;
+#define slide (*pslide)
+
+float * phook_left = 0;
+#define hook_left (*phook_left)
+
+float * phook_right = 0;
+#define hook_right (*phook_right)
 
 //Constants
 #define encoderticks_per_radian (1440.0f/(2.0f*pi))
@@ -23,6 +35,9 @@ float potentiometer_range = 333.33333333333333333333333333333333333f;
 //globals
 float dt;
 float current_time;
+
+double * ptime;
+#define time (*ptime)
 
 //PID Control: UNTESTED, may not be ported correctly (In case the built in doesn't work)
 //TODO: de-OOP

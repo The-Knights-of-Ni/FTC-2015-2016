@@ -1,6 +1,8 @@
 #ifndef BUTTON
 #define BUTTON
 
+#include "maths.h"
+
 #define offset 40
 
 enum Buttons
@@ -61,7 +63,7 @@ struct Button
     }
 };
 
-#pragma pack(push, 4)
+#pragma pack(push,1)
 struct gamepad
 {
     v2f joystick1;
@@ -73,5 +75,11 @@ struct gamepad
     int buttons;
 };
 #pragma pack(pop)
+
+gamepad * pgamepad1;
+#define gamepad1 (*pgamepad1)
+
+gamepad * pgamepad2;
+#define gamepad2 (*pgamepad2)
 
 #endif
