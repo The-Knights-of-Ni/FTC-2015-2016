@@ -11,6 +11,7 @@
   int winch_encoder;
   int shoulder_encoder;
   int elbow_potentiometer;
+  int shoulder_potentiometer;
   float heading;
   float tilt;
   float roll;
@@ -149,20 +150,26 @@ void JNI_main(JNIEnv * _env, jobject _self)
         //Might need to add additional bounding in as a safety
         
 //============================== Arm =============================            
-        //TODO: correctly convert to angle
-        elbow_potentiometer_angle = lerp(
-            (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+12.0f))*pi/180.0f,
-            elbow_potentiometer_angle,
-            exp(-500.0*dt));
+        elbow_potentiometer_angle = (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+9.6383f))*pi/180.0f;
+            // lerp(
+            // (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+9.6383f))*pi/180.0f,
+            // elbow_potentiometer_angle,
+            // exp(-500.0*dt));
         
-        float new_shoulder_theta = shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
+        shoulder_potentiometer_angle = (-180+((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))+101.24f))*pi/180.0f;
+            // lerp(
+            // (((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))+95.047f))*pi/180.0f,
+            // shoulder_potentiometer_angle,
+            // exp(-500.0*dt));
+        
+        float new_shoulder_theta = shoulder_potentiometer_angle;//shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
         float new_inside_elbow_theta = elbow_potentiometer_angle;
         float new_winch_theta = winch_encoder/winch_gear_ratio/encoderticks_per_radian;
-        shoulder_omega = lerp((new_shoulder_theta-shoulder_theta)/dt, shoulder_omega, 0.1);
-        winch_omega = lerp((new_winch_theta-winch_theta)/dt, winch_omega, 0.1);
-        float inside_elbow_omega = (new_inside_elbow_theta-inside_elbow_theta)/dt;
+        shoulder_omega = lerp((new_shoulder_theta-shoulder_theta)/dt, shoulder_omega, exp(-10*dt));
+        winch_omega = lerp((new_winch_theta-winch_theta)/dt, winch_omega, exp(-10*dt));
+        inside_elbow_omega = lerp((new_inside_elbow_theta-inside_elbow_theta)/dt, inside_elbow_omega, exp(-10*dt));
         
-        shoulder_print_theta = target_inside_elbow_theta;
+        shoulder_print_theta = new_shoulder_theta;
         forearm_print_theta = new_inside_elbow_theta;
         
         shoulder_theta = new_shoulder_theta;
@@ -175,24 +182,20 @@ void JNI_main(JNIEnv * _env, jobject _self)
             if(arm_score_mode_button)
             {
                 score_mode = true;
-                //target_shoulder_theta = 0.75;
+                target_shoulder_theta = 1.0;
                 target_inside_elbow_theta = pi*2/5;
                 
-                shoulder = -clamp(2-0.6*(inside_elbow_theta-target_inside_elbow_theta), 0.0, 1.0);
                 float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                           -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-                target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+                target_arm_theta = target_shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
                 
                 winch = shoulder*winch_gear_ratio/shoulder_gear_ratio;
             }
             else if(arm_intake_mode_button)
             {
                 score_mode = false;
-                //target_shoulder_theta = 2.75;
+                target_shoulder_theta = 2.0;
                 target_inside_elbow_theta = 4.0;
-                
-                shoulder = clamp(2-0.6*(target_inside_elbow_theta-inside_elbow_theta), 0.0, 1.0);
-                target_shoulder_theta = shoulder_theta;
                 
                 winch = shoulder*winch_gear_ratio/shoulder_gear_ratio;
             }

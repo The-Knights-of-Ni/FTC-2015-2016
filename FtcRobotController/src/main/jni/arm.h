@@ -42,6 +42,7 @@ float string_length_0 = 7;
 
 //current values
 float elbow_potentiometer_angle = 0.0;
+float shoulder_potentiometer_angle = 0.0;
 
 float shoulder_theta = 0;
 float inside_elbow_theta = 0;
@@ -49,6 +50,7 @@ float winch_theta = 0;
 bool8 score_mode = true;
 float shoulder_omega = 0.0;
 float winch_omega = 0.0;
+float inside_elbow_omega = 0.0;
 
 //target values
 float target_arm_theta;
@@ -383,7 +385,7 @@ void armToAngle(float & out_shoulder_power, float & out_winch_power,
     
     float arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
     
-    out_shoulder_power += 3*(target_arm_theta-arm_theta);
+    out_shoulder_power += 1*(target_arm_theta-arm_theta)/* -2*shoulder_omega */;
     out_winch_power += 1*(target_inside_elbow_theta-inside_elbow_theta);
 }
 
@@ -392,7 +394,7 @@ void armJointsToAngle(float & out_shoulder_power, float & out_winch_power,
                       float shoulder_theta,        float inside_elbow_theta,
                       bool8 score_mode, float dt)
 {
-    out_shoulder_power += 3*(target_shoulder_theta-shoulder_theta);
+    out_shoulder_power += 1*(target_shoulder_theta-shoulder_theta);
     out_winch_power += 1*(target_inside_elbow_theta-inside_elbow_theta);
 }
 

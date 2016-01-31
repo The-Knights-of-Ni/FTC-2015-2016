@@ -13,6 +13,7 @@ enum robot_state_element
     rsid_winch_encoder, rsid_winch_encoder_end = rsid_winch_encoder + 3,
     rsid_shoulder_encoder, rsid_shoulder_encoder_end = rsid_shoulder_encoder + 3,
     rsid_elbow_potentiometer, rsid_elbow_potentiometer_end = rsid_elbow_potentiometer + 3,
+    rsid_shoulder_potentiometer, rsid_shoulder_potentiometer_end = rsid_shoulder_potentiometer + 3,
     rsid_heading, rsid_heading_end = rsid_heading + 3,
     rsid_tilt, rsid_tilt_end = rsid_tilt + 3,
     rsid_roll, rsid_roll_end = rsid_roll + 3,
@@ -41,6 +42,7 @@ enum robot_state_element
 #define winch_encoder (*((int *) (robot_state.state+rsid_winch_encoder)))
 #define shoulder_encoder (*((int *) (robot_state.state+rsid_shoulder_encoder)))
 #define elbow_potentiometer (*((int *) (robot_state.state+rsid_elbow_potentiometer)))
+#define shoulder_potentiometer (*((int *) (robot_state.state+rsid_shoulder_potentiometer)))
 #define heading (*((float *) (robot_state.state+rsid_heading)))
 #define tilt (*((float *) (robot_state.state+rsid_tilt)))
 #define roll (*((float *) (robot_state.state+rsid_roll)))

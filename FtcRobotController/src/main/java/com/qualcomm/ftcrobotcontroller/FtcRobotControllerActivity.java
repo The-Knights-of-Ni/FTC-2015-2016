@@ -95,14 +95,14 @@ public class FtcRobotControllerActivity extends Activity {
     private static final int NUM_GAMEPADS = 2;
 
     public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
-
+    
     protected SharedPreferences preferences;
-
+    
     protected UpdateUI.Callback callback;
     protected Context context;
     private Utility utility;
     protected ImageButton buttonMenu;
-
+    
     protected TextView textDeviceName;
     protected TextView textWifiDirectStatus;
     protected TextView textRobotStatus;
@@ -110,15 +110,15 @@ public class FtcRobotControllerActivity extends Activity {
     protected TextView textOpMode;
     protected TextView textErrorMessage;
     protected ImmersiveMode immersion;
-
+    
     protected UpdateUI updateUI;
     protected Dimmer dimmer;
     protected LinearLayout entireScreenLayout;
-
+    
     protected FtcRobotControllerService controllerService;
-
+    
     protected FtcEventLoop eventLoop;
-
+    
     protected class RobotRestarter implements Restarter {
 
         public void requestRestart() {
@@ -160,16 +160,21 @@ public class FtcRobotControllerActivity extends Activity {
         public SurfaceHolder surface_holder;
         public Camera camera;
         
-        public CameraPreview(Context context, Camera cam)
+        public CameraPreview(Context context)
         {
             super(context);
-            camera = cam;
             surface_holder = getHolder();
             surface_holder.addCallback(this);
         }
         
         public void surfaceCreated(SurfaceHolder holder)
         {
+            try {
+                camera = Camera.open(1);
+            } catch (Exception e) {
+                DbgLog.error("could not open camera, camera is in use or does not exist");
+            }
+            
             try
             {
                 camera.setPreviewDisplay(holder);
@@ -277,13 +282,8 @@ public class FtcRobotControllerActivity extends Activity {
         addListenerOnRed();
         addListenerOnBlue();
         addListenerOnAligned();
-        try {
-            camera = Camera.open(1);
-        } catch (Exception e) {
-            DbgLog.error("could not open camera, camera is in use or does not exist");
-        }
         
-        camera_preview = new CameraPreview(this, camera);
+        camera_preview = new CameraPreview(this);
         FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
         frame_layout_preview.addView(camera_preview);
         
