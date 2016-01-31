@@ -160,10 +160,10 @@ public class FtcRobotControllerActivity extends Activity {
         public SurfaceHolder surface_holder;
         public Camera camera;
         
-        public CameraPreview(Context context, Camera cam)
+        public CameraPreview(Context context/* , Camera cam */)
         {
             super(context);
-            camera = cam;
+            //camera = cam;
             surface_holder = getHolder();
             surface_holder.addCallback(this);
         }
@@ -172,8 +172,13 @@ public class FtcRobotControllerActivity extends Activity {
         {
             try
             {
+                try {
+                    camera = Camera.open(1);
+                } catch (Exception e) {
+                    DbgLog.error("could not open camera, camera is in use or does not exist");
+                }
+                
                 camera.setPreviewDisplay(holder);
-
             }
             catch(IOException e)
             {
@@ -207,7 +212,7 @@ public class FtcRobotControllerActivity extends Activity {
             
             try
             {
-                camera.setPreviewDisplay(/*surface_*/holder);
+                camera.setPreviewDisplay(surface_holder);
                 camera.startPreview();
             }
             catch(Exception e)
@@ -277,13 +282,8 @@ public class FtcRobotControllerActivity extends Activity {
         addListenerOnRed();
         addListenerOnBlue();
         addListenerOnAligned();
-        try {
-            camera = Camera.open(1);
-        } catch (Exception e) {
-            DbgLog.error("could not open camera, camera is in use or does not exist");
-        }
         
-        camera_preview = new CameraPreview(this, camera);
+        camera_preview = new CameraPreview(this/* , camera */);
         FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
         frame_layout_preview.addView(camera_preview);
         

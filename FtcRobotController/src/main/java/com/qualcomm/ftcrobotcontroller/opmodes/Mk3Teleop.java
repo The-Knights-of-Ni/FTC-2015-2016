@@ -5,6 +5,9 @@ changes made this file are not permanent
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import com.qualcomm.ftccommon.DbgLog;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -22,7 +25,7 @@ byte[] robot_state;
 int rsid_current = 0;
 public Mk3Teleop()
 {
-    robot_state = new byte[128];
+    DbgLog.error("opmode constructor");
 }
 
 
@@ -33,117 +36,146 @@ public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks 
     return stick.getInt(40);//Offset value
 }
 
-public void setInt(int a)
+public void setInt(int index, int a)
 {
-    ByteBuffer.wrap(robot_state, rsid_current, rsid_current+4).order(ByteOrder.nativeOrder()).putInt(a);
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).putInt(a);
+    rsid_current = index+4;
+}
+public void setRelative(int a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).putInt(a);
     rsid_current += 4;
 }
-public void set(int a)
+public int getInt(int index)
 {
-    setInt(a);
+    rsid_current = index+4;
+    return ByteBuffer.wrap(robot_state, index, 4).order(ByteOrder.nativeOrder()).getInt();
 }
-public int getInt()
+public int getRelativeInt()
 {
-    int out = ByteBuffer.wrap(robot_state, rsid_current, rsid_current+4).order(ByteOrder.nativeOrder()).getInt();
+    int out = ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).getInt();
     rsid_current += 4;
     return out;}
-public int getExistingInt(int rsid_existing)
-{
-    return ByteBuffer.wrap(robot_state, rsid_existing, rsid_existing+4).order(ByteOrder.nativeOrder()).getInt();
-}
 
-public void setLong(long a)
+public void setLong(int index, long a)
 {
-    ByteBuffer.wrap(robot_state, rsid_current, rsid_current+8).order(ByteOrder.nativeOrder()).putLong(a);
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).putLong(a);
+    rsid_current = index+8;
+}
+public void setRelative(long a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).putLong(a);
     rsid_current += 8;
 }
-public void set(long a)
+public long getLong(int index)
 {
-    setLong(a);
+    rsid_current = index+8;
+    return ByteBuffer.wrap(robot_state, index, 8).order(ByteOrder.nativeOrder()).getLong();
 }
-public long getLong()
+public long getRelativeLong()
 {
-    long out = ByteBuffer.wrap(robot_state, rsid_current, rsid_current+8).order(ByteOrder.nativeOrder()).getLong();
+    long out = ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).getLong();
     rsid_current += 8;
     return out;}
-public long getExistingLong(int rsid_existing)
-{
-    return ByteBuffer.wrap(robot_state, rsid_existing, rsid_existing+8).order(ByteOrder.nativeOrder()).getLong();
-}
 
-public void setFloat(float a)
+public void setFloat(int index, float a)
 {
-    ByteBuffer.wrap(robot_state, rsid_current, rsid_current+4).order(ByteOrder.nativeOrder()).putFloat(a);
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).putFloat(a);
+    rsid_current = index+4;
+}
+public void setRelative(float a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).putFloat(a);
     rsid_current += 4;
 }
-public void set(float a)
+public float getFloat(int index)
 {
-    setFloat(a);
+    rsid_current = index+4;
+    return ByteBuffer.wrap(robot_state, index, 4).order(ByteOrder.nativeOrder()).getFloat();
 }
-public float getFloat()
+public float getRelativeFloat()
 {
-    float out = ByteBuffer.wrap(robot_state, rsid_current, rsid_current+4).order(ByteOrder.nativeOrder()).getFloat();
+    float out = ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).getFloat();
     rsid_current += 4;
     return out;}
-public float getExistingFloat(int rsid_existing)
-{
-    return ByteBuffer.wrap(robot_state, rsid_existing, rsid_existing+4).order(ByteOrder.nativeOrder()).getFloat();
-}
 
-public void setDouble(double a)
+public void setDouble(int index, double a)
 {
-    ByteBuffer.wrap(robot_state, rsid_current, rsid_current+8).order(ByteOrder.nativeOrder()).putDouble(a);
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).putDouble(a);
+    rsid_current = index+8;
+}
+public void setRelative(double a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).putDouble(a);
     rsid_current += 8;
 }
-public void set(double a)
+public double getDouble(int index)
 {
-    setDouble(a);
+    rsid_current = index+8;
+    return ByteBuffer.wrap(robot_state, index, 8).order(ByteOrder.nativeOrder()).getDouble();
 }
-public double getDouble()
+public double getRelativeDouble()
 {
-    double out = ByteBuffer.wrap(robot_state, rsid_current, rsid_current+8).order(ByteOrder.nativeOrder()).getDouble();
+    double out = ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).getDouble();
     rsid_current += 8;
     return out;}
-public double getExistingDouble(int rsid_existing)
-{
-    return ByteBuffer.wrap(robot_state, rsid_existing, rsid_existing+8).order(ByteOrder.nativeOrder()).getDouble();
-}
 
+
+void robotStateOut()
+{
+rsid_current = 0;
+left_drive.setPower(getFloat(28));;
+right_drive.setPower(getFloat(32));;
+winch.setPower(getFloat(36));;
+shoulder.setPower(getFloat(40));;
+intake.setPower(getFloat(44));;
+hand.setPosition(getFloat(48));
+slide.setPosition(getFloat(52));
+hook_left.setPosition(getFloat(56));
+hook_right.setPosition(getFloat(60));
+telemetry.addData("shoulder theta", getFloat(64));
+telemetry.addData("forearm theta", getFloat(68));
+
+}
 
 void robotStateIn()
 {
-rsid_current = 0;
 {
-setDouble(time);
+setDouble(0, time);
 
 rsid_current = 8;
 }
 {
-setInt(right_drive.getCurrentPosition());
+setInt(8, right_drive.getCurrentPosition());
 
 rsid_current = 12;
 }
 {
-setInt(left_drive.getCurrentPosition());
+setInt(12, left_drive.getCurrentPosition());
 
 rsid_current = 16;
 }
 {
-setInt(winch.getCurrentPosition());
+setInt(16, winch.getCurrentPosition());
 
 rsid_current = 20;
 }
 {
-setInt(shoulder.getCurrentPosition());
+setInt(20, shoulder.getCurrentPosition());
 
 rsid_current = 24;
 }
 {
-setInt((FtcRobotControllerActivity.red ? 1 : 0));
+setInt(24, (FtcRobotControllerActivity.red ? 1 : 0));
 
 rsid_current = 28;
 }
 {
+rsid_current = 72;
 int gamepad1_buttons = 0;
 try
 {
@@ -153,16 +185,17 @@ catch (RobotCoreException e)
 {
     e.printStackTrace();
 }
-set(gamepad1.left_stick_x);
-set( gamepad1.left_stick_y);
-set(gamepad1.right_stick_x);
-set( gamepad1.right_stick_y);
-set(gamepad1.left_trigger);
-set( gamepad1.right_trigger);
-set( gamepad1_buttons);
+setRelative(gamepad1.left_stick_x);
+setRelative( gamepad1.left_stick_y);
+setRelative(gamepad1.right_stick_x);
+setRelative( gamepad1.right_stick_y);
+setRelative(gamepad1.left_trigger);
+setRelative( gamepad1.right_trigger);
+setRelative( gamepad1_buttons);
 ;
 }
 {
+rsid_current = 100;
 int gamepad2_buttons = 0;
 try
 {
@@ -172,31 +205,15 @@ catch (RobotCoreException e)
 {
     e.printStackTrace();
 }
-set(gamepad2.left_stick_x);
-set( gamepad2.left_stick_y);
-set(gamepad2.right_stick_x);
-set( gamepad2.right_stick_y);
-set(gamepad2.left_trigger);
-set( gamepad2.right_trigger);
-set( gamepad2_buttons);
+setRelative(gamepad2.left_stick_x);
+setRelative( gamepad2.left_stick_y);
+setRelative(gamepad2.right_stick_x);
+setRelative( gamepad2.right_stick_y);
+setRelative(gamepad2.left_trigger);
+setRelative( gamepad2.right_trigger);
+setRelative( gamepad2_buttons);
 ;
 }
-
-}
-
-void robotStateOut()
-{
-left_drive.setPower(getFloat());;
-right_drive.setPower(getFloat());;
-winch.setPower(getFloat());;
-shoulder.setPower(getFloat());;
-intake.setPower(getFloat());;
-hand.setPosition(getFloat());
-slide.setPosition(getFloat());
-hook_left.setPosition(getFloat());
-hook_right.setPosition(getFloat());
-telemetry.addData("shoulder theta", getFloat());
-telemetry.addData("forearm theta", getFloat());
 
 }
 /* Start Motor Definitions */
@@ -223,6 +240,8 @@ static
 
 @Override public void runOpMode() throws InterruptedException
 {
+    rsid_current = 0;
+    robot_state = new byte[128];
 dim = hardwareMap.deviceInterfaceModule.get("dim");
 left_drive  = hardwareMap.dcMotor.get("leftd");
 right_drive = hardwareMap.dcMotor.get("rightd");
@@ -248,6 +267,6 @@ slide = hardwareMap.servo.get("slide");
 hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
-main();
+    main();
 }
 }

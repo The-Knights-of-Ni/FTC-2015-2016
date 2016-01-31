@@ -89,7 +89,9 @@ char * rsin_code_current = rsin_code;
 void * robot_state_first_address = malloc(robot_state_reserved_addresses);
 //TODO: figure out a better way to do this, the memory is not actually needed, just the addresses
 
-//TODO: allow for variables to be used for both input and output
+//TODO: remove redundent setting of rsid_current in the java file
+
+//TODO: allow for variables to be used for both input and output (1/2 done)
 #define defineJniIn(type, Type)                                         \
     type * jni##Type##In_line(const char * s, const char * filename, int line) \
     {                                                                   \
@@ -113,7 +115,8 @@ void * robot_state_first_address = malloc(robot_state_reserved_addresses);
                     }                                                   \
                 }                                                       \
                 n_printed = sprintf(rsin_code_current,                  \
-                                    "set"#Type"(%.*s);\n",              \
+                                    "set"#Type"(%d, %.*s);\n",     \
+                                    rsid_current,                       \
                                     n_return_chars, t);                 \
                 assert(n_printed >= 0);                                 \
                 rsin_code_current += n_printed;                         \
@@ -147,7 +150,7 @@ void * jniStructIn_line(int struct_size, const char * s, const char * filename, 
     {
         if(constStrcmp(t, "return") == 0)
         {
-            int n_printed = sprintf(rsin_code_current, "{\n%.*s", t-s, s);
+            int n_printed = sprintf(rsin_code_current, "{\nrsid_current = %d;\n%.*s",rsid_current, t-s, s);
             assert(n_printed >= 0);
             rsin_code_current += n_printed;
             t += sizeof("return");
@@ -186,7 +189,7 @@ void * jniStructIn_line(int struct_size, const char * s, const char * filename, 
                    be solved if we C++ had a way to loop over the
                    members of a struct */
                 n_printed = sprintf(rsin_code_current,
-                                    "set(%.*s);\n",
+                                    "setRelative(%.*s);\n",
                                     n_return_chars, t);
                 assert(n_printed >= 0);
                 rsin_code_current += n_printed;
@@ -221,13 +224,13 @@ jniOutStruct operator, (jniOutStruct jos, const char * s)
         if(rs_index > 0 && rs_index < robot_state_reserved_addresses)   \
         {                                                               \
             int n_printed = sprintf(rsout_code_current,                 \
-                                    "getExisting"#Type"(%d)", rs_index); \
+                                    "get"#Type"(%d)", rs_index); \
             assert(n_printed >= 0);                                     \
             rsout_code_current += n_printed;                            \
         }                                                               \
         else                                                            \
         {                                                               \
-            int n_printed = sprintf(rsout_code_current, "get"#Type"()"); \
+            int n_printed = sprintf(rsout_code_current, "get"#Type"(%d)", rsid_current); \
             assert(n_printed >= 0);                                     \
             rsout_code_current += n_printed;                            \
             rsid_current += sizeof(type);                               \
@@ -332,6 +335,10 @@ void jniGenerate()
 
     fprintf(java_output_file,
             "\n"
+            "import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\n"
+            "\n"
+            "import com.qualcomm.ftccommon.DbgLog;"
+            "\n"
             "import java.nio.ByteBuffer;\n"
             "import java.nio.ByteOrder;\n");
     if(jni_import_string) fprintf(java_output_file, "\n%s\n", jni_import_string);
@@ -343,10 +350,12 @@ void jniGenerate()
             "int rsid_current = 0;\n"
             "public %.*s()\n"
             "{\n"
-            "    robot_state = new byte[%d];\n",
+            "    DbgLog.error(\"opmode constructor\");\n"
+            /* "    rsid_current = 0;" */
+            /* "    robot_state = new byte[%d];\n" */,
             java_output_name_part_len-java_output_path_part_len, java_output_filename+java_output_path_part_len,
-            java_output_name_part_len-java_output_path_part_len, java_output_filename+java_output_path_part_len,
-            rsid_current);
+            java_output_name_part_len-java_output_path_part_len, java_output_filename+java_output_path_part_len/*,*/
+            /* rsid_current */);
     if(jni_constructor_string) fprintf(java_output_file, "\n%s\n", jni_constructor_string);
     fprintf(java_output_file,
             "}\n"
@@ -363,42 +372,46 @@ void jniGenerate()
         uint buffer_read_size = type_sizes[i];
         
         fprintf(java_output_file,
-                "public void set%c%s(%s a)\n"
+                "public void set%c%s(int index, %s a)\n"
                 "{\n"
-                "    ByteBuffer.wrap(robot_state, rsid_current, rsid_current+%d).order(ByteOrder.nativeOrder()).put%c%s(a);\n"
+                "    rsid_current = index;\n"
+                "    ByteBuffer.wrap(robot_state, rsid_current, %d).order(ByteOrder.nativeOrder()).put%c%s(a);\n"
+                "    rsid_current = index+%d;\n"
+                "}\n"
+                "public void setRelative(%s a)\n"
+                "{\n"
+                "    ByteBuffer.wrap(robot_state, rsid_current, %d).order(ByteOrder.nativeOrder()).put%c%s(a);\n"
                 "    rsid_current += %d;\n"
                 "}\n"
-                "public void set(%s a)\n"
+                "public %s get%c%s(int index)\n"
                 "{\n"
-                "    set%c%s(a);\n"
+                "    rsid_current = index+%d;\n"
+                "    return ByteBuffer.wrap(robot_state, index, %d).order(ByteOrder.nativeOrder()).get%c%s();\n"
                 "}\n"
-                "public %s get%c%s()\n"
+                "public %s getRelative%c%s()\n"
                 "{\n"
-                "    %s out = ByteBuffer.wrap(robot_state, rsid_current, rsid_current+%d).order(ByteOrder.nativeOrder()).get%c%s();\n"
+                "    %s out = ByteBuffer.wrap(robot_state, rsid_current, %d).order(ByteOrder.nativeOrder()).get%c%s();\n"
                 "    rsid_current += %d;\n"
                 "    return out;"
-                "}\n"
-                "public %s getExisting%c%s(int rsid_existing)\n"
-                "{\n"
-                "    return ByteBuffer.wrap(robot_state, rsid_existing, rsid_existing+%d).order(ByteOrder.nativeOrder()).get%c%s();\n"
                 "}\n\n",
                 Type, type, buffer_read_size, Type, buffer_read_size,
-                type, Type,
-                type, Type, type, buffer_read_size, Type, buffer_read_size,
-                type, Type, buffer_read_size, Type);
+                type, buffer_read_size, Type, buffer_read_size,
+                type, Type, buffer_read_size, buffer_read_size, Type,
+                type, Type, type, buffer_read_size, Type, buffer_read_size);
     }
+    
+    fprintf(java_output_file, "\n"
+            "void robotStateOut()\n"
+            "{\n"
+            "rsid_current = 0;\n"
+            "%s\n"
+            "}\n", rsout_code);
     
     fprintf(java_output_file, "\n"
             "void robotStateIn()\n"
             "{\n"
-            "rsid_current = 0;\n"
             "%s\n"
             "}\n" , rsin_code);
-    fprintf(java_output_file, "\n"
-            "void robotStateOut()\n"
-            "{\n"
-            "%s\n"
-            "}\n", rsout_code);
     
     if(jni_variables_string) fprintf(java_output_file, "%s\n", jni_variables_string);
     fprintf(java_output_file,
@@ -412,10 +425,13 @@ void jniGenerate()
             "\n"
             "@Override public void runOpMode() throws InterruptedException\n"
             "{\n"
-            "%s\n"
-            "main();\n"
-            "}\n", jni_run_opmode_string);
-
+            "    rsid_current = 0;\n"
+            "    robot_state = new byte[%d];\n", rsid_current);
+    if(jni_run_opmode_string) fprintf(java_output_file, "%s\n", jni_run_opmode_string);
+    fprintf(java_output_file,
+            "    main();\n"
+            "}\n");
+    
     fprintf(java_output_file, "}\n");
     exit(EXIT_SUCCESS);
 }
@@ -445,16 +461,16 @@ jobject self;
 void initJNI()
 {
     jclass cls = env->GetObjectClass(self);
-
+    
     //functions
     waitForStartID = env->GetMethodID(cls, "waitForStart", "()V");
-
+    
     waitOneFullHardwareCycleID = env->GetMethodID(cls, "waitOneFullHardwareCycle", "()V");
     waitForNextHardwareCycleID = env->GetMethodID(cls, "waitForNextHardwareCycle", "()V");
-
+    
     robotStateInID = env->GetMethodID(cls, "robotStateIn", "()V");
     robotStateOutID = env->GetMethodID(cls, "robotStateOut", "()V");
-
+    
     //setup pinned array
     jfieldID jrobot_stateID = env->GetFieldID(cls, "robot_state", "[B");
     jrobot_state = (jbyteArray) env->GetObjectField(self, jrobot_stateID);
@@ -462,7 +478,7 @@ void initJNI()
     /* { */
     /*     //TODO: give error */
     /* } */
-
+    
     robot_state.state = (byte *) env->GetByteArrayElements(jrobot_state, &robot_state.is_copy);
     assert(robot_state.state);
     if(robot_state.is_copy)

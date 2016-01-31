@@ -14,14 +14,13 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
     initJNI();
     
     jni_import_string = ("import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;\n"
-                         "import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\n"
                          "import com.qualcomm.robotcore.exception.RobotCoreException;\n"
                          "import com.qualcomm.robotcore.hardware.DcMotor;\n"
                          "import com.qualcomm.robotcore.hardware.DcMotorController;\n"
                          "import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;\n"
                          "import com.qualcomm.robotcore.hardware.Servo;\n"
                          "import java.nio.ByteBuffer;\n");
-    
+    #if 0
     //TODO: shortcut for defining and declaring motors, servos, etc.
     jni_variables_string = ("/* Start Motor Definitions */\n"
                             "DeviceInterfaceModule dim;\n"
@@ -64,6 +63,7 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
                              "hook_left_servo = hardwareMap.servo.get(\"hook_left\");\n"
                              "hook_right_servo = hardwareMap.servo.get(\"hook_right\");\n"
                              "hook_left_servo.setDirection(Servo.Direction.REVERSE);");
+    #endif
     
     jni_misc_string = (
         "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
@@ -73,8 +73,10 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
         "    return stick.getInt(40);//Offset value\n"
         "}\n");
     
-    pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
-    pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
+    // pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
+    // pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
+    
+    ptime = jniDoubleIn("return time;");
     
     //NOTE: this only works for tightly packed structs
     pgamepad1 = jniStructIn(
@@ -92,6 +94,8 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
     
     jniOut("telemetry.addData(\"left drive\",", pleft_drive, ");\n");
     jniOut("telemetry.addData(\"right drive\",", pright_drive, ");\n");
+    float * pdt;
+    jniOut("telemetry.addData(\"time\",", pdt, ");\n");
     jniGenerate();
     
     Button pad1 = {};
@@ -100,6 +104,10 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
     
     interruptable for ever
     {
+        dt = time-current_time;
+        *pdt = dt;
+        current_time = time;
+        
         left_drive = gamepad1.joystick1.y-gamepad1.joystick1.x;
         right_drive = gamepad1.joystick1.y+gamepad1.joystick1.x;
         

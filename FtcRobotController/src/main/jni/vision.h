@@ -44,6 +44,7 @@ void initCamera()
 void cleanupCamera()
 {
     free(camera_buffer_rgb);
+    env->ReleaseByteArrayElements(jcamera_buffer, (jbyte *) camera_buffer, 0);
 }
 
 //TODO: simdize

@@ -5,11 +5,13 @@ changes made this file are not permanent
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import com.qualcomm.ftccommon.DbgLog;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
@@ -23,7 +25,7 @@ byte[] robot_state;
 int rsid_current = 0;
 public test()
 {
-    robot_state = new byte[44];
+    DbgLog.error("opmode constructor");
 }
 
 
@@ -34,97 +36,116 @@ public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks 
     return stick.getInt(40);//Offset value
 }
 
-public void setInt(int a)
+public void setInt(int index, int a)
 {
-    ByteBuffer.wrap(robot_state, rsid_current, rsid_current+4).order(ByteOrder.nativeOrder()).putInt(a);
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).putInt(a);
+    rsid_current = index+4;
+}
+public void setRelative(int a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).putInt(a);
     rsid_current += 4;
 }
-public void set(int a)
+public int getInt(int index)
 {
-    setInt(a);
+    rsid_current = index+4;
+    return ByteBuffer.wrap(robot_state, index, 4).order(ByteOrder.nativeOrder()).getInt();
 }
-public int getInt()
+public int getRelativeInt()
 {
-    int out = ByteBuffer.wrap(robot_state, rsid_current, rsid_current+4).order(ByteOrder.nativeOrder()).getInt();
+    int out = ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).getInt();
     rsid_current += 4;
     return out;}
-public int getExistingInt(int rsid_existing)
-{
-    return ByteBuffer.wrap(robot_state, rsid_existing, rsid_existing+4).order(ByteOrder.nativeOrder()).getInt();
-}
 
-public void setLong(long a)
+public void setLong(int index, long a)
 {
-    ByteBuffer.wrap(robot_state, rsid_current, rsid_current+8).order(ByteOrder.nativeOrder()).putLong(a);
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).putLong(a);
+    rsid_current = index+8;
+}
+public void setRelative(long a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).putLong(a);
     rsid_current += 8;
 }
-public void set(long a)
+public long getLong(int index)
 {
-    setLong(a);
+    rsid_current = index+8;
+    return ByteBuffer.wrap(robot_state, index, 8).order(ByteOrder.nativeOrder()).getLong();
 }
-public long getLong()
+public long getRelativeLong()
 {
-    long out = ByteBuffer.wrap(robot_state, rsid_current, rsid_current+8).order(ByteOrder.nativeOrder()).getLong();
+    long out = ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).getLong();
     rsid_current += 8;
     return out;}
-public long getExistingLong(int rsid_existing)
-{
-    return ByteBuffer.wrap(robot_state, rsid_existing, rsid_existing+8).order(ByteOrder.nativeOrder()).getLong();
-}
 
-public void setFloat(float a)
+public void setFloat(int index, float a)
 {
-    ByteBuffer.wrap(robot_state, rsid_current, rsid_current+4).order(ByteOrder.nativeOrder()).putFloat(a);
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).putFloat(a);
+    rsid_current = index+4;
+}
+public void setRelative(float a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).putFloat(a);
     rsid_current += 4;
 }
-public void set(float a)
+public float getFloat(int index)
 {
-    setFloat(a);
+    rsid_current = index+4;
+    return ByteBuffer.wrap(robot_state, index, 4).order(ByteOrder.nativeOrder()).getFloat();
 }
-public float getFloat()
+public float getRelativeFloat()
 {
-    float out = ByteBuffer.wrap(robot_state, rsid_current, rsid_current+4).order(ByteOrder.nativeOrder()).getFloat();
+    float out = ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).getFloat();
     rsid_current += 4;
     return out;}
-public float getExistingFloat(int rsid_existing)
-{
-    return ByteBuffer.wrap(robot_state, rsid_existing, rsid_existing+4).order(ByteOrder.nativeOrder()).getFloat();
-}
 
-public void setDouble(double a)
+public void setDouble(int index, double a)
 {
-    ByteBuffer.wrap(robot_state, rsid_current, rsid_current+8).order(ByteOrder.nativeOrder()).putDouble(a);
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).putDouble(a);
+    rsid_current = index+8;
+}
+public void setRelative(double a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).putDouble(a);
     rsid_current += 8;
 }
-public void set(double a)
+public double getDouble(int index)
 {
-    setDouble(a);
+    rsid_current = index+8;
+    return ByteBuffer.wrap(robot_state, index, 8).order(ByteOrder.nativeOrder()).getDouble();
 }
-public double getDouble()
+public double getRelativeDouble()
 {
-    double out = ByteBuffer.wrap(robot_state, rsid_current, rsid_current+8).order(ByteOrder.nativeOrder()).getDouble();
+    double out = ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).getDouble();
     rsid_current += 8;
     return out;}
-public double getExistingDouble(int rsid_existing)
-{
-    return ByteBuffer.wrap(robot_state, rsid_existing, rsid_existing+8).order(ByteOrder.nativeOrder()).getDouble();
-}
 
+
+void robotStateOut()
+{
+rsid_current = 0;
+telemetry.addData("left drive",getFloat(36));
+
+telemetry.addData("right drive",getFloat(40));
+
+telemetry.addData("time",getFloat(44));
+
+
+}
 
 void robotStateIn()
 {
-rsid_current = 0;
 {
-setInt(left_drive.getCurrentPosition());
-
-rsid_current = 4;
-}
-{
-setInt(right_drive.getCurrentPosition());
+setDouble(0, time);
 
 rsid_current = 8;
 }
 {
+rsid_current = 8;
 int gamepad1_buttons = 0;
 try
 {
@@ -134,38 +155,15 @@ catch (RobotCoreException e)
 {
     e.printStackTrace();
 }
-set(gamepad1.left_stick_x);
-set( gamepad1.left_stick_y);
-set( gamepad1.left_trigger);
-set( gamepad1.right_trigger);
-set( gamepad1_buttons);
+setRelative(gamepad1.left_stick_x);
+setRelative( gamepad1.left_stick_y);
+setRelative( gamepad1.left_trigger);
+setRelative( gamepad1.right_trigger);
+setRelative( gamepad1_buttons);
 ;
 }
 
 }
-
-void robotStateOut()
-{
-telemetry.addData("left drive",getFloat());
-
-telemetry.addData("right drive",getFloat());
-
-
-}
-/* Start Motor Definitions */
-DeviceInterfaceModule dim;
-
-DcMotor left_drive;
-DcMotor right_drive;
-DcMotor shoulder;
-DcMotor elbow;
-DcMotor intake;
-
-Servo hand_servo;
-Servo slide_servo;
-Servo hook_left_servo;
-Servo hook_right_servo;
-/* End Motor Definitions */
 native void main();
 
 static
@@ -175,32 +173,8 @@ static
 
 @Override public void runOpMode() throws InterruptedException
 {
-int elbow_potentiometer_port = 7;
-dim = hardwareMap.deviceInterfaceModule.get("dim");
-left_drive  = hardwareMap.dcMotor.get("leftd");
-right_drive = hardwareMap.dcMotor.get("rightd");
-shoulder    = hardwareMap.dcMotor.get("shoulder");
-elbow       = hardwareMap.dcMotor.get("winch");
-intake      = hardwareMap.dcMotor.get("intake");
-right_drive.setDirection(DcMotor.Direction.REVERSE);
-left_drive.setDirection(DcMotor.Direction.REVERSE);
-shoulder.setDirection(DcMotor.Direction.REVERSE);
-shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-waitOneFullHardwareCycle();
-intake.setDirection(DcMotor.Direction.REVERSE);
-shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-elbow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-waitOneFullHardwareCycle();
-elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-waitOneFullHardwareCycle();
-//shoulder.setDirection(DcMotor.Direction.REVERSE);
-//elbow.setDirection(DcMotor.Direction.REVERSE);
-
-hand_servo = hardwareMap.servo.get("hand");
-slide_servo = hardwareMap.servo.get("slide");
-hook_left_servo = hardwareMap.servo.get("hook_left");
-hook_right_servo = hardwareMap.servo.get("hook_right");
-hook_left_servo.setDirection(Servo.Direction.REVERSE);
-main();
+    rsid_current = 0;
+    robot_state = new byte[48];
+    main();
 }
 }
