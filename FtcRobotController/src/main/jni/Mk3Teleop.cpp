@@ -156,7 +156,7 @@ void JNI_main(JNIEnv * _env, jobject _self)
             // elbow_potentiometer_angle,
             // exp(-500.0*dt));
         
-        shoulder_potentiometer_angle = (-180+((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))+101.24f))*pi/180.0f;
+        shoulder_potentiometer_angle = (-180+((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))+77.22f))*pi/180.0f;
             // lerp(
             // (((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))+95.047f))*pi/180.0f,
             // shoulder_potentiometer_angle,
@@ -181,6 +181,9 @@ void JNI_main(JNIEnv * _env, jobject _self)
             v2f target_arm_velocity = arm_stick;
             if(arm_score_mode_button)
             {
+                winch = 0;
+                shoulder = 0;
+                
                 score_mode = true;
                 target_shoulder_theta = 1.0;
                 target_inside_elbow_theta = pi*2/5;
@@ -193,6 +196,9 @@ void JNI_main(JNIEnv * _env, jobject _self)
             }
             else if(arm_intake_mode_button)
             {
+                winch = 0;
+                shoulder = 0;
+
                 score_mode = false;
                 target_shoulder_theta = 2.0;
                 target_inside_elbow_theta = 4.0;
