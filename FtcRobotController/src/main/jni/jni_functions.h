@@ -346,16 +346,16 @@ void jniGenerate()
     fprintf(java_output_file,
             "\n"
             "public class %.*s extends LinearOpMode {\n"
-            "byte[] robot_state;\n"
+            "static byte[] robot_state;\n"
             "int rsid_current = 0;\n"
             "public %.*s()\n"
             "{\n"
             "    DbgLog.error(\"opmode constructor\");\n"
             /* "    rsid_current = 0;" */
-            /* "    robot_state = new byte[%d];\n" */,
+            "    robot_state = new byte[%d];\n",
             java_output_name_part_len-java_output_path_part_len, java_output_filename+java_output_path_part_len,
-            java_output_name_part_len-java_output_path_part_len, java_output_filename+java_output_path_part_len/*,*/
-            /* rsid_current */);
+            java_output_name_part_len-java_output_path_part_len, java_output_filename+java_output_path_part_len,
+            rsid_current);
     if(jni_constructor_string) fprintf(java_output_file, "\n%s\n", jni_constructor_string);
     fprintf(java_output_file,
             "}\n"
@@ -392,7 +392,7 @@ void jniGenerate()
                 "{\n"
                 "    %s out = ByteBuffer.wrap(robot_state, rsid_current, %d).order(ByteOrder.nativeOrder()).get%c%s();\n"
                 "    rsid_current += %d;\n"
-                "    return out;"
+                "    return out;\n"
                 "}\n\n",
                 Type, type, buffer_read_size, Type, buffer_read_size,
                 type, buffer_read_size, Type, buffer_read_size,
@@ -414,7 +414,7 @@ void jniGenerate()
             "}\n" , rsin_code);
     
     if(jni_variables_string) fprintf(java_output_file, "%s\n", jni_variables_string);
-    fprintf(java_output_file,
+    fprintf(java_output_file, "\n"
             "native void main();\n"
             "\n"
             "static\n"
@@ -425,8 +425,7 @@ void jniGenerate()
             "\n"
             "@Override public void runOpMode() throws InterruptedException\n"
             "{\n"
-            "    rsid_current = 0;\n"
-            "    robot_state = new byte[%d];\n", rsid_current);
+            "    rsid_current = 0;\n");
     if(jni_run_opmode_string) fprintf(java_output_file, "%s\n", jni_run_opmode_string);
     fprintf(java_output_file,
             "    main();\n"

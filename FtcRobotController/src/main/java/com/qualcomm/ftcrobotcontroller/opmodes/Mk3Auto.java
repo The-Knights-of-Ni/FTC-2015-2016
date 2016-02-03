@@ -23,11 +23,12 @@ import android.hardware.Camera;
 
 
 public class Mk3Auto extends LinearOpMode {
-byte[] robot_state;
+static byte[] robot_state;
 int rsid_current = 0;
 public Mk3Auto()
 {
     DbgLog.error("opmode constructor");
+    robot_state = new byte[100];
 
 camera = FtcRobotControllerActivity.camera;
 Camera.Parameters parameters = camera.getParameters();
@@ -89,7 +90,8 @@ public int getRelativeInt()
 {
     int out = ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).getInt();
     rsid_current += 4;
-    return out;}
+    return out;
+}
 
 public void setLong(int index, long a)
 {
@@ -111,7 +113,8 @@ public long getRelativeLong()
 {
     long out = ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).getLong();
     rsid_current += 8;
-    return out;}
+    return out;
+}
 
 public void setFloat(int index, float a)
 {
@@ -133,7 +136,8 @@ public float getRelativeFloat()
 {
     float out = ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).getFloat();
     rsid_current += 4;
-    return out;}
+    return out;
+}
 
 public void setDouble(int index, double a)
 {
@@ -155,7 +159,8 @@ public double getRelativeDouble()
 {
     double out = ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).getDouble();
     rsid_current += 8;
-    return out;}
+    return out;
+}
 
 
 void robotStateOut()
@@ -243,6 +248,7 @@ Servo slide;
 Servo hook_left;
 Servo hook_right;
 /* End Motor Definitions */
+
 native void main();
 
 static
@@ -253,7 +259,6 @@ static
 @Override public void runOpMode() throws InterruptedException
 {
     rsid_current = 0;
-    robot_state = new byte[100];
 dim = hardwareMap.deviceInterfaceModule.get("dim");
 I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
 imu = new IMU(imu_i2c_device);

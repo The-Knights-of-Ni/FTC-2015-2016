@@ -21,11 +21,12 @@ import java.nio.ByteBuffer;
 
 
 public class test extends LinearOpMode {
-byte[] robot_state;
+static byte[] robot_state;
 int rsid_current = 0;
 public test()
 {
     DbgLog.error("opmode constructor");
+    robot_state = new byte[48];
 }
 
 
@@ -56,7 +57,8 @@ public int getRelativeInt()
 {
     int out = ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).getInt();
     rsid_current += 4;
-    return out;}
+    return out;
+}
 
 public void setLong(int index, long a)
 {
@@ -78,7 +80,8 @@ public long getRelativeLong()
 {
     long out = ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).getLong();
     rsid_current += 8;
-    return out;}
+    return out;
+}
 
 public void setFloat(int index, float a)
 {
@@ -100,7 +103,8 @@ public float getRelativeFloat()
 {
     float out = ByteBuffer.wrap(robot_state, rsid_current, 4).order(ByteOrder.nativeOrder()).getFloat();
     rsid_current += 4;
-    return out;}
+    return out;
+}
 
 public void setDouble(int index, double a)
 {
@@ -122,7 +126,8 @@ public double getRelativeDouble()
 {
     double out = ByteBuffer.wrap(robot_state, rsid_current, 8).order(ByteOrder.nativeOrder()).getDouble();
     rsid_current += 8;
-    return out;}
+    return out;
+}
 
 
 void robotStateOut()
@@ -164,6 +169,7 @@ setRelative( gamepad1_buttons);
 }
 
 }
+
 native void main();
 
 static
@@ -174,7 +180,6 @@ static
 @Override public void runOpMode() throws InterruptedException
 {
     rsid_current = 0;
-    robot_state = new byte[48];
     main();
 }
 }
