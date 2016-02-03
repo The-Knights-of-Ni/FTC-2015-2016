@@ -47,8 +47,8 @@ extends k {
         }
         FT_EEPROM_245R fT_EEPROM_245R = (FT_EEPROM_245R)fT_EEPROM;
         try {
-            short s;
             int n;
+            short s;
             for (s = 0; s < 80; s = (short)(s + 1)) {
                 arrn[s] = this.a(s);
             }

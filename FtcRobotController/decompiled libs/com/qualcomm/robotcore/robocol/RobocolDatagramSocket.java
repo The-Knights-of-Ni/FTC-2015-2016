@@ -16,100 +16,113 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 
 public class RobocolDatagramSocket {
-    private final byte[] a = new byte[4098];
-    private DatagramSocket b;
-    private final DatagramPacket c = new DatagramPacket(this.a, this.a.length);
-    private final RobocolDatagram d = new RobocolDatagram();
-    private volatile State e = State.CLOSED;
+    private DatagramSocket a;
+    private volatile State b = State.CLOSED;
+    private final Object c = new Object();
+    private final Object d = new Object();
+    private final Object e = new Object();
 
     public void listen(InetAddress destAddress) throws SocketException {
         this.bind(new InetSocketAddress(RobocolConfig.determineBindAddress(destAddress), 20884));
     }
 
     public void bind(InetSocketAddress bindAddress) throws SocketException {
-        if (this.e != State.CLOSED) {
-            this.close();
+        Object object = this.e;
+        synchronized (object) {
+            if (this.b != State.CLOSED) {
+                this.close();
+            }
+            this.b = State.LISTENING;
+            RobotLog.d("RobocolDatagramSocket binding to " + bindAddress.toString());
+            this.a = new DatagramSocket(bindAddress);
         }
-        this.e = State.LISTENING;
-        RobotLog.d("RobocolDatagramSocket binding to " + bindAddress.toString());
-        this.b = new DatagramSocket(bindAddress);
     }
 
     public void connect(InetAddress connectAddress) throws SocketException {
         InetSocketAddress inetSocketAddress = new InetSocketAddress(connectAddress, 20884);
         RobotLog.d("RobocolDatagramSocket connected to " + inetSocketAddress.toString());
-        this.b.connect(inetSocketAddress);
+        this.a.connect(inetSocketAddress);
     }
 
     public void close() {
-        this.e = State.CLOSED;
-        if (this.b != null) {
-            this.b.close();
+        Object object = this.e;
+        synchronized (object) {
+            this.b = State.CLOSED;
+            if (this.a != null) {
+                this.a.close();
+            }
+            RobotLog.d("RobocolDatagramSocket is closed");
         }
-        RobotLog.d("RobocolDatagramSocket is closed");
     }
 
     public void send(RobocolDatagram message) {
-        try {
-            this.b.send(message.getPacket());
-        }
-        catch (IllegalArgumentException var2_2) {
-            RobotLog.w("Unable to send RobocolDatagram: " + var2_2.toString());
-            RobotLog.w("               " + message.toString());
-        }
-        catch (IOException var2_3) {
-            RobotLog.w("Unable to send RobocolDatagram: " + var2_3.toString());
-            RobotLog.w("               " + message.toString());
-        }
-        catch (NullPointerException var2_4) {
-            RobotLog.w("Unable to send RobocolDatagram: " + var2_4.toString());
-            RobotLog.w("               " + message.toString());
+        Object object = this.d;
+        synchronized (object) {
+            try {
+                this.a.send(message.getPacket());
+            }
+            catch (IllegalArgumentException var3_3) {
+                RobotLog.w("Unable to send RobocolDatagram: " + var3_3.toString());
+                RobotLog.w("               " + message.toString());
+            }
+            catch (IOException var3_4) {
+                RobotLog.w("Unable to send RobocolDatagram: " + var3_4.toString());
+                RobotLog.w("               " + message.toString());
+            }
+            catch (NullPointerException var3_5) {
+                RobotLog.w("Unable to send RobocolDatagram: " + var3_5.toString());
+                RobotLog.w("               " + message.toString());
+            }
         }
     }
 
     public RobocolDatagram recv() {
-        try {
-            this.b.receive(this.c);
+        Object object = this.c;
+        synchronized (object) {
+            RobocolDatagram robocolDatagram = RobocolDatagram.forReceive();
+            DatagramPacket datagramPacket = robocolDatagram.getPacket();
+            try {
+                this.a.receive(datagramPacket);
+            }
+            catch (PortUnreachableException var4_4) {
+                RobotLog.d("RobocolDatagramSocket receive error: remote port unreachable");
+                return null;
+            }
+            catch (IOException var4_5) {
+                RobotLog.d("RobocolDatagramSocket receive error: " + var4_5.toString());
+                return null;
+            }
+            catch (NullPointerException var4_6) {
+                RobotLog.d("RobocolDatagramSocket receive error: " + var4_6.toString());
+            }
+            return robocolDatagram;
         }
-        catch (PortUnreachableException var1_1) {
-            RobotLog.d("RobocolDatagramSocket receive error: remote port unreachable");
-            return null;
-        }
-        catch (IOException var1_2) {
-            RobotLog.d("RobocolDatagramSocket receive error: " + var1_2.toString());
-            return null;
-        }
-        catch (NullPointerException var1_3) {
-            RobotLog.d("RobocolDatagramSocket receive error: " + var1_3.toString());
-        }
-        this.d.setPacket(this.c);
-        return this.d;
     }
 
     public State getState() {
-        return this.e;
+        return this.b;
     }
 
     public InetAddress getInetAddress() {
-        if (this.b == null) {
+        if (this.a == null) {
             return null;
         }
-        return this.b.getInetAddress();
+        return this.a.getInetAddress();
     }
 
     public InetAddress getLocalAddress() {
-        if (this.b == null) {
+        if (this.a == null) {
             return null;
         }
-        return this.b.getLocalAddress();
+        return this.a.getLocalAddress();
     }
 
     public boolean isRunning() {
-        return this.e == State.LISTENING;
+        return this.b == State.LISTENING;
     }
 
     public boolean isClosed() {
-        return this.e == State.CLOSED;
+        return this.b == State.CLOSED;
     }
 
     public static enum State {

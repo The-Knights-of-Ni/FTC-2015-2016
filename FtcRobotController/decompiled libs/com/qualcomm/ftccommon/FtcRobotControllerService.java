@@ -11,12 +11,13 @@
  *  com.qualcomm.robotcore.eventloop.EventLoop
  *  com.qualcomm.robotcore.eventloop.EventLoopManager
  *  com.qualcomm.robotcore.eventloop.EventLoopManager$EventLoopMonitor
- *  com.qualcomm.robotcore.eventloop.EventLoopManager$State
  *  com.qualcomm.robotcore.exception.RobotCoreException
  *  com.qualcomm.robotcore.factory.RobotFactory
  *  com.qualcomm.robotcore.robot.Robot
+ *  com.qualcomm.robotcore.robot.RobotState
  *  com.qualcomm.robotcore.util.ElapsedTime
  *  com.qualcomm.robotcore.util.RobotLog
+ *  com.qualcomm.robotcore.util.Util
  *  com.qualcomm.robotcore.wifi.WifiDirectAssistant
  *  com.qualcomm.robotcore.wifi.WifiDirectAssistant$Event
  *  com.qualcomm.robotcore.wifi.WifiDirectAssistant$WifiDirectAssistantCallback
@@ -29,6 +30,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import com.qualcomm.ftccommon.ConfigWifiDirectActivity;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.UpdateUI;
 import com.qualcomm.robotcore.eventloop.EventLoop;
@@ -36,8 +38,10 @@ import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.factory.RobotFactory;
 import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.util.Util;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import java.net.InetAddress;
 
@@ -137,10 +141,14 @@ implements WifiDirectAssistant.WifiDirectAssistantCallback {
             case CONNECTED_AS_GROUP_OWNER: {
                 DbgLog.msg("Wifi Direct - Group Owner");
                 this.b.cancelDiscoverPeers();
+                if (this.b.isDeviceNameValid()) break;
+                RobotLog.e((String)"Wifi-Direct device name contains non-printable characters");
+                ConfigWifiDirectActivity.launch(this.getBaseContext(), ConfigWifiDirectActivity.Flag.WIFI_DIRECT_DEVICE_NAME_INVALID);
                 break;
             }
             case CONNECTED_AS_PEER: {
                 DbgLog.error("Wifi Direct - connected as peer, was expecting Group Owner");
+                ConfigWifiDirectActivity.launch(this.getBaseContext(), ConfigWifiDirectActivity.Flag.WIFI_DIRECT_FIX_CONFIG);
                 break;
             }
             case CONNECTION_INFO_AVAILABLE: {
@@ -176,50 +184,57 @@ implements WifiDirectAssistant.WifiDirectAssistantCallback {
 
         @Override
         public void run() {
-            try {
-                if (FtcRobotControllerService.this.c != null) {
-                    FtcRobotControllerService.this.c.shutdown();
-                    FtcRobotControllerService.this.c = null;
-                }
-                FtcRobotControllerService.this.a("Robot Status: scanning for USB devices");
-                try {
-                    Thread.sleep(2000);
-                }
-                catch (InterruptedException var1_1) {
-                    FtcRobotControllerService.this.a("Robot Status: abort due to interrupt");
-                    return;
-                }
-                FtcRobotControllerService.this.c = RobotFactory.createRobot();
-                FtcRobotControllerService.this.a("Robot Status: waiting on network");
-                FtcRobotControllerService.this.i.reset();
-                while (!FtcRobotControllerService.this.b.isConnected()) {
+            Util.logThreadLifeCycle((String)"RobotSetupRunnable.run()", (Runnable)new Runnable(){
+
+                @Override
+                public void run() {
                     try {
-                        Thread.sleep(1000);
-                        if (FtcRobotControllerService.this.i.time() <= 120.0) continue;
-                        FtcRobotControllerService.this.a("Robot Status: network timed out");
-                        return;
+                        if (FtcRobotControllerService.this.c != null) {
+                            FtcRobotControllerService.this.c.shutdown();
+                            FtcRobotControllerService.this.c = null;
+                        }
+                        FtcRobotControllerService.this.a("Robot Status: scanning for USB devices");
+                        try {
+                            Thread.sleep(5000);
+                        }
+                        catch (InterruptedException var1_1) {
+                            FtcRobotControllerService.this.a("Robot Status: abort due to interrupt");
+                            return;
+                        }
+                        FtcRobotControllerService.this.c = RobotFactory.createRobot();
+                        FtcRobotControllerService.this.a("Robot Status: waiting on network");
+                        FtcRobotControllerService.this.i.reset();
+                        while (!FtcRobotControllerService.this.b.isConnected()) {
+                            try {
+                                Thread.sleep(1000);
+                                if (FtcRobotControllerService.this.i.time() <= 120.0) continue;
+                                FtcRobotControllerService.this.a("Robot Status: network timed out");
+                                return;
+                            }
+                            catch (InterruptedException var1_2) {
+                                DbgLog.msg("interrupt waiting for network; aborting setup");
+                                return;
+                            }
+                        }
+                        FtcRobotControllerService.this.a("Robot Status: starting robot");
+                        try {
+                            FtcRobotControllerService.b((FtcRobotControllerService)FtcRobotControllerService.this).eventLoopManager.setMonitor((EventLoopManager.EventLoopMonitor)FtcRobotControllerService.this.h);
+                            InetAddress inetAddress = FtcRobotControllerService.this.b.getGroupOwnerAddress();
+                            FtcRobotControllerService.this.c.start(inetAddress, FtcRobotControllerService.this.d);
+                        }
+                        catch (RobotCoreException var1_4) {
+                            FtcRobotControllerService.this.a("Robot Status: failed to start robot");
+                            RobotLog.setGlobalErrorMsg((String)var1_4.getMessage());
+                        }
                     }
-                    catch (InterruptedException var1_2) {
-                        DbgLog.msg("interrupt waiting for network; aborting setup");
-                        return;
+                    catch (RobotCoreException var1_5) {
+                        FtcRobotControllerService.this.a("Robot Status: Unable to create robot!");
+                        RobotLog.setGlobalErrorMsg((String)var1_5.getMessage());
                     }
                 }
-                FtcRobotControllerService.this.a("Robot Status: starting robot");
-                try {
-                    FtcRobotControllerService.b((FtcRobotControllerService)FtcRobotControllerService.this).eventLoopManager.setMonitor((EventLoopManager.EventLoopMonitor)FtcRobotControllerService.this.h);
-                    InetAddress inetAddress = FtcRobotControllerService.this.b.getGroupOwnerAddress();
-                    FtcRobotControllerService.this.c.start(inetAddress, FtcRobotControllerService.this.d);
-                }
-                catch (RobotCoreException var1_4) {
-                    FtcRobotControllerService.this.a("Robot Status: failed to start robot");
-                    RobotLog.setGlobalErrorMsg((String)var1_4.getMessage());
-                }
-            }
-            catch (RobotCoreException var1_5) {
-                FtcRobotControllerService.this.a("Robot Status: Unable to create robot!");
-                RobotLog.setGlobalErrorMsg((String)var1_5.getMessage());
-            }
+            });
         }
+
     }
 
     private class a
@@ -227,7 +242,7 @@ implements WifiDirectAssistant.WifiDirectAssistantCallback {
         private a() {
         }
 
-        public void onStateChange(EventLoopManager.State state) {
+        public void onStateChange(RobotState state) {
             if (FtcRobotControllerService.this.g == null) {
                 return;
             }

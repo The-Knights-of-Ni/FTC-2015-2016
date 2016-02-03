@@ -177,6 +177,10 @@ public class WifiDirectAssistant {
         return this.m == ConnectStatus.GROUP_OWNER;
     }
 
+    public boolean isDeviceNameValid() {
+        return this.p.matches("^\\p{Graph}+$");
+    }
+
     public void discoverPeers() {
         this.g.discoverPeers(this.f, new WifiP2pManager.ActionListener(){
 

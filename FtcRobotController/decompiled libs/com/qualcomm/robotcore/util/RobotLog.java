@@ -23,20 +23,40 @@ public class RobotLog {
     private RobotLog() {
     }
 
+    public static /* varargs */ void v(String format, Object ... args) {
+        RobotLog.v(String.format(format, args));
+    }
+
     public static void v(String message) {
         Log.v((String)"RobotCore", (String)message);
+    }
+
+    public static /* varargs */ void d(String format, Object ... args) {
+        RobotLog.d(String.format(format, args));
     }
 
     public static void d(String message) {
         Log.d((String)"RobotCore", (String)message);
     }
 
+    public static /* varargs */ void i(String format, Object ... args) {
+        RobotLog.i(String.format(format, args));
+    }
+
     public static void i(String message) {
         Log.i((String)"RobotCore", (String)message);
     }
 
+    public static /* varargs */ void w(String format, Object ... args) {
+        RobotLog.w(String.format(format, args));
+    }
+
     public static void w(String message) {
         Log.w((String)"RobotCore", (String)message);
+    }
+
+    public static /* varargs */ void e(String format, Object ... args) {
+        RobotLog.e(String.format(format, args));
     }
 
     public static void e(String message) {
@@ -100,7 +120,7 @@ public class RobotLog {
         b = true;
         final String string = context.getPackageName();
         final String string2 = new File(RobotLog.getLogFilename(context)).getAbsolutePath();
-        Thread thread = new Thread(){
+        Thread thread = new Thread("Logging Thread"){
 
             @Override
             public void run() {

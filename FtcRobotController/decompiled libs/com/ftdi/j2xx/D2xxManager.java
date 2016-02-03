@@ -264,7 +264,7 @@ public class D2xxManager {
         synchronized (arrayList) {
             int n = this.f.size();
             for (int i = 0; i < n; ++i) {
-                this.f.remove(i);
+                this.f.remove(0);
             }
         }
     }
@@ -325,7 +325,7 @@ public class D2xxManager {
     }
 
     public static int getLibraryVersion() {
-        return 537919488;
+        return 540016640;
     }
 
     private boolean a(Context context, FT_Device fT_Device, DriverParameters driverParameters) {
@@ -479,6 +479,7 @@ public class D2xxManager {
                         fT_Device = new FT_Device(b, g, dev, dev.getInterface(i));
                     } else {
                         fT_Device.a(b);
+                        this.f.remove(fT_Device);
                     }
                     this.f.add(fT_Device);
                     ++n;

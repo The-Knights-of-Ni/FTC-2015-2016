@@ -7,6 +7,7 @@
 package com.qualcomm.robotcore.util;
 
 import android.widget.TextView;
+import com.qualcomm.robotcore.util.RobotLog;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -56,6 +57,23 @@ public class Util {
         System.arraycopy(first, 0, arrby, 0, first.length);
         System.arraycopy(second, 0, arrby, first.length, second.length);
         return arrby;
+    }
+
+    /*
+     * Enabled aggressive block sorting
+     * Enabled unnecessary exception pruning
+     */
+    public static void logThreadLifeCycle(String name, Runnable runnable) {
+        try {
+            Thread.currentThread().setName(name);
+            RobotLog.v(String.format("thread: '%s' starting...", name));
+            runnable.run();
+        }
+        catch (Throwable var2_2) {
+            RobotLog.v(String.format("thread: ...terminating '%s'", name));
+            throw var2_2;
+        }
+        RobotLog.v(String.format("thread: ...terminating '%s'", name));
     }
 
 }

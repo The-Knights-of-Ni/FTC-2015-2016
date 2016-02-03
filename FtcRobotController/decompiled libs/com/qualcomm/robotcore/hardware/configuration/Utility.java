@@ -53,6 +53,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utility {
     public static final String AUTOCONFIGURE_K9LEGACYBOT = "K9LegacyBot";
@@ -98,6 +100,8 @@ public class Utility {
         for (File file2 : arrfile) {
             if (!file2.isFile()) continue;
             String string = file2.getName();
+            Pattern pattern = Pattern.compile("(?i).xml");
+            if (!pattern.matcher((CharSequence)string).find()) continue;
             String string2 = string.replaceFirst("[.][^.]+$", "");
             arrayList.add(string2);
         }

@@ -163,7 +163,7 @@ extends Activity {
             this.e = (LegacyModuleControllerConfiguration)serializable;
             this.g = (ArrayList)this.e.getDevices();
             this.f.setText((CharSequence)this.e.getName());
-            this.f.addTextChangedListener((TextWatcher)new a((DeviceConfiguration)this.e));
+            this.f.addTextChangedListener((TextWatcher)new a(this));
             TextView textView = (TextView)this.findViewById(R.id.legacy_serialNumber);
             textView.setText((CharSequence)this.e.getSerialNumber().toString());
             for (int i = 0; i < this.g.size(); ++i) {
@@ -228,7 +228,7 @@ extends Activity {
         EditText editText = (EditText)view.findViewById(R.id.editTextResult_name);
         TextView textView = (TextView)view.findViewById(R.id.portNumber);
         int n2 = Integer.parseInt(textView.getText().toString());
-        editText.addTextChangedListener((TextWatcher)new a(deviceConfiguration));
+        editText.addTextChangedListener((TextWatcher)new a(this, this.a(n2)));
         editText.setText((CharSequence)string);
         if (a) {
             RobotLog.e((String)("[populatePort] name: " + string + ", port: " + n2 + ", type: " + (Object)deviceConfiguration.getType()));
@@ -399,10 +399,21 @@ extends Activity {
 
     private class a
     implements TextWatcher {
-        private DeviceConfiguration b;
+        private int b;
+        private boolean c;
+        final /* synthetic */ EditLegacyModuleControllerActivity a;
 
-        private a(DeviceConfiguration deviceConfiguration) {
-            this.b = deviceConfiguration;
+        private a(EditLegacyModuleControllerActivity editLegacyModuleControllerActivity) {
+            this.a = editLegacyModuleControllerActivity;
+            this.c = false;
+            this.c = true;
+        }
+
+        private a(EditLegacyModuleControllerActivity editLegacyModuleControllerActivity, View view) {
+            this.a = editLegacyModuleControllerActivity;
+            this.c = false;
+            TextView textView = (TextView)view.findViewById(R.id.portNumber);
+            this.b = Integer.parseInt(textView.getText().toString());
         }
 
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -413,7 +424,12 @@ extends Activity {
 
         public void afterTextChanged(Editable editable) {
             String string = editable.toString();
-            this.b.setName(string);
+            if (this.c) {
+                this.a.e.setName(string);
+            } else {
+                DeviceConfiguration deviceConfiguration = (DeviceConfiguration)this.a.g.get(this.b);
+                deviceConfiguration.setName(string);
+            }
         }
     }
 

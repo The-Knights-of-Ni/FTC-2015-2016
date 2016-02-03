@@ -4,13 +4,13 @@
 package com.qualcomm.robotcore.eventloop.opmode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
-port com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robocol.Telemetry;
 import java.util.concurrent.TimeUnit;
 
 public abstract class OpMode {
-    public Gamepad gamepad1 = new Gamepad();
-    public Gamepad gamepad2 = new Gamepad();
+    public Gamepad gamepad1 = null;
+    public Gamepad gamepad2 = null;
     public Telemetry telemetry = new Telemetry();
     public HardwareMap hardwareMap = new HardwareMap();
     public double time = 0.0;

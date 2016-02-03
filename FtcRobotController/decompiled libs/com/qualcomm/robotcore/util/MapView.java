@@ -105,8 +105,8 @@ extends View {
     }
 
     private void b() {
-        int n;
         float f;
+        int n;
         this.h = Bitmap.createBitmap((int)this.getWidth(), (int)this.getHeight(), (Bitmap.Config)Bitmap.Config.ARGB_8888);
         this.g = new Canvas(this.h);
         Paint paint = new Paint();

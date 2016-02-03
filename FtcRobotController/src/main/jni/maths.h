@@ -1,6 +1,6 @@
 #include "misc.h"
 #include <math.h>
-#include <arm_neon.h>
+//#include <arm_neon.h>
 
 #ifndef MATHS
 #define MATHS

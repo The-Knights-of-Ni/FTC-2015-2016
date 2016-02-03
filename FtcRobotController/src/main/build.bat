@@ -2,21 +2,23 @@
 
 set JAVA_HOME=c:\Progra~1\Java\jdk1.8.0_66
 
-REM pushd ndk
-REM for %%f in (*.javac) do (
-REM     echo %%~nf
-REM     clang -E -P -x c %%~nf.javac -o processed\%%~nf.java
-REM )
-REM popd
+REM TODO: use native_robot or loop over all cpp files
+del generator\test.exe
+clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/test.cpp --output generator\test
+generator\test
 
-clang++ -O0 -D DEBUG -Wc++11-extensions generator/robot_state_element_generator.cpp --output generator\robot_state_element_generator
+del generator\Mk3Teleop.exe
+clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/Mk3Teleop.cpp --output generator\Mk3Teleop
+generator\Mk3Teleop
 
-.\generator\robot_state_element_generator jni/test.cpp
-.\generator\robot_state_element_generator jni/Mk3Teleop.cpp
-.\generator\robot_state_element_generator jni/Mk3Auto.cpp
+del generator\Mk3Auto.exe
+clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/Mk3Auto.cpp --output generator\Mk3Auto
+generator\Mk3Auto
 
-REM call ndk-build clean NDK_LIBS_OUT=.\jniLibs
-call ndk-build NDK_LIBS_OUT=.\jniLibs
+REM call ndk-build clean NDK_LIBS_OUT=.\jniLibs V=0
+call ndk-build NDK_LIBS_OUT=.\jniLibs -B V=0
+
+echo ndk build complete
 
 pushd ..\..\
 
@@ -26,5 +28,3 @@ popd
 
 REM call adb -d install -r ..\..\build\outputs\apk\FtcRobotController-debug.apk
 adb -s 10.0.0.4:5555 install -r ..\..\build\outputs\apk\FtcRobotController-debug.apk
-
-

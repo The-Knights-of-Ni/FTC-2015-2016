@@ -3,19 +3,19 @@
  * 
  * Could not load the following classes:
  *  android.content.Context
+ *  com.qualcomm.hardware.HardwareFactory
  *  com.qualcomm.robotcore.eventloop.EventLoopManager
- *  com.qualcomm.robotcore.eventloop.EventLoopManager$State
  *  com.qualcomm.robotcore.exception.RobotCoreException
  *  com.qualcomm.robotcore.hardware.DcMotorController
  *  com.qualcomm.robotcore.hardware.DeviceInterfaceModule
  *  com.qualcomm.robotcore.hardware.Gamepad
- *  com.qualcomm.robotcore.hardware.HardwareFactory
  *  com.qualcomm.robotcore.hardware.HardwareMap
  *  com.qualcomm.robotcore.hardware.HardwareMap$DeviceMapping
  *  com.qualcomm.robotcore.hardware.LegacyModule
  *  com.qualcomm.robotcore.hardware.ServoController
  *  com.qualcomm.robotcore.robocol.Command
  *  com.qualcomm.robotcore.robocol.Telemetry
+ *  com.qualcomm.robotcore.robot.RobotState
  *  com.qualcomm.robotcore.util.BatteryChecker
  *  com.qualcomm.robotcore.util.BatteryChecker$BatteryWatcher
  *  com.qualcomm.robotcore.util.ElapsedTime
@@ -25,17 +25,18 @@ package com.qualcomm.ftccommon;
 import android.content.Context;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.UpdateUI;
+import com.qualcomm.hardware.HardwareFactory;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareFactory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LegacyModule;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.robocol.Command;
 import com.qualcomm.robotcore.robocol.Telemetry;
+import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.util.BatteryChecker;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import java.math.BigDecimal;
@@ -175,7 +176,7 @@ implements BatteryChecker.BatteryWatcher {
     }
 
     public String getOpMode(String extra) {
-        if (this.a.state != EventLoopManager.State.RUNNING) {
+        if (this.a.state != RobotState.RUNNING) {
             return "Stop Robot";
         }
         return extra;

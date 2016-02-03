@@ -14,7 +14,7 @@
  *  com.qualcomm.ftccommon.R$id
  *  com.qualcomm.ftccommon.R$layout
  *  com.qualcomm.ftccommon.R$string
- *  com.qualcomm.hardware.ModernRoboticsDeviceManager
+ *  com.qualcomm.hardware.HardwareDeviceManager
  *  com.qualcomm.robotcore.eventloop.EventLoopManager
  *  com.qualcomm.robotcore.exception.RobotCoreException
  *  com.qualcomm.robotcore.hardware.DeviceManager
@@ -41,7 +41,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.ftccommon.R;
-import com.qualcomm.hardware.ModernRoboticsDeviceManager;
+import com.qualcomm.hardware.HardwareDeviceManager;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DeviceManager;
@@ -83,7 +83,7 @@ extends Activity {
         this.b = (Button)this.findViewById(R.id.configureLegacy);
         this.c = (Button)this.findViewById(R.id.configureUSB);
         try {
-            this.d = new ModernRoboticsDeviceManager(this.a, null);
+            this.d = new HardwareDeviceManager(this.a, null);
         }
         catch (RobotCoreException var2_2) {
             this.g.complainToast("Failed to open the Device Manager", this.a);

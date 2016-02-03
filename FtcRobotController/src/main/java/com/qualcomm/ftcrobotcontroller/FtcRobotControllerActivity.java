@@ -1,33 +1,33 @@
 /* Copyright (c) 2014, 2015 Qualcomm Technologies Inc
 
-All rights reserved.
+   All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification,
-are permitted (subject to the limitations in the disclaimer below) provided that
-the following conditions are met:
+   Redistribution and use in source and binary forms, with or without modification,
+   are permitted (subject to the limitations in the disclaimer below) provided that
+   the following conditions are met:
 
-Redistributions of source code must retain the above copyright notice, this list
-of conditions and the following disclaimer.
+   Redistributions of source code must retain the above copyright notice, this list
+   of conditions and the following disclaimer.
 
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
+   Redistributions in binary form must reproduce the above copyright notice, this
+   list of conditions and the following disclaimer in the documentation and/or
+   other materials provided with the distribution.
 
-Neither the name of Qualcomm Technologies Inc nor the names of its contributors
-may be used to endorse or promote products derived from this software without
-specific prior written permission.
+   Neither the name of Qualcomm Technologies Inc nor the names of its contributors
+   may be used to endorse or promote products derived from this software without
+   specific prior written permission.
 
-NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
-LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+   NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+   LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.qualcomm.ftcrobotcontroller;
 
@@ -40,6 +40,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.hardware.usb.UsbManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -96,6 +97,8 @@ public class FtcRobotControllerActivity extends Activity {
 
     public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";
     
+    protected WifiManager.WifiLock wifiLock;
+    
     protected SharedPreferences preferences;
     
     protected UpdateUI.Callback callback;
@@ -128,20 +131,17 @@ public class FtcRobotControllerActivity extends Activity {
     }
 
     protected ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
+        @Override public void onServiceConnected(ComponentName name, IBinder service) {
             FtcRobotControllerBinder binder = (FtcRobotControllerBinder) service;
             onServiceBind(binder.getService());
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
+        @Override public void onServiceDisconnected(ComponentName name) {
             controllerService = null;
         }
     };
 
-    @Override
-    protected void onNewIntent(Intent intent) {
+    @Override protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(intent.getAction())) {
             // a new USB device has been attached
@@ -160,9 +160,10 @@ public class FtcRobotControllerActivity extends Activity {
         public SurfaceHolder surface_holder;
         public Camera camera;
         
-        public CameraPreview(Context context)
+        public CameraPreview(Context context/* , Camera cam */)
         {
             super(context);
+            //camera = cam;
             surface_holder = getHolder();
             surface_holder.addCallback(this);
         }
@@ -177,8 +178,13 @@ public class FtcRobotControllerActivity extends Activity {
             
             try
             {
+                try {
+                    camera = Camera.open(1);
+                } catch (Exception e) {
+                    DbgLog.error("could not open camera, camera is in use or does not exist");
+                }
+                
                 camera.setPreviewDisplay(holder);
-
             }
             catch(IOException e)
             {
@@ -187,8 +193,7 @@ public class FtcRobotControllerActivity extends Activity {
             camera.startPreview();
         }
         
-        @Override
-            public void surfaceDestroyed(SurfaceHolder holder)
+        @Override public void surfaceDestroyed(SurfaceHolder holder)
         {
             camera.stopPreview();
             camera.release();
@@ -212,7 +217,7 @@ public class FtcRobotControllerActivity extends Activity {
             
             try
             {
-                camera.setPreviewDisplay(/*surface_*/holder);
+                camera.setPreviewDisplay(surface_holder);
                 camera.startPreview();
             }
             catch(Exception e)
@@ -232,48 +237,44 @@ public class FtcRobotControllerActivity extends Activity {
         redBox = (CheckBox) findViewById(R.id.redBox);
         redBox.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                if (((CheckBox) v).isChecked()) {
-                    red = true;
-                    if (blue)
-                        blueBox.performClick();
-                } else red = false;
-            }
-        });
+                @Override public void onClick(View v) {
+                    if (((CheckBox) v).isChecked()) {
+                        red = true;
+                        if (blue)
+                            blueBox.performClick();
+                    } else red = false;
+                }
+            });
     }
 
     private void addListenerOnBlue() {
         blueBox = (CheckBox) findViewById(R.id.blueBox);
         blueBox.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                if (((CheckBox) v).isChecked()) {
-                    blue = true;
-                    if (red)
-                        redBox.performClick();
-                } else blue = false;
-            }
-        });
+                @Override public void onClick(View v) {
+                    if (((CheckBox) v).isChecked()) {
+                        blue = true;
+                        if (red)
+                            redBox.performClick();
+                    } else blue = false;
+                }
+            });
     }
 
     private void addListenerOnAligned() {
         alignedBox = (CheckBox) findViewById(R.id.alignedBox);
         alignedBox.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                if (((CheckBox) v).isChecked()) aligned = true;
-                else aligned = false;
-            }
-        });
+                @Override public void onClick(View v) {
+                    if (((CheckBox) v).isChecked()) aligned = true;
+                    else aligned = false;
+                }
+            });
     }
     
     //custom gui
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.activity_ftc_controller);
@@ -283,22 +284,21 @@ public class FtcRobotControllerActivity extends Activity {
         addListenerOnBlue();
         addListenerOnAligned();
         
-        camera_preview = new CameraPreview(this);
+        camera_preview = new CameraPreview(this/* , camera */);
         FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
         frame_layout_preview.addView(camera_preview);
         
-// End of Custom Stuff
+        // End of Custom Stuff
         utility = new Utility(this);
         context = this;
         entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
         buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
         buttonMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openOptionsMenu();
-            }
-        });
-        
+                @Override public void onClick(View v) {
+                    openOptionsMenu();
+                }
+            });
+
         textDeviceName = (TextView) findViewById(R.id.textDeviceName);
         textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
         textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
@@ -310,74 +310,71 @@ public class FtcRobotControllerActivity extends Activity {
         dimmer = new Dimmer(this);
         dimmer.longBright();
         Restarter restarter = new RobotRestarter();
-        
+
         updateUI = new UpdateUI(this, dimmer);
         updateUI.setRestarter(restarter);
         updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
-                textGamepad, textOpMode, textErrorMessage, textDeviceName);
+                              textGamepad, textOpMode, textErrorMessage, textDeviceName);
         callback = updateUI.new Callback();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "");
+
         hittingMenuButtonBrightensScreen();
 
-        if (USE_DEVICE_EMULATION) {
-            HardwareFactory.enableDeviceEmulation();
-        }
+        if (USE_DEVICE_EMULATION) { HardwareFactory.enableDeviceEmulation(); }
     }
-    
-    @Override
-    protected void onStart() {
+
+    @Override protected void onStart() {
         super.onStart();
-        
+
         // save 4MB of logcat to the SD card
         RobotLog.writeLogcatToDisk(this, 4 * 1024);
-        
+
         Intent intent = new Intent(this, FtcRobotControllerService.class);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
-        
+
         utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
 
         callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
 
         entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                dimmer.handleDimTimer();
-                return false;
-            }
-        });
+                @Override public boolean onTouch(View v, MotionEvent event) {
+                    dimmer.handleDimTimer();
+                    return false;
+                }
+            });
 
+        wifiLock.acquire();
     }
 
-    @Override
-    protected void onResume() {
+    @Override protected void onResume() {
         super.onResume();
     }
 
-    @Override
-    public void onPause() {
+    @Override public void onPause() {
         super.onPause();
     }
 
-    @Override
-    protected void onStop() {
+    @Override protected void onStop() {
         super.onStop();
 
         if (controllerService != null) unbindService(connection);
 
         RobotLog.cancelWriteLogcatToDisk(this);
-    }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
+        wifiLock.release();
+    }
+    @Override public void onWindowFocusChanged(boolean hasFocus){
         super.onWindowFocusChanged(hasFocus);
         // When the window loses focus (e.g., the action overflow is shown),
         // cancel any pending hide action. When the window gains focus,
         // hide the system UI.
         if (hasFocus) {
-            if (ImmersiveMode.apiOver19()) {
+            if (ImmersiveMode.apiOver19()){
                 // Immersive flag only works on API 19 and above.
                 immersion.hideSystemUI();
             }
@@ -387,14 +384,12 @@ public class FtcRobotControllerActivity extends Activity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_restart_robot:
                 dimmer.handleDimTimer();
@@ -425,14 +420,12 @@ public class FtcRobotControllerActivity extends Activity {
         }
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    @Override public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // don't destroy assets on screen rotation
     }
 
-    @Override
-    protected void onActivityResult(int request, int result, Intent intent) {
+    @Override protected void onActivityResult(int request, int result, Intent intent) {
         if (request == REQUEST_CONFIG_WIFI_CHANNEL) {
             if (result == RESULT_OK) {
                 Toast toast = Toast.makeText(context, "Configuration Complete", Toast.LENGTH_LONG);
@@ -450,25 +443,23 @@ public class FtcRobotControllerActivity extends Activity {
             }
         }
     }
-
+    
     public void onServiceBind(FtcRobotControllerService service) {
         DbgLog.msg("Bound to Ftc Controller Service");
         controllerService = service;
         updateUI.setControllerService(controllerService);
-
+        
         callback.wifiDirectUpdate(controllerService.getWifiDirectStatus());
         callback.robotUpdate(controllerService.getRobotStatus());
         requestRobotSetup();
     }
-
+    
     private void requestRobotSetup() {
         if (controllerService == null) return;
-
+        
         FileInputStream fis = fileSetup();
         // if we can't find the file, don't try and build the robot.
-        if (fis == null) {
-            return;
-        }
+        if (fis == null) { return; }
 
         HardwareFactory factory;
 
@@ -486,7 +477,7 @@ public class FtcRobotControllerActivity extends Activity {
     private FileInputStream fileSetup() {
 
         final String filename = Utility.CONFIG_FILES_DIR
-                + utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
+            + utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
 
         FileInputStream fis;
         try {
@@ -516,22 +507,20 @@ public class FtcRobotControllerActivity extends Activity {
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
-                @Override
-                public void onMenuVisibilityChanged(boolean isVisible) {
-                    if (isVisible) {
-                        dimmer.handleDimTimer();
+                    @Override public void onMenuVisibilityChanged(boolean isVisible) {
+                        if (isVisible) {
+                            dimmer.handleDimTimer();
+                        }
                     }
-                }
-            });
+                });
         }
     }
 
     public void showToast(final Toast toast) {
         runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                toast.show();
-            }
-        });
+                @Override public void run() {
+                    toast.show();
+                }
+            });
     }
 }

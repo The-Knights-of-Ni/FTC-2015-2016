@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.robocol.RobocolParsable;
+import com.qualcomm.robotcore.robocol.RobocolParsableBase;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 import java.nio.BufferOverflowException;
@@ -27,7 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Gamepad
-implements RobocolParsable {
+extends RobocolParsableBase {
     public static final int ID_UNASSOCIATED = -1;
     public float left_stick_x = 0.0f;
     public float left_stick_y = 0.0f;
@@ -65,6 +66,20 @@ implements RobocolParsable {
 
     public Gamepad(GamepadCallback callback) {
         this.c = callback;
+    }
+
+    public void copy(Gamepad gamepad) throws RobotCoreException {
+        this.fromByteArray(gamepad.toByteArray());
+    }
+
+    public void reset() {
+        try {
+            this.copy(new Gamepad());
+        }
+        catch (RobotCoreException var1_1) {
+            RobotLog.e("Gamepad library in an invalid state");
+            throw new IllegalStateException("Gamepad library in an invalid state");
+        }
     }
 
     public void setJoystickDeadzone(float deadzone) {
@@ -114,7 +129,7 @@ implements RobocolParsable {
             this.guide = this.pressed(event);
         } else if (n == 108) {
             this.start = this.pressed(event);
-        } else if (n == 4) {
+        } else if (n == 109) {
             this.back = this.pressed(event);
         } else if (n == 103) {
             this.right_bumper = this.pressed(event);
@@ -135,11 +150,9 @@ implements RobocolParsable {
 
     @Override
     public byte[] toByteArray() throws RobotCoreException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(45);
+        ByteBuffer byteBuffer = this.getWriteBuffer(42);
         try {
             int n = 0;
-            byteBuffer.put(this.getRobocolMsgType().asByte());
-            byteBuffer.putShort(42);
             byteBuffer.put(2);
             byteBuffer.putInt(this.id);
             byteBuffer.putLong(this.timestamp).array();
@@ -175,10 +188,10 @@ implements RobocolParsable {
 
     @Override
     public void fromByteArray(byte[] byteArray) throws RobotCoreException {
-        if (byteArray.length < 45) {
-            throw new RobotCoreException("Expected buffer of at least 45 bytes, received " + byteArray.length);
+        if (byteArray.length < 47) {
+            throw new RobotCoreException("Expected buffer of at least 47 bytes, received " + byteArray.length);
         }
-        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray, 3, 42);
+        ByteBuffer byteBuffer = this.getReadBuffer(byteArray);
         int n = 0;
         byte by = byteBuffer.get();
         if (by >= 1) {
@@ -281,12 +294,7 @@ implements RobocolParsable {
         if (number < -1.0f) {
             return -1.0f;
         }
-        if (number < 0.0f) {
-            Range.scale(number, this.joystickDeadzone, 1.0, 0.0, 1.0);
-        }
-        if (number > 0.0f) {
-            Range.scale(number, - this.joystickDeadzone, -1.0, 0.0, -1.0);
-        }
+        number = number > 0.0f ? (float)Range.scale(number, this.joystickDeadzone, 1.0, 0.0, 1.0) : (float)Range.scale(number, - this.joystickDeadzone, -1.0, 0.0, -1.0);
         return number;
     }
 

@@ -6,6 +6,7 @@ package com.qualcomm.robotcore.eventloop.opmode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.util.Util;
 
 public abstract class LinearOpMode
 extends OpMode {
@@ -50,12 +51,13 @@ extends OpMode {
     @Override
     public final void init() {
         this.a = new a(this);
-        this.b = new Thread(this.a);
+        this.b = new Thread((Runnable)this.a, "Linear OpMode Helper");
         this.b.start();
     }
 
     @Override
     public final void init_loop() {
+        this.a();
     }
 
     @Override
@@ -69,13 +71,7 @@ extends OpMode {
 
     @Override
     public final void loop() {
-        if (this.a.a()) {
-            throw this.a.b();
-        }
-        LinearOpMode linearOpMode = this;
-        synchronized (linearOpMode) {
-            this.notifyAll();
-        }
+        this.a();
     }
 
     @Override
@@ -97,6 +93,16 @@ extends OpMode {
         }
     }
 
+    private void a() {
+        if (this.a.a()) {
+            throw this.a.b();
+        }
+        LinearOpMode linearOpMode = this;
+        synchronized (linearOpMode) {
+            this.notifyAll();
+        }
+    }
+
     private static class a
     implements Runnable {
         private RuntimeException a = null;
@@ -109,20 +115,26 @@ extends OpMode {
 
         @Override
         public void run() {
-            this.a = null;
-            this.b = false;
-            try {
-                this.c.runOpMode();
-            }
-            catch (InterruptedException var1_1) {
-                RobotLog.d("LinearOpMode received an Interrupted Exception; shutting down this linear op mode");
-            }
-            catch (RuntimeException var1_2) {
-                this.a = var1_2;
-            }
-            finally {
-                this.b = true;
-            }
+            Util.logThreadLifeCycle("LinearOpModeHelper.run()", new Runnable(){
+
+                @Override
+                public void run() {
+                    a.this.a = null;
+                    a.this.b = false;
+                    try {
+                        a.this.c.runOpMode();
+                    }
+                    catch (InterruptedException var1_1) {
+                        RobotLog.d("LinearOpMode received an Interrupted Exception; shutting down this linear op mode");
+                    }
+                    catch (RuntimeException var1_2) {
+                        a.this.a = var1_2;
+                    }
+                    finally {
+                        a.this.b = true;
+                    }
+                }
+            });
         }
 
         public boolean a() {
@@ -136,6 +148,7 @@ extends OpMode {
         public boolean c() {
             return this.b;
         }
+
     }
 
 }

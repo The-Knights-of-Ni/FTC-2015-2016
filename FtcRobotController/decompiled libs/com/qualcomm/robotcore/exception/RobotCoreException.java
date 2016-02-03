@@ -11,9 +11,14 @@ extends Exception {
         super(message);
     }
 
-    public RobotCoreException(String message, Exception e) {
-        super(message);
-        this.a = e;
+    public /* varargs */ RobotCoreException(String format, Object ... args) {
+        super(String.format(format, args));
+    }
+
+    public static /* varargs */ RobotCoreException createChained(Exception e, String format, Object ... args) {
+        RobotCoreException robotCoreException = new RobotCoreException(format, args);
+        robotCoreException.a = e;
+        return robotCoreException;
     }
 
     public boolean isChainedException() {

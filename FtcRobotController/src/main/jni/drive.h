@@ -10,20 +10,16 @@
 //TODO: Delete this comment
 
 //TODO:
-float * left_drive;
-float * right_drive;
-float * heading;
-int * left_drive_encoder;
-int * right_drive_encoder;
-
-void setDriveMotors(float * left, float * right, float * imu_heading, int * left_encoder, int * right_encoder)
-{
-    left_drive = left;
-    right_drive = right;
-    heading = imu_heading;
-    left_drive_encoder = left_encoder;
-    right_drive_encoder = right_encoder;
-}
+float * pleft_drive;
+#define left_drive (*pleft_drive)
+float * pright_drive;
+#define right_drive (*pright_drive)
+float * pheading;
+#define heading (*pheading)
+int * pleft_drive_encoder;
+#define left_drive_encoder (*pleft_drive_encoder)
+int * pright_drive_encoder;
+#define right_drive_encoder (*pright_drive_encoder)
 
 #define threshold 0.
 

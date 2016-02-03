@@ -18,21 +18,21 @@ implements RobotUsbDevice {
     @Override
     public void setBaudRate(int rate) throws RobotCoreException {
         if (!this.a.setBaudRate(rate)) {
-            throw new RobotCoreException("failed to set baud rate to " + rate);
+            throw new RobotCoreException("FTDI driver failed to set baud rate to " + rate);
         }
     }
 
     @Override
     public void setDataCharacteristics(byte dataBits, byte stopBits, byte parity) throws RobotCoreException {
         if (!this.a.setDataCharacteristics(dataBits, stopBits, parity)) {
-            throw new RobotCoreException("failed to set data characteristics");
+            throw new RobotCoreException("FTDI driver failed to set data characteristics");
         }
     }
 
     @Override
     public void setLatencyTimer(int latencyTimer) throws RobotCoreException {
         if (!this.a.setLatencyTimer((byte)latencyTimer)) {
-            throw new RobotCoreException("failed to set latency timer to " + latencyTimer);
+            throw new RobotCoreException("FTDI driver failed to set latency timer to " + latencyTimer);
         }
     }
 

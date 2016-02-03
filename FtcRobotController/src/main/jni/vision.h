@@ -3,6 +3,12 @@
 
 #include "jni_functions.h"
 
+int * pindicator;
+#define indicator (*pindicator)
+
+int * pbeacon_right;
+#define beacon_right (*pbeacon_right)
+
 byte * camera_buffer = 0;
 jbyteArray jcamera_buffer;
 
@@ -13,7 +19,7 @@ byte * camera_buffer_rgb;
 
 #define camera_bytes_per_pixel 4
 
-void initCamera(int w, int h)
+void initCamera()
 {
     jclass cls = env->GetObjectClass(self);
     
@@ -25,9 +31,20 @@ void initCamera(int w, int h)
         camera_buffer = (byte *) env->GetByteArrayElements(jcamera_buffer, 0);
         assert(camera_buffer);
     }
-    camera_w = w;
-    camera_h = h;
+    
+    jfieldID jcamera_bufferID = env->GetFieldID(cls, "camera_buffer", "[B");
+    
+    jfieldID camera_wID = env->GetFieldID(cls, "camera_w", "I");
+    camera_w = env->GetIntField(cls, camera_wID);
+    jfieldID camera_hID = env->GetFieldID(cls, "camera_h", "I");
+    camera_h = env->GetIntField(cls, camera_hID);
     camera_buffer_rgb = (byte *) malloc(camera_w*camera_h*camera_bytes_per_pixel);
+}
+
+void cleanupCamera()
+{
+    free(camera_buffer_rgb);
+    env->ReleaseByteArrayElements(jcamera_buffer, (jbyte *) camera_buffer, 0);
 }
 
 //TODO: simdize

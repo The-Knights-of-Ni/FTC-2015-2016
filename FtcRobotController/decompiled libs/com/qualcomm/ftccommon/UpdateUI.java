@@ -9,6 +9,7 @@
  *  com.qualcomm.robotcore.hardware.Gamepad
  *  com.qualcomm.robotcore.util.Dimmer
  *  com.qualcomm.robotcore.util.RobotLog
+ *  com.qualcomm.robotcore.util.Util
  *  com.qualcomm.robotcore.wifi.WifiDirectAssistant
  *  com.qualcomm.robotcore.wifi.WifiDirectAssistant$Event
  */
@@ -24,6 +25,7 @@ import com.qualcomm.ftccommon.Restarter;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.Dimmer;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.util.Util;
 import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 
 public class UpdateUI {
@@ -95,26 +97,33 @@ public class UpdateUI {
                     Toast.makeText((Context)UpdateUI.this.c, (CharSequence)"Restarting Robot", (int)0).show();
                 }
             });
-            Thread thread = new Thread(){
+            Thread thread = new Thread(new Runnable(){
 
                 @Override
                 public void run() {
-                    try {
-                        Thread.sleep(1500);
-                    }
-                    catch (InterruptedException var1_1) {
-                        // empty catch block
-                    }
-                    UpdateUI.this.c.runOnUiThread(new Runnable(){
+                    Util.logThreadLifeCycle((String)"restart robot UI thunker", (Runnable)new Runnable(){
 
                         @Override
                         public void run() {
-                            UpdateUI.this.a();
+                            try {
+                                Thread.sleep(1500);
+                            }
+                            catch (InterruptedException var1_1) {
+                                // empty catch block
+                            }
+                            UpdateUI.this.c.runOnUiThread(new Runnable(){
+
+                                @Override
+                                public void run() {
+                                    UpdateUI.this.a();
+                                }
+                            });
                         }
+
                     });
                 }
 
-            };
+            });
             thread.start();
         }
 

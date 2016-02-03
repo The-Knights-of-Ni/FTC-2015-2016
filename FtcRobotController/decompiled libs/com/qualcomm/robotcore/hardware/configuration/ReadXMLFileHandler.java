@@ -127,7 +127,7 @@ public class ReadXMLFileHandler {
                     deviceConfiguration = this.c();
                     arrayList.set(deviceConfiguration.getPort(), deviceConfiguration);
                 }
-                if (string3.equalsIgnoreCase(DeviceConfiguration.ConfigurationType.I2C_DEVICE.toString()) || string3.equalsIgnoreCase(DeviceConfiguration.ConfigurationType.IR_SEEKER_V3.toString()) || string3.equalsIgnoreCase(DeviceConfiguration.ConfigurationType.ADAFRUIT_COLOR_SENSOR.toString()) || string3.equalsIgnoreCase(DeviceConfiguration.ConfigurationType.COLOR_SENSOR.toString())) {
+                if (string3.equalsIgnoreCase(DeviceConfiguration.ConfigurationType.I2C_DEVICE.toString()) || string3.equalsIgnoreCase(DeviceConfiguration.ConfigurationType.IR_SEEKER_V3.toString()) || string3.equalsIgnoreCase(DeviceConfiguration.ConfigurationType.ADAFRUIT_COLOR_SENSOR.toString()) || string3.equalsIgnoreCase(DeviceConfiguration.ConfigurationType.COLOR_SENSOR.toString()) || string3.equalsIgnoreCase(DeviceConfiguration.ConfigurationType.GYRO.toString())) {
                     deviceConfiguration = this.c();
                     arrayList2.set(deviceConfiguration.getPort(), deviceConfiguration);
                 }
@@ -393,6 +393,9 @@ public class ReadXMLFileHandler {
         }
         if (string.equalsIgnoreCase("Led")) {
             return DeviceConfiguration.ConfigurationType.LED.toString();
+        }
+        if (string.equalsIgnoreCase("Gyro")) {
+            return DeviceConfiguration.ConfigurationType.GYRO.toString();
         }
         return string;
     }

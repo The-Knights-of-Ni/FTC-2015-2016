@@ -19,6 +19,10 @@ implements HardwareDevice {
 
     public abstract void enableLed(boolean var1);
 
+    public abstract void setI2cAddress(int var1);
+
+    public abstract int getI2cAddress();
+
     public String toString() {
         return String.format("argb: %d", this.argb());
     }

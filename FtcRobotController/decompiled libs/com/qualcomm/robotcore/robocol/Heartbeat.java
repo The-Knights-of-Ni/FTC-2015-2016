@@ -5,43 +5,39 @@ package com.qualcomm.robotcore.robocol;
 
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.robocol.RobocolParsable;
+import com.qualcomm.robotcore.robocol.RobocolParsableBase;
+import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.util.RobotLog;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 
 public class Heartbeat
-implements RobocolParsable {
-    public static final short PAYLOAD_SIZE = 10;
-    public static final short BUFFER_SIZE = 13;
-    public static final short MAX_SEQUENCE_NUMBER = 10000;
-    private static short a = 0;
-    private long b;
-    private short c;
+extends RobocolParsableBase {
+    public static final short PAYLOAD_SIZE = 11;
+    public static final short BUFFER_SIZE = 16;
+    private long a;
+    private RobotState b;
 
     public Heartbeat() {
-        this.c = Heartbeat.a();
-        this.b = System.nanoTime();
+        this.a = System.nanoTime();
+        this.b = RobotState.NOT_STARTED;
     }
 
     public Heartbeat(Token token) {
         switch (token) {
             case EMPTY: {
-                this.c = 0;
-                this.b = 0;
+                this.a = 0;
+                this.b = RobotState.NOT_STARTED;
             }
         }
     }
 
     public long getTimestamp() {
-        return this.b;
+        return this.a;
     }
 
     public double getElapsedTime() {
-        return (double)(System.nanoTime() - this.b) / 1.0E9;
-    }
-
-    public short getSequenceNumber() {
-        return this.c;
+        return (double)(System.nanoTime() - this.a) / 1.0E9;
     }
 
     @Override
@@ -49,14 +45,20 @@ implements RobocolParsable {
         return RobocolParsable.MsgType.HEARTBEAT;
     }
 
+    public byte getRobotState() {
+        return this.b.asByte();
+    }
+
+    public void setRobotState(RobotState state) {
+        this.b = state;
+    }
+
     @Override
     public byte[] toByteArray() throws RobotCoreException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(13);
+        ByteBuffer byteBuffer = this.getWriteBuffer(11);
         try {
-            byteBuffer.put(this.getRobocolMsgType().asByte());
-            byteBuffer.putShort(10);
-            byteBuffer.putShort(this.c);
-            byteBuffer.putLong(this.b);
+            byteBuffer.putLong(this.a);
+            byteBuffer.put(this.b.asByte());
         }
         catch (BufferOverflowException var2_2) {
             RobotLog.logStacktrace(var2_2);
@@ -66,24 +68,16 @@ implements RobocolParsable {
 
     @Override
     public void fromByteArray(byte[] byteArray) throws RobotCoreException {
-        if (byteArray.length < 13) {
-            throw new RobotCoreException("Expected buffer of at least 13 bytes, received " + byteArray.length);
+        if (byteArray.length < 16) {
+            throw new RobotCoreException("Expected buffer of at least 16 bytes, received " + byteArray.length);
         }
-        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray, 3, 10);
-        this.c = byteBuffer.getShort();
-        this.b = byteBuffer.getLong();
+        ByteBuffer byteBuffer = this.getReadBuffer(byteArray);
+        this.a = byteBuffer.getLong();
+        this.b = RobotState.fromByte(byteBuffer.get());
     }
 
     public String toString() {
-        return String.format("Heartbeat - seq: %4d, time: %d", this.c, this.b);
-    }
-
-    private static synchronized short a() {
-        short s = a;
-        if ((Heartbeat.a = (short)(a + 1)) > 10000) {
-            a = 0;
-        }
-        return s;
+        return String.format("Heartbeat - seq: %4d, time: %d", this.getSequenceNumber(), this.a);
     }
 
     public static enum Token {

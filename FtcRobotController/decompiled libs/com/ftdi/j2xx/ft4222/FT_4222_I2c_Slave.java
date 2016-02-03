@@ -18,16 +18,8 @@ implements I2cSlave {
         this.b = this.a.mFtDev;
     }
 
-    public int cmdSet(int wValue1, int wValue2) {
-        return this.b.VendorCmdSet(33, wValue1 | wValue2 << 8);
-    }
-
-    public int cmdSet(int wValue1, int wValue2, byte[] buf, int datalen) {
-        return this.b.VendorCmdSet(33, wValue1 | wValue2 << 8, buf, datalen);
-    }
-
-    public int cmdGet(int wValue1, int wValue2, byte[] buf, int datalen) {
-        return this.b.VendorCmdGet(32, wValue1 | wValue2 << 8, buf, datalen);
+    int a(int n, int n2) {
+        return this.b.VendorCmdSet(33, n | n2 << 8);
     }
 
     public int init() {
@@ -38,7 +30,7 @@ implements I2cSlave {
         if (!this.a()) {
             return 1012;
         }
-        n = this.cmdSet(5, 2);
+        n = this.a(5, 2);
         if (n < 0) {
             return n;
         }
@@ -52,7 +44,7 @@ implements I2cSlave {
         if (n2 != 0) {
             return n2;
         }
-        return this.cmdSet(91, n);
+        return this.a(91, n);
     }
 
     public int getAddress(int[] addr) {
@@ -75,7 +67,7 @@ implements I2cSlave {
         if (n != 0) {
             return n;
         }
-        n = this.cmdSet(92, arrby[0]);
+        n = this.a(92, arrby[0]);
         if (n < 0) {
             return 18;
         }

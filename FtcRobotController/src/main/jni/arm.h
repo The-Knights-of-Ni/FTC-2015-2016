@@ -4,6 +4,19 @@
 #include "maths.h"
 #include "robotics.h"
 
+int * pelbow_potentiometer;
+#define elbow_potentiometer (*pelbow_potentiometer)
+
+float * pshoulder;
+#define shoulder (*pshoulder)
+float * pwinch;
+#define winch (*pwinch)
+
+int * pshoulder_encoder;
+#define shoulder_encoder (*pshoulder_encoder)
+int * pwinch_encoder;
+#define winch_encoder (*pwinch_encoder)
+
 //TODO: tune values
 float g = 384; //gravity in " per sec
 

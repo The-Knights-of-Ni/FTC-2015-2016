@@ -10,7 +10,7 @@
  */
 package com.qualcomm.modernrobotics;
 
-import com.qualcomm.modernrobotics.RobotUsbDeviceEmulator;
+import com.qualcomm.modernrobotics.b;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbManager;
@@ -20,25 +20,25 @@ import java.util.ArrayList;
 
 public class RobotUsbManagerEmulator
 implements RobotUsbManager {
-    private ArrayList<RobotUsbDeviceEmulator> a = new ArrayList();
+    private ArrayList<b> a = new ArrayList();
 
     public int scanForDevices() throws RobotCoreException {
         return this.a.size();
     }
 
     public SerialNumber getDeviceSerialNumberByIndex(int index) throws RobotCoreException {
-        return this.a.get((int)index).serialNumber;
+        return this.a.get((int)index).b;
     }
 
     public String getDeviceDescriptionByIndex(int index) throws RobotCoreException {
-        return this.a.get((int)index).description;
+        return this.a.get((int)index).c;
     }
 
     public RobotUsbDevice openBySerialNumber(SerialNumber serialNumber) throws RobotCoreException {
         RobotLog.d((String)("attempting to open emulated device " + (Object)serialNumber));
-        for (RobotUsbDeviceEmulator robotUsbDeviceEmulator : this.a) {
-            if (!robotUsbDeviceEmulator.serialNumber.equals((Object)serialNumber)) continue;
-            return robotUsbDeviceEmulator;
+        for (b b : this.a) {
+            if (!b.b.equals((Object)serialNumber)) continue;
+            return b;
         }
         throw new RobotCoreException("cannot open device - could not find device with serial number " + (Object)serialNumber);
     }

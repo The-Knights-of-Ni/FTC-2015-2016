@@ -72,7 +72,7 @@ public abstract class DeviceManager {
 
     public abstract CompassSensor createNxtCompassSensor(LegacyModule var1, int var2);
 
-    public abstract TouchSensor createTouchSensor(DeviceInterfaceModule var1, int var2);
+    public abstract TouchSensor createDigitalTouchSensor(DeviceInterfaceModule var1, int var2);
 
     public abstract AccelerationSensor createNxtAccelerationSensor(LegacyModule var1, int var2);
 
@@ -80,19 +80,21 @@ public abstract class DeviceManager {
 
     public abstract IrSeekerSensor createNxtIrSeekerSensor(LegacyModule var1, int var2);
 
-    public abstract IrSeekerSensor createIrSeekerSensorV3(DeviceInterfaceModule var1, int var2);
+    public abstract IrSeekerSensor createI2cIrSeekerSensorV3(DeviceInterfaceModule var1, int var2);
 
     public abstract UltrasonicSensor createNxtUltrasonicSensor(LegacyModule var1, int var2);
 
     public abstract GyroSensor createNxtGyroSensor(LegacyModule var1, int var2);
 
-    public abstract OpticalDistanceSensor createOpticalDistanceSensor(DeviceInterfaceModule var1, int var2);
+    public abstract GyroSensor createModernRoboticsI2cGyroSensor(DeviceInterfaceModule var1, int var2);
 
-    public abstract ColorSensor createAdafruitColorSensor(DeviceInterfaceModule var1, int var2);
+    public abstract OpticalDistanceSensor createAnalogOpticalDistanceSensor(DeviceInterfaceModule var1, int var2);
+
+    public abstract ColorSensor createAdafruitI2cColorSensor(DeviceInterfaceModule var1, int var2);
 
     public abstract ColorSensor createNxtColorSensor(LegacyModule var1, int var2);
 
-    public abstract ColorSensor createModernRoboticsColorSensor(DeviceInterfaceModule var1, int var2);
+    public abstract ColorSensor createModernRoboticsI2cColorSensor(DeviceInterfaceModule var1, int var2);
 
     public abstract LED createLED(DigitalChannelController var1, int var2);
 

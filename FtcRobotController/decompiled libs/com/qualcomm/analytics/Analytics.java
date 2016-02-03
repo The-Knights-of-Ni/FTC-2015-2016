@@ -18,6 +18,9 @@
  *  android.os.Bundle
  *  android.os.Environment
  *  android.preference.PreferenceManager
+ *  com.qualcomm.robotcore.hardware.HardwareMap
+ *  com.qualcomm.robotcore.hardware.HardwareMap$DeviceMapping
+ *  com.qualcomm.robotcore.hardware.ServoController
  *  com.qualcomm.robotcore.util.RobotLog
  *  com.qualcomm.robotcore.util.Version
  */
@@ -37,20 +40,27 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.Version;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
@@ -66,8 +76,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
@@ -86,9 +99,10 @@ extends BroadcastReceiver {
     public static final String DS_COMMAND_STRING = "update_ds";
     public static final String EXTERNAL_STORAGE_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/";
     public static final String LAST_UPLOAD_DATE = "last_upload_date";
+    public static final String MAX_DEVICES = "max_usb_devices";
     public static int MAX_ENTRIES_SIZE = 100;
     public static int TRIMMED_SIZE = 90;
-    private static final Charset l = Charset.forName("UTF-8");
+    private static final Charset m = Charset.forName("UTF-8");
     static long b;
     static UUID c;
     static String d;
@@ -96,9 +110,10 @@ extends BroadcastReceiver {
     static String f;
     Context g;
     SharedPreferences h;
-    boolean i;
+    boolean i = false;
     long j = 0;
-    static final HostnameVerifier k;
+    int k = 0;
+    static final HostnameVerifier l;
 
     public void onReceive(Context context, Intent intent) {
         NetworkInfo networkInfo;
@@ -110,20 +125,6 @@ extends BroadcastReceiver {
         }
     }
 
-    private static String b(String string, int n) {
-        int n2 = Analytics.findNthIndex(string, n, ']');
-        return string.substring(n2 + 1);
-    }
-
-    public static int findNthIndex(String entries, int n, char c) {
-        int n2 = entries.indexOf(c, 0);
-        while (n > 0 && n2 != -1) {
-            n2 = entries.indexOf(c, n2 + 1);
-            --n;
-        }
-        return n2;
-    }
-
     public void unregister() {
         this.g.unregisterReceiver((BroadcastReceiver)this);
     }
@@ -132,7 +133,7 @@ extends BroadcastReceiver {
         this.g.registerReceiver((BroadcastReceiver)this, new IntentFilter("android.net.wifi.STATE_CHANGE"));
     }
 
-    public Analytics(Context context, String commandString) {
+    public Analytics(Context context, String commandString, HardwareMap map) {
         this.g = context;
         this.e = commandString;
         try {
@@ -141,28 +142,114 @@ extends BroadcastReceiver {
                 b = System.currentTimeMillis();
                 f = Version.getLibraryVersion();
                 this.handleUUID(".analytics_id");
+                int n = this.calculateUsbDevices(map);
+                int n2 = this.h.getInt("max_usb_devices", this.k);
+                if (n2 < n) {
+                    SharedPreferences.Editor editor = this.h.edit();
+                    editor.putInt("max_usb_devices", n);
+                    editor.apply();
+                }
                 Analytics.setApplicationName(context.getApplicationInfo().loadLabel(context.getPackageManager()).toString());
-                String string = EXTERNAL_STORAGE_DIRECTORY_PATH + ".ftcdc";
-                String string2 = this.incrementAndSetCount(string, Analytics.getDateFromTime(b));
-                this.handleCreateNewFile(string, string2);
-                context.registerReceiver((BroadcastReceiver)this, new IntentFilter("android.net.wifi.STATE_CHANGE"));
+                this.handleData();
+                this.register();
+                RobotLog.i((String)"Analytics has completed initialization.");
             }
-            catch (Exception var3_4) {
+            catch (Exception var4_5) {
                 this.i = true;
             }
             if (this.i) {
                 this.a();
+                this.i = false;
             }
         }
-        catch (Exception var3_5) {
-            RobotLog.i((String)"Analytics encountered a problem");
-            RobotLog.logStacktrace((Exception)var3_5);
+        catch (Exception var4_6) {
+            RobotLog.i((String)"Analytics encountered a problem during initialization");
+            RobotLog.logStacktrace((Exception)var4_6);
         }
     }
 
+    protected int calculateUsbDevices(HardwareMap map) {
+        Pattern pattern;
+        String string;
+        int n = 0;
+        n+=map.legacyModule.size();
+        n+=map.deviceInterfaceModule.size();
+        for (ServoController servoController2 : map.servoController) {
+            string = servoController2.getDeviceName();
+            pattern = Pattern.compile("(?i)usb");
+            if (!pattern.matcher((CharSequence)string).matches()) continue;
+            ++n;
+        }
+        for (ServoController servoController2 : map.dcMotorController) {
+            string = servoController2.getDeviceName();
+            pattern = Pattern.compile("(?i)usb");
+            if (!pattern.matcher((CharSequence)string).matches()) continue;
+            ++n;
+        }
+        return n;
+    }
+
+    protected void handleData() throws IOException, ClassNotFoundException {
+        String string = EXTERNAL_STORAGE_DIRECTORY_PATH + ".ftcdc";
+        File file = new File(string);
+        if (!file.exists()) {
+            this.createInitialFile(string);
+        } else {
+            ArrayList<DataInfo> arrayList = this.updateExistingFile(string, Analytics.getDateFromTime(b));
+            if (arrayList.size() >= MAX_ENTRIES_SIZE) {
+                this.trimEntries(arrayList);
+            }
+            this.writeObjectsToFile(string, arrayList);
+        }
+    }
+
+    protected void trimEntries(ArrayList<DataInfo> dataInfoArrayList) {
+        dataInfoArrayList.subList(TRIMMED_SIZE, dataInfoArrayList.size()).clear();
+    }
+
+    protected ArrayList<DataInfo> updateExistingFile(String filepath, String date) throws ClassNotFoundException, IOException {
+        ArrayList<DataInfo> arrayList = this.readObjectsFromFile(filepath);
+        DataInfo dataInfo = arrayList.get(arrayList.size() - 1);
+        if (dataInfo.a.equalsIgnoreCase(date)) {
+            ++dataInfo.numUsages;
+        } else {
+            DataInfo dataInfo2 = new DataInfo(date, 1);
+            arrayList.add(dataInfo2);
+        }
+        return arrayList;
+    }
+
+    protected ArrayList<DataInfo> readObjectsFromFile(String filepath) throws IOException, ClassNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream(new File(filepath));
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        ArrayList<DataInfo> arrayList = new ArrayList<DataInfo>();
+        boolean bl = true;
+        while (bl) {
+            try {
+                DataInfo dataInfo = (DataInfo)objectInputStream.readObject();
+                arrayList.add(dataInfo);
+            }
+            catch (EOFException var6_7) {
+                bl = false;
+            }
+        }
+        objectInputStream.close();
+        return arrayList;
+    }
+
+    protected void createInitialFile(String filepath) throws IOException {
+        DataInfo dataInfo = new DataInfo(Analytics.getDateFromTime(b), 1);
+        ArrayList<DataInfo> arrayList = new ArrayList<DataInfo>();
+        arrayList.add(dataInfo);
+        this.writeObjectsToFile(filepath, arrayList);
+    }
+
     private void a() {
+        RobotLog.i((String)"Analytics is starting with a clean slate.");
         SharedPreferences.Editor editor = this.h.edit();
         editor.putLong("last_upload_date", this.j);
+        editor.apply();
+        editor.putInt("max_usb_devices", 0);
         editor.apply();
         File file = new File(EXTERNAL_STORAGE_DIRECTORY_PATH + ".ftcdc");
         file.delete();
@@ -215,6 +302,14 @@ extends BroadcastReceiver {
         return "";
     }
 
+    protected void writeObjectsToFile(String filepath, ArrayList<DataInfo> info) throws IOException {
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filepath));
+        for (DataInfo dataInfo : info) {
+            objectOutputStream.writeObject(dataInfo);
+        }
+        objectOutputStream.close();
+    }
+
     protected void handleCreateNewFile(String filepath, String data) {
         Writer writer = null;
         try {
@@ -242,68 +337,19 @@ extends BroadcastReceiver {
         return string;
     }
 
-    public String incrementAndSetCount(String filepath, String date) {
-        int n;
-        String string = "";
-        File file = new File(filepath);
-        if (!file.exists()) {
-            string = "[" + date + " 1] ";
-            return string;
-        }
-        String string2 = this.readFromFile(file);
-        int n2 = Analytics.findNthIndex(string2, MAX_ENTRIES_SIZE, ']');
-        if (n2 > 0) {
-            string2 = Analytics.b(string2, MAX_ENTRIES_SIZE - TRIMMED_SIZE);
-        }
-        if ((n = string2.lastIndexOf("[")) < 0) {
-            string = "[" + date + " 1] ";
-            return string;
-        }
-        DateCount dateCount = Analytics.c(string2, n);
-        if (Analytics.getDateFromTime(b).equals(dateCount.date())) {
-            int n3 = Integer.parseInt(dateCount.count());
-            String string3 = string2.substring(0, n);
-            string = string3.trim() + " [" + dateCount.date() + " " + Integer.toString(++n3) + "] ";
-        } else {
-            string = string2 + " [" + date + " " + "1] ";
-        }
-        return string;
-    }
-
-    private static DateCount c(String string, int n) {
-        String string2 = string.substring(n);
-        string2 = string2.replace((CharSequence)"[", (CharSequence)"");
-        string2 = string2.replace((CharSequence)"]", (CharSequence)"");
-        String[] arrstring = string2.split(" ");
-        return new DateCount(arrstring[0].trim(), arrstring[1].trim());
-    }
-
-    protected static ArrayList<DateCount> parseDateCountFile(String str) {
-        String[] arrstring;
-        if (str == null || str.isEmpty()) {
-            return null;
-        }
-        ArrayList<DateCount> arrayList = new ArrayList<DateCount>();
-        for (String string : arrstring = str.split("]")) {
-            String[] arrstring2 = (string = string.replace((CharSequence)"[", (CharSequence)"").trim()).split(" ");
-            if (arrstring2.length != 2) continue;
-            arrayList.add(new DateCount(arrstring2[0], arrstring2[1]));
-        }
-        return arrayList;
-    }
-
     protected static UUID getUuid() {
         return c;
     }
 
-    public String updateStats(String user, ArrayList<DateCount> dateInfo, String commandString) {
-        String string = this.a("cmd", "=", commandString) + "&" + this.a("uuid", "=", user) + "&" + this.a("device_hw", "=", Build.MANUFACTURER) + "&" + this.a("device_ver", "=", Build.MODEL) + "&" + this.a("chip_type", "=", this.b()) + "&" + this.a("sw_ver", "=", f) + "&";
+    public String updateStats(String user, ArrayList<DataInfo> dateInfo, String commandString) {
+        int n = this.h.getInt("max_usb_devices", this.k);
+        String string = this.a("cmd", "=", commandString) + "&" + this.a("uuid", "=", user) + "&" + this.a("device_hw", "=", Build.MANUFACTURER) + "&" + this.a("device_ver", "=", Build.MODEL) + "&" + this.a("chip_type", "=", this.b()) + "&" + this.a("sw_ver", "=", f) + "&" + this.a("max_dev", "=", String.valueOf(n)) + "&";
         String string2 = "";
         for (int i = 0; i < dateInfo.size(); ++i) {
             if (i > 0) {
                 string2 = string2 + ",";
             }
-            string2 = string2 + this.a(dateInfo.get(i).date(), ",", dateInfo.get(i).count());
+            string2 = string2 + this.a(dateInfo.get(i).date(), ",", String.valueOf(dateInfo.get(i).numUsages()));
         }
         string = string + this.a("dc", "=", "");
         string = string + string2;
@@ -313,7 +359,7 @@ extends BroadcastReceiver {
     private String a(String string, String string2, String string3) {
         String string4 = "";
         try {
-            string4 = URLEncoder.encode(string, l.name()) + string2 + URLEncoder.encode(string3, l.name());
+            string4 = URLEncoder.encode(string, m.name()) + string2 + URLEncoder.encode(string3, m.name());
         }
         catch (UnsupportedEncodingException var5_5) {
             RobotLog.i((String)"Analytics caught an UnsupportedEncodingException");
@@ -378,7 +424,7 @@ extends BroadcastReceiver {
                 if (url.getProtocol().toLowerCase().equals("https")) {
                     Analytics.c();
                     object = (HttpsURLConnection)url.openConnection();
-                    object.setHostnameVerifier(k);
+                    object.setHostnameVerifier(Analytics.l);
                     httpURLConnection = object;
                 } else {
                     httpURLConnection = (HttpURLConnection)url.openConnection();
@@ -432,7 +478,7 @@ extends BroadcastReceiver {
     static {
         c = null;
         f = "";
-        k = new HostnameVerifier(){
+        l = new HostnameVerifier(){
 
             @Override
             public boolean verify(String hostname, SSLSession session) {
@@ -454,63 +500,66 @@ extends BroadcastReceiver {
                     long l = Analytics.this.h.getLong("last_upload_date", Analytics.this.j);
                     if (!Analytics.getDateFromTime(Analytics.b).equals(Analytics.getDateFromTime(l))) {
                         String string;
-                        String string2 = Analytics.this.a("cmd", "=", "ping");
-                        String string3 = Analytics.ping(uRL, string2);
-                        String string4 = "\"rc\": \"OK\"";
-                        if (!(string3 != null && string3.contains((CharSequence)string4))) {
+                        String string2;
+                        String string3 = Analytics.this.a("cmd", "=", "ping");
+                        String string4 = Analytics.ping(uRL, string3);
+                        String string5 = "\"rc\": \"OK\"";
+                        if (!(string4 != null && string4.contains((CharSequence)string5))) {
                             RobotLog.e((String)"Analytics: Ping failed.");
                             return null;
                         }
                         RobotLog.i((String)"Analytics ping succeeded.");
-                        String string5 = Analytics.EXTERNAL_STORAGE_DIRECTORY_PATH + ".ftcdc";
-                        File file = new File(string5);
-                        if (!file.exists()) {
-                            string = Analytics.this.incrementAndSetCount(string5, Analytics.getDateFromTime(Analytics.b));
-                            Analytics.this.handleCreateNewFile(string5, string);
+                        String string6 = Analytics.EXTERNAL_STORAGE_DIRECTORY_PATH + ".ftcdc";
+                        ArrayList<DataInfo> arrayList = Analytics.this.readObjectsFromFile(string6);
+                        if (arrayList.size() >= Analytics.MAX_ENTRIES_SIZE) {
+                            Analytics.this.trimEntries(arrayList);
                         }
-                        string = Analytics.this.readFromFile(file);
-                        ArrayList<DateCount> arrayList = Analytics.parseDateCountFile(string);
-                        String string6 = Analytics.this.updateStats(Analytics.c.toString(), arrayList, Analytics.this.e);
-                        String string7 = Analytics.call(uRL, string6);
-                        if (!(string7 != null && string7.contains((CharSequence)string4))) {
+                        if (!((string2 = Analytics.call(uRL, string = Analytics.this.updateStats(Analytics.c.toString(), arrayList, Analytics.this.e))) != null && string2.contains((CharSequence)string5))) {
                             RobotLog.e((String)"Analytics: Upload failed.");
-                            if (arrayList.size() > Analytics.MAX_ENTRIES_SIZE) {
-                                String string8 = Analytics.b(string, Analytics.MAX_ENTRIES_SIZE - Analytics.TRIMMED_SIZE);
-                                Analytics.this.handleCreateNewFile(string5, string8);
-                                RobotLog.i((String)"Analytics trimmed the data file.");
-                            }
                             return null;
                         }
                         RobotLog.i((String)"Analytics: Upload succeeded.");
                         SharedPreferences.Editor editor = Analytics.this.h.edit();
                         editor.putLong("last_upload_date", Analytics.b);
                         editor.apply();
+                        editor.putInt("max_usb_devices", 0);
+                        editor.apply();
+                        File file = new File(string6);
                         boolean bl = file.delete();
                     }
                 }
                 catch (MalformedURLException var2_3) {
                     RobotLog.e((String)"Analytics encountered a malformed URL exception");
                 }
+                catch (Exception var2_4) {
+                    Analytics.this.i = true;
+                }
+                if (Analytics.this.i) {
+                    RobotLog.i((String)"Analytics encountered a problem during communication");
+                    Analytics.this.a();
+                    Analytics.this.i = false;
+                }
             }
             return null;
         }
     }
 
-    public static class DateCount {
+    public static class DataInfo
+    implements Serializable {
         private final String a;
-        private final String b;
+        protected int numUsages;
 
-        public DateCount(String adate, String acount) {
+        public DataInfo(String adate, int numUsages) {
             this.a = adate;
-            this.b = acount;
+            this.numUsages = numUsages;
         }
 
         public String date() {
             return this.a;
         }
 
-        public String count() {
-            return this.b;
+        public int numUsages() {
+            return this.numUsages;
         }
     }
 

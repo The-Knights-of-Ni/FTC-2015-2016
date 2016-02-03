@@ -7,72 +7,92 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.robocol.RobocolParsable;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class RobocolDatagram {
-    private DatagramPacket a;
+    private DatagramPacket b;
+    private byte[] c = null;
+    static Queue<byte[]> a = new ConcurrentLinkedQueue<byte[]>();
 
     public RobocolDatagram(RobocolParsable message) throws RobotCoreException {
-        this.setData(message.toByteArray());
+        this.setData(message.toByteArrayForTransmission());
     }
 
     public RobocolDatagram(byte[] message) {
         this.setData(message);
     }
 
-    protected RobocolDatagram(DatagramPacket packet) {
-        this.a = packet;
+    public static RobocolDatagram forReceive() {
+        byte[] arrby = a.poll();
+        if (arrby == null) {
+            arrby = new byte[4098];
+        }
+        DatagramPacket datagramPacket = new DatagramPacket(arrby, arrby.length);
+        RobocolDatagram robocolDatagram = new RobocolDatagram();
+        robocolDatagram.b = datagramPacket;
+        robocolDatagram.c = arrby;
+        return robocolDatagram;
     }
 
     protected RobocolDatagram() {
-        this.a = null;
+        this.b = null;
+    }
+
+    public void close() {
+        if (this.c != null) {
+            a.add(this.c);
+            this.c = null;
+        }
+        this.b = null;
     }
 
     public RobocolParsable.MsgType getMsgType() {
-        return RobocolParsable.MsgType.fromByte(this.a.getData()[0]);
+        return RobocolParsable.MsgType.fromByte(this.b.getData()[0]);
     }
 
     public int getLength() {
-        return this.a.getLength();
+        return this.b.getLength();
     }
 
     public int getPayloadLength() {
-        return this.a.getLength() - 3;
+        return this.b.getLength() - 5;
     }
 
     public byte[] getData() {
-        return this.a.getData();
+        return this.b.getData();
     }
 
     public void setData(byte[] data) {
-        this.a = new DatagramPacket(data, data.length);
+        this.b = new DatagramPacket(data, data.length);
     }
 
     public InetAddress getAddress() {
-        return this.a.getAddress();
+        return this.b.getAddress();
     }
 
     public void setAddress(InetAddress address) {
-        this.a.setAddress(address);
+        this.b.setAddress(address);
     }
 
     public String toString() {
         int n = 0;
         String string = "NONE";
         String string2 = null;
-        if (this.a != null && this.a.getAddress() != null && this.a.getLength() > 0) {
-            string = RobocolParsable.MsgType.fromByte(this.a.getData()[0]).name();
-            n = this.a.getLength();
-            string2 = this.a.getAddress().getHostAddress();
+        if (this.b != null && this.b.getAddress() != null && this.b.getLength() > 0) {
+            string = RobocolParsable.MsgType.fromByte(this.b.getData()[0]).name();
+            n = this.b.getLength();
+            string2 = this.b.getAddress().getHostAddress();
         }
         return String.format("RobocolDatagram - type:%s, addr:%s, size:%d", string, string2, n);
     }
 
     protected DatagramPacket getPacket() {
-        return this.a;
+        return this.b;
     }
 
     protected void setPacket(DatagramPacket packet) {
-        this.a = packet;
+        this.b = packet;
     }
 }
 

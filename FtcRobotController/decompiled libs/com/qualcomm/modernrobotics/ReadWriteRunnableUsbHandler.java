@@ -10,7 +10,7 @@
  */
 package com.qualcomm.modernrobotics;
 
-import com.qualcomm.modernrobotics.ModernRoboticsPacket;
+import com.qualcomm.modernrobotics.a;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.usb.RobotUsbDevice;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -32,28 +32,25 @@ public class ReadWriteRunnableUsbHandler {
     }
 
     public void throwIfUsbErrorCountIsTooHigh() throws RobotCoreException {
-        if (this.usbSequentialReadErrorCount < 10) {
-            return;
+        if (this.usbSequentialReadErrorCount > 10 || this.usbSequentialWriteErrorCount > 10) {
+            throw new RobotCoreException("Too many sequential USB errors on device");
         }
-        if (this.usbSequentialWriteErrorCount < 10) {
-            return;
-        }
-        throw new RobotCoreException("Too many sequential USB errors on device");
     }
 
-    public void read(int address, byte[] buffer) throws RobotCoreException {
+    public void read(int address, byte[] buffer) throws RobotCoreException, InterruptedException {
         this.a(address, buffer);
     }
 
-    private void a(int n, byte[] arrby) throws RobotCoreException {
+    private void a(int n, byte[] arrby) throws RobotCoreException, InterruptedException {
         this.readCmd[3] = (byte)n;
         this.readCmd[4] = (byte)arrby.length;
         this.device.write(this.readCmd);
         Arrays.fill(this.respHeader, 0);
         int n2 = this.device.read(this.respHeader, this.respHeader.length, 100);
-        if (!ModernRoboticsPacket.a(this.respHeader, arrby.length)) {
+        if (!a.a(this.respHeader, arrby.length)) {
             ++this.usbSequentialReadErrorCount;
             if (n2 == this.respHeader.length) {
+                Thread.sleep(100);
                 this.a(this.readCmd, "comm error");
             } else {
                 this.a(this.readCmd, "comm timeout");
@@ -65,19 +62,20 @@ public class ReadWriteRunnableUsbHandler {
         this.usbSequentialReadErrorCount = 0;
     }
 
-    public void write(int address, byte[] buffer) throws RobotCoreException {
+    public void write(int address, byte[] buffer) throws RobotCoreException, InterruptedException {
         this.b(address, buffer);
     }
 
-    private void b(int n, byte[] arrby) throws RobotCoreException {
+    private void b(int n, byte[] arrby) throws RobotCoreException, InterruptedException {
         this.writeCmd[3] = (byte)n;
         this.writeCmd[4] = (byte)arrby.length;
         this.device.write(Util.concatenateByteArrays((byte[])this.writeCmd, (byte[])arrby));
         Arrays.fill(this.respHeader, 0);
         int n2 = this.device.read(this.respHeader, this.respHeader.length, 100);
-        if (!ModernRoboticsPacket.a(this.respHeader, 0)) {
+        if (!a.a(this.respHeader, 0)) {
             ++this.usbSequentialWriteErrorCount;
             if (n2 == this.respHeader.length) {
+                Thread.sleep(100);
                 this.a(this.writeCmd, "comm error");
             } else {
                 this.a(this.writeCmd, "comm timeout");

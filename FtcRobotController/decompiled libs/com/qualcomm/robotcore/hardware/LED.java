@@ -23,12 +23,12 @@ implements HardwareDevice {
 
     @Override
     public String getDeviceName() {
-        return null;
+        return "LED";
     }
 
     @Override
     public String getConnectionInfo() {
-        return null;
+        return String.format("%s; port %d", this.a.getConnectionInfo(), this.b);
     }
 
     @Override
