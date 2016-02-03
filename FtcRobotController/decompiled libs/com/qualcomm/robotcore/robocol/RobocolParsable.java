@@ -7,10 +7,17 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.util.RobotLog;
 
 public interface RobocolParsable {
-    public static final int HEADER_LENGTH = 3;
-    public static final byte[] EMPTY_HEADER_BUFFER = new byte[3];
+    public static final int HEADER_LENGTH = 5;
 
     public MsgType getRobocolMsgType();
+
+    public int getSequenceNumber();
+
+    public void setSequenceNumber();
+
+    public boolean shouldTransmit(long var1);
+
+    public byte[] toByteArrayForTransmission() throws RobotCoreException;
 
     public byte[] toByteArray() throws RobotCoreException;
 

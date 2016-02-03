@@ -70,8 +70,8 @@ public class FT_4222_Defines {
     }
 
     public class FT4222_SPICPOL {
-        public static final int CLK_ACTIVE_LOW = 0;
-        public static final int CLK_ACTIVE_HIGH = 1;
+        public static final int CLK_IDLE_LOW = 0;
+        public static final int CLK_IDLE_HIGH = 1;
     }
 
     public class FT4222_SPIClock {
@@ -137,6 +137,7 @@ public class FT_4222_Defines {
         public static final int FT4222_INTERRUPT_NOT_SUPPORTED = 1019;
         public static final int FT4222_GPIO_INPUT_NOT_SUPPORTED = 1020;
         public static final int FT4222_EVENT_NOT_SUPPORTED = 1021;
+        public static final int FT4222_FUN_NOT_SUPPORT = 1022;
     }
 
     public class GPIO_Dir {
@@ -170,10 +171,19 @@ public class FT_4222_Defines {
         public static final int I2C_MASTER_GET_I2CMTP = 82;
         public static final int I2C_MASTER_SET_HS = 83;
         public static final int I2C_MASTER_GET_HS = 83;
+        public static final int I2C_MASTER_STATUS = 245;
         public static final int I2C_SLAVE_GET_STATUS = 90;
         public static final int I2C_SLAVE_RESET = 91;
         public static final int I2C_SLAVE_SET_I2CSADR = 92;
         public static final int I2C_SLAVE_GET_I2CSADR = 92;
+    }
+
+    public class I2C_MasterFlag {
+        public static final int NONE = 128;
+        public static final int START = 2;
+        public static final int Repeated_START = 3;
+        public static final int STOP = 4;
+        public static final int START_AND_STOP = 6;
     }
 
     public class SPI_CMD {

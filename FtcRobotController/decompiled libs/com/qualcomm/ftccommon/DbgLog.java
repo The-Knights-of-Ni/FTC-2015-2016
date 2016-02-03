@@ -19,8 +19,16 @@ public class DbgLog {
         Log.i((String)"FIRST", (String)message);
     }
 
+    public static /* varargs */ void msg(String format, Object ... args) {
+        DbgLog.msg(String.format(format, args));
+    }
+
     public static void error(String message) {
         Log.e((String)"FIRST", (String)("### ERROR: " + message));
+    }
+
+    public static /* varargs */ void error(String format, Object ... args) {
+        DbgLog.error(String.format(format, args));
     }
 
     public static void logStacktrace(Exception e) {

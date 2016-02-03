@@ -21,11 +21,11 @@ extends k {
 
     short a(FT_EEPROM fT_EEPROM) {
         short s;
-        int[] arrn;
         int n;
+        byte by;
         int n2;
         int n3;
-        byte by;
+        int[] arrn;
         block46 : {
             arrn = new int[this.b];
             int n4 = 0;
@@ -188,26 +188,26 @@ extends k {
         if (by2 == -1) {
             by2 = 0;
         }
-        if ((n2 = fT_EEPROM_X_Series.CBus1) == -1) {
-            n2 = 0;
+        if ((n = fT_EEPROM_X_Series.CBus1) == -1) {
+            n = 0;
         }
-        arrn[13] = (short)(by2 | (n2<<=8));
+        arrn[13] = (short)(by2 | (n<<=8));
         byte by3 = fT_EEPROM_X_Series.CBus2;
         if (by3 == -1) {
             by3 = 0;
         }
-        if ((n3 = fT_EEPROM_X_Series.CBus3) == -1) {
-            n3 = 0;
+        if ((n2 = fT_EEPROM_X_Series.CBus3) == -1) {
+            n2 = 0;
         }
-        arrn[14] = (short)(by3 | (n3<<=8));
+        arrn[14] = (short)(by3 | (n2<<=8));
         byte by4 = fT_EEPROM_X_Series.CBus4;
         if (by4 == -1) {
             by4 = 0;
         }
-        if ((n = fT_EEPROM_X_Series.CBus5) == -1) {
-            n = 0;
+        if ((n3 = fT_EEPROM_X_Series.CBus5) == -1) {
+            n3 = 0;
         }
-        arrn[15] = (short)(by4 | (n<<=8));
+        arrn[15] = (short)(by4 | (n3<<=8));
         short s2 = fT_EEPROM_X_Series.CBus6;
         if (s2 == -1) {
             s2 = 0;

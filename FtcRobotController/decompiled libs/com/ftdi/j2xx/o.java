@@ -156,16 +156,16 @@ class o {
             }
             Object object = this.s;
             synchronized (object) {
-                n4 = this.d();
-                n3 = n2 - 2;
-                if (n4 < n3) {
+                n3 = this.d();
+                n4 = n2 - 2;
+                if (n3 < n4) {
                     Log.d((String)"ProcessBulkIn::", (String)" Buffer is full, waiting for read....");
                     this.a(bl, s, s2);
                     this.n.lock();
                     this.p = true;
                 }
             }
-            if (n4 < n3) {
+            if (n3 < n4) {
                 this.o.await();
                 this.n.unlock();
             }

@@ -16,6 +16,10 @@ public class FixWifiDirectSetup {
         FixWifiDirectSetup.a(true, wifiManager);
     }
 
+    public static void disableWifiDirect(WifiManager wifiManager) throws InterruptedException {
+        FixWifiDirectSetup.a(false, wifiManager);
+    }
+
     private static void a(boolean bl, WifiManager wifiManager) throws InterruptedException {
         wifiManager.setWifiEnabled(bl);
         Thread.sleep(2000);

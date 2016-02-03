@@ -19,16 +19,8 @@ implements I2cMaster {
         this.b = this.a.mFtDev;
     }
 
-    public int cmdSet(int wValue1, int wValue2) {
-        return this.b.VendorCmdSet(33, wValue1 | wValue2 << 8);
-    }
-
-    public int cmdSet(int wValue1, int wValue2, byte[] buf, int datalen) {
-        return this.b.VendorCmdSet(33, wValue1 | wValue2 << 8, buf, datalen);
-    }
-
-    public int cmdGet(int wValue1, int wValue2, byte[] buf, int datalen) {
-        return this.b.VendorCmdGet(32, wValue1 | wValue2 << 8, buf, datalen);
+    int a(int n, int n2) {
+        return this.b.VendorCmdSet(33, n | n2 << 8);
     }
 
     public int init(int kbps) {
@@ -40,18 +32,18 @@ implements I2cMaster {
         if (!this.a()) {
             return 1012;
         }
-        this.cmdSet(81, 0);
+        this.a(81, 0);
         n = this.a.getClock(arrby);
         if (n != 0) {
             return n;
         }
-        int n2 = this.a(arrby[0], kbps);
-        n = this.cmdSet(5, 1);
+        int n2 = this.b(arrby[0], kbps);
+        n = this.a(5, 1);
         if (n < 0) {
             return n;
         }
         this.a.mChipStatus.g = 1;
-        n = this.cmdSet(82, n2);
+        n = this.a(82, n2);
         if (n < 0) {
             return n;
         }
@@ -65,18 +57,25 @@ implements I2cMaster {
         if (n2 != 0) {
             return n2;
         }
-        return this.cmdSet(81, n);
+        return this.a(81, n);
     }
 
     public int read(int deviceAddress, byte[] buffer, int sizeToTransfer, int[] sizeTransferred) {
+        return this.readEx(deviceAddress, 6, buffer, sizeToTransfer, sizeTransferred);
+    }
+
+    public int readEx(int deviceAddress, int flag, byte[] buffer, int sizeToTransfer, int[] sizeTransferred) {
         short s = (short)(deviceAddress & 65535);
-        short s2 = (short)((deviceAddress & 896) >> 7);
-        short s3 = (short)sizeToTransfer;
+        short s2 = (short)sizeToTransfer;
         int[] arrn = new int[1];
         byte[] arrby = new byte[4];
         long l = System.currentTimeMillis();
         int n = this.b.getReadTimeout();
-        int n2 = this.a(deviceAddress);
+        int n2 = this.a(flag);
+        if (n2 != 0) {
+            return n2;
+        }
+        n2 = this.b(deviceAddress);
         if (n2 != 0) {
             return n2;
         }
@@ -97,9 +96,9 @@ implements I2cMaster {
         sizeTransferred[0] = 0;
         s = (short)((s << 1) + 1);
         arrby[0] = (byte)s;
-        arrby[1] = (byte)s2;
-        arrby[2] = (byte)(s3 >> 8 & 255);
-        arrby[3] = (byte)(s3 & 255);
+        arrby[1] = (byte)flag;
+        arrby[2] = (byte)(s2 >> 8 & 255);
+        arrby[3] = (byte)(s2 & 255);
         n2 = this.b.write(arrby, 4);
         if (4 != n2) {
             return 1011;
@@ -119,12 +118,19 @@ implements I2cMaster {
     }
 
     public int write(int deviceAddress, byte[] buffer, int sizeToTransfer, int[] sizeTransferred) {
+        return this.writeEx(deviceAddress, 6, buffer, sizeToTransfer, sizeTransferred);
+    }
+
+    public int writeEx(int deviceAddress, int flag, byte[] buffer, int sizeToTransfer, int[] sizeTransferred) {
         short s = (short)deviceAddress;
-        short s2 = (short)((deviceAddress & 896) >> 7);
-        short s3 = (short)sizeToTransfer;
+        short s2 = (short)sizeToTransfer;
         byte[] arrby = new byte[sizeToTransfer + 4];
         int[] arrn = new int[1];
-        int n = this.a(deviceAddress);
+        int n = this.a(flag);
+        if (n != 0) {
+            return n;
+        }
+        n = this.b(deviceAddress);
         if (n != 0) {
             return n;
         }
@@ -145,9 +151,9 @@ implements I2cMaster {
         sizeTransferred[0] = 0;
         s = (short)(s << 1);
         arrby[0] = (byte)s;
-        arrby[1] = (byte)s2;
-        arrby[2] = (byte)(s3 >> 8 & 255);
-        arrby[3] = (byte)(s3 & 255);
+        arrby[1] = (byte)flag;
+        arrby[2] = (byte)(s2 >> 8 & 255);
+        arrby[3] = (byte)(s2 & 255);
         for (int i = 0; i < sizeToTransfer; ++i) {
             arrby[i + 4] = buffer[i];
         }
@@ -157,6 +163,18 @@ implements I2cMaster {
             return 0;
         }
         return 10;
+    }
+
+    public int getStatus(int deviceAddress, byte[] controllerStatus) {
+        int n = this.a(true);
+        if (n != 0) {
+            return n;
+        }
+        n = this.b.VendorCmdGet(34, 62900, controllerStatus, 1);
+        if (n < 0) {
+            return 18;
+        }
+        return 0;
     }
 
     boolean a() {
@@ -174,15 +192,29 @@ implements I2cMaster {
     }
 
     int a(int n) {
+        if (!(this.b != null && this.b.isOpen())) {
+            return 3;
+        }
+        if (n != 6) {
+            char[] arrc = new char[1];
+            this.a(arrc);
+            if (arrc[0] < 'B') {
+                return 1022;
+            }
+        }
+        return 0;
+    }
+
+    int b(int n) {
         if ((n & 64512) > 0) {
             return 1007;
         }
         return 0;
     }
 
-    private int a(int n, int n2) {
-        double d;
+    private int b(int n, int n2) {
         int n3;
+        double d;
         switch (n) {
             default: {
                 d = 16.666666666666668;
@@ -248,6 +280,20 @@ implements I2cMaster {
             default: {
                 return 17;
             }
+        }
+        return 0;
+    }
+
+    int a(char[] arrc) {
+        byte[] arrby = new byte[12];
+        int n = this.b.VendorCmdGet(32, 0, arrby, 12);
+        if (n < 0) {
+            return 18;
+        }
+        if (arrby[2] == 1) {
+            arrc[0] = 65;
+        } else if (arrby[2] == 2) {
+            arrc[0] = 66;
         }
         return 0;
     }

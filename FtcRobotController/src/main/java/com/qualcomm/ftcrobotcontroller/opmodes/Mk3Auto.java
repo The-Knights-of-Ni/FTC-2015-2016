@@ -23,7 +23,7 @@ import android.hardware.Camera;
 
 
 public class Mk3Auto extends LinearOpMode {
-static byte[] robot_state;
+public static byte[] robot_state;
 int rsid_current = 0;
 public Mk3Auto()
 {

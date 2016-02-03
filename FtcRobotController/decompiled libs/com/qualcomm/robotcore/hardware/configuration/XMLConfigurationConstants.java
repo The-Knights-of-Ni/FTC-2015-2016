@@ -24,5 +24,6 @@ public class XMLConfigurationConstants {
     public static final String ADAFRUIT_COLOR_SENSOR = "AdafruitColorSensor";
     public static final String COLOR_SENSOR = "ColorSensor";
     public static final String LED = "Led";
+    public static final String GYRO = "Gyro";
 }
 

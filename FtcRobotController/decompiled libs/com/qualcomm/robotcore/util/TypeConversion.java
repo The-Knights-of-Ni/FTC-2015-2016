@@ -65,6 +65,10 @@ public class TypeConversion {
         return b & 255;
     }
 
+    public static int unsignedShortToInt(short s) {
+        return s & 65535;
+    }
+
     public static double unsignedByteToDouble(byte b) {
         return b & 255;
     }

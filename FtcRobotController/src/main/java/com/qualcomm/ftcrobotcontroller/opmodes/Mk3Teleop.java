@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 public class Mk3Teleop extends LinearOpMode {
-static byte[] robot_state;
+public static byte[] robot_state;
 int rsid_current = 0;
 public Mk3Teleop()
 {

@@ -5,6 +5,7 @@ package com.qualcomm.robotcore.robocol;
 
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.robocol.RobocolParsable;
+import com.qualcomm.robotcore.robocol.RobocolParsableBase;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.TypeConversion;
 import java.nio.BufferOverflowException;
@@ -13,10 +14,9 @@ import java.nio.charset.Charset;
 import java.util.Comparator;
 
 public class Command
-implements RobocolParsable,
-Comparable<Command>,
+extends RobocolParsableBase
+implements Comparable<Command>,
 Comparator<Command> {
-    public static final int MAX_COMMAND_LENGTH = 256;
     private static final Charset h = Charset.forName("UTF-8");
     String a;
     String b;
@@ -36,11 +36,9 @@ Comparator<Command> {
         this.c = TypeConversion.stringToUtf8(this.a);
         this.d = TypeConversion.stringToUtf8(this.b);
         this.e = Command.generateTimestamp();
-        if (this.c.length > 256) {
-            throw new IllegalArgumentException(String.format("command name length is too long (MAX: %d)", 256));
-        }
-        if (this.d.length > 256) {
-            throw new IllegalArgumentException(String.format("command extra data length is too long (MAX: %d)", 256));
+        int n = this.a();
+        if (n > 32767) {
+            throw new IllegalArgumentException(String.format("command payload is too large: %d", n));
         }
     }
 
@@ -82,16 +80,14 @@ Comparator<Command> {
         if (this.g != 127) {
             this.g = (byte)(this.g + 1);
         }
-        short s = (short)(11 + this.c.length + this.d.length);
-        ByteBuffer byteBuffer = ByteBuffer.allocate(3 + s);
+        short s = (short)this.a();
+        ByteBuffer byteBuffer = this.getWriteBuffer(s);
         try {
-            byteBuffer.put(this.getRobocolMsgType().asByte());
-            byteBuffer.putShort(s);
             byteBuffer.putLong(this.e);
             byteBuffer.put(this.f ? 1 : 0);
-            byteBuffer.put((byte)this.c.length);
+            byteBuffer.putShort((short)this.c.length);
             byteBuffer.put(this.c);
-            byteBuffer.put((byte)this.d.length);
+            byteBuffer.putShort((short)this.d.length);
             byteBuffer.put(this.d);
         }
         catch (BufferOverflowException var3_3) {
@@ -100,16 +96,20 @@ Comparator<Command> {
         return byteBuffer.array();
     }
 
+    int a() {
+        return 13 + this.c.length + this.d.length;
+    }
+
     @Override
     public void fromByteArray(byte[] byteArray) throws RobotCoreException {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray, 3, byteArray.length - 3);
+        ByteBuffer byteBuffer = this.getReadBuffer(byteArray);
         this.e = byteBuffer.getLong();
-        this.f = byteBuffer.get() == 1;
-        int n = TypeConversion.unsignedByteToInt(byteBuffer.get());
+        this.f = byteBuffer.get() != 0;
+        int n = TypeConversion.unsignedShortToInt(byteBuffer.getShort());
         this.c = new byte[n];
         byteBuffer.get(this.c);
         this.a = TypeConversion.utf8ToString(this.c);
-        n = TypeConversion.unsignedByteToInt(byteBuffer.get());
+        n = TypeConversion.unsignedShortToInt(byteBuffer.getShort());
         this.d = new byte[n];
         byteBuffer.get(this.d);
         this.b = TypeConversion.utf8ToString(this.d);
@@ -131,7 +131,7 @@ Comparator<Command> {
     }
 
     public int hashCode() {
-        return (int)((long)this.a.hashCode() & this.e);
+        return this.a.hashCode() ^ (int)this.e;
     }
 
     @Override

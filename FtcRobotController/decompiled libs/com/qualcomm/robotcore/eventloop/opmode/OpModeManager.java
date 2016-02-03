@@ -33,6 +33,7 @@ public class OpModeManager {
     private boolean i = false;
     private boolean j = false;
     private boolean k = false;
+    private boolean l = false;
 
     public OpModeManager(HardwareMap hardwareMap) {
         this.f = hardwareMap;
@@ -40,54 +41,60 @@ public class OpModeManager {
         this.initActiveOpMode("Stop Robot");
     }
 
-    public void registerOpModes(OpModeRegister register) {
+    public synchronized void registerOpModes(OpModeRegister register) {
         register.register(this);
     }
 
-    public void setHardwareMap(HardwareMap hardwareMap) {
+    public synchronized void setHardwareMap(HardwareMap hardwareMap) {
         this.f = hardwareMap;
     }
 
-    public HardwareMap getHardwareMap() {
+    public synchronized HardwareMap getHardwareMap() {
         return this.f;
     }
 
-    public Set<String> getOpModes() {
+    public synchronized Set<String> getOpModes() {
         LinkedHashSet<String> linkedHashSet = new LinkedHashSet<String>();
         linkedHashSet.addAll(this.a.keySet());
         linkedHashSet.addAll(this.b.keySet());
         return linkedHashSet;
     }
 
-    public String getActiveOpModeName() {
+    public synchronized String getActiveOpModeName() {
         return this.c;
     }
 
-    public OpMode getActiveOpMode() {
+    public synchronized OpMode getActiveOpMode() {
         return this.d;
     }
 
-    public void initActiveOpMode(String name) {
+    public synchronized void initActiveOpMode(String name) {
         this.e = name;
         this.i = true;
         this.j = true;
+        this.l = true;
         this.h = b.a;
     }
 
-    public void startActiveOpMode() {
+    public synchronized void startActiveOpMode() {
         this.h = b.b;
         this.k = true;
     }
 
-    public void stopActiveOpMode() {
+    public synchronized void stopActiveOpMode() {
         this.d.stop();
         this.initActiveOpMode("Stop Robot");
     }
 
-    public void runActiveOpMode(Gamepad[] gamepads) {
+    public synchronized void runActiveOpMode(Gamepad[] gamepads) {
         this.d.time = this.d.getRuntime();
         this.d.gamepad1 = gamepads[0];
         this.d.gamepad2 = gamepads[1];
+        if (this.l) {
+            this.d.gamepad1.reset();
+            this.d.gamepad2.reset();
+            this.l = false;
+        }
         if (this.i) {
             this.d.stop();
             this.a();
@@ -111,7 +118,7 @@ public class OpModeManager {
         }
     }
 
-    public void logOpModes() {
+    public synchronized void logOpModes() {
         int n = this.a.size() + this.b.size();
         RobotLog.i("There are " + n + " Op Modes");
         for (Map.Entry entry2 : this.a.entrySet()) {
@@ -122,14 +129,14 @@ public class OpModeManager {
         }
     }
 
-    public void register(String name, Class opMode) {
+    public synchronized void register(String name, Class opMode) {
         if (this.a(name)) {
             throw new IllegalArgumentException("Cannot register the same op mode name twice");
         }
         this.a.put(name, opMode);
     }
 
-    public void register(String name, OpMode opMode) {
+    public synchronized void register(String name, OpMode opMode) {
         if (this.a(name)) {
             throw new IllegalArgumentException("Cannot register the same op mode name twice");
         }
@@ -194,7 +201,7 @@ public class OpModeManager {
             }
             for (DcMotor dcMotor : this.hardwareMap.dcMotor) {
                 dcMotor.setPower(0.0);
-                dcMotor.setChannelMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+                dcMotor.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
             }
             for (LightSensor lightSensor : this.hardwareMap.lightSensor) {
                 lightSensor.enableLed(false);

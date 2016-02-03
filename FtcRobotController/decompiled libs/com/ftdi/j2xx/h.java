@@ -47,8 +47,8 @@ extends k {
         int[] arrn = new int[80];
         FT_EEPROM_232R fT_EEPROM_232R = (FT_EEPROM_232R)fT_EEPROM;
         try {
-            short s;
             int n;
+            short s;
             for (s = 0; s < 80; s = (short)(s + 1)) {
                 arrn[s] = this.a(s);
             }

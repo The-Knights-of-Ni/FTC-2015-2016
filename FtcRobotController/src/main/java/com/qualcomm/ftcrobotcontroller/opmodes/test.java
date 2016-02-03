@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 
 
 public class test extends LinearOpMode {
-static byte[] robot_state;
+public static byte[] robot_state;
 int rsid_current = 0;
 public test()
 {
@@ -32,9 +32,7 @@ public test()
 
 public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
 {
-    ByteBuffer stick = ByteBuffer.allocate(45);
-    stick.put(joystick);
-    return stick.getInt(40);//Offset value
+    return ByteBuffer.wrap(joystick, 37, 4).order(ByteOrder.nativeOrder()).getInt();
 }
 
 public void setInt(int index, int a)
@@ -154,6 +152,8 @@ rsid_current = 8;
 int gamepad1_buttons = 0;
 try
 {
+    //TODO: toByteArray() just copies all of the values into a byte buffer anyway
+    //      make custom function so this won't break again if they update
     gamepad1_buttons = updateButtons(gamepad1.toByteArray());
 }
 catch (RobotCoreException e)

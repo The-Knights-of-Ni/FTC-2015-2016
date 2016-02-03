@@ -211,7 +211,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("slide.setPosition(", pslide,");");
     jniOut("hook_left.setPosition(", phook_left,");");
     jniOut("hook_right.setPosition(", phook_right,");");
-
+    
     jniOut("telemetry.addData(\"Indicator:\", ", pindicator, ");");
     jniOut("telemetry.addData(\"beacon right:\", (", pbeacon_right," == 1 ? \"red\" : \"blue\"));");
     float * pimu_heading = &imu_heading;

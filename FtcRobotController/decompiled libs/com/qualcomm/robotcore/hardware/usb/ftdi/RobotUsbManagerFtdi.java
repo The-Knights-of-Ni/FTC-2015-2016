@@ -50,7 +50,7 @@ implements RobotUsbManager {
     public RobotUsbDevice openBySerialNumber(SerialNumber serialNumber) throws RobotCoreException {
         FT_Device fT_Device = this.b.openBySerialNumber(this.a, serialNumber.toString());
         if (fT_Device == null) {
-            throw new RobotCoreException("Unable to open USB device with serial number " + serialNumber);
+            throw new RobotCoreException("FTDI driver failed to open USB device with serial number " + serialNumber + " (returned null device)");
         }
         return new RobotUsbDeviceFtdi(fT_Device);
     }

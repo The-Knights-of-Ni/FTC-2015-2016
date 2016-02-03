@@ -68,9 +68,7 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
     jni_misc_string = (
         "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
         "{\n"
-        "    ByteBuffer stick = ByteBuffer.allocate(45);\n"
-        "    stick.put(joystick);\n"
-        "    return stick.getInt(40);//Offset value\n"
+        "    return ByteBuffer.wrap(joystick, 37, 4).order(ByteOrder.nativeOrder()).getInt();\n"
         "}\n");
     
     // pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
@@ -84,6 +82,8 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
         "int gamepad1_buttons = 0;\n"
         "try\n"
         "{\n"
+        "    //TODO: toByteArray() just copies all of the values into a byte buffer anyway\n"
+        "    //      make custom function so this won't break again if they update\n"
         "    gamepad1_buttons = updateButtons(gamepad1.toByteArray());\n"
         "}\n"
         "catch (RobotCoreException e)\n"

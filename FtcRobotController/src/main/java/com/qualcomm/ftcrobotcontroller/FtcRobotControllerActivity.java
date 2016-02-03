@@ -130,20 +130,17 @@ public class FtcRobotControllerActivity extends Activity {
     }
 
     protected ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
+        @Override public void onServiceConnected(ComponentName name, IBinder service) {
             FtcRobotControllerBinder binder = (FtcRobotControllerBinder) service;
             onServiceBind(binder.getService());
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
+        @Override public void onServiceDisconnected(ComponentName name) {
             controllerService = null;
         }
     };
 
-    @Override
-        protected void onNewIntent(Intent intent) {
+    @Override protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(intent.getAction())) {
             // a new USB device has been attached
@@ -189,8 +186,7 @@ public class FtcRobotControllerActivity extends Activity {
             camera.startPreview();
         }
         
-        @Override
-            public void surfaceDestroyed(SurfaceHolder holder)
+        @Override public void surfaceDestroyed(SurfaceHolder holder)
         {
             camera.stopPreview();
             camera.release();
@@ -234,8 +230,7 @@ public class FtcRobotControllerActivity extends Activity {
         redBox = (CheckBox) findViewById(R.id.redBox);
         redBox.setOnClickListener(new View.OnClickListener() {
 
-                @Override
-                    public void onClick(View v) {
+                @Override public void onClick(View v) {
                     if (((CheckBox) v).isChecked()) {
                         red = true;
                         if (blue)
@@ -249,8 +244,7 @@ public class FtcRobotControllerActivity extends Activity {
         blueBox = (CheckBox) findViewById(R.id.blueBox);
         blueBox.setOnClickListener(new View.OnClickListener() {
 
-                @Override
-                    public void onClick(View v) {
+                @Override public void onClick(View v) {
                     if (((CheckBox) v).isChecked()) {
                         blue = true;
                         if (red)
@@ -264,8 +258,7 @@ public class FtcRobotControllerActivity extends Activity {
         alignedBox = (CheckBox) findViewById(R.id.alignedBox);
         alignedBox.setOnClickListener(new View.OnClickListener() {
 
-                @Override
-                    public void onClick(View v) {
+                @Override public void onClick(View v) {
                     if (((CheckBox) v).isChecked()) aligned = true;
                     else aligned = false;
                 }
@@ -274,8 +267,7 @@ public class FtcRobotControllerActivity extends Activity {
     
     //custom gui
 
-    @Override
-        protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.activity_ftc_controller);
@@ -289,18 +281,17 @@ public class FtcRobotControllerActivity extends Activity {
         FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
         frame_layout_preview.addView(camera_preview);
         
-// End of Custom Stuff
+        // End of Custom Stuff
         utility = new Utility(this);
         context = this;
         entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
         buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
         buttonMenu.setOnClickListener(new View.OnClickListener() {
-                @Override
-                    public void onClick(View v) {
+                @Override public void onClick(View v) {
                     openOptionsMenu();
                 }
             });
-        
+
         textDeviceName = (TextView) findViewById(R.id.textDeviceName);
         textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
         textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
@@ -312,7 +303,7 @@ public class FtcRobotControllerActivity extends Activity {
         dimmer = new Dimmer(this);
         dimmer.longBright();
         Restarter restarter = new RobotRestarter();
-        
+
         updateUI = new UpdateUI(this, dimmer);
         updateUI.setRestarter(restarter);
         updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
@@ -322,168 +313,61 @@ public class FtcRobotControllerActivity extends Activity {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "");
+
         hittingMenuButtonBrightensScreen();
 
-        if (USE_DEVICE_EMULATION) {
-            HardwareFactory.enableDeviceEmulation();
-        }
+        if (USE_DEVICE_EMULATION) { HardwareFactory.enableDeviceEmulation(); }
     }
-    
-    @Override
-        protected void onStart() {
+
+    @Override protected void onStart() {
         super.onStart();
-        
+
         // save 4MB of logcat to the SD card
         RobotLog.writeLogcatToDisk(this, 4 * 1024);
-        
+
         Intent intent = new Intent(this, FtcRobotControllerService.class);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
-        
+
         utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
 
         callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
 
         entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                    public boolean onTouch(View v, MotionEvent event) {
+                @Override public boolean onTouch(View v, MotionEvent event) {
                     dimmer.handleDimTimer();
                     return false;
                 }
             });
 
-    }
-    
-}
-
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    setContentView(R.layout.activity_ftc_controller);
-
-    utility = new Utility(this);
-    context = this;
-    entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
-    buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
-    buttonMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-                public void onClick(View v) {
-                openOptionsMenu();
-            }
-        });
-
-    textDeviceName = (TextView) findViewById(R.id.textDeviceName);
-    textWifiDirectStatus = (TextView) findViewById(R.id.textWifiDirectStatus);
-    textRobotStatus = (TextView) findViewById(R.id.textRobotStatus);
-    textOpMode = (TextView) findViewById(R.id.textOpMode);
-    textErrorMessage = (TextView) findViewById(R.id.textErrorMessage);
-    textGamepad[0] = (TextView) findViewById(R.id.textGamepad1);
-    textGamepad[1] = (TextView) findViewById(R.id.textGamepad2);
-    immersion = new ImmersiveMode(getWindow().getDecorView());
-    dimmer = new Dimmer(this);
-    dimmer.longBright();
-    Restarter restarter = new RobotRestarter();
-
-    updateUI = new UpdateUI(this, dimmer);
-    updateUI.setRestarter(restarter);
-    updateUI.setTextViews(textWifiDirectStatus, textRobotStatus,
-                          textGamepad, textOpMode, textErrorMessage, textDeviceName);
-    callback = updateUI.new Callback();
-
-    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-    preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-    WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-    wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "");
-
-    hittingMenuButtonBrightensScreen();
-
-    if (USE_DEVICE_EMULATION) { HardwareFactory.enableDeviceEmulation(); }
-}
-
-@Override
-protected void onStart() {
-    super.onStart();
-
-    // save 4MB of logcat to the SD card
-    RobotLog.writeLogcatToDisk(this, 4 * 1024);
-
-    Intent intent = new Intent(this, FtcRobotControllerService.class);
-    bindService(intent, connection, Context.BIND_AUTO_CREATE);
-
-    utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-
-    callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
-
-    entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                dimmer.handleDimTimer();
-                return false;
-            }
-        });
-
-    wifiLock.acquire();
-}
-
-@Override
-protected void onResume() {
-    super.onResume();
-}
-
-@Override
-public void onPause() {
-    super.onPause();
-}
-
-@Override
-protected void onStop() {
-    super.onStop();
-
-    if (controllerService != null) unbindService(connection);
-
-    RobotLog.cancelWriteLogcatToDisk(this);
-
-    wifiLock.release();
-}
-
-@Override
-public void onWindowFocusChanged(boolean hasFocus){
-    super.onWindowFocusChanged(hasFocus);
-    // When the window loses focus (e.g., the action overflow is shown),
-    // cancel any pending hide action. When the window gains focus,
-    // hide the system UI.
-    if (hasFocus) {
-        if (ImmersiveMode.apiOver19()){
-            // Immersive flag only works on API 19 and above.
-            immersion.hideSystemUI();
-        }
-    } else {
-        immersion.cancelSystemUIHide();
+        wifiLock.acquire();
     }
 
-    @Override
-        public void onPause() {
+    @Override protected void onResume() {
+        super.onResume();
+    }
+
+    @Override public void onPause() {
         super.onPause();
     }
 
-    @Override
-        protected void onStop() {
+    @Override protected void onStop() {
         super.onStop();
 
         if (controllerService != null) unbindService(connection);
 
         RobotLog.cancelWriteLogcatToDisk(this);
-    }
 
-    @Override
-        public void onWindowFocusChanged(boolean hasFocus) {
+        wifiLock.release();
+    }
+    @Override public void onWindowFocusChanged(boolean hasFocus){
         super.onWindowFocusChanged(hasFocus);
         // When the window loses focus (e.g., the action overflow is shown),
         // cancel any pending hide action. When the window gains focus,
         // hide the system UI.
         if (hasFocus) {
-            if (ImmersiveMode.apiOver19()) {
+            if (ImmersiveMode.apiOver19()){
                 // Immersive flag only works on API 19 and above.
                 immersion.hideSystemUI();
             }
@@ -493,14 +377,12 @@ public void onWindowFocusChanged(boolean hasFocus){
     }
 
 
-    @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
         return true;
     }
 
-    @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_restart_robot:
                 dimmer.handleDimTimer();
@@ -531,14 +413,12 @@ public void onWindowFocusChanged(boolean hasFocus){
         }
     }
 
-    @Override
-        public void onConfigurationChanged(Configuration newConfig) {
+    @Override public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // don't destroy assets on screen rotation
     }
 
-    @Override
-        protected void onActivityResult(int request, int result, Intent intent) {
+    @Override protected void onActivityResult(int request, int result, Intent intent) {
         if (request == REQUEST_CONFIG_WIFI_CHANNEL) {
             if (result == RESULT_OK) {
                 Toast toast = Toast.makeText(context, "Configuration Complete", Toast.LENGTH_LONG);
@@ -572,9 +452,7 @@ public void onWindowFocusChanged(boolean hasFocus){
 
         FileInputStream fis = fileSetup();
         // if we can't find the file, don't try and build the robot.
-        if (fis == null) {
-            return;
-        }
+        if (fis == null) { return; }
 
         HardwareFactory factory;
 
@@ -622,8 +500,7 @@ public void onWindowFocusChanged(boolean hasFocus){
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
-                    @Override
-                        public void onMenuVisibilityChanged(boolean isVisible) {
+                    @Override public void onMenuVisibilityChanged(boolean isVisible) {
                         if (isVisible) {
                             dimmer.handleDimTimer();
                         }
@@ -634,8 +511,7 @@ public void onWindowFocusChanged(boolean hasFocus){
 
     public void showToast(final Toast toast) {
         runOnUiThread(new Runnable() {
-                @Override
-                    public void run() {
+                @Override public void run() {
                     toast.show();
                 }
             });

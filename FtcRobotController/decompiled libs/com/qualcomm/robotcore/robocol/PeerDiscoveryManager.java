@@ -59,7 +59,7 @@ public class PeerDiscoveryManager {
         @Override
         public void run() {
             try {
-                RobotLog.v("Sending peer discovery packet");
+                RobotLog.v("sending peer discovery packet(%d)", PeerDiscoveryManager.this.e.getSequenceNumber());
                 RobocolDatagram robocolDatagram = new RobocolDatagram(PeerDiscoveryManager.this.e);
                 if (PeerDiscoveryManager.this.b.getInetAddress() == null) {
                     robocolDatagram.setAddress(PeerDiscoveryManager.this.a);

@@ -27,7 +27,7 @@
  *  com.qualcomm.ftccommon.R$id
  *  com.qualcomm.ftccommon.R$layout
  *  com.qualcomm.ftccommon.R$string
- *  com.qualcomm.hardware.ModernRoboticsDeviceManager
+ *  com.qualcomm.hardware.HardwareDeviceManager
  *  com.qualcomm.robotcore.eventloop.EventLoopManager
  *  com.qualcomm.robotcore.exception.RobotCoreException
  *  com.qualcomm.robotcore.hardware.DeviceManager
@@ -44,6 +44,7 @@
  *  com.qualcomm.robotcore.hardware.configuration.Utility
  *  com.qualcomm.robotcore.util.RobotLog
  *  com.qualcomm.robotcore.util.SerialNumber
+ *  com.qualcomm.robotcore.util.Util
  */
 package com.qualcomm.ftccommon.configuration;
 
@@ -70,7 +71,7 @@ import com.qualcomm.ftccommon.configuration.EditDeviceInterfaceModuleActivity;
 import com.qualcomm.ftccommon.configuration.EditLegacyModuleControllerActivity;
 import com.qualcomm.ftccommon.configuration.EditMotorControllerActivity;
 import com.qualcomm.ftccommon.configuration.EditServoControllerActivity;
-import com.qualcomm.hardware.ModernRoboticsDeviceManager;
+import com.qualcomm.hardware.HardwareDeviceManager;
 import com.qualcomm.robotcore.eventloop.EventLoopManager;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DeviceManager;
@@ -85,6 +86,7 @@ import com.qualcomm.robotcore.hardware.configuration.ServoControllerConfiguratio
 import com.qualcomm.robotcore.hardware.configuration.Utility;
 import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.util.SerialNumber;
+import com.qualcomm.robotcore.util.Util;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -142,7 +144,7 @@ extends Activity {
         this.h = (Button)this.findViewById(R.id.scanButton);
         this.a();
         try {
-            this.g = new ModernRoboticsDeviceManager(this.f, null);
+            this.g = new HardwareDeviceManager(this.f, null);
         }
         catch (RobotCoreException var2_2) {
             this.j.complainToast("Failed to open the Device Manager", this.f);
@@ -197,26 +199,33 @@ extends Activity {
 
                     @Override
                     public void run() {
-                        try {
-                            DbgLog.msg("Scanning USB bus");
-                            FtcConfigurationActivity.this.scannedDevices = FtcConfigurationActivity.this.g.scanForUsbDevices();
-                        }
-                        catch (RobotCoreException var1_1) {
-                            DbgLog.error("Device scan failed: " + var1_1.toString());
-                        }
-                        FtcConfigurationActivity.this.runOnUiThread(new Runnable(){
+                        Util.logThreadLifeCycle((String)"Scanning USB Bus", (Runnable)new Runnable(){
 
                             @Override
                             public void run() {
-                                FtcConfigurationActivity.this.j.resetCount();
-                                FtcConfigurationActivity.this.g();
-                                FtcConfigurationActivity.this.i();
-                                FtcConfigurationActivity.this.j.updateHeader(FtcConfigurationActivity.this.i, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-                                FtcConfigurationActivity.this.scannedEntries = FtcConfigurationActivity.this.scannedDevices.entrySet();
-                                FtcConfigurationActivity.this.e = FtcConfigurationActivity.this.b();
-                                FtcConfigurationActivity.this.h();
-                                FtcConfigurationActivity.this.f();
+                                try {
+                                    DbgLog.msg("Scanning USB bus");
+                                    FtcConfigurationActivity.this.scannedDevices = FtcConfigurationActivity.this.g.scanForUsbDevices();
+                                }
+                                catch (RobotCoreException var1_1) {
+                                    DbgLog.error("Device scan failed: " + var1_1.toString());
+                                }
+                                FtcConfigurationActivity.this.runOnUiThread(new Runnable(){
+
+                                    @Override
+                                    public void run() {
+                                        FtcConfigurationActivity.this.j.resetCount();
+                                        FtcConfigurationActivity.this.g();
+                                        FtcConfigurationActivity.this.i();
+                                        FtcConfigurationActivity.this.j.updateHeader(FtcConfigurationActivity.this.i, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+                                        FtcConfigurationActivity.this.scannedEntries = FtcConfigurationActivity.this.scannedDevices.entrySet();
+                                        FtcConfigurationActivity.this.e = FtcConfigurationActivity.this.b();
+                                        FtcConfigurationActivity.this.h();
+                                        FtcConfigurationActivity.this.f();
+                                    }
+                                });
                             }
+
                         });
                     }
 

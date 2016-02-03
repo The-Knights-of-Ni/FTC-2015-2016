@@ -113,13 +113,23 @@ implements HardwareDevice {
         return n;
     }
 
-    public void setChannelMode(DcMotorController.RunMode mode) {
+    public void setMode(DcMotorController.RunMode mode) {
         this.mode = mode;
         this.controller.setMotorChannelMode(this.portNumber, mode);
     }
 
-    public DcMotorController.RunMode getChannelMode() {
+    public DcMotorController.RunMode getMode() {
         return this.controller.getMotorChannelMode(this.portNumber);
+    }
+
+    @Deprecated
+    public void setChannelMode(DcMotorController.RunMode mode) {
+        this.setMode(mode);
+    }
+
+    @Deprecated
+    public DcMotorController.RunMode getChannelMode() {
+        return this.getMode();
     }
 
     public static enum Direction {

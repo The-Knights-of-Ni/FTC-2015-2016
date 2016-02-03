@@ -91,7 +91,10 @@ void * robot_state_first_address = malloc(robot_state_reserved_addresses);
 
 //TODO: remove redundent setting of rsid_current in the java file
 
-//TODO: allow for variables to be used for both input and output (1/2 done)
+/*TODO(maybe): give a warning if you try to set a pointer to two
+  things, would require making another dummy struct and overloading =*/
+//TODO: allow for variables to be used for both input and output (1/2
+//done)
 #define defineJniIn(type, Type)                                         \
     type * jni##Type##In_line(const char * s, const char * filename, int line) \
     {                                                                   \
@@ -115,7 +118,7 @@ void * robot_state_first_address = malloc(robot_state_reserved_addresses);
                     }                                                   \
                 }                                                       \
                 n_printed = sprintf(rsin_code_current,                  \
-                                    "set"#Type"(%d, %.*s);\n",     \
+                                    "set"#Type"(%d, %.*s);\n",          \
                                     rsid_current,                       \
                                     n_return_chars, t);                 \
                 assert(n_printed >= 0);                                 \
@@ -221,10 +224,10 @@ jniOutStruct operator, (jniOutStruct jos, const char * s)
     jniOutStruct operator, (jniOutStruct jos, type * & a)               \
     {                                                                   \
         int rs_index = ((size_t)a-(size_t)robot_state_first_address);   \
-        if(rs_index > 0 && rs_index < robot_state_reserved_addresses)   \
+        if(rs_index > 0 && rs_index < rsid_current)                     \
         {                                                               \
             int n_printed = sprintf(rsout_code_current,                 \
-                                    "get"#Type"(%d)", rs_index); \
+                                    "get"#Type"(%d)", rs_index);        \
             assert(n_printed >= 0);                                     \
             rsout_code_current += n_printed;                            \
         }                                                               \
@@ -332,7 +335,7 @@ void jniGenerate()
             "package com.qualcomm.ftcrobotcontroller.opmodes;\n"
             ""
             "\n");
-
+    
     fprintf(java_output_file,
             "\n"
             "import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\n"
@@ -342,11 +345,11 @@ void jniGenerate()
             "import java.nio.ByteBuffer;\n"
             "import java.nio.ByteOrder;\n");
     if(jni_import_string) fprintf(java_output_file, "\n%s\n", jni_import_string);
-        
+    
     fprintf(java_output_file,
             "\n"
             "public class %.*s extends LinearOpMode {\n"
-            "static byte[] robot_state;\n"
+            "public static byte[] robot_state;\n"
             "int rsid_current = 0;\n"
             "public %.*s()\n"
             "{\n"
@@ -458,7 +461,7 @@ JNIEnv * env;
 jobject self;
 
 void initJNI()
-{
+{    
     jclass cls = env->GetObjectClass(self);
     
     //functions
@@ -471,8 +474,8 @@ void initJNI()
     robotStateOutID = env->GetMethodID(cls, "robotStateOut", "()V");
     
     //setup pinned array
-    jfieldID jrobot_stateID = env->GetFieldID(cls, "robot_state", "[B");
-    jrobot_state = (jbyteArray) env->GetObjectField(self, jrobot_stateID);
+    jfieldID jrobot_stateID = env->GetStaticFieldID(cls, "robot_state", "[B");
+    jrobot_state = (jbyteArray) env->GetStaticObjectField(cls, jrobot_stateID);
     /* if(env->GetArrayLength(jrobot_state) != rsid_size) */
     /* { */
     /*     //TODO: give error */
@@ -484,6 +487,8 @@ void initJNI()
     {
         //TODO: give warning that the GC did not pin the array and perfomance may be impacted
     }
+    
+    rsid_current = 0;
 }
 
 void cleanupJNI();
@@ -534,6 +539,7 @@ jniOutStruct operator, (jniOutStruct jos, const char * s)
         int rs_index = ((size_t)a-(size_t)robot_state.state);   \
         if(rs_index > 0 && rs_index < rsid_current)             \
         {                                                       \
+            /*don't need to do anything*/                       \
         }                                                       \
         else                                                    \
         {                                                       \
