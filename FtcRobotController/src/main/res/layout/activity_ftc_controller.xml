@@ -128,18 +128,38 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       android:layout_below="@+id/textRobotStatus"
       android:text="" />
 
+    <SeekBar
+      android:id="@+id/slider_0"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/textOpMode"
+      android:text="" />
+
+    <SeekBar
+      android:id="@+id/slider_1"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/slider_0"
+      android:text="" />
+
+    <SeekBar
+      android:id="@+id/slider_2"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/slider_1"
+      android:text="" />
+    
     <TextView
       android:id="@+id/textErrorMessage"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_below="@+id/slider_2"
       android:textColor="#990000"
       android:textStyle="bold"
       android:minLines="2"
       android:maxLines="4"
-      android:layout_below="@+id/textOpMode"
-      android:layout_alignParentRight="true"
-      android:layout_alignParentEnd="true"/>
-
+      android:text="" />
+    
     <TextView
       android:id="@+id/textGamepad1"
       android:layout_width="match_parent"

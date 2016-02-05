@@ -68,7 +68,7 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
     jni_misc_string = (
         "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
         "{\n"
-        "    return ByteBuffer.wrap(joystick, 37, 4).order(ByteOrder.nativeOrder()).getInt();\n"
+        "    return ByteBuffer.wrap(joystick, 42, 4).getInt();\n"
         "}\n");
     
     // pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");

@@ -129,7 +129,7 @@ public class FtcRobotControllerActivity extends Activity {
         }
 
     }
-
+    
     protected ServiceConnection connection = new ServiceConnection() {
         @Override public void onServiceConnected(ComponentName name, IBinder service) {
             FtcRobotControllerBinder binder = (FtcRobotControllerBinder) service;
@@ -154,7 +154,11 @@ public class FtcRobotControllerActivity extends Activity {
     public static boolean red;
     public static boolean blue;
     public static int color;
-
+    
+    public static int slider_0;
+    public static int slider_1;
+    public static int slider_2;
+    
     public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     {
         public SurfaceHolder surface_holder;
@@ -232,7 +236,7 @@ public class FtcRobotControllerActivity extends Activity {
     ////////////
     
     CheckBox redBox, blueBox, alignedBox;
-
+    
     private void addListenerOnRed() {
         redBox = (CheckBox) findViewById(R.id.redBox);
         redBox.setOnClickListener(new View.OnClickListener() {
@@ -287,6 +291,39 @@ public class FtcRobotControllerActivity extends Activity {
         camera_preview = new CameraPreview(this/* , camera */);
         FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
         frame_layout_preview.addView(camera_preview);
+        
+        SeekBar slider0 = (SeekBar) findViewById(R.id.slider_0);
+        slider0.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                                           {
+                                               public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
+                                               {
+                                                   slider_0 = progress;
+                                               }
+                                               public void onStartTrackingTouch(SeekBar seek_bar){}
+                                               public void onStopTrackingTouch(SeekBar seek_bar){}
+                                           });
+        
+        SeekBar slider1 = (SeekBar) findViewById(R.id.slider_1);
+        slider1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                                           {
+                                               public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
+                                               {
+                                                   slider_1 = progress;
+                                               }
+                                               public void onStartTrackingTouch(SeekBar seek_bar){}
+                                               public void onStopTrackingTouch(SeekBar seek_bar){}
+                                           });
+        
+        SeekBar slider2 = (SeekBar) findViewById(R.id.slider_2);
+        slider2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                                           {
+                                               public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
+                                               {
+                                                   slider_2 = progress;
+                                               }
+                                               public void onStartTrackingTouch(SeekBar seek_bar){}
+                                               public void onStopTrackingTouch(SeekBar seek_bar){}
+                                           });
         
         // End of Custom Stuff
         utility = new Utility(this);

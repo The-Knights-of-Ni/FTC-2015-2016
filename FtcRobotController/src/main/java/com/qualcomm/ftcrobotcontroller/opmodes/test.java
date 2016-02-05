@@ -32,7 +32,7 @@ public test()
 
 public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
 {
-    return ByteBuffer.wrap(joystick, 37, 4).order(ByteOrder.nativeOrder()).getInt();
+    return ByteBuffer.wrap(joystick, 42, 4).getInt();
 }
 
 public void setInt(int index, int a)
@@ -179,7 +179,6 @@ static
 
 @Override public void runOpMode() throws InterruptedException
 {
-    rsid_current = 0;
     main();
 }
 }

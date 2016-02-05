@@ -39,10 +39,10 @@ float current_time;
 double * ptime;
 #define time (*ptime)
 
-//PID Control: UNTESTED, may not be ported correctly (In case the built in doesn't work)
-//TODO: de-OOP
+#define min_motor_power 0.05
+#define debuzz(a) (a)//(((a) < min_motor_power && (a) > -min_motor_power) ? 0 : (a))
 
-#define deadzone_radius 0.2
+#define deadzone_radius 0.1
 
 float deadzoneAdjust(float a)
 {
@@ -51,46 +51,34 @@ float deadzoneAdjust(float a)
     return 0;
 }
 
-struct PID
+v2f deadzone(v2f stick)
 {
-    float k_p;
-    float k_i;
-    float k_d;
-    float k_d2;
-
-    float i;
-    float p_old;
-    float d;
-    float p2_old;
-    float d2;
-
-    void PIDController(float K_P, float K_I, float K_D, float K_D2, float initial_val,
-                       float initial_val2)
+    float stick_norm = norm(stick);
+    if (stick_norm < deadzone_radius)
     {
-        k_p = K_P;
-        k_i = K_I;
-        k_d = K_D;
-        k_d2 = K_D2;
-        p_old = initial_val;
-        p2_old = initial_val2;
+        stick.data[0] = 0;
+        stick.data[1] = 0;
     }
-
-    float getControl(float p, float p2, float dt)
+    else
     {
-        d2 = lerp((p2 - p2_old) / dt,
-                  d2,
-                  exp(-20.0 * dt));
-        p2_old = p2;
+        stick * ((stick_norm - deadzone_radius) / (1.0f - deadzone_radius)) /
+        stick_norm;
+    } //Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
+    return stick;
+}
 
-        if (i != i) i = 0.0f; //this will trigger if i is NaN
-        i += p * dt; //might want to try different integrators
-        d = lerp((p - p_old) / dt,
-                 d,
-                 exp(-20.0 * dt));
-        p_old = p;
-        return k_p * p + k_i * i;//+k_d*d+k_d2*d2;
+v2f squareDeadzone(v2f stick)
+{
+    if (fabs(stick.data[0]) < deadzone_radius)
+    {
+        stick.data[0] = 0;
     }
-};
+    if (fabs(stick.data[1]) < deadzone_radius)
+    {
+        stick.data[1] = 0;
+    }
+    return stick;
+}
 
 enum Colors
 {

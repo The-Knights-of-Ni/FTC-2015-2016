@@ -5,13 +5,14 @@
 
 #define offset 40
 
+//TODO: BTN_ prefix
 enum Buttons
 {
     RIGHT_BUMPER,
     LEFT_BUMPER,
     BACK,
     START,
-    LOGITECH,
+    GUIDE,
     Y,
     X,
     B,

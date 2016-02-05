@@ -28,10 +28,7 @@ void Mk3AutonomousUpdate()
     
     shoulder = 0;
     winch = 0;
-    armJointsToAngle(shoulder, winch,
-               target_shoulder_theta, target_inside_elbow_theta,
-               shoulder_theta, inside_elbow_theta,
-               score_mode, dt);
+    armJointsToAngle();
     
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);

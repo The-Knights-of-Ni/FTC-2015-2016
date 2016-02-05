@@ -258,7 +258,6 @@ static
 
 @Override public void runOpMode() throws InterruptedException
 {
-    rsid_current = 0;
 dim = hardwareMap.deviceInterfaceModule.get("dim");
 I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
 imu = new IMU(imu_i2c_device);

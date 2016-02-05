@@ -223,8 +223,8 @@ jniOutStruct operator, (jniOutStruct jos, const char * s)
 #define defineJniOut(type, Type)                                        \
     jniOutStruct operator, (jniOutStruct jos, type * & a)               \
     {                                                                   \
-        int rs_index = ((size_t)a-(size_t)robot_state_first_address);   \
-        if(rs_index > 0 && rs_index < rsid_current)                     \
+        int rs_index = ((byte*)a-(byte*)robot_state_first_address);     \
+        if(rs_index >= 0 && rs_index < rsid_current)                    \
         {                                                               \
             int n_printed = sprintf(rsout_code_current,                 \
                                     "get"#Type"(%d)", rs_index);        \
@@ -233,9 +233,11 @@ jniOutStruct operator, (jniOutStruct jos, const char * s)
         }                                                               \
         else                                                            \
         {                                                               \
-            int n_printed = sprintf(rsout_code_current, "get"#Type"(%d)", rsid_current); \
+            int n_printed = sprintf(rsout_code_current,                 \
+                                    "get"#Type"(%d)", rsid_current);    \
             assert(n_printed >= 0);                                     \
             rsout_code_current += n_printed;                            \
+            a = (type*)((byte*)robot_state_first_address+rsid_current); \
             rsid_current += sizeof(type);                               \
         }                                                               \
         return jos;                                                     \
@@ -303,7 +305,7 @@ int main(int n_args, char ** args)
     {
         if(java_output_filename[l] == '/') java_output_path_part_len = l+1;
     }
-
+    
     java_output_name_part_len = 0;
     for(int l = 0; java_output_filename[l]; l++)
     {
@@ -427,8 +429,7 @@ void jniGenerate()
     fprintf(java_output_file,
             "\n"
             "@Override public void runOpMode() throws InterruptedException\n"
-            "{\n"
-            "    rsid_current = 0;\n");
+            "{\n");
     if(jni_run_opmode_string) fprintf(java_output_file, "%s\n", jni_run_opmode_string);
     fprintf(java_output_file,
             "    main();\n"
@@ -536,8 +537,8 @@ jniOutStruct operator, (jniOutStruct jos, const char * s)
 #define defineJniOut(type, Type)                                \
     jniOutStruct operator, (jniOutStruct jos, type * & a)       \
     {                                                           \
-        int rs_index = ((size_t)a-(size_t)robot_state.state);   \
-        if(rs_index > 0 && rs_index < rsid_current)             \
+        int rs_index = ((byte*)a-(byte*)robot_state.state);     \
+        if(rs_index >= 0 && rs_index < rsid_current)            \
         {                                                       \
             /*don't need to do anything*/                       \
         }                                                       \

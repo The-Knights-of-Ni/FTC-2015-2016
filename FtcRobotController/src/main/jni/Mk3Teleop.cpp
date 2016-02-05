@@ -1,5 +1,6 @@
 #include "drive.h"
 #include "arm.h"
+#include "robotics.h"
 #include "Button.h"
 
 #include "jni_functions.h"
@@ -37,8 +38,9 @@ float hook_locked_position = 1.0f;
 #define hand_manual_control pad1stick2.x
 
 //Arm
-#define shoulder_manual pad2stick1
-#define elbow_manual pad2stick2
+// #define shoulder_manual pad2stick1
+// #define elbow_manual pad2stick2
+//                       [0] shoulder, [1] winch/elbow
 #define arm_stick ((v2f){pad2stick1.y, -pad2stick2.y})
 #define arm_manual_toggle pad2.toggle(Y)
 #define arm_score_mode_button pad2.press(DPAD_UP)
@@ -70,6 +72,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     //TODO: shortcut for defining and declaring motors, servos, etc.
     jni_variables_string = ("/* Start Motor Definitions */\n"
                             "int elbow_potentiometer_port = 7;\n"
+                            "int shoulder_potentiometer_port = 1;\n"
                             "DeviceInterfaceModule dim;\n"
                             "\n"
                             "DcMotor left_drive;\n"
@@ -85,64 +88,78 @@ void jniMain(JNIEnv * _env, jobject _self)
                             "/* End Motor Definitions */");
     
     jni_run_opmode_string = ("dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
-                             "left_drive  = hardwareMap.dcMotor.get(\"leftd\");\n"
-                             "right_drive = hardwareMap.dcMotor.get(\"rightd\");\n"
+                             "//left_drive  = hardwareMap.dcMotor.get(\"leftd\");\n"
+                             "//right_drive = hardwareMap.dcMotor.get(\"rightd\");\n"
                              "shoulder    = hardwareMap.dcMotor.get(\"shoulder\");\n"
                              "winch       = hardwareMap.dcMotor.get(\"winch\");\n"
-                             "intake      = hardwareMap.dcMotor.get(\"intake\");\n"
-                             "right_drive.setDirection(DcMotor.Direction.REVERSE);\n"
-                             "left_drive.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "//intake      = hardwareMap.dcMotor.get(\"intake\");\n"
+                             "//right_drive.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "//left_drive.setDirection(DcMotor.Direction.REVERSE);\n"
                              "shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
                              "shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);\n"
                              "waitOneFullHardwareCycle();\n"
-                             "intake.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "//intake.setDirection(DcMotor.Direction.REVERSE);\n"
                              "shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);\n"
                              "winch.setMode(DcMotorController.RunMode.RESET_ENCODERS);\n"
                              "waitOneFullHardwareCycle();\n"
                              "winch.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);\n"
                              "waitOneFullHardwareCycle();\n"
-                             "//shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
-                             "//elbow.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "//winch.setDirection(DcMotor.Direction.REVERSE);\n"
                              "\n"
-                             "hand = hardwareMap.servo.get(\"hand\");\n"
-                             "slide = hardwareMap.servo.get(\"slide\");\n"
-                             "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
-                             "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
-                             "hook_left.setDirection(Servo.Direction.REVERSE);");
+                             "//hand = hardwareMap.servo.get(\"hand\");\n"
+                             "//slide = hardwareMap.servo.get(\"slide\");\n"
+                             "//hook_left = hardwareMap.servo.get(\"hook_left\");\n"
+                             "//hook_right = hardwareMap.servo.get(\"hook_right\");\n"
+                             "//hook_left.setDirection(Servo.Direction.REVERSE);");
     
     jni_misc_string = (
         "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
         "{\n"
-        "    ByteBuffer stick = ByteBuffer.allocate(45);\n"
-        "    stick.put(joystick);\n"
-        "    return stick.getInt(40);//Offset value\n"
+        "    return ByteBuffer.wrap(joystick, 42, 4).getInt();\n"
         "}\n");
     
     ptime = jniDoubleIn("return time;");
-    pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
-    pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
+    pright_drive_encoder = jniIntIn("return 0;//right_drive.getCurrentPosition();");
+    pleft_drive_encoder = jniIntIn("return 0;//left_drive.getCurrentPosition();");
     pwinch_encoder = jniIntIn("return winch.getCurrentPosition();");
     pshoulder_encoder = jniIntIn("return shoulder.getCurrentPosition();");
+    pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
+    pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
     int * current_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
     
-    jniOut("left_drive.setPower(", pleft_drive, ");;");
-    jniOut("right_drive.setPower(", pright_drive, ");;");
+    pslider0 = jniIntIn("return FtcRobotControllerActivity.slider_0;");
+    pslider1 = jniIntIn("return FtcRobotControllerActivity.slider_1;");
+    pslider2 = jniIntIn("return FtcRobotControllerActivity.slider_2;");
+    
+    jniOut("//left_drive.setPower(", pleft_drive, ");;");
+    jniOut("//right_drive.setPower(", pright_drive, ");;");
     jniOut("winch.setPower(", pwinch, ");;");
     jniOut("shoulder.setPower(", pshoulder, ");;");
-    jniOut("intake.setPower(", pintake, ");;");
+    jniOut("//intake.setPower(", pintake, ");;");
     
-    jniOut("hand.setPosition(", phand,");");
-    jniOut("slide.setPosition(", pslide,");");
-    jniOut("hook_left.setPosition(", phook_left,");");
-    jniOut("hook_right.setPosition(", phook_right,");");
-
+    jniOut("//hand.setPosition(", phand,");");
+    jniOut("//slide.setPosition(", pslide,");");
+    jniOut("//hook_left.setPosition(", phook_left,");");
+    jniOut("//hook_right.setPosition(", phook_right,");");
+    
     float * pshoulder_print_theta;
     #define shoulder_print_theta (*pshoulder_print_theta)
     jniOut("telemetry.addData(\"shoulder theta\", ", pshoulder_print_theta,");");
+
+    float * pshoulder_compensation_print;
+    #define shoulder_compensation_print (*pshoulder_compensation_print)
+    jniOut("telemetry.addData(\"shoulder_compensation\", ", pshoulder_compensation_print,");");
+    
+    jniOut("telemetry.addData(\"slider 0\", ", pslider0,");");
+    jniOut("telemetry.addData(\"slider 1\", ", pslider1,");");
+    jniOut("telemetry.addData(\"slider 2\", ", pslider2,");");
     
     float * pforearm_print_theta;
     #define forearm_print_theta (*pforearm_print_theta)
     jniOut("telemetry.addData(\"forearm theta\", ", pforearm_print_theta,");");
+    
+    jniOut("telemetry.addData(\"shoulder power\", ", pshoulder,");");
     
     pgamepad1 = jniStructIn(
         gamepad,
@@ -155,6 +172,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "{\n"
         "    e.printStackTrace();\n"
         "}\n"
+        "telemetry.addData(\"gamepad1_buttons\", String.format(\"%d\", gamepad1_buttons));\n"
         "return {gamepad1.left_stick_x, gamepad1.left_stick_y,"
         "gamepad1.right_stick_x, gamepad1.right_stick_y,"
         "gamepad1.left_trigger, gamepad1.right_trigger, gamepad1_buttons};");
@@ -187,15 +205,22 @@ void jniMain(JNIEnv * _env, jobject _self)
     target_shoulder_theta = pi*150/180;
     target_inside_elbow_theta = pi/6;
     
-    waitForStart();
+    shoulder_omega = 0;
+    winch_omega = 0;
+    inside_elbow_omega = 0;
     
-    float dt;
-    float old_time = time;
+    waitForStart();
     
     interruptable for ever
     {
-        dt = time - old_time;
-        old_time = time;
+        dt = time - current_time;
+        current_time = time;
+        
+        if(dt == 0)
+        {
+            updateRobot();
+            continue;
+        }
         
 //============================ Controls ==========================
         
@@ -209,7 +234,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         pad2stick2.y = gamepad2.joystick2.y;
         
 //============================= Drive ============================
-        deadZone(drive_stick);
+        drive_stick = deadzone(drive_stick);
         //smoothJoysticks(&drive_stick);
         if(drive_toggle)
         {
@@ -226,31 +251,11 @@ void jniMain(JNIEnv * _env, jobject _self)
         //Might need to add additional bounding in as a safety
         
 //============================== Arm =============================            
-        elbow_potentiometer_angle = (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+9.6383f))*pi/180.0f;
-            // lerp(
-            // (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+9.6383f))*pi/180.0f,
-            // elbow_potentiometer_angle,
-            // exp(-500.0*dt));
-        
-        shoulder_potentiometer_angle = (-180+((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))+77.22f))*pi/180.0f;
-            // lerp(
-            // (((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))+95.047f))*pi/180.0f,
-            // shoulder_potentiometer_angle,
-            // exp(-500.0*dt));
-        
-        float new_shoulder_theta = shoulder_potentiometer_angle;//shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
-        float new_inside_elbow_theta = elbow_potentiometer_angle;
-        float new_winch_theta = winch_encoder/winch_gear_ratio/encoderticks_per_radian;
-        shoulder_omega = lerp((new_shoulder_theta-shoulder_theta)/dt, shoulder_omega, exp(-10*dt));
-        winch_omega = lerp((new_winch_theta-winch_theta)/dt, winch_omega, exp(-10*dt));
-        inside_elbow_omega = lerp((new_inside_elbow_theta-inside_elbow_theta)/dt, inside_elbow_omega, exp(-10*dt));
-        
-        shoulder_print_theta = new_shoulder_theta;
-        forearm_print_theta = new_inside_elbow_theta;
-        
-        shoulder_theta = new_shoulder_theta;
-        inside_elbow_theta = new_inside_elbow_theta;
-        winch_theta = new_winch_theta;
+        updateArmSensors();
+
+        shoulder_compensation_print = shoulder_compensation;
+        shoulder_print_theta = shoulder_theta;
+        forearm_print_theta = shoulder_omega;
         
         if(arm_manual_toggle) //IK
         {
@@ -274,7 +279,7 @@ void jniMain(JNIEnv * _env, jobject _self)
             {
                 winch = 0;
                 shoulder = 0;
-
+                
                 score_mode = false;
                 target_shoulder_theta = 2.0;
                 target_inside_elbow_theta = 4.0;
@@ -285,19 +290,13 @@ void jniMain(JNIEnv * _env, jobject _self)
             {
                 if(score_mode)
                 {
-                    armAtVelocity(shoulder, winch,
-                                  target_arm_theta, target_inside_elbow_theta, target_arm_velocity,
-                                  shoulder_theta, inside_elbow_theta,
-                                  shoulder_omega, dt);
+                    armAtVelocity(target_arm_velocity);
                     
                     target_shoulder_theta = shoulder_theta;
                 }
                 else
                 {
-                    armJointsAtVelocity(shoulder, winch,
-                                        target_shoulder_theta, target_inside_elbow_theta, target_arm_velocity,
-                                        shoulder_theta, inside_elbow_theta,
-                                        shoulder_omega, dt);
+                    armJointsAtVelocity(target_arm_velocity);
                     
                     float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                                       -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
@@ -307,17 +306,11 @@ void jniMain(JNIEnv * _env, jobject _self)
             
             if(score_mode)
             {
-                armToAngle(shoulder, winch,
-                           target_arm_theta, target_inside_elbow_theta,
-                           shoulder_theta, inside_elbow_theta,
-                           score_mode, dt);
+                armToAngle();
             }
             else
             {
-                armJointsToAngle(shoulder, winch,
-                                 target_shoulder_theta, target_inside_elbow_theta,
-                                 shoulder_theta, inside_elbow_theta,
-                                 score_mode, dt);
+                armJointsToAngle();
             }
             
             shoulder = clamp(shoulder, -1.0, 1.0);
@@ -331,15 +324,15 @@ void jniMain(JNIEnv * _env, jobject _self)
             target_shoulder_theta = shoulder_theta;
             target_inside_elbow_theta = inside_elbow_theta;
             
-            deadZone(elbow_manual);
-            deadZone(shoulder_manual);
+            float shoulder_control = filterArmJoystick(arm_stick[0]);
+            float elbow_control = filterArmJoystick(arm_stick[1]);
             // smoothJoysticks(&elbow_manual);//This needs to be fixed.
             // smoothJoysticks(&shoulder_manual);
-            shoulder = shoulder_manual.y*(precision_mode ? 0.6 : 1);
-            winch = -elbow_manual.y*(precision_mode ? 0.6 : 1);
+            shoulder = shoulder_control*(precision_mode ? 0.6 : 1);
+            winch = elbow_control*(precision_mode ? 0.6 : 1);
             
-            shoulder = clamp(shoulder, -1.0, 1.0);
-            winch = clamp(winch, -1.0, 1.0);
+            shoulder = debuzz(clamp(shoulder, -1.0, 1.0));
+            winch = debuzz(clamp(winch, -1.0, 1.0));
         }
         
 //TODO: Feed-Forward
@@ -369,7 +362,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         
         hand = clamp(hand, 0.0, 1.0);
-
+        
         //for finding servo values
         // if(pad1.singlePress(B)) hand_level_position += 0.1;
         // if(pad1.singlePress(X)) hand_level_position -= 0.1;
@@ -400,6 +393,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         hook_left = clamp(hook_left, 0.0, 1.0);
         hook_right = clamp(hook_right, 0.0, 1.0);
 //============================ Updates ===========================
+        
         pad1.updateButtons(gamepad1.buttons);
         pad2.updateButtons(gamepad2.buttons);
         updateRobot();

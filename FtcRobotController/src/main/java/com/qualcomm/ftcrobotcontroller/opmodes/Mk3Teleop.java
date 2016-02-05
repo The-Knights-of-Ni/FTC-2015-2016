@@ -21,155 +21,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 public class Mk3Teleop extends LinearOpMode {
-<<<<<<< HEAD
-    /* Start NDK Stuff*/
-    byte[] robot_state;
-    int elbow_potentiometer_port = 7;
-    int shoulder_potentiometer_port = 1;
-    
-    public Mk3Teleop()
-    {
-        robot_state = new byte[Mk3TeleopRobotStateElements.robot_state_size];
-        Mk3TeleopRobotStateElements.robot_state = robot_state;
-    }
-    
-    native void main();
-    
-    static
-    {
-        System.loadLibrary("Mk3Teleop");
-    }
-    
-    void robotStateOut()
-    {
-        /*DATA OUT (to electronics&driver station)*/
-        /* left_drive.setPower(Mk3TeleopRobotStateElements.get_left_drive()); */
-        /* right_drive.setPower(Mk3TeleopRobotStateElements.get_right_drive()); */
-        elbow.setPower(Mk3TeleopRobotStateElements.get_winch());
-        shoulder.setPower(Mk3TeleopRobotStateElements.get_shoulder());
-        /* intake.setPower(Mk3TeleopRobotStateElements.get_intake()); */
-        /* hand_servo.setPosition(Mk3TeleopRobotStateElements.get_hand()); */
-        /* slide_servo.setPosition(Mk3TeleopRobotStateElements.get_slide()); */
-        /* hook_left_servo.setPosition(Mk3TeleopRobotStateElements.get_hook_left()); */
-        /* hook_right_servo.setPosition(Mk3TeleopRobotStateElements.get_hook_right()); */
-        telemetry.addData("shoulder_theta", Mk3TeleopRobotStateElements.get_shoulder_print_theta());
-        telemetry.addData("forearm_theta", Mk3TeleopRobotStateElements.get_forearm_print_theta());
-        //telemetry.addData("hand position", Mk3TeleopRobotStateElements.get_hand_print_position());
-    }
-
-    void robotStateIn()
-    {
-        /*DATA IN (from electronics&driver station)*/
-        //Gamepad 1
-        Mk3TeleopRobotStateElements.set_gamepad1_joystick1_x(gamepad1.left_stick_x);
-        Mk3TeleopRobotStateElements.set_gamepad1_joystick1_y(gamepad1.left_stick_y);
-        Mk3TeleopRobotStateElements.set_gamepad1_joystick2_x(gamepad1.right_stick_x);
-        Mk3TeleopRobotStateElements.set_gamepad1_joystick2_y(gamepad1.right_stick_y);
-        Mk3TeleopRobotStateElements.set_gamepad1_trigger1(gamepad1.left_trigger);
-        Mk3TeleopRobotStateElements.set_gamepad1_trigger2(gamepad1.right_trigger);
-        try {
-            Mk3TeleopRobotStateElements.set_gamepad1_buttons(updateButtons(gamepad1.toByteArray()));
-        } catch (RobotCoreException e) {
-            e.printStackTrace();
-        }
-        //Gamepad 2
-        Mk3TeleopRobotStateElements.set_gamepad2_joystick1_x(gamepad2.left_stick_x);
-        Mk3TeleopRobotStateElements.set_gamepad2_joystick1_y(gamepad2.left_stick_y);
-        Mk3TeleopRobotStateElements.set_gamepad2_joystick2_x(gamepad2.right_stick_x);
-        Mk3TeleopRobotStateElements.set_gamepad2_joystick2_y(gamepad2.right_stick_y);
-        Mk3TeleopRobotStateElements.set_gamepad2_trigger1(gamepad2.left_trigger);
-        Mk3TeleopRobotStateElements.set_gamepad2_trigger2(gamepad2.right_trigger);
-        try {
-            Mk3TeleopRobotStateElements.set_gamepad2_buttons(updateButtons(gamepad2.toByteArray()));
-        } catch (RobotCoreException e) {
-            e.printStackTrace();
-        }
-        //Sensors
-        Mk3TeleopRobotStateElements.set_time(time);
-        /* Mk3TeleopRobotStateElements.set_right_drive_encoder(right_drive.getCurrentPosition()); */
-        /* Mk3TeleopRobotStateElements.set_left_drive_encoder(left_drive.getCurrentPosition()); */
-        Mk3TeleopRobotStateElements.set_winch_encoder(elbow.getCurrentPosition());
-        Mk3TeleopRobotStateElements.set_shoulder_encoder(shoulder.getCurrentPosition());
-        Mk3TeleopRobotStateElements.set_elbow_potentiometer(dim.getAnalogInputValue(elbow_potentiometer_port));
-        Mk3TeleopRobotStateElements.set_shoulder_potentiometer(dim.getAnalogInputValue(shoulder_potentiometer_port));
-        Mk3TeleopRobotStateElements.set_heading(6);//TODO: get these from the imu
-        Mk3TeleopRobotStateElements.set_tilt(6);
-        Mk3TeleopRobotStateElements.set_roll(6);
-        Mk3TeleopRobotStateElements.set_x_velocity(6);
-        Mk3TeleopRobotStateElements.set_y_velocity(6);
-        Mk3TeleopRobotStateElements.set_current_color((FtcRobotControllerActivity.red ? 1 : 0));
-    }
-    /* End NDK Stuff*/
-
-
-    /* Start Motor Definitions */
-    DeviceInterfaceModule dim;
-
-    DcMotor left_drive;
-    DcMotor right_drive;
-    DcMotor shoulder;
-    DcMotor elbow;
-    DcMotor intake;
-
-    Servo hand_servo;
-    Servo slide_servo;
-    Servo hook_left_servo;
-    Servo hook_right_servo;
-    /* End Motor Definitions */
-
-    public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
-    {
-        ByteBuffer stick = ByteBuffer.allocate(45);
-        stick.put(joystick);
-        return stick.getInt(40);//Offset value
-    }
-
-    @Override
-    public void runOpMode() throws InterruptedException {
-        dim = hardwareMap.deviceInterfaceModule.get("dim");
-        /* left_drive  = hardwareMap.dcMotor.get("leftd"); */
-        /* right_drive = hardwareMap.dcMotor.get("rightd"); */
-        shoulder    = hardwareMap.dcMotor.get("shoulder");
-        elbow       = hardwareMap.dcMotor.get("winch");
-        /* intake      = hardwareMap.dcMotor.get("intake"); */
-        /* right_drive.setDirection(DcMotor.Direction.REVERSE); */
-        /* left_drive.setDirection(DcMotor.Direction.REVERSE); */
-        shoulder.setDirection(DcMotor.Direction.REVERSE);
-        shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        waitOneFullHardwareCycle();
-        /* intake.setDirection(DcMotor.Direction.REVERSE); */
-        shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        elbow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        waitOneFullHardwareCycle();
-        elbow.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        waitOneFullHardwareCycle();
-        //shoulder.setDirection(DcMotor.Direction.REVERSE);
-        //elbow.setDirection(DcMotor.Direction.REVERSE);
-        
-        /* hand_servo = hardwareMap.servo.get("hand"); */
-        /* slide_servo = hardwareMap.servo.get("slide");         */
-        /* hook_left_servo = hardwareMap.servo.get("hook_left"); */
-        /* hook_right_servo = hardwareMap.servo.get("hook_right"); */
-        /* hook_left_servo.setDirection(Servo.Direction.REVERSE); */
-        
-        main();
-
-    }
-=======
 public static byte[] robot_state;
 int rsid_current = 0;
 public Mk3Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[128];
+    robot_state = new byte[152];
 }
 
 
 public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
 {
-    ByteBuffer stick = ByteBuffer.allocate(45);
-    stick.put(joystick);
-    return stick.getInt(40);//Offset value
+    return ByteBuffer.wrap(joystick, 42, 4).getInt();
 }
 
 public void setInt(int index, int a)
@@ -268,17 +131,22 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-left_drive.setPower(getFloat(28));;
-right_drive.setPower(getFloat(32));;
-winch.setPower(getFloat(36));;
-shoulder.setPower(getFloat(40));;
-intake.setPower(getFloat(44));;
-hand.setPosition(getFloat(48));
-slide.setPosition(getFloat(52));
-hook_left.setPosition(getFloat(56));
-hook_right.setPosition(getFloat(60));
-telemetry.addData("shoulder theta", getFloat(64));
-telemetry.addData("forearm theta", getFloat(68));
+//left_drive.setPower(getFloat(48));;
+//right_drive.setPower(getFloat(52));;
+winch.setPower(getFloat(56));;
+shoulder.setPower(getFloat(60));;
+//intake.setPower(getFloat(64));;
+//hand.setPosition(getFloat(68));
+//slide.setPosition(getFloat(72));
+//hook_left.setPosition(getFloat(76));
+//hook_right.setPosition(getFloat(80));
+telemetry.addData("shoulder theta", getFloat(84));
+telemetry.addData("shoulder_compensation", getFloat(88));
+telemetry.addData("slider 0", getInt(36));
+telemetry.addData("slider 1", getInt(40));
+telemetry.addData("slider 2", getInt(44));
+telemetry.addData("forearm theta", getFloat(92));
+telemetry.addData("shoulder power", getFloat(60));
 
 }
 
@@ -290,13 +158,13 @@ setDouble(0, time);
 rsid_current = 8;
 }
 {
-setInt(8, right_drive.getCurrentPosition());
-
+setInt(8, 0);
+//right_drive.getCurrentPosition();
 rsid_current = 12;
 }
 {
-setInt(12, left_drive.getCurrentPosition());
-
+setInt(12, 0);
+//left_drive.getCurrentPosition();
 rsid_current = 16;
 }
 {
@@ -310,12 +178,37 @@ setInt(20, shoulder.getCurrentPosition());
 rsid_current = 24;
 }
 {
-setInt(24, (FtcRobotControllerActivity.red ? 1 : 0));
+setInt(24, dim.getAnalogInputValue(elbow_potentiometer_port));
 
 rsid_current = 28;
 }
 {
-rsid_current = 72;
+setInt(28, dim.getAnalogInputValue(shoulder_potentiometer_port));
+
+rsid_current = 32;
+}
+{
+setInt(32, (FtcRobotControllerActivity.red ? 1 : 0));
+
+rsid_current = 36;
+}
+{
+setInt(36, FtcRobotControllerActivity.slider_0);
+
+rsid_current = 40;
+}
+{
+setInt(40, FtcRobotControllerActivity.slider_1);
+
+rsid_current = 44;
+}
+{
+setInt(44, FtcRobotControllerActivity.slider_2);
+
+rsid_current = 48;
+}
+{
+rsid_current = 96;
 int gamepad1_buttons = 0;
 try
 {
@@ -325,6 +218,7 @@ catch (RobotCoreException e)
 {
     e.printStackTrace();
 }
+telemetry.addData("gamepad1_buttons", String.format("%d", gamepad1_buttons));
 setRelative(gamepad1.left_stick_x);
 setRelative( gamepad1.left_stick_y);
 setRelative(gamepad1.right_stick_x);
@@ -335,7 +229,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 100;
+rsid_current = 124;
 int gamepad2_buttons = 0;
 try
 {
@@ -358,6 +252,7 @@ setRelative( gamepad2_buttons);
 }
 /* Start Motor Definitions */
 int elbow_potentiometer_port = 7;
+int shoulder_potentiometer_port = 1;
 DeviceInterfaceModule dim;
 
 DcMotor left_drive;
@@ -381,33 +276,31 @@ static
 
 @Override public void runOpMode() throws InterruptedException
 {
-    rsid_current = 0;
 dim = hardwareMap.deviceInterfaceModule.get("dim");
-left_drive  = hardwareMap.dcMotor.get("leftd");
-right_drive = hardwareMap.dcMotor.get("rightd");
+//left_drive  = hardwareMap.dcMotor.get("leftd");
+//right_drive = hardwareMap.dcMotor.get("rightd");
 shoulder    = hardwareMap.dcMotor.get("shoulder");
 winch       = hardwareMap.dcMotor.get("winch");
-intake      = hardwareMap.dcMotor.get("intake");
-right_drive.setDirection(DcMotor.Direction.REVERSE);
-left_drive.setDirection(DcMotor.Direction.REVERSE);
+//intake      = hardwareMap.dcMotor.get("intake");
+//right_drive.setDirection(DcMotor.Direction.REVERSE);
+//left_drive.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 waitOneFullHardwareCycle();
-intake.setDirection(DcMotor.Direction.REVERSE);
+//intake.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 winch.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 waitOneFullHardwareCycle();
 winch.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 waitOneFullHardwareCycle();
-//shoulder.setDirection(DcMotor.Direction.REVERSE);
-//elbow.setDirection(DcMotor.Direction.REVERSE);
+shoulder.setDirection(DcMotor.Direction.REVERSE);
+//winch.setDirection(DcMotor.Direction.REVERSE);
 
-hand = hardwareMap.servo.get("hand");
-slide = hardwareMap.servo.get("slide");
-hook_left = hardwareMap.servo.get("hook_left");
-hook_right = hardwareMap.servo.get("hook_right");
-hook_left.setDirection(Servo.Direction.REVERSE);
+//hand = hardwareMap.servo.get("hand");
+//slide = hardwareMap.servo.get("slide");
+//hook_left = hardwareMap.servo.get("hook_left");
+//hook_right = hardwareMap.servo.get("hook_right");
+//hook_left.setDirection(Servo.Direction.REVERSE);
     main();
 }
->>>>>>> new-jni-setup
 }
