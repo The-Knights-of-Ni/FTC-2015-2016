@@ -63,7 +63,8 @@ float target_arm_theta;
 float target_shoulder_theta;
 float target_inside_elbow_theta;
 
-float past_shoulder_thetas[25] = {}; //looped buffer
+#define past_buffers_size 12
+float past_shoulder_thetas[past_buffers_size] = {}; //looped buffer
 int current_shoulder_frame = 0;
 int n_valid_shoulder_angles = 0;
 
@@ -86,10 +87,10 @@ void updateArmSensors()
     float new_shoulder_theta = shoulder_potentiometer_angle;//shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
     float new_inside_elbow_theta = elbow_potentiometer_angle;
     float new_winch_theta = winch_encoder/winch_gear_ratio/encoderticks_per_radian;
-
+    
     if(shoulder_omega != shoulder_omega) shoulder_omega = 0;
-    shoulder_omega = lerp((new_shoulder_theta-shoulder_theta)/dt, shoulder_omega, exp(-75*dt));
-
+    shoulder_omega = lerp((new_shoulder_theta-shoulder_theta)/dt, shoulder_omega, exp(-10*dt));
+    
     if(winch_omega != winch_omega) winch_omega = 0;
     winch_omega = lerp((new_winch_theta-winch_theta)/dt/winch_gear_ratio, winch_omega, exp(-10*dt));
     
@@ -102,7 +103,7 @@ void updateArmSensors()
     
     past_shoulder_thetas[current_shoulder_frame] = shoulder_theta;
     current_shoulder_frame = (current_shoulder_frame+1)%len(past_shoulder_thetas);
-
+    
     low_passed_inside_elbow_theta = lerp(inside_elbow_theta, low_passed_inside_elbow_theta, exp(-3*dt));
     if(n_valid_shoulder_angles < len(past_shoulder_thetas)) n_valid_shoulder_angles++;
 }
@@ -269,72 +270,66 @@ void armToAngle()
                                       -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
     
     float arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
-
-    shoulder_compensation += shoulder_omega_error*shoulder_kslow*dt;
     
-    shoulder +=
-        shoulder_kd*shoulder_omega_error
-        +shoulder_compensation;
+    if(shoulder_active) //try to bring the shoulder to a stop, or to the target velocity if the joystick is pressed
+    {
+        float min_shoulder_theta = past_shoulder_thetas[0];
+        float max_shoulder_theta = past_shoulder_thetas[0];
+        for(int i = 1; i < len(past_shoulder_thetas); i++)
+        {
+            if(past_shoulder_thetas[i] < min_shoulder_theta) min_shoulder_theta = past_shoulder_thetas[i];
+            if(past_shoulder_thetas[i] > max_shoulder_theta) max_shoulder_theta = past_shoulder_thetas[i];
+        }
+        
+        if(shoulder_active == 2)
+        {
+            n_valid_shoulder_angles = 0;
+            shoulder_compensation = clamp(shoulder, -0.0, 0.1);
+        }
+        
+        /* if(past_shoulder_active == 2 && shoulder_active == 1) //the user just stopped pressing the joystick */
+        /* { */
+        /*     shoulder_compensation = clamp(shoulder, -0.0, 0.1); */
+        /* } */
+        /* past_shoulder_active = shoulder_active; */
+        
+        if(n_valid_shoulder_angles >= len(past_shoulder_thetas)
+           && fabs(max_shoulder_theta-min_shoulder_theta) < shoulder_speed_threshold)
+        {
+            shoulder_active = 0;
+        }
+        else
+        {
+            shoulder_compensation += shoulder_omega_error*shoulder_kslow*dt;
+            
+            shoulder +=
+                shoulder_kd*shoulder_omega_error
+                +shoulder_compensation;
+            
+            target_arm_theta = arm_theta;
+            
+            if(shoulder_active == 2)
+            {
+                shoulder_active = 1;
+            }
+        }
+    }
     
-    /* if(shoulder_active) //try to bring the shoulder to a stop, or to the target velocity if the joystick is pressed */
-    /* { */
-    /*     float min_shoulder_theta = past_shoulder_thetas[0]; */
-    /*     float max_shoulder_theta = past_shoulder_thetas[0]; */
-    /*     for(int i = 1; i < len(past_shoulder_thetas); i++) */
-    /*     { */
-    /*         if(past_shoulder_thetas[i] < min_shoulder_theta) min_shoulder_theta = past_shoulder_thetas[i]; */
-    /*         if(past_shoulder_thetas[i] > max_shoulder_theta) max_shoulder_theta = past_shoulder_thetas[i]; */
-    /*     } */
+    if(shoulder_active == 0)
+    {
+        //TODO: compensate for momentum
         
-    /*     if(shoulder_active == 2) */
-    /*     { */
-    /*         n_valid_shoulder_angles = 0; */
-    /*         shoulder_compensation = clamp(shoulder, -0.0, 0.1); */
-    /*     } */
+        float velocity_uncertainty_factor = 0.01;
         
-    /*     /\* if(past_shoulder_active == 2 && shoulder_active == 1) //the user just stopped pressing the joystick *\/ */
-    /*     /\* { *\/ */
-    /*     /\*     shoulder_compensation = clamp(shoulder, -0.0, 0.1); *\/ */
-    /*     /\* } *\/ */
-    /*     /\* past_shoulder_active = shoulder_active; *\/ */
+        float shoulder_error = target_arm_theta-arm_theta;
         
-    /*     if(n_valid_shoulder_angles >= len(past_shoulder_thetas) */
-    /*        && fabs(max_shoulder_theta-min_shoulder_theta) < shoulder_speed_threshold) */
-    /*     { */
-    /*         shoulder_active = 0; */
-    /*     } */
-    /*     else */
-    /*     { */
-    /*         shoulder_compensation -= shoulder_omega_error*shoulder_kslow*dt; */
-            
-    /*         shoulder += */
-    /*             shoulder_kd*shoulder_omega_error */
-    /*             +shoulder_compensation; */
-            
-    /*         target_arm_theta = arm_theta; */
-            
-    /*         if(shoulder_active == 2) */
-    /*         { */
-    /*             shoulder_active = 1; */
-    /*         } */
-    /*     } */
-    /* } */
-    
-    /* if(shoulder_active == 0) */
-    /* { */
-    /*     //TODO: compensate for momentum */
+        shoulder_compensation += shoulder_ki*shoulder_error*dt;
         
-    /*     float velocity_uncertainty_factor = 0.01; */
-        
-    /*     float shoulder_error = target_arm_theta-arm_theta; */
-        
-    /*     shoulder_compensation += shoulder_ki*shoulder_error*dt; */
-        
-    /*     shoulder += */
-    /*         shoulder_kp*(shoulder_error) //P */
-    /*         +shoulder_kd*shoulder_omega_error //D */
-    /*         +shoulder_compensation; //modified I         */
-    /* } */
+        shoulder +=
+            shoulder_kp*(shoulder_error) //P
+            +shoulder_kd*shoulder_omega_error //D
+            +shoulder_compensation; //modified I
+    }
     
     winch +=
         1*(target_inside_elbow_theta-low_passed_inside_elbow_theta);
