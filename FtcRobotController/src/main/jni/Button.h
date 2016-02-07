@@ -23,8 +23,25 @@ enum Buttons
     DPAD_UP,
     RIGHT_STICK_BUTTON,
     LEFT_STICK_BUTTON,
+    RIGHT_TRIGGER,
+    LEFT_TRIGGER,
     SIZEOF_BUTTON
 };
+
+#pragma pack(push,1)
+struct gamepad
+{
+    v2f joystick1;
+    v2f joystick2;
+
+    float left_trigger;
+    float right_trigger;
+    
+    int buttons;
+};
+#pragma pack(pop)
+
+#define trigger_press_threshold 0.1
 
 struct Button
 {
@@ -56,26 +73,15 @@ struct Button
         return getState(btn, toggleByte);
     }
     
-    void updateButtons(int stickArray)
+    void updateButtons(gamepad g)
     {
         previousByte = currentByte;
-        currentByte = stickArray;
+        currentByte = g.buttons;
+        currentByte |= (g.right_trigger >= trigger_press_threshold)<<RIGHT_TRIGGER;
+        currentByte |= (g.left_trigger >= trigger_press_threshold)<<LEFT_TRIGGER;
         toggleByte = toggleByte^(currentByte & ~previousByte);
     }
 };
-
-#pragma pack(push,1)
-struct gamepad
-{
-    v2f joystick1;
-    v2f joystick2;
-
-    float left_trigger;
-    float right_trigger;
-    
-    int buttons;
-};
-#pragma pack(pop)
 
 gamepad * pgamepad1;
 #define gamepad1 (*pgamepad1)

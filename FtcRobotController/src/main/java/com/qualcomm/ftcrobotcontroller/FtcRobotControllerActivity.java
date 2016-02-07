@@ -158,6 +158,7 @@ public class FtcRobotControllerActivity extends Activity {
     public static int slider_0;
     public static int slider_1;
     public static int slider_2;
+    public static int slider_3;
     
     public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     {
@@ -320,6 +321,17 @@ public class FtcRobotControllerActivity extends Activity {
                                                public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
                                                {
                                                    slider_2 = progress;
+                                               }
+                                               public void onStartTrackingTouch(SeekBar seek_bar){}
+                                               public void onStopTrackingTouch(SeekBar seek_bar){}
+                                           });
+        
+        SeekBar slider3 = (SeekBar) findViewById(R.id.slider_3);
+        slider3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+                                           {
+                                               public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
+                                               {
+                                                   slider_3 = progress;
                                                }
                                                public void onStartTrackingTouch(SeekBar seek_bar){}
                                                public void onStopTrackingTouch(SeekBar seek_bar){}

@@ -30,7 +30,7 @@ typedef double float64;
 
 #define ever (;;)
 
-#define len(array) sizeof(array)/sizeof((array)[0])
+#define len(array) (sizeof(array)/sizeof((array)[0]))
 
 #ifdef __clang__
 #define crash __builtin_trap()

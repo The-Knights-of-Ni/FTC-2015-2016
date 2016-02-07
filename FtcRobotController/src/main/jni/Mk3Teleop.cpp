@@ -43,8 +43,8 @@ float hook_locked_position = 1.0f;
 //                       [0] shoulder, [1] winch/elbow
 #define arm_stick ((v2f){pad2stick1.y, -pad2stick2.y})
 #define arm_manual_toggle pad2.toggle(Y)
-#define arm_score_mode_button pad2.press(DPAD_UP)
-#define arm_intake_mode_button pad2.press(DPAD_DOWN)
+#define arm_score_mode_button pad2.press(LEFT_TRIGGER)
+#define arm_intake_mode_button pad2.press(LEFT_BUMPER)
 #define precision_mode pad2.toggle(A)
 
 //Slide
@@ -131,6 +131,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     pslider0 = jniIntIn("return FtcRobotControllerActivity.slider_0;");
     pslider1 = jniIntIn("return FtcRobotControllerActivity.slider_1;");
     pslider2 = jniIntIn("return FtcRobotControllerActivity.slider_2;");
+    pslider3 = jniIntIn("return FtcRobotControllerActivity.slider_3;");
     
     jniOut("//left_drive.setPower(", pleft_drive, ");;");
     jniOut("//right_drive.setPower(", pright_drive, ");;");
@@ -150,10 +151,15 @@ void jniMain(JNIEnv * _env, jobject _self)
     float * pshoulder_compensation_print;
     #define shoulder_compensation_print (*pshoulder_compensation_print)
     jniOut("telemetry.addData(\"shoulder_compensation\", ", pshoulder_compensation_print,");");
+
+    int * pshoulder_active_print;
+    #define shoulder_active_print (*pshoulder_active_print)
+    jniOut("telemetry.addData(\"shoulder_active\", ", pshoulder_active_print,");");
     
     jniOut("telemetry.addData(\"slider 0\", ", pslider0,");");
     jniOut("telemetry.addData(\"slider 1\", ", pslider1,");");
     jniOut("telemetry.addData(\"slider 2\", ", pslider2,");");
+    jniOut("telemetry.addData(\"slider 3\", ", pslider3,");");
     
     float * pforearm_print_theta;
     #define forearm_print_theta (*pforearm_print_theta)
@@ -209,6 +215,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     winch_omega = 0;
     inside_elbow_omega = 0;
     
+    shoulder_compensation = 0;
+    
     waitForStart();
     
     interruptable for ever
@@ -256,6 +264,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         shoulder_compensation_print = shoulder_compensation;
         shoulder_print_theta = shoulder_theta;
         forearm_print_theta = shoulder_omega;
+        shoulder_active_print = shoulder_active;
         
         if(arm_manual_toggle) //IK
         {
@@ -267,13 +276,15 @@ void jniMain(JNIEnv * _env, jobject _self)
                 
                 score_mode = true;
                 target_shoulder_theta = 1.0;
-                target_inside_elbow_theta = pi*2/5;
+                target_inside_elbow_theta = pi*4/5;
                 
                 float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                           -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-                target_arm_theta = target_shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+                target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
                 
-                winch = shoulder*winch_gear_ratio/shoulder_gear_ratio;
+                shoulder = 1*(target_shoulder_theta-shoulder_theta);
+                winch = (1*(target_inside_elbow_theta-inside_elbow_theta)
+                         +shoulder*winch_gear_ratio/shoulder_gear_ratio);
             }
             else if(arm_intake_mode_button)
             {
@@ -282,9 +293,11 @@ void jniMain(JNIEnv * _env, jobject _self)
                 
                 score_mode = false;
                 target_shoulder_theta = 2.0;
-                target_inside_elbow_theta = 4.0;
+                target_inside_elbow_theta = 3.5;
                 
-                winch = shoulder*winch_gear_ratio/shoulder_gear_ratio;
+                shoulder = 1*(target_shoulder_theta-shoulder_theta);
+                winch = (1*(target_inside_elbow_theta-inside_elbow_theta)
+                         +shoulder*winch_gear_ratio/shoulder_gear_ratio);
             }
             else
             {
@@ -302,15 +315,15 @@ void jniMain(JNIEnv * _env, jobject _self)
                                                       -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
                     target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
                 }
-            }
-            
-            if(score_mode)
-            {
-                armToAngle();
-            }
-            else
-            {
-                armJointsToAngle();
+                
+                if(score_mode)
+                {
+                    armToAngle();
+                }
+                else
+                {
+                    armJointsToAngle();
+                }
             }
             
             shoulder = clamp(shoulder, -1.0, 1.0);
@@ -394,8 +407,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         hook_right = clamp(hook_right, 0.0, 1.0);
 //============================ Updates ===========================
         
-        pad1.updateButtons(gamepad1.buttons);
-        pad2.updateButtons(gamepad2.buttons);
+        pad1.updateButtons(gamepad1);
+        pad2.updateButtons(gamepad2);
         updateRobot();
     }
 }

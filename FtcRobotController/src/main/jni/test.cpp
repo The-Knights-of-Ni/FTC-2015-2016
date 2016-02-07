@@ -111,7 +111,7 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
         left_drive = gamepad1.joystick1.y-gamepad1.joystick1.x;
         right_drive = gamepad1.joystick1.y+gamepad1.joystick1.x;
         
-        pad1.updateButtons(gamepad1.buttons);
+        pad1.updateButtons(gamepad1);
         updateRobot();
     }
 }

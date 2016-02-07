@@ -26,7 +26,7 @@ int rsid_current = 0;
 public Mk3Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[152];
+    robot_state = new byte[160];
 }
 
 
@@ -131,22 +131,24 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-//left_drive.setPower(getFloat(48));;
-//right_drive.setPower(getFloat(52));;
-winch.setPower(getFloat(56));;
-shoulder.setPower(getFloat(60));;
-//intake.setPower(getFloat(64));;
-//hand.setPosition(getFloat(68));
-//slide.setPosition(getFloat(72));
-//hook_left.setPosition(getFloat(76));
-//hook_right.setPosition(getFloat(80));
-telemetry.addData("shoulder theta", getFloat(84));
-telemetry.addData("shoulder_compensation", getFloat(88));
+//left_drive.setPower(getFloat(52));;
+//right_drive.setPower(getFloat(56));;
+winch.setPower(getFloat(60));;
+shoulder.setPower(getFloat(64));;
+//intake.setPower(getFloat(68));;
+//hand.setPosition(getFloat(72));
+//slide.setPosition(getFloat(76));
+//hook_left.setPosition(getFloat(80));
+//hook_right.setPosition(getFloat(84));
+telemetry.addData("shoulder theta", getFloat(88));
+telemetry.addData("shoulder_compensation", getFloat(92));
+telemetry.addData("shoulder_active", getInt(96));
 telemetry.addData("slider 0", getInt(36));
 telemetry.addData("slider 1", getInt(40));
 telemetry.addData("slider 2", getInt(44));
-telemetry.addData("forearm theta", getFloat(92));
-telemetry.addData("shoulder power", getFloat(60));
+telemetry.addData("slider 3", getInt(48));
+telemetry.addData("forearm theta", getFloat(100));
+telemetry.addData("shoulder power", getFloat(64));
 
 }
 
@@ -208,7 +210,12 @@ setInt(44, FtcRobotControllerActivity.slider_2);
 rsid_current = 48;
 }
 {
-rsid_current = 96;
+setInt(48, FtcRobotControllerActivity.slider_3);
+
+rsid_current = 52;
+}
+{
+rsid_current = 104;
 int gamepad1_buttons = 0;
 try
 {
@@ -229,7 +236,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 124;
+rsid_current = 132;
 int gamepad2_buttons = 0;
 try
 {
