@@ -1,0 +1,1392 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+A	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        A (9, false),$/;"	e	enum:Button.Buttons	file:
+A	.\jni\Button.h	/^    A,$/;"	e	enum:Buttons
+ACC_CONFIG	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte ACC_CONFIG      = 0x08;$/;"	f	class:IMU
+ADAFRUIT	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  public enum ColorSensorDevice {ADAFRUIT, HITECHNIC_NXT, MODERN_ROBOTICS_I2C};$/;"	e	enum:ColorSensorDriver.ColorSensorDevice	file:
+ADDRESS_MEMORY_START	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final int ADDRESS_MEMORY_START = 0x0;$/;"	f	class:LinearI2cAddressChange
+ADDRESS_SET_NEW_I2C_ADDRESS	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final int ADDRESS_SET_NEW_I2C_ADDRESS = 0x70;$/;"	f	class:LinearI2cAddressChange
+APP_ABI	.\jni\Application.mk	/^APP_ABI := armeabi-v7a$/;"	m
+APP_PLATFORM	.\jni\Application.mk	/^APP_PLATFORM := android-19$/;"	m
+ARM_MAX_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^    final static double ARM_MAX_RANGE  = 0.90;$/;"	f	class:K9TankDrive
+ARM_MAX_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	final static double ARM_MAX_RANGE  = 0.90;$/;"	f	class:K9TeleOp
+ARM_MAX_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	final static double ARM_MAX_RANGE  = 1.0;$/;"	f	class:MatrixK9TeleOp
+ARM_MIN_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^    final static double ARM_MIN_RANGE  = 0.20;$/;"	f	class:K9TankDrive
+ARM_MIN_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	final static double ARM_MIN_RANGE  = 0.20;$/;"	f	class:K9TeleOp
+ARM_MIN_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	final static double ARM_MIN_RANGE  = 0.40;$/;"	f	class:MatrixK9TeleOp
+AUTONOMOUS	.\jni\autonomous.h	2;"	d
+AdafruitRGBExample	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\AdafruitRGBExample.java	/^public class AdafruitRGBExample extends LinearOpMode {$/;"	c
+B	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        B (8, false),$/;"	e	enum:Button.Buttons	file:
+B	.\jni\Button.h	/^    B,$/;"	e	enum:Buttons
+BACK	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        BACK (3, false),$/;"	e	enum:Button.Buttons	file:
+BACK	.\jni\Button.h	/^    BACK,$/;"	e	enum:Buttons
+BLUE	.\jni\robotics.h	/^    BLUE,$/;"	e	enum:Colors
+BUFFER_CHANGE_ADDRESS_LENGTH	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final int BUFFER_CHANGE_ADDRESS_LENGTH = 0x03;$/;"	f	class:LinearI2cAddressChange
+BUTTON	.\jni\Button.h	2;"	d
+Button	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^public class Button \/\/Might want to extend gamepad instead of passing to it later. I think the opmode structure makes this annoying though.$/;"	c
+Button	.\jni\Button.h	/^struct Button$/;"	s
+Buttons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        Buttons(int location, boolean prevStatus)$/;"	m	class:Button.Buttons
+Buttons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    public enum Buttons {$/;"	g	class:Button
+Buttons	.\jni\Button.h	/^enum Buttons$/;"	g
+CALIB_STAT	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte CALIB_STAT      = 0x35;$/;"	f	class:IMU
+CHIP_ID	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte CHIP_ID         = 0x00;$/;"	f	class:IMU
+CLAW_MAX_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^    final static double CLAW_MAX_RANGE  = 0.7;$/;"	f	class:K9TankDrive
+CLAW_MAX_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	final static double CLAW_MAX_RANGE  = 0.7;$/;"	f	class:K9TeleOp
+CLAW_MAX_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	final static double CLAW_MAX_RANGE  = 0.9;$/;"	f	class:MatrixK9TeleOp
+CLAW_MIN_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^    final static double CLAW_MIN_RANGE  = 0.20;$/;"	f	class:K9TankDrive
+CLAW_MIN_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	final static double CLAW_MIN_RANGE  = 0.20;$/;"	f	class:K9TeleOp
+CLAW_MIN_RANGE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	final static double CLAW_MIN_RANGE  = 0.30;$/;"	f	class:MatrixK9TeleOp
+COLOR_SENSOR_FIRMWARE_REV	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte COLOR_SENSOR_FIRMWARE_REV = 0x10;$/;"	f	class:LinearI2cAddressChange
+COLOR_SENSOR_ORIGINAL_ADDRESS	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte COLOR_SENSOR_ORIGINAL_ADDRESS = 0x3C;$/;"	f	class:LinearI2cAddressChange
+COLOR_SENSOR_SENSOR_ID	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte COLOR_SENSOR_SENSOR_ID = 0x43;$/;"	f	class:LinearI2cAddressChange
+CONFIGURE_FILENAME	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static final String CONFIGURE_FILENAME = "CONFIGURE_FILENAME";$/;"	f	class:FtcRobotControllerActivity
+CameraPreview	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^        public CameraPreview(Context context\/* , Camera cam *\/)$/;"	m	class:FtcRobotControllerActivity.CameraPreview
+CameraPreview	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback$/;"	c	class:FtcRobotControllerActivity
+CameraPreviewCallback	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^    CameraPreviewCallback(){}$/;"	m	class:Mk3Auto.CameraPreviewCallback
+CameraPreviewCallback	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^class CameraPreviewCallback implements Camera.PreviewCallback$/;"	c	class:Mk3Auto
+ColorSensorDevice	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  public enum ColorSensorDevice {ADAFRUIT, HITECHNIC_NXT, MODERN_ROBOTICS_I2C};$/;"	g	class:ColorSensorDriver
+ColorSensorDriver	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^public class ColorSensorDriver extends LinearOpMode {$/;"	c
+Colors	.\jni\robotics.h	/^enum Colors$/;"	g
+CompassCalibration	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^public class CompassCalibration extends OpMode {$/;"	c
+DPAD_DOWN	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        DPAD_DOWN (12, false),$/;"	e	enum:Button.Buttons	file:
+DPAD_DOWN	.\jni\Button.h	/^    DPAD_DOWN,$/;"	e	enum:Buttons
+DPAD_LEFT	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        DPAD_LEFT (11, false),$/;"	e	enum:Button.Buttons	file:
+DPAD_LEFT	.\jni\Button.h	/^    DPAD_LEFT,$/;"	e	enum:Buttons
+DPAD_RIGHT	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        DPAD_RIGHT (10, false),$/;"	e	enum:Button.Buttons	file:
+DPAD_RIGHT	.\jni\Button.h	/^    DPAD_RIGHT,$/;"	e	enum:Buttons
+DPAD_UP	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        DPAD_UP (13, false),$/;"	e	enum:Button.Buttons	file:
+DPAD_UP	.\jni\Button.h	/^    DPAD_UP,$/;"	e	enum:Buttons
+DRIVE	.\jni\drive.h	2;"	d
+DeadReckoningAutonomous	.\java\com\qualcomm\ftcrobotcontroller\opmodes\DeadReckoningAutonomous.java	/^public class DeadReckoningAutonomous extends LinearOpMode{$/;"	c
+Drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    private Drive(){}\/\/Not used as an object.$/;"	m	class:Drive	file:
+Drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^public class Drive$/;"	c
+EUL_DATA_X	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte EUL_DATA_X      = 0x1A;$/;"	f	class:IMU
+EUL_DATA_Y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte EUL_DATA_Y      = 0x1C;$/;"	f	class:IMU
+EUL_DATA_Z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte EUL_DATA_Z      = 0x1E;$/;"	f	class:IMU
+FIRMWARE_REV	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte FIRMWARE_REV = IR_SEEKER_V3_FIRMWARE_REV;$/;"	f	class:LinearI2cAddressChange
+FtcOpModeRegister	.\java\com\qualcomm\ftcrobotcontroller\opmodes\FtcOpModeRegister.java	/^public class FtcOpModeRegister implements OpModeRegister {$/;"	c
+FtcRobotControllerActivity	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^public class FtcRobotControllerActivity extends Activity {$/;"	c
+GUIDE	.\jni\Button.h	/^    GUIDE,$/;"	e	enum:Buttons
+GetByteArrayElements	.\jni\jni_functions.h	/^    void * GetByteArrayElements(jbyteArray, void *){return 0;}$/;"	f	struct:JNIEnv
+GetFieldID	.\jni\jni_functions.h	/^    jfieldID GetFieldID(jclass, const char *, const char *){return 0;}$/;"	f	struct:JNIEnv
+GetIntField	.\jni\jni_functions.h	/^    int GetIntField(jclass, jfieldID){return 0;}$/;"	f	struct:JNIEnv
+GetObjectClass	.\jni\jni_functions.h	/^    jclass GetObjectClass(jobject){return 0;}$/;"	f	struct:JNIEnv
+GetObjectField	.\jni\jni_functions.h	/^    jclass GetObjectField(jobject, jfieldID){return 0;}$/;"	f	struct:JNIEnv
+HITECHNIC_NXT	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  public enum ColorSensorDevice {ADAFRUIT, HITECHNIC_NXT, MODERN_ROBOTICS_I2C};$/;"	e	enum:ColorSensorDriver.ColorSensorDevice	file:
+HOLD_IR_SIGNAL_STRENGTH	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	final static double HOLD_IR_SIGNAL_STRENGTH = 0.20; \/\/ Higher values will cause the robot to follow closer$/;"	f	class:K9AutoTime
+HOLD_IR_SIGNAL_STRENGTH	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^  final static double HOLD_IR_SIGNAL_STRENGTH = 0.20; \/\/ Higher values will cause the robot to follow closer$/;"	f	class:IrSeekerOp
+HOLD_IR_SIGNAL_STRENGTH	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	final static double HOLD_IR_SIGNAL_STRENGTH = 0.50; \/\/ Higher values will cause the robot to follow closer$/;"	f	class:K9IrSeeker
+HOLD_IR_SIGNAL_STRENGTH	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	final static double HOLD_IR_SIGNAL_STRENGTH = 0.20; \/\/ Higher values will cause the robot to follow closer$/;"	f	class:K9Line
+HOLD_IR_SIGNAL_STRENGTH	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearIrExample.java	/^  final static double HOLD_IR_SIGNAL_STRENGTH = 0.20; \/\/ Higher values will cause the robot to follow closer$/;"	f	class:LinearIrExample
+HOLD_POSITION	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  final static double HOLD_POSITION = 3.0; \/\/ in seconds$/;"	f	class:CompassCalibration
+HTRGBExample	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\HTRGBExample.java	/^public class HTRGBExample extends LinearOpMode {$/;"	c
+IK_solver	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^public class IK_solver$/;"	c
+IMU	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public IMU(I2cDevice I2CD)$/;"	m	class:IMU
+IMU	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^public class IMU$/;"	c
+IMUTester	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMUTester.java	/^public class IMUTester extends LinearOpMode$/;"	c
+IR_SEEKER_V3_FIRMWARE_REV	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte IR_SEEKER_V3_FIRMWARE_REV = 0x12;$/;"	f	class:LinearI2cAddressChange
+IR_SEEKER_V3_ORIGINAL_ADDRESS	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte IR_SEEKER_V3_ORIGINAL_ADDRESS = 0x38;$/;"	f	class:LinearI2cAddressChange
+IR_SEEKER_V3_SENSOR_ID	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte IR_SEEKER_V3_SENSOR_ID = 0x49;$/;"	f	class:LinearI2cAddressChange
+IntakeTest	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IntakeTest.java	/^    public IntakeTest() {}$/;"	m	class:IntakeTest
+IntakeTest	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IntakeTest.java	/^public class IntakeTest extends OpMode$/;"	c
+IrSeekerOp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^public class IrSeekerOp extends OpMode {$/;"	c
+JAVA_HOME	.\build.bat	/^set JAVA_HOME=c:\\Progra~1\\Java\\jdk1.8.0_66$/;"	v
+JNIEnv	.\jni\jni_functions.h	/^struct JNIEnv$/;"	s
+JNI_COMMIT	.\jni\jni_functions.h	69;"	d
+JNI_FUNCTIONS	.\jni\jni_functions.h	2;"	d
+JNI_main	.\jni\test.cpp	6;"	d	file:
+JoystickTest	.\java\com\qualcomm\ftcrobotcontroller\opmodes\JoystickTest.java	/^public class JoystickTest extends LinearOpMode$/;"	c
+K9AutoTime	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	public K9AutoTime() {$/;"	m	class:K9AutoTime
+K9AutoTime	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^public class K9AutoTime extends OpMode {$/;"	c
+K9IrSeeker	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	public K9IrSeeker() {$/;"	m	class:K9IrSeeker
+K9IrSeeker	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^public class K9IrSeeker extends OpMode {$/;"	c
+K9Line	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	public K9Line() {$/;"	m	class:K9Line
+K9Line	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^public class K9Line extends OpMode {$/;"	c
+K9TankDrive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	public K9TankDrive() {$/;"	m	class:K9TankDrive
+K9TankDrive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^public class K9TankDrive extends OpMode {$/;"	c
+K9TeleOp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	public K9TeleOp() {$/;"	m	class:K9TeleOp
+K9TeleOp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^public class K9TeleOp extends OpMode {$/;"	c
+LED_CHANNEL	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\AdafruitRGBExample.java	/^  static final int LED_CHANNEL = 5;$/;"	f	class:AdafruitRGBExample
+LEFT_BUMPER	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        LEFT_BUMPER (2, false),$/;"	e	enum:Button.Buttons	file:
+LEFT_BUMPER	.\jni\Button.h	/^    LEFT_BUMPER,$/;"	e	enum:Buttons
+LEFT_STICK_BUTTON	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        LEFT_STICK_BUTTON (15, false), \/\/TODO: Make status into a byte that will tell us more information if needed.$/;"	e	enum:Button.Buttons	file:
+LEFT_STICK_BUTTON	.\jni\Button.h	/^    LEFT_STICK_BUTTON,$/;"	e	enum:Buttons
+LEFT_TRIGGER	.\jni\Button.h	/^    LEFT_TRIGGER,$/;"	e	enum:Buttons
+LIA_DATA_X	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte LIA_DATA_X      = 0x28;$/;"	f	class:IMU
+LIA_DATA_Y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte LIA_DATA_Y      = 0x2A;$/;"	f	class:IMU
+LIA_DATA_Z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte LIA_DATA_Z      = 0x2C;$/;"	f	class:IMU
+LIGHT_THRESHOLD	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	final static double LIGHT_THRESHOLD = 0.5;$/;"	f	class:K9AutoTime
+LIGHT_THRESHOLD	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	final static double LIGHT_THRESHOLD = 0.5;$/;"	f	class:K9Line
+LOCAL_ARM_NEON	.\jni\Android.mk	/^    LOCAL_ARM_NEON := true$/;"	m
+LOCAL_MODULE	.\jni\Android.mk	/^LOCAL_MODULE    := native_robot$/;"	m
+LOCAL_PATH	.\jni\Android.mk	/^LOCAL_PATH := $(call my-dir)$/;"	m
+LOCAL_SRC_FILES	.\jni\Android.mk	/^LOCAL_SRC_FILES := native_robot.cpp$/;"	m
+LOGITECH	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        LOGITECH (5, false),$/;"	e	enum:Button.Buttons	file:
+LinearI2cAddressChange	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^public class LinearI2cAddressChange extends LinearOpMode {$/;"	c
+LinearIrExample	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearIrExample.java	/^public class LinearIrExample extends LinearOpMode {$/;"	c
+LinearK9TeleOp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^public class LinearK9TeleOp extends LinearOpMode {$/;"	c
+MANUFACTURER_CODE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte MANUFACTURER_CODE = 0x4d;$/;"	f	class:LinearI2cAddressChange
+MATHS	.\jni\maths.h	6;"	d
+MISC	.\jni\misc.h	2;"	d
+MODERN_ROBOTICS_I2C	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  public enum ColorSensorDevice {ADAFRUIT, HITECHNIC_NXT, MODERN_ROBOTICS_I2C};$/;"	e	enum:ColorSensorDriver.ColorSensorDevice	file:
+MOTOR_OSC_FREQ	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private final static double MOTOR_OSC_FREQ = 2.0;$/;"	f	class:MatrixControllerDemo	file:
+MOTOR_POWER	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	final static double MOTOR_POWER = 0.15; \/\/ Higher values will cause the robot to move faster$/;"	f	class:K9AutoTime
+MOTOR_POWER	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  final static double MOTOR_POWER = 0.2; \/\/ scale from 0 to 1$/;"	f	class:CompassCalibration
+MOTOR_POWER	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^  final static double MOTOR_POWER = 0.15; \/\/ Higher values will cause the robot to move faster$/;"	f	class:IrSeekerOp
+MOTOR_POWER	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	final static double MOTOR_POWER = 0.15; \/\/ Higher values will cause the robot to move faster$/;"	f	class:K9IrSeeker
+MOTOR_POWER	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	final static double MOTOR_POWER = 0.15; \/\/ Higher values will cause the robot to move faster$/;"	f	class:K9Line
+MOTOR_POWER	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearIrExample.java	/^  final static double MOTOR_POWER = 0.15; \/\/ Higher values will cause the robot to move faster$/;"	f	class:LinearIrExample
+MRGyroTest	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MRGyroTest.java	/^public class MRGyroTest extends LinearOpMode {$/;"	c
+MRRGBExample	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MRRGBExample.java	/^public class MRRGBExample extends LinearOpMode {$/;"	c
+MatrixControllerDemo	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^public class MatrixControllerDemo extends OpMode {$/;"	c
+MatrixK9TeleOp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	public MatrixK9TeleOp() {$/;"	m	class:MatrixK9TeleOp
+MatrixK9TeleOp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^public class MatrixK9TeleOp extends OpMode {$/;"	c
+MenuTest	.\java\com\qualcomm\ftcrobotcontroller\opmodes\MenuTest.java	/^public class MenuTest extends LinearOpMode {$/;"	c
+Mk1Teleop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    public Mk1Teleop() {}$/;"	m	class:Mk1Teleop
+Mk1Teleop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^public class Mk1Teleop extends LinearOpMode$/;"	c
+Mk2Teleop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    public Mk2Teleop() {}$/;"	m	class:Mk2Teleop
+Mk2Teleop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^public class Mk2Teleop extends LinearOpMode$/;"	c
+Mk3Auto	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public Mk3Auto()$/;"	m	class:Mk3Auto
+Mk3Auto	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public class Mk3Auto extends LinearOpMode {$/;"	c
+Mk3AutonomousUpdate	.\jni\Mk3Auto.cpp	/^void Mk3AutonomousUpdate()$/;"	f
+Mk3Teleop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public Mk3Teleop()$/;"	m	class:Mk3Teleop
+Mk3Teleop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public class Mk3Teleop extends LinearOpMode {$/;"	c
+Mk3TeleopRobotStateElements	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    Mk3TeleopRobotStateElements(){}$/;"	m	class:Mk3TeleopRobotStateElements
+Mk3TeleopRobotStateElements	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^public class Mk3TeleopRobotStateElements$/;"	c
+NDK_TOOLCHAIN_VERSION	.\jni\Application.mk	/^NDK_TOOLCHAIN_VERSION := clang$/;"	m
+NUM_GAMEPADS	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private static final int NUM_GAMEPADS = 2;$/;"	f	class:FtcRobotControllerActivity	file:
+NullOp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\NullOp.java	/^public class NullOp extends OpMode {$/;"	c
+NxtTeleOp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^public class NxtTeleOp extends OpMode {$/;"	c
+OPR_MODE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte OPR_MODE        = 0x3D;$/;"	f	class:IMU
+PAGE_ID	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte PAGE_ID         = 0x07;$/;"	f	class:IMU
+PIDController	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public PIDController(float K_P, float K_I, float K_D, float K_D2, float initial_val, float initial_val2)$/;"	m	class:Mk2Teleop.PIDController
+PIDController	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    class PIDController$/;"	c	class:Mk2Teleop
+PWR_MODE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte PWR_MODE        = 0x3E;$/;"	f	class:IMU
+P_0	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static final float P_0 = 0.0f;$/;"	f	class:Mk2Teleop
+P_1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static final float P_1 = 10\/100.0f;$/;"	f	class:Mk2Teleop
+P_2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static final float P_2 = 1.0f;$/;"	f	class:Mk2Teleop
+PushBotAuto	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAuto.java	/^    public PushBotAuto ()$/;"	m	class:PushBotAuto
+PushBotAuto	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAuto.java	/^public class PushBotAuto extends PushBotTelemetry$/;"	c
+PushBotAutoSensors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAutoSensors.java	/^    public PushBotAutoSensors ()$/;"	m	class:PushBotAutoSensors
+PushBotAutoSensors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAutoSensors.java	/^public class PushBotAutoSensors extends PushBotTelemetrySensors$/;"	c
+PushBotDriveTouch	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotDriveTouch.java	/^public class PushBotDriveTouch extends LinearOpMode {$/;"	c
+PushBotHardware	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public PushBotHardware ()$/;"	m	class:PushBotHardware
+PushBotHardware	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^public class PushBotHardware extends OpMode$/;"	c
+PushBotHardwareSensors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    public PushBotHardwareSensors()$/;"	m	class:PushBotHardwareSensors
+PushBotHardwareSensors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^public class PushBotHardwareSensors extends PushBotTelemetry$/;"	c
+PushBotIrEvent	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrEvent.java	/^    public PushBotIrEvent ()$/;"	m	class:PushBotIrEvent
+PushBotIrEvent	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrEvent.java	/^public class PushBotIrEvent extends PushBotTelemetrySensors$/;"	c
+PushBotIrSeek	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrSeek.java	/^public class PushBotIrSeek extends LinearOpMode {$/;"	c
+PushBotManual	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManual.java	/^    public PushBotManual ()$/;"	m	class:PushBotManual
+PushBotManual	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManual.java	/^public class PushBotManual extends PushBotTelemetry$/;"	c
+PushBotManual1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManual1.java	/^    public PushBotManual1 ()$/;"	m	class:PushBotManual1
+PushBotManual1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManual1.java	/^public class PushBotManual1 extends PushBotTelemetry$/;"	c
+PushBotManualSensors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManualSensors.java	/^    public PushBotManualSensors ()$/;"	m	class:PushBotManualSensors
+PushBotManualSensors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManualSensors.java	/^public class PushBotManualSensors extends PushBotTelemetrySensors$/;"	c
+PushBotOdsDetectEvent	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotOdsDetectEvent.java	/^    public PushBotOdsDetectEvent ()$/;"	m	class:PushBotOdsDetectEvent
+PushBotOdsDetectEvent	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotOdsDetectEvent.java	/^public class PushBotOdsDetectEvent extends PushBotTelemetrySensors$/;"	c
+PushBotOdsFollowEvent	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotOdsFollowEvent.java	/^    public PushBotOdsFollowEvent ()$/;"	m	class:PushBotOdsFollowEvent
+PushBotOdsFollowEvent	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotOdsFollowEvent.java	/^public class PushBotOdsFollowEvent extends PushBotTelemetrySensors$/;"	c
+PushBotSquare	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotSquare.java	/^public class PushBotSquare extends LinearOpMode {$/;"	c
+PushBotTelemetry	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetry.java	/^    public PushBotTelemetry ()$/;"	m	class:PushBotTelemetry
+PushBotTelemetry	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetry.java	/^public class PushBotTelemetry extends PushBotHardware$/;"	c
+PushBotTelemetrySensors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetrySensors.java	/^    public PushBotTelemetrySensors ()$/;"	m	class:PushBotTelemetrySensors
+PushBotTelemetrySensors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetrySensors.java	/^public class PushBotTelemetrySensors extends PushBotHardwareSensors$/;"	c
+PushBotTouchEvent	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTouchEvent.java	/^    public PushBotTouchEvent ()$/;"	m	class:PushBotTouchEvent
+PushBotTouchEvent	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTouchEvent.java	/^public class PushBotTouchEvent extends PushBotTelemetrySensors$/;"	c
+Px_0	.\jni\drive.h	29;"	d
+Px_1	.\jni\drive.h	30;"	d
+Px_2	.\jni\drive.h	31;"	d
+Py_0	.\jni\drive.h	32;"	d
+Py_1	.\jni\drive.h	33;"	d
+Py_2	.\jni\drive.h	34;"	d
+QUA_DATA_W	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte QUA_DATA_W      = 0x20;$/;"	f	class:IMU
+QUA_DATA_X	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte QUA_DATA_X      = 0x22;$/;"	f	class:IMU
+QUA_DATA_Y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte QUA_DATA_Y      = 0x24;$/;"	f	class:IMU
+QUA_DATA_Z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte QUA_DATA_Z      = 0x26;$/;"	f	class:IMU
+READ_MODE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final int READ_MODE = 0x80;$/;"	f	class:LinearI2cAddressChange
+RED	.\jni\robotics.h	/^    RED$/;"	e	enum:Colors
+REQUEST_CONFIG_WIFI_CHANNEL	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private static final int REQUEST_CONFIG_WIFI_CHANNEL = 1;$/;"	f	class:FtcRobotControllerActivity	file:
+RIGHT_BUMPER	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        RIGHT_BUMPER (1, false);$/;"	e	enum:Button.Buttons	file:
+RIGHT_BUMPER	.\jni\Button.h	/^    RIGHT_BUMPER,$/;"	e	enum:Buttons
+RIGHT_STICK_BUTTON	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        RIGHT_STICK_BUTTON (14, false),$/;"	e	enum:Button.Buttons	file:
+RIGHT_STICK_BUTTON	.\jni\Button.h	/^    RIGHT_STICK_BUTTON,$/;"	e	enum:Buttons
+RIGHT_TRIGGER	.\jni\Button.h	/^    RIGHT_TRIGGER,$/;"	e	enum:Buttons
+ROBOTICS	.\jni\robotics.h	8;"	d
+ROBOT_ARM	.\jni\arm.h	2;"	d
+ReleaseByteArrayElements	.\jni\jni_functions.h	/^    void ReleaseByteArrayElements(jbyteArray, jbyte *, int){}$/;"	f	struct:JNIEnv
+RobotRestarter	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected class RobotRestarter implements Restarter {$/;"	c	class:FtcRobotControllerActivity
+RobotState	.\jni\jni_functions.h	/^struct RobotState$/;"	s
+SELFTEST_RESULT	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte SELFTEST_RESULT = 0x36;$/;"	f	class:IMU
+SENSOR_ID	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte SENSOR_ID = IR_SEEKER_V3_SENSOR_ID;$/;"	f	class:LinearI2cAddressChange
+SERVO_OSC_FREQ	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private final static double SERVO_OSC_FREQ = 1.0;$/;"	f	class:MatrixControllerDemo	file:
+SIZEOF_BUTTON	.\jni\Button.h	/^    SIZEOF_BUTTON$/;"	e	enum:Buttons
+SPAM_PREVENTION_FREQ	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private final static double SPAM_PREVENTION_FREQ = 1.0;$/;"	f	class:MatrixControllerDemo	file:
+START	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        START (4, false),$/;"	e	enum:Button.Buttons	file:
+START	.\jni\Button.h	/^    START,$/;"	e	enum:Buttons
+SYS_TRIGGER	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte SYS_TRIGGER     = 0x3F;$/;"	f	class:IMU
+TARGET_PLATFORM	.\jni\Application.mk	/^TARGET_PLATFORM := android-19$/;"	m
+TOTAL_MEMORY_LENGTH	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final int TOTAL_MEMORY_LENGTH = 0x0c;$/;"	f	class:LinearI2cAddressChange
+TRIGGER_BYTE_1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte TRIGGER_BYTE_1 = 0x55;$/;"	f	class:LinearI2cAddressChange
+TRIGGER_BYTE_2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public static final byte TRIGGER_BYTE_2 = (byte) 0xaa;$/;"	f	class:LinearI2cAddressChange
+Type	.\jni\jni_functions.h	375;"	d
+UNIT_SEL	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte UNIT_SEL        = 0x3B;$/;"	f	class:IMU
+USE_DEVICE_EMULATION	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private static final boolean USE_DEVICE_EMULATION = false;$/;"	f	class:FtcRobotControllerActivity	file:
+VISION	.\jni\vision.h	2;"	d
+X	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        X (7, false),$/;"	e	enum:Button.Buttons	file:
+X	.\jni\Button.h	/^    X,$/;"	e	enum:Buttons
+Y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        Y (6, false),$/;"	e	enum:Button.Buttons	file:
+Y	.\jni\Button.h	/^    Y,$/;"	e	enum:Buttons
+a_hand_position	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    double a_hand_position ()$/;"	m	class:PushBotHardware
+a_ir_angle	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    double a_ir_angle ()$/;"	m	class:PushBotHardwareSensors
+a_ir_angles_and_strengths	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    IrSeekerSensor.IrSeekerIndividualSensor[] a_ir_angles_and_strengths ()$/;"	m	class:PushBotHardwareSensors
+a_ir_strength	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    double a_ir_strength ()$/;"	m	class:PushBotHardwareSensors
+a_left_arm_power	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    double a_left_arm_power ()$/;"	m	class:PushBotHardware
+a_left_drive_power	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    double a_left_drive_power ()$/;"	m	class:PushBotHardware
+a_left_encoder_count	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    int a_left_encoder_count ()$/;"	m	class:PushBotHardware
+a_ods_light_detected	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    double a_ods_light_detected ()$/;"	m	class:PushBotHardwareSensors
+a_ods_white_tape_detected	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    boolean a_ods_white_tape_detected ()$/;"	m	class:PushBotHardwareSensors
+a_right_drive_power	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    double a_right_drive_power ()$/;"	m	class:PushBotHardware
+a_right_encoder_count	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    int a_right_encoder_count ()$/;"	m	class:PushBotHardware
+a_warning_generated	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    boolean a_warning_generated ()$/;"	m	class:PushBotHardware
+a_warning_message	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    String a_warning_message ()$/;"	m	class:PushBotHardware
+absi	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int absi(int a)$/;"	m	class:IMU
+acc_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public float acc_x = 0.0f;$/;"	f	class:IMU
+acc_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public float acc_y = 0.0f;$/;"	f	class:IMU
+acc_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public float acc_z = 0.0f;$/;"	f	class:IMU
+acceptableAngleError	.\jni\drive.h	27;"	d
+action_flag	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final int action_flag = 31;$/;"	f	class:IMU
+add	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static void add(float[] a, float[] b)$/;"	m	class:Mk2Teleop
+addListenerOnAligned	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private void addListenerOnAligned() {$/;"	m	class:FtcRobotControllerActivity	file:
+addListenerOnBlue	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private void addListenerOnBlue() {$/;"	m	class:FtcRobotControllerActivity	file:
+addListenerOnRed	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private void addListenerOnRed() {$/;"	m	class:FtcRobotControllerActivity	file:
+aligned	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static boolean aligned;$/;"	f	class:FtcRobotControllerActivity
+alignedBox	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    CheckBox redBox, blueBox, alignedBox;$/;"	f	class:FtcRobotControllerActivity
+allowedToWrite	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  private boolean allowedToWrite(){$/;"	m	class:NxtTeleOp	file:
+arm	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	Servo arm;$/;"	f	class:K9AutoTime
+arm	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	Servo arm;$/;"	f	class:K9IrSeeker
+arm	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	Servo arm;$/;"	f	class:K9Line
+arm	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	Servo arm;$/;"	f	class:K9TankDrive
+arm	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	Servo arm;$/;"	f	class:K9TeleOp
+arm	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	Servo arm;$/;"	f	class:MatrixK9TeleOp
+armAtVelocity	.\jni\arm.h	/^void armAtVelocity(v2f target_velocity)$/;"	f
+armDelta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	double armDelta = 0.1;$/;"	f	class:K9TankDrive
+armDelta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	double armDelta = 0.1;$/;"	f	class:K9TeleOp
+armDelta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	double armDelta = 0.1;$/;"	f	class:MatrixK9TeleOp
+armJointsAtVelocity	.\jni\arm.h	/^void armJointsAtVelocity(v2f target_velocity)$/;"	f
+armJointsToAngle	.\jni\arm.h	/^void armJointsToAngle()$/;"	f
+armPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	double armPosition;$/;"	f	class:K9AutoTime
+armPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	double armPosition;$/;"	f	class:K9IrSeeker
+armPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	double armPosition;$/;"	f	class:K9Line
+armPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	double armPosition;$/;"	f	class:K9TankDrive
+armPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	double armPosition;$/;"	f	class:K9TeleOp
+armPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	double armPosition;$/;"	f	class:MatrixK9TeleOp
+armToAngle	.\jni\arm.h	/^void armToAngle()$/;"	f
+arm_intake_mode_button	.\jni\Mk3Teleop.cpp	47;"	d	file:
+arm_manual_toggle	.\jni\Mk3Teleop.cpp	45;"	d	file:
+arm_score_mode_button	.\jni\Mk3Teleop.cpp	46;"	d	file:
+arm_stick	.\jni\Mk3Teleop.cpp	44;"	d	file:
+assert	.\jni\misc.h	40;"	d
+assert	.\jni\misc.h	42;"	d
+autonomousUpdate	.\jni\autonomous.h	/^void autonomousUpdate()$/;"	f
+bCHIP_ID_VALUE	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public final static byte bCHIP_ID_VALUE = (byte) 0xA0;$/;"	f	class:IMU
+battery	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private int battery;$/;"	f	class:MatrixControllerDemo	file:
+beacon_right	.\jni\vision.h	10;"	d
+blue	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static boolean blue;$/;"	f	class:FtcRobotControllerActivity
+blueBox	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    CheckBox redBox, blueBox, alignedBox;$/;"	f	class:FtcRobotControllerActivity
+bool8	.\jni\misc.h	/^typedef uint8 bool8;$/;"	t
+bound	.\jni\maths.h	/^float bound(float bounded, float lower, float upper)$/;"	f
+buttonMenu	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected ImageButton buttonMenu;$/;"	f	class:FtcRobotControllerActivity
+buttons	.\jni\Button.h	/^    int buttons;$/;"	m	struct:gamepad
+byte	.\jni\misc.h	/^typedef uint8_t byte;$/;"	t
+calibrationMessageToString	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  private String calibrationMessageToString(boolean failed) {$/;"	m	class:CompassCalibration	file:
+callback	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected UpdateUI.Callback callback;$/;"	f	class:FtcRobotControllerActivity
+camera	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^        public Camera camera;$/;"	f	class:FtcRobotControllerActivity.CameraPreview
+camera	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static Camera camera;$/;"	f	class:FtcRobotControllerActivity
+camera	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^Camera camera = null;$/;"	f	class:Mk3Auto
+camera_buffer	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^byte[] camera_buffer = null;$/;"	f	class:Mk3Auto
+camera_buffer	.\jni\vision.h	/^byte * camera_buffer = 0;$/;"	v
+camera_buffer_rgb	.\jni\vision.h	/^byte * camera_buffer_rgb;$/;"	v
+camera_bytes_per_pixel	.\jni\vision.h	20;"	d
+camera_h	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^int camera_h = 0;$/;"	f	class:Mk3Auto
+camera_h	.\jni\vision.h	/^int camera_h;$/;"	v
+camera_preview	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static CameraPreview camera_preview;$/;"	f	class:FtcRobotControllerActivity
+camera_preview_callback	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^CameraPreviewCallback camera_preview_callback;$/;"	f	class:Mk3Auto
+camera_w	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^int camera_w = 0;$/;"	f	class:Mk3Auto
+camera_w	.\jni\vision.h	/^int camera_w;$/;"	v
+cdim	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\AdafruitRGBExample.java	/^  DeviceInterfaceModule cdim;$/;"	f	class:AdafruitRGBExample
+cdim	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  DeviceInterfaceModule cdim;$/;"	f	class:ColorSensorDriver
+checkForUpdate	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public boolean checkForUpdate()$/;"	m	class:IMU
+clamp	.\jni\misc.h	13;"	d
+class	.\jni\misc.h	8;"	d
+claw	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	Servo claw;$/;"	f	class:K9AutoTime
+claw	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	Servo claw;$/;"	f	class:K9IrSeeker
+claw	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	Servo claw;$/;"	f	class:K9Line
+claw	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	Servo claw;$/;"	f	class:K9TankDrive
+claw	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	Servo claw;$/;"	f	class:K9TeleOp
+claw	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	Servo claw;$/;"	f	class:MatrixK9TeleOp
+claw	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  Servo claw;$/;"	f	class:NxtTeleOp
+clawDelta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	double clawDelta = 0.1;$/;"	f	class:K9TankDrive
+clawDelta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	double clawDelta = 0.1;$/;"	f	class:K9TeleOp
+clawDelta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	double clawDelta = 0.1;$/;"	f	class:MatrixK9TeleOp
+clawDelta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  double clawDelta = 0.01;$/;"	f	class:NxtTeleOp
+clawPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	double clawPosition;$/;"	f	class:K9AutoTime
+clawPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	double clawPosition;$/;"	f	class:K9IrSeeker
+clawPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	double clawPosition;$/;"	f	class:K9Line
+clawPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	double clawPosition;$/;"	f	class:K9TankDrive
+clawPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	double clawPosition;$/;"	f	class:K9TeleOp
+clawPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	double clawPosition;$/;"	f	class:MatrixK9TeleOp
+clawPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  double clawPosition;$/;"	f	class:NxtTeleOp
+cleanupCamera	.\jni\vision.h	/^void cleanupCamera()$/;"	f
+cleanupJNI	.\jni\jni_functions.h	/^void cleanupJNI()$/;"	f
+cleanupJNI	.\jni\jni_functions.h	68;"	d
+color	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static int color;$/;"	f	class:FtcRobotControllerActivity
+colorAdjustedAngle	.\jni\Mk3Auto.cpp	228;"	d	file:
+colorSensor	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  ColorSensor colorSensor;$/;"	f	class:ColorSensorDriver
+com.qualcomm.ftcrobotcontroller	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^package com.qualcomm.ftcrobotcontroller;$/;"	p
+com.qualcomm.ftcrobotcontroller	.\java\com\qualcomm\ftcrobotcontroller\package-info.java	/^package com.qualcomm.ftcrobotcontroller;/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\DeadReckoningAutonomous.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\FtcOpModeRegister.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMUTester.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IntakeTest.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\JoystickTest.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\MenuTest.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\NullOp.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\AdafruitRGBExample.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\HTRGBExample.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearIrExample.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MRGyroTest.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MRRGBExample.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAuto.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAutoSensors.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotDriveTouch.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrEvent.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrSeek.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManual.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManual1.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManualSensors.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotOdsDetectEvent.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotOdsFollowEvent.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotSquare.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetry.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetrySensors.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTouchEvent.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\package-info.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+com.qualcomm.ftcrobotcontroller.opmodes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^package com.qualcomm.ftcrobotcontroller.opmodes;$/;"	p
+combinationPress	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    private boolean combinationPress(Buttons[] btn) \/\/TODO: Make this a lookup table.$/;"	m	class:Button	file:
+compass	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  CompassSensor compass;$/;"	f	class:CompassCalibration
+complexMultiply	.\jni\maths.h	/^v2f complexMultiply(v2f a, v2f b)$/;"	f
+connection	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected ServiceConnection connection = new ServiceConnection() {$/;"	f	class:FtcRobotControllerActivity
+constStrcmp	.\jni\jni_functions.h	86;"	d
+constStrncmp	.\jni\jni_functions.h	84;"	d
+context	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected Context context;$/;"	f	class:FtcRobotControllerActivity
+controllerService	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected FtcRobotControllerService controllerService;$/;"	f	class:FtcRobotControllerActivity
+convertPixelToRGB	.\jni\vision.h	/^void convertPixelToRGB(int x, int y, int v_val, int u_val)$/;"	f
+convertToRGB	.\jni\vision.h	/^void convertToRGB()$/;"	f
+crash	.\jni\misc.h	36;"	d
+cross	.\jni\maths.h	/^v3f cross(v3f a, v3f b)$/;"	f
+cubicBezier	.\jni\maths.h	/^float cubicBezier(float t, float p0, float p1, float p2, float p3)$/;"	f
+currentAddress	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  int currentAddress = IR_SEEKER_V3_ORIGINAL_ADDRESS;$/;"	f	class:LinearI2cAddressChange
+currentByte	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    private int currentByte = 0; \/\/Set these in update function$/;"	f	class:Button	file:
+currentByte	.\jni\Button.h	/^    int currentByte;$/;"	m	struct:Button
+currentColor	.\jni\Mk3Auto.cpp	49;"	d	file:
+current_shoulder_frame	.\jni\arm.h	/^int current_shoulder_frame = 0;$/;"	v
+current_time	.\jni\robotics.h	/^float current_time;$/;"	v
+customAutonomousUpdate	.\jni\autonomous.h	/^void (*customAutonomousUpdate)();$/;"	v
+d	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public float d = 0.0f;$/;"	f	class:Mk2Teleop.PIDController
+d2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public float d2 = 0.0f;$/;"	f	class:Mk2Teleop.PIDController
+data	.\jni\maths.h	/^        float data[16];$/;"	m	union:m4x4f::__anon14
+data	.\jni\maths.h	/^        float data[20];$/;"	m	union:m4x5f::__anon16
+data	.\jni\maths.h	/^        float data[2];$/;"	m	union:v2f::__anon1
+data	.\jni\maths.h	/^        float data[3];$/;"	m	union:v3f::__anon3
+data	.\jni\maths.h	/^        float data[4];$/;"	m	union:v4f::__anon7
+data	.\jni\maths.h	/^        float data[5];$/;"	m	union:v5f::__anon10
+data	.\jni\maths.h	/^        float data[9];$/;"	m	union:m3x3f::__anon12
+dc_motor_voltage	.\jni\arm.h	/^float dc_motor_voltage = 12;$/;"	v
+deadZone	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    float deadZone(float val)$/;"	m	class:Mk1Teleop
+deadZone	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static float deadZone(float val)$/;"	m	class:Mk2Teleop
+deadZone	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static void deadZone(float[] stick)$/;"	m	class:Mk2Teleop
+deadzone	.\jni\robotics.h	/^v2f deadzone(v2f stick)$/;"	f
+deadzoneAdjust	.\jni\robotics.h	/^float deadzoneAdjust(float a)$/;"	f
+deadzone_radius	.\jni\robotics.h	45;"	d
+debuzz	.\jni\robotics.h	43;"	d
+defineJni	.\jni\jni_functions.h	557;"	d
+defineJniIn	.\jni\jni_functions.h	515;"	d
+defineJniIn	.\jni\jni_functions.h	98;"	d
+defineJniOut	.\jni\jni_functions.h	223;"	d
+defineJniOut	.\jni\jni_functions.h	537;"	d
+delay	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public void delay(int time)$/;"	m	class:IMU
+devMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  DcMotorController.DeviceMode devMode;$/;"	f	class:NxtTeleOp
+device	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  public ColorSensorDevice device = ColorSensorDevice.MODERN_ROBOTICS_I2C;$/;"	f	class:ColorSensorDriver
+dib_cache_overhead	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final int dib_cache_overhead = 4;$/;"	f	class:IMU
+dim	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMUTester.java	/^    DeviceInterfaceModule dim;$/;"	f	class:IMUTester
+dim	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    DeviceInterfaceModule dim;$/;"	f	class:Mk2Teleop
+dim	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^DeviceInterfaceModule dim;$/;"	f	class:Mk3Auto
+dim	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^DeviceInterfaceModule dim;$/;"	f	class:Mk3Teleop
+dim	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  DeviceInterfaceModule dim;$/;"	f	class:LinearI2cAddressChange
+dimmer	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected Dimmer dimmer;$/;"	f	class:FtcRobotControllerActivity
+dist_to_treads	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    public static final float dist_to_treads = (float) 7.04;\/\/Currently in inches, not sure if we have standard units$/;"	f	class:Drive
+dot	.\jni\maths.h	/^float dot(v2f a, v2f b)$/;"	f
+dot	.\jni\maths.h	/^float dot(v3f a, v3f b)$/;"	f
+driveDistCm	.\jni\autonomous.h	/^void driveDistCm(float dist, float vIs)$/;"	f
+driveDistIn	.\jni\autonomous.h	/^void driveDistIn(float dist, float vIs)$/;"	f
+driveOnCourseCm	.\jni\autonomous.h	/^void driveOnCourseCm(float dist, float vIs,$/;"	f
+driveOnCourseIn	.\jni\autonomous.h	/^void driveOnCourseIn(float dist, float vIs,$/;"	f
+driveStraight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    public float[] driveStraight(float heading, float target)\/\/Call when stick is +- 1 y, need a state machine for this. (if stick forward, then set heading and run this)$/;"	m	class:Drive
+drive_stick	.\jni\Mk3Teleop.cpp	31;"	d	file:
+drive_to_ir_beacon	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    int drive_to_ir_beacon ()$/;"	m	class:PushBotHardwareSensors
+drive_to_ir_beacon_done	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    final int drive_to_ir_beacon_done = 1;$/;"	f	class:PushBotHardwareSensors
+drive_to_ir_beacon_invalid	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    final int drive_to_ir_beacon_invalid = -1; \/\/ Unknown failure$/;"	f	class:PushBotHardwareSensors
+drive_to_ir_beacon_not_detected	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    final int drive_to_ir_beacon_not_detected = -2;$/;"	f	class:PushBotHardwareSensors
+drive_to_ir_beacon_running	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    final int drive_to_ir_beacon_running = 0;$/;"	f	class:PushBotHardwareSensors
+drive_toggle	.\jni\Mk3Teleop.cpp	32;"	d	file:
+drive_using_encoders	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    boolean drive_using_encoders$/;"	m	class:PushBotHardware
+dt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public double dt = 0;$/;"	f	class:IMU
+dt	.\jni\robotics.h	/^float dt;$/;"	v
+e	.\jni\maths.h	9;"	d
+elbow	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    DcMotor elbow;$/;"	f	class:Mk1Teleop
+elbow	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    DcMotor elbow;$/;"	f	class:Mk2Teleop
+elbow_1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static final float elbow_1 = \/\/the winch rotation where the arm switches modes$/;"	f	class:IK_solver
+elbow_2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static final float elbow_2 = \/\/the winch rotation where the arm is completely closed (toward the spring side)$/;"	f	class:IK_solver
+elbow_potentiometer	.\jni\arm.h	8;"	d
+elbow_potentiometer_angle	.\jni\arm.h	/^float elbow_potentiometer_angle = 0.0;$/;"	v
+elbow_potentiometer_port	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^IMU imu;int elbow_potentiometer_port = 7;$/;"	f	class:Mk3Auto
+elbow_potentiometer_port	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^int elbow_potentiometer_port = 7;$/;"	f	class:Mk3Teleop
+elbow_pulley_r	.\jni\arm.h	/^float elbow_pulley_r = 2.0f;$/;"	v
+elbow_radius	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static final float elbow_radius = 1.0f;$/;"	f	class:IK_solver
+enableLed	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  private void enableLed(boolean value) {$/;"	m	class:ColorSensorDriver	file:
+encoder_ticks_per_radian	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    public static final float encoder_ticks_per_radian = 1440.0f\/(2.0f*(float)Math.PI); \/\/TODO: might want to make this a global const$/;"	f	class:Mk2Teleop
+encoder_velocity_error	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    public static final float encoder_velocity_error = (float) 1.0;\/\/m\/s currently$/;"	f	class:Drive
+encoderticks_per_cm	.\jni\drive.h	26;"	d
+encoderticks_per_inch	.\jni\drive.h	25;"	d
+encoderticks_per_radian	.\jni\robotics.h	31;"	d
+entireScreenLayout	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected LinearLayout entireScreenLayout;$/;"	f	class:FtcRobotControllerActivity
+env	.\jni\jni_functions.h	/^JNIEnv * env;$/;"	v
+eul_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short eul_x = 0;$/;"	f	class:IMU
+eul_x_offset	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short eul_x_offset = 0;$/;"	f	class:IMU
+eul_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short eul_y = 0;$/;"	f	class:IMU
+eul_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short eul_z = 0;$/;"	f	class:IMU
+eventLoop	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected FtcEventLoop eventLoop;$/;"	f	class:FtcRobotControllerActivity
+ever	.\jni\misc.h	31;"	d
+exit_jump	.\jni\jni_functions.h	/^static jmp_buf exit_jump;$/;"	v
+fileSetup	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private FileInputStream fileSetup() {$/;"	m	class:FtcRobotControllerActivity	file:
+filter	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    void filter(int acc, int[] past_acc, int[] wavelet_acc, int[] filtered_acc, float[] past_vel, float dt)$/;"	m	class:IMU
+filterArmJoystick	.\jni\arm.h	/^float filterArmJoystick(float a)$/;"	f
+filter_threshold	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static int filter_threshold = 30;$/;"	f	class:IMU
+filter_write_location	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int filter_write_location = 0;$/;"	f	class:IMU
+filtered_acc_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int[] filtered_acc_x = new int[n_to_filter];$/;"	f	class:IMU
+filtered_acc_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int[] filtered_acc_y = new int[n_to_filter];$/;"	f	class:IMU
+filtered_acc_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int[] filtered_acc_z = new int[n_to_filter];$/;"	f	class:IMU
+firstBattery	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private boolean firstBattery = true;$/;"	f	class:MatrixControllerDemo	file:
+firstMotors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private boolean firstMotors = true;$/;"	f	class:MatrixControllerDemo	file:
+firstServos	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private boolean firstServos = true;$/;"	f	class:MatrixControllerDemo	file:
+float32	.\jni\misc.h	/^typedef float float32;$/;"	t
+float64	.\jni\misc.h	/^typedef double float64;$/;"	t
+forearm_len	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static final float forearm_len = 13.5f;$/;"	f	class:IK_solver
+forearm_length	.\jni\arm.h	/^float forearm_length = 11.5f;$/;"	v
+forearm_print_theta	.\jni\Mk3Teleop.cpp	165;"	d	file:
+foundExpectedBytes	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  private boolean foundExpectedBytes(int[] byteArray, Lock lock, byte[] cache) {$/;"	m	class:LinearI2cAddressChange	file:
+g	.\jni\arm.h	/^float g = 384; \/\/gravity in " per sec$/;"	v
+gamepad	.\jni\Button.h	/^struct gamepad$/;"	s
+gamepad1	.\jni\Button.h	87;"	d
+gamepad2	.\jni\Button.h	90;"	d
+getArmTargetsPolar	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static float[] getArmTargetsPolar(float[] hand, boolean mode)$/;"	m	class:IK_solver
+getArmTargetsRectangular	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static float[] getArmTargetsRectangular(float[] hand, boolean mode)$/;"	m	class:IK_solver
+getBeaconColor	.\jni\vision.h	/^bool8 getBeaconColor()$/;"	f
+getControl	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        float getControl(float p, float p2, float dt)$/;"	m	class:Mk2Teleop.PIDController
+getDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public double getDouble(int index)$/;"	m	class:Mk3Auto
+getDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public double getDouble(int index)$/;"	m	class:Mk3Teleop
+getDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public double getDouble(int index)$/;"	m	class:test
+getFloat	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public float getFloat(int index)$/;"	m	class:Mk3Auto
+getFloat	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public float getFloat(int index)$/;"	m	class:Mk3Teleop
+getFloat	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public float getFloat(int index)$/;"	m	class:test
+getInt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public int getInt(int index)$/;"	m	class:Mk3Auto
+getInt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public int getInt(int index)$/;"	m	class:Mk3Teleop
+getInt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public int getInt(int index)$/;"	m	class:test
+getLong	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public long getLong(int index)$/;"	m	class:Mk3Auto
+getLong	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public long getLong(int index)$/;"	m	class:Mk3Teleop
+getLong	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public long getLong(int index)$/;"	m	class:test
+getRelativeDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public double getRelativeDouble()$/;"	m	class:Mk3Auto
+getRelativeDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public double getRelativeDouble()$/;"	m	class:Mk3Teleop
+getRelativeDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public double getRelativeDouble()$/;"	m	class:test
+getRelativeFloat	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public float getRelativeFloat()$/;"	m	class:Mk3Auto
+getRelativeFloat	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public float getRelativeFloat()$/;"	m	class:Mk3Teleop
+getRelativeFloat	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public float getRelativeFloat()$/;"	m	class:test
+getRelativeInt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public int getRelativeInt()$/;"	m	class:Mk3Auto
+getRelativeInt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public int getRelativeInt()$/;"	m	class:Mk3Teleop
+getRelativeInt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public int getRelativeInt()$/;"	m	class:test
+getRelativeLong	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public long getRelativeLong()$/;"	m	class:Mk3Auto
+getRelativeLong	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public long getRelativeLong()$/;"	m	class:Mk3Teleop
+getRelativeLong	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public long getRelativeLong()$/;"	m	class:test
+getState	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    private static boolean getState(int btn, int bits) \/\/Might be better to put this in the enum (in a separate file) and import that.$/;"	m	class:Button	file:
+getState	.\jni\Button.h	/^    static bool getState(int btn, int allBits)$/;"	f	struct:Button
+get_current_color	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int get_current_color()$/;"	m	class:Mk3TeleopRobotStateElements
+get_elbow_potentiometer	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int get_elbow_potentiometer()$/;"	m	class:Mk3TeleopRobotStateElements
+get_forearm_print_theta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_forearm_print_theta()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad1_buttons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int get_gamepad1_buttons()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad1_joystick1_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad1_joystick1_x()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad1_joystick1_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad1_joystick1_y()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad1_joystick2_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad1_joystick2_x()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad1_joystick2_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad1_joystick2_y()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad1_trigger1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad1_trigger1()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad1_trigger2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad1_trigger2()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad2_buttons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int get_gamepad2_buttons()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad2_joystick1_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad2_joystick1_x()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad2_joystick1_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad2_joystick1_y()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad2_joystick2_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad2_joystick2_x()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad2_joystick2_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad2_joystick2_y()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad2_trigger1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad2_trigger1()$/;"	m	class:Mk3TeleopRobotStateElements
+get_gamepad2_trigger2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_gamepad2_trigger2()$/;"	m	class:Mk3TeleopRobotStateElements
+get_hand	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_hand()$/;"	m	class:Mk3TeleopRobotStateElements
+get_heading	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_heading()$/;"	m	class:Mk3TeleopRobotStateElements
+get_hook_left	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_hook_left()$/;"	m	class:Mk3TeleopRobotStateElements
+get_hook_right	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_hook_right()$/;"	m	class:Mk3TeleopRobotStateElements
+get_intake	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_intake()$/;"	m	class:Mk3TeleopRobotStateElements
+get_left_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_left_drive()$/;"	m	class:Mk3TeleopRobotStateElements
+get_left_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int get_left_drive_encoder()$/;"	m	class:Mk3TeleopRobotStateElements
+get_right_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_right_drive()$/;"	m	class:Mk3TeleopRobotStateElements
+get_right_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int get_right_drive_encoder()$/;"	m	class:Mk3TeleopRobotStateElements
+get_roll	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_roll()$/;"	m	class:Mk3TeleopRobotStateElements
+get_shoulder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_shoulder()$/;"	m	class:Mk3TeleopRobotStateElements
+get_shoulder_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int get_shoulder_encoder()$/;"	m	class:Mk3TeleopRobotStateElements
+get_shoulder_potentiometer	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int get_shoulder_potentiometer()$/;"	m	class:Mk3TeleopRobotStateElements
+get_shoulder_print_theta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_shoulder_print_theta()$/;"	m	class:Mk3TeleopRobotStateElements
+get_slide	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_slide()$/;"	m	class:Mk3TeleopRobotStateElements
+get_tilt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_tilt()$/;"	m	class:Mk3TeleopRobotStateElements
+get_time	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static double get_time()$/;"	m	class:Mk3TeleopRobotStateElements
+get_winch	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_winch()$/;"	m	class:Mk3TeleopRobotStateElements
+get_winch_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int get_winch_encoder()$/;"	m	class:Mk3TeleopRobotStateElements
+get_x_velocity	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_x_velocity()$/;"	m	class:Mk3TeleopRobotStateElements
+get_y_velocity	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static float get_y_velocity()$/;"	m	class:Mk3TeleopRobotStateElements
+gigabyte	.\jni\misc.h	47;"	d
+haarWaveletTransform	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    void haarWaveletTransform(int[] in, int[] out, int n)$/;"	m	class:IMU
+hand	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^Servo hand;$/;"	f	class:Mk3Auto
+hand	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^Servo hand;$/;"	f	class:Mk3Teleop
+hand	.\jni\robotics.h	19;"	d
+hand_blue_position	.\jni\Mk3Teleop.cpp	/^float hand_blue_position = 0.3;$/;"	v
+hand_level_position	.\jni\Mk3Teleop.cpp	/^float hand_level_position = 0.6;$/;"	v
+hand_manual_control	.\jni\Mk3Teleop.cpp	38;"	d	file:
+hand_positions	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    float[] hand_positions = new float[]{0.0f, 0.0f};$/;"	f	class:Mk1Teleop
+hand_red_position	.\jni\Mk3Teleop.cpp	/^float hand_red_position = 0.9;$/;"	v
+hand_servo	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    Servo hand_servo;$/;"	f	class:Mk2Teleop
+handleBattery	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    protected void handleBattery()$/;"	m	class:MatrixControllerDemo
+handleMotors	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    protected void handleMotors()$/;"	m	class:MatrixControllerDemo
+handleServos	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    protected void handleServos()$/;"	m	class:MatrixControllerDemo
+has_left_drive_encoder_reached	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    boolean has_left_drive_encoder_reached (double p_count)$/;"	m	class:PushBotHardware
+has_left_drive_encoder_reset	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    boolean has_left_drive_encoder_reset ()$/;"	m	class:PushBotHardware
+has_right_drive_encoder_reached	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    boolean has_right_drive_encoder_reached (double p_count)$/;"	m	class:PushBotHardware
+has_right_drive_encoder_reset	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    boolean has_right_drive_encoder_reset ()$/;"	m	class:PushBotHardware
+have_drive_encoders_reached	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    boolean have_drive_encoders_reached$/;"	m	class:PushBotHardware
+have_drive_encoders_reset	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    boolean have_drive_encoders_reset ()$/;"	m	class:PushBotHardware
+heading	.\jni\drive.h	18;"	d
+heading	.\jni\maths.h	/^            float heading;$/;"	m	struct:v3f::__anon3::__anon6
+highest_read_address	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public int highest_read_address = 0x2D;$/;"	f	class:IMU
+hittingMenuButtonBrightensScreen	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected void hittingMenuButtonBrightensScreen() {$/;"	m	class:FtcRobotControllerActivity
+hook_left	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^Servo hook_left;$/;"	f	class:Mk3Auto
+hook_left	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^Servo hook_left;$/;"	f	class:Mk3Teleop
+hook_left	.\jni\robotics.h	25;"	d
+hook_level_position	.\jni\Mk3Teleop.cpp	/^float hook_level_position = 0.0f;$/;"	v
+hook_locked_position	.\jni\Mk3Teleop.cpp	/^float hook_locked_position = 1.0f;$/;"	v
+hook_right	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^Servo hook_right;$/;"	f	class:Mk3Auto
+hook_right	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^Servo hook_right;$/;"	f	class:Mk3Teleop
+hook_right	.\jni\robotics.h	28;"	d
+hook_toggle	.\jni\Mk3Teleop.cpp	56;"	d	file:
+hopper_tilt	.\jni\Mk3Teleop.cpp	37;"	d	file:
+i	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public float i = 0.0f;$/;"	f	class:Mk2Teleop.PIDController
+i	.\jni\maths.h	/^            float i;$/;"	m	struct:v3f::__anon3::__anon5
+i	.\jni\maths.h	/^            float i;$/;"	m	struct:v4f::__anon7::__anon9
+i2c_address	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public int i2c_address = 0x28<<1; \/\/the default address, modern robotics doubles the address for some reason$/;"	f	class:IMU
+i2cd	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public I2cDevice i2cd;$/;"	f	class:IMU
+image	.\jni\vision.h	128;"	d
+image	.\jni\vision.h	86;"	d
+immersion	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected ImmersiveMode immersion;$/;"	f	class:FtcRobotControllerActivity
+imu	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMUTester.java	/^    IMU imu;$/;"	f	class:IMUTester
+imu	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^IMU imu;int elbow_potentiometer_port = 7;$/;"	f	class:Mk3Auto
+imu_heading	.\jni\autonomous.h	14;"	d
+imu_roll	.\jni\autonomous.h	16;"	d
+imu_state	.\jni\autonomous.h	/^struct imu_state$/;"	s
+imu_tilt	.\jni\autonomous.h	15;"	d
+imu_vel	.\jni\autonomous.h	17;"	d
+indicator	.\jni\vision.h	7;"	d
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public int init(byte mode, byte unit_flags)$/;"	m	class:IMU
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IntakeTest.java	/^    @Override public void init()$/;"	m	class:IntakeTest
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	public void init() {$/;"	m	class:K9AutoTime
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\NullOp.java	/^  public void init() {$/;"	m	class:NullOp
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  public void init() {$/;"	m	class:CompassCalibration
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^  public void init() {$/;"	m	class:IrSeekerOp
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	public void init() {$/;"	m	class:K9IrSeeker
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	public void init() {$/;"	m	class:K9Line
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	public void init() {$/;"	m	class:K9TankDrive
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	public void init() {$/;"	m	class:K9TeleOp
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    public void init()$/;"	m	class:MatrixControllerDemo
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	public void init() {$/;"	m	class:MatrixK9TeleOp
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  public void init() {$/;"	m	class:NxtTeleOp
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    @Override public void init ()$/;"	m	class:PushBotHardware
+init	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    @Override public void init ()$/;"	m	class:PushBotHardwareSensors
+initCamera	.\jni\vision.h	/^void initCamera()$/;"	f
+initJNI	.\jni\jni_functions.h	/^void initJNI()$/;"	f
+initJNI	.\jni\jni_functions.h	66;"	d
+init_loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\NullOp.java	/^  public void init_loop() {$/;"	m	class:NullOp
+init_loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  public void init_loop() {$/;"	m	class:CompassCalibration
+init_loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  public void init_loop() {$/;"	m	class:NxtTeleOp
+input_filename	.\jni\jni_functions.h	/^const char * input_filename = __BASE_FILE__;$/;"	v
+input_name_part_len	.\jni\jni_functions.h	/^int input_name_part_len = 0;$/;"	v
+input_path_part_len	.\jni\jni_functions.h	/^int input_path_part_len = 0;$/;"	v
+inside_elbow_omega	.\jni\arm.h	/^float inside_elbow_omega = 0.0;$/;"	v
+inside_elbow_theta	.\jni\arm.h	/^float inside_elbow_theta = 0;$/;"	v
+int16	.\jni\misc.h	/^typedef int16_t int16;$/;"	t
+int32	.\jni\misc.h	/^typedef int32_t int32;$/;"	t
+int64	.\jni\misc.h	/^typedef int64_t int64;$/;"	t
+int8	.\jni\misc.h	/^typedef int8_t int8;$/;"	t
+intake	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IntakeTest.java	/^    DcMotor intake;$/;"	f	class:IntakeTest
+intake	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    DcMotor intake;$/;"	f	class:Mk2Teleop
+intake	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^DcMotor intake;$/;"	f	class:Mk3Auto
+intake	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^DcMotor intake;$/;"	f	class:Mk3Teleop
+intake	.\jni\robotics.h	16;"	d
+intake_reverse	.\jni\Mk3Teleop.cpp	36;"	d	file:
+intake_servo	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    Servo intake_servo;$/;"	f	class:Mk2Teleop
+intake_toggle	.\jni\Mk3Teleop.cpp	35;"	d	file:
+interruptable	.\jni\jni_functions.h	23;"	d
+invSqrt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    static float invSqrt(float a)$/;"	m	class:IK_solver
+invSqrt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static float invSqrt(float a)$/;"	m	class:Mk2Teleop
+invSqrt	.\jni\maths.h	/^float invSqrt(float a)$/;"	f
+inverseHaarWaveletTransform	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    void inverseHaarWaveletTransform(int[] in, int[] out, int n)$/;"	m	class:IMU
+irSeeker	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^  IrSeekerSensor irSeeker;$/;"	f	class:IrSeekerOp
+irSeeker	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	IrSeekerSensor irSeeker;$/;"	f	class:K9IrSeeker
+irSeeker	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearIrExample.java	/^  IrSeekerSensor irSeeker;$/;"	f	class:LinearIrExample
+irSeeker	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrSeek.java	/^    IrSeekerSensor irSeeker;$/;"	f	class:PushBotIrSeek
+isAngleGreaterDeg	.\jni\maths.h	/^bool isAngleGreaterDeg(float a, float b)\/\/TODO: Better name$/;"	f
+isExternalStorageWritable	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMUTester.java	/^    public boolean isExternalStorageWritable() {$/;"	m	class:IMUTester
+is_copy	.\jni\jni_functions.h	/^    bool8 is_copy;$/;"	m	struct:RobotState
+is_touch_sensor_pressed	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    boolean is_touch_sensor_pressed ()$/;"	m	class:PushBotHardwareSensors
+j	.\jni\maths.h	/^            float j;$/;"	m	struct:v3f::__anon3::__anon5
+j	.\jni\maths.h	/^            float j;$/;"	m	struct:v4f::__anon7::__anon9
+java_out_file_prefix	.\jni\jni_functions.h	248;"	d
+java_out_file_suffix	.\jni\jni_functions.h	249;"	d
+java_output_file	.\jni\jni_functions.h	/^FILE * java_output_file;$/;"	v
+java_output_filename	.\jni\jni_functions.h	/^char * java_output_filename = 0;$/;"	v
+java_output_name_part_len	.\jni\jni_functions.h	/^uint java_output_name_part_len = 0;$/;"	v
+java_output_path_part_len	.\jni\jni_functions.h	/^uint java_output_path_part_len = 0;$/;"	v
+jaw	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^  Servo jaw;$/;"	f	class:LinearK9TeleOp
+jawPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^  double jawPosition;$/;"	f	class:LinearK9TeleOp
+jbyte	.\jni\jni_functions.h	/^typedef byte jbyte;$/;"	t
+jbyteArray	.\jni\jni_functions.h	/^typedef byte jbyteArray;$/;"	t
+jcamera_buffer	.\jni\vision.h	/^jbyteArray jcamera_buffer;$/;"	v
+jclass	.\jni\jni_functions.h	/^typedef byte jclass;$/;"	t
+jfieldID	.\jni\jni_functions.h	/^typedef byte jfieldID;$/;"	t
+jniDoubleIn	.\jni\jni_functions.h	574;"	d
+jniFloatIn	.\jni\jni_functions.h	571;"	d
+jniGenerate	.\jni\jni_functions.h	/^void jniGenerate()$/;"	f
+jniGenerate	.\jni\jni_functions.h	/^void jniGenerate(){}$/;"	f
+jniIntIn	.\jni\jni_functions.h	565;"	d
+jniLongIn	.\jni\jni_functions.h	568;"	d
+jniMain	.\jni\Mk3Auto.cpp	/^void jniMain(JNIEnv * _env, jobject _self)$/;"	f
+jniMain	.\jni\Mk3Auto.cpp	44;"	d	file:
+jniMain	.\jni\Mk3Auto.cpp	45;"	d	file:
+jniMain	.\jni\Mk3Teleop.cpp	/^void jniMain(JNIEnv * _env, jobject _self)$/;"	f
+jniMain	.\jni\Mk3Teleop.cpp	10;"	d	file:
+jniMain	.\jni\Mk3Teleop.cpp	11;"	d	file:
+jniMain	.\jni\test.cpp	/^extern "C" void jniMain(JNIEnv * _env, jobject _self)$/;"	f
+jniMain	.\jni\test.cpp	7;"	d	file:
+jniOut	.\jni\jni_functions.h	555;"	d
+jniOutStruct	.\jni\jni_functions.h	/^struct jniOutStruct{};$/;"	s
+jniOutVar	.\jni\jni_functions.h	/^jniOutStruct jniOutVar;$/;"	v
+jniStructIn	.\jni\jni_functions.h	576;"	d
+jniStructIn_line	.\jni\jni_functions.h	/^void * jniStructIn_line(int struct_size, const char * s, const char * filename, int line)$/;"	f
+jni_constructor_string	.\jni\jni_functions.h	/^char * jni_constructor_string = 0;$/;"	v
+jni_import_string	.\jni\jni_functions.h	/^char * jni_import_string = 0;$/;"	v
+jni_misc_string	.\jni\jni_functions.h	/^char * jni_misc_string = 0;$/;"	v
+jni_run_opmode_string	.\jni\jni_functions.h	/^char * jni_run_opmode_string = 0;$/;"	v
+jni_variables_string	.\jni\jni_functions.h	/^char * jni_variables_string = 0;$/;"	v
+jobject	.\jni\jni_functions.h	/^typedef byte jobject;$/;"	t
+joystick1	.\jni\Button.h	/^    v2f joystick1;$/;"	m	struct:gamepad
+joystick2	.\jni\Button.h	/^    v2f joystick2;$/;"	m	struct:gamepad
+jrobot_state	.\jni\jni_functions.h	/^jbyteArray jrobot_state;$/;"	v
+k	.\jni\maths.h	/^            float k;$/;"	m	struct:v3f::__anon3::__anon5
+k	.\jni\maths.h	/^            float k;$/;"	m	struct:v4f::__anon7::__anon9
+kBaseSpeed	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrSeek.java	/^    final static double kBaseSpeed = 0.15;  \/\/ Higher values will cause the robot to move faster$/;"	f	class:PushBotIrSeek
+kMaximumStrength	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrSeek.java	/^    final static double kMaximumStrength = 0.60; \/\/ Lower values will cause the robot to stop sooner$/;"	f	class:PushBotIrSeek
+kMinimumStrength	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrSeek.java	/^    final static double kMinimumStrength = 0.08; \/\/ Higher values will cause the robot to follow closer$/;"	f	class:PushBotIrSeek
+k_d	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public float k_d;$/;"	f	class:Mk2Teleop.PIDController
+k_d2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public float k_d2;$/;"	f	class:Mk2Teleop.PIDController
+k_i	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public float k_i;$/;"	f	class:Mk2Teleop.PIDController
+k_p	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public float k_p;$/;"	f	class:Mk2Teleop.PIDController
+keepTurning	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  private boolean keepTurning = true;$/;"	f	class:CompassCalibration	file:
+kilobyte	.\jni\misc.h	45;"	d
+led	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  LED led;$/;"	f	class:ColorSensorDriver
+leftMotor	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotDriveTouch.java	/^    DcMotor leftMotor;$/;"	f	class:PushBotDriveTouch
+leftMotor	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrSeek.java	/^    DcMotor leftMotor;$/;"	f	class:PushBotIrSeek
+leftMotor	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotSquare.java	/^    DcMotor leftMotor;$/;"	f	class:PushBotSquare
+left_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    DcMotor left_drive;$/;"	f	class:Mk1Teleop
+left_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    DcMotor left_drive;$/;"	f	class:Mk2Teleop
+left_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^DcMotor left_drive;$/;"	f	class:Mk3Auto
+left_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^DcMotor left_drive;$/;"	f	class:Mk3Teleop
+left_drive	.\jni\drive.h	14;"	d
+left_drive_encoder	.\jni\drive.h	20;"	d
+left_trigger	.\jni\Button.h	/^    float left_trigger;$/;"	m	struct:gamepad
+len	.\jni\misc.h	33;"	d
+lerp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    float lerp(float a, float b, float t)$/;"	m	class:IMU
+lerp	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    float lerp(float a, float b, float t)$/;"	m	class:Mk2Teleop
+lerp	.\jni\maths.h	/^float lerp(float a, float b, float t)$/;"	f
+lia_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short lia_x = 0;$/;"	f	class:IMU
+lia_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short lia_y = 0;$/;"	f	class:IMU
+lia_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short lia_z = 0;$/;"	f	class:IMU
+location	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        public int location;$/;"	f	class:Button.Buttons
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IntakeTest.java	/^    @Override public void loop()$/;"	m	class:IntakeTest
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	public void loop() {$/;"	m	class:K9AutoTime
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\NullOp.java	/^  public void loop() {$/;"	m	class:NullOp
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  public void loop() {$/;"	m	class:CompassCalibration
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^  public void loop() {$/;"	m	class:IrSeekerOp
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	public void loop() {$/;"	m	class:K9IrSeeker
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	public void loop() {$/;"	m	class:K9Line
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	public void loop() {$/;"	m	class:K9TankDrive
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	public void loop() {$/;"	m	class:K9TeleOp
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    public void loop()$/;"	m	class:MatrixControllerDemo
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	public void loop() {$/;"	m	class:MatrixK9TeleOp
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  public void loop() {$/;"	m	class:NxtTeleOp
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAuto.java	/^    @Override public void loop ()$/;"	m	class:PushBotAuto
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAutoSensors.java	/^    @Override public void loop ()$/;"	m	class:PushBotAutoSensors
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    @Override public void loop ()$/;"	m	class:PushBotHardware
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrEvent.java	/^    @Override public void loop ()$/;"	m	class:PushBotIrEvent
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManual.java	/^    @Override public void loop ()$/;"	m	class:PushBotManual
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManual1.java	/^    @Override public void loop ()$/;"	m	class:PushBotManual1
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManualSensors.java	/^    @Override public void loop ()$/;"	m	class:PushBotManualSensors
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotOdsDetectEvent.java	/^    @Override public void loop ()$/;"	m	class:PushBotOdsDetectEvent
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotOdsFollowEvent.java	/^    @Override public void loop ()$/;"	m	class:PushBotOdsFollowEvent
+loop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTouchEvent.java	/^    @Override public void loop ()$/;"	m	class:PushBotTouchEvent
+loopOnce	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private boolean loopOnce = false;$/;"	f	class:MatrixControllerDemo	file:
+low_passed_inside_elbow_theta	.\jni\arm.h	/^float low_passed_inside_elbow_theta = 0;$/;"	v
+lowest_read_address	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public int lowest_read_address = 0x1A;$/;"	f	class:IMU
+m3x3f	.\jni\maths.h	/^struct m3x3f$/;"	s
+m4x4f	.\jni\maths.h	/^struct m4x4f$/;"	s
+m4x5f	.\jni\maths.h	/^struct m4x5f$/;"	s
+m_hand_position	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    void m_hand_position (double p_position)$/;"	m	class:PushBotHardware
+m_left_arm_power	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    void m_left_arm_power (double p_level)$/;"	m	class:PushBotHardware
+m_warning_message	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    void m_warning_message (String p_exception_message)$/;"	m	class:PushBotHardware
+main	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^native void main();$/;"	m	class:Mk3Auto
+main	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^native void main();$/;"	m	class:Mk3Teleop
+main	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^native void main();$/;"	m	class:test
+main	.\jni\jni_functions.h	/^int main(int n_args, char ** args)$/;"	f
+max	.\jni\misc.h	12;"	d
+max_java_code	.\jni\jni_functions.h	39;"	d
+mc	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private MatrixDcMotorController mc;$/;"	f	class:MatrixControllerDemo	file:
+megabyte	.\jni\misc.h	46;"	d
+min	.\jni\misc.h	11;"	d
+min_motor_power	.\jni\robotics.h	42;"	d
+mode_accgyro	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_accgyro      = 0b0101;$/;"	f	class:IMU
+mode_accmag	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_accmag       = 0b0100;$/;"	f	class:IMU
+mode_acconly	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_acconly      = 0b0001;$/;"	f	class:IMU
+mode_amg	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_amg          = 0b0111;$/;"	f	class:IMU
+mode_compass	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_compass      = 0b1001;$/;"	f	class:IMU
+mode_config	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_config       = 0b0000;$/;"	f	class:IMU
+mode_gyroonly	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_gyroonly     = 0b0011;$/;"	f	class:IMU
+mode_imu	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_imu          = 0b1000;$/;"	f	class:IMU
+mode_m4g	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_m4g          = 0b1010;$/;"	f	class:IMU
+mode_maggyro	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_maggyro      = 0b0110;$/;"	f	class:IMU
+mode_magonly	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_magonly      = 0b0010;$/;"	f	class:IMU
+mode_ndof	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_ndof         = 0b1100;$/;"	f	class:IMU
+mode_ndof_fmc_off	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte mode_ndof_fmc_off = 0b1011;$/;"	f	class:IMU
+modifier	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    private static float[] modifier = new float[2];\/\/Should remember for every cycle, this is what the system is based around.$/;"	f	class:Drive	file:
+momentum_compensation_angle_threshold	.\jni\arm.h	263;"	d
+momentum_compensation_speed_threshold	.\jni\arm.h	262;"	d
+monitorCalibrationSuccess	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  private boolean monitorCalibrationSuccess = false;$/;"	f	class:CompassCalibration	file:
+motor1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private DcMotor motor1;$/;"	f	class:MatrixControllerDemo	file:
+motor2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private DcMotor motor2;$/;"	f	class:MatrixControllerDemo	file:
+motor3	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private DcMotor motor3;$/;"	f	class:MatrixControllerDemo	file:
+motor4	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private DcMotor motor4;$/;"	f	class:MatrixControllerDemo	file:
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	DcMotor motorLeft;$/;"	f	class:K9AutoTime
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  DcMotor motorLeft;$/;"	f	class:CompassCalibration
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^  DcMotor motorLeft;$/;"	f	class:IrSeekerOp
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	DcMotor motorLeft;$/;"	f	class:K9IrSeeker
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	DcMotor motorLeft;$/;"	f	class:K9Line
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	DcMotor motorLeft;$/;"	f	class:K9TankDrive
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	DcMotor motorLeft;$/;"	f	class:K9TeleOp
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearIrExample.java	/^  DcMotor motorLeft;$/;"	f	class:LinearIrExample
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^  DcMotor motorLeft;$/;"	f	class:LinearK9TeleOp
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	DcMotor motorLeft;$/;"	f	class:MatrixK9TeleOp
+motorLeft	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  DcMotor motorLeft;$/;"	f	class:NxtTeleOp
+motorOscTimer	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private ElapsedTime motorOscTimer = new ElapsedTime(0);$/;"	f	class:MatrixControllerDemo	file:
+motorPower	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private double motorPower = 1.0;$/;"	f	class:MatrixControllerDemo	file:
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	DcMotor motorRight;$/;"	f	class:K9AutoTime
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  DcMotor motorRight;$/;"	f	class:CompassCalibration
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^  DcMotor motorRight;$/;"	f	class:IrSeekerOp
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	DcMotor motorRight;$/;"	f	class:K9IrSeeker
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	DcMotor motorRight;$/;"	f	class:K9Line
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	DcMotor motorRight;$/;"	f	class:K9TankDrive
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	DcMotor motorRight;$/;"	f	class:K9TeleOp
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearIrExample.java	/^  DcMotor motorRight;$/;"	f	class:LinearIrExample
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^  DcMotor motorRight;$/;"	f	class:LinearK9TeleOp
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	DcMotor motorRight;$/;"	f	class:MatrixK9TeleOp
+motorRight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  DcMotor motorRight;$/;"	f	class:NxtTeleOp
+motorSet	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private Set<DcMotor> motorSet = new HashSet<DcMotor>();$/;"	f	class:MatrixControllerDemo	file:
+move_arm_upward_until_touch	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    boolean move_arm_upward_until_touch ()$/;"	m	class:PushBotHardwareSensors
+n_reads	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public int n_reads = 0;$/;"	f	class:IMU
+n_to_filter	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static int n_to_filter = 256; \/\/must be a power of 2$/;"	f	class:IMU
+n_types	.\jni\jni_functions.h	/^enum types{ type_bool, type_byte, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+n_valid_shoulder_angles	.\jni\arm.h	/^int n_valid_shoulder_angles = 0;$/;"	v
+neck	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^  Servo neck;$/;"	f	class:LinearK9TeleOp
+neckDelta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^  double neckDelta = 0.01;$/;"	f	class:LinearK9TeleOp
+neckPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^  double neckPosition;$/;"	f	class:LinearK9TeleOp
+neverest_k_i	.\jni\arm.h	/^float neverest_k_i = dc_motor_voltage\/neverest_max_speed;$/;"	v
+neverest_k_t_over_R	.\jni\arm.h	/^float neverest_k_t_over_R = neverest_max_torque\/dc_motor_voltage;$/;"	v
+neverest_max_speed	.\jni\arm.h	/^float neverest_max_speed = 13.51; \/\/in rad\/s$/;"	v
+neverest_max_torque	.\jni\arm.h	/^float neverest_max_torque = 4334000; \/\/in g in^2\/s^2$/;"	v
+new	.\jni\misc.h	9;"	d
+newAddress	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  int newAddress = 0x42;$/;"	f	class:LinearI2cAddressChange
+norm	.\jni\maths.h	/^float norm(v2f a)$/;"	f
+norm	.\jni\maths.h	/^float norm(v3f a)$/;"	f
+normSq	.\jni\maths.h	/^float normSq(v2f a)$/;"	f
+normSq	.\jni\maths.h	/^float normSq(v3f a)$/;"	f
+normalize	.\jni\maths.h	/^v2f normalize(v2f a)$/;"	f
+normalize	.\jni\maths.h	/^v3f normalize(v3f a)$/;"	f
+normalizeScale	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    static void normalizeScale(float[] v, float s)$/;"	m	class:IK_solver
+normalizeScale	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static void normalizeScale(float[] v, float s)$/;"	m	class:Mk2Teleop
+normalizeScale	.\jni\maths.h	/^v2f normalizeScale(v2f a, float s)$/;"	f
+normalizeScale	.\jni\maths.h	/^v3f normalizeScale(v3f a, float s)$/;"	f
+numOpLoops	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  int numOpLoops = 1;$/;"	f	class:NxtTeleOp
+offset	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    final int offset = 40;\/\/Location of the Button storage integer in Gamepad.java$/;"	f	class:Button
+offset	.\jni\Button.h	6;"	d
+old_time	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public long old_time;$/;"	f	class:IMU
+onActivityResult	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override protected void onActivityResult(int request, int result, Intent intent) {$/;"	m	class:FtcRobotControllerActivity
+onConfigurationChanged	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override public void onConfigurationChanged(Configuration newConfig) {$/;"	m	class:FtcRobotControllerActivity
+onCreate	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override protected void onCreate(Bundle savedInstanceState) {$/;"	m	class:FtcRobotControllerActivity
+onCreateOptionsMenu	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override public boolean onCreateOptionsMenu(Menu menu) {$/;"	m	class:FtcRobotControllerActivity
+onNewIntent	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override protected void onNewIntent(Intent intent) {$/;"	m	class:FtcRobotControllerActivity
+onOptionsItemSelected	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override public boolean onOptionsItemSelected(MenuItem item) {$/;"	m	class:FtcRobotControllerActivity
+onPause	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override public void onPause() {$/;"	m	class:FtcRobotControllerActivity
+onPreviewFrame	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^    public void onPreviewFrame(byte[] data, Camera camera)$/;"	m	class:Mk3Auto.CameraPreviewCallback
+onResume	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override protected void onResume() {$/;"	m	class:FtcRobotControllerActivity
+onServiceBind	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public void onServiceBind(FtcRobotControllerService service) {$/;"	m	class:FtcRobotControllerActivity
+onStart	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override protected void onStart() {$/;"	m	class:FtcRobotControllerActivity
+onStop	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override protected void onStop() {$/;"	m	class:FtcRobotControllerActivity
+onWindowFocusChanged	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    @Override public void onWindowFocusChanged(boolean hasFocus){$/;"	m	class:FtcRobotControllerActivity
+open_hand	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    void open_hand ()$/;"	m	class:PushBotHardware
+operator *	.\jni\maths.h	/^v2f operator*(float b, v2f a)$/;"	f
+operator *	.\jni\maths.h	/^v2f operator*(v2f a, float b)$/;"	f
+operator *	.\jni\maths.h	/^v3f operator*(float b, v3f a)$/;"	f
+operator *	.\jni\maths.h	/^v3f operator*(v3f a, float b)$/;"	f
+operator *	.\jni\maths.h	/^v5f operator*(v5f a, float b)$/;"	f
+operator +	.\jni\maths.h	/^v2f operator+(v2f a, v2f b)$/;"	f
+operator +	.\jni\maths.h	/^v3f operator+(v3f a, v3f b)$/;"	f
+operator ,	.\jni\jni_functions.h	/^jniOutStruct operator, (jniOutStruct jos, const char * s)$/;"	f
+operator -	.\jni\maths.h	/^v2f operator-(v2f a, v2f b)$/;"	f
+operator -	.\jni\maths.h	/^v3f operator-(v3f a, v3f b)$/;"	f
+operator -	.\jni\maths.h	/^v5f operator-(v5f a, v5f b)$/;"	f
+operator /	.\jni\maths.h	/^v2f operator\/(v2f a, float b)\/\/Shouldn't need other configuration, since it makes no sense$/;"	f
+operator /	.\jni\maths.h	/^v3f operator\/(v3f a, float b)\/\/Shouldn't need other configuration, since it makes no sense$/;"	f
+operator []	.\jni\maths.h	/^    inline float & operator[](int a)$/;"	f	struct:m4x5f
+operator []	.\jni\maths.h	/^    inline float & operator[](int a)$/;"	f	struct:v5f
+operator []	.\jni\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:m3x3f
+operator []	.\jni\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:m4x4f
+operator []	.\jni\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:v2f
+operator []	.\jni\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:v3f
+operator []	.\jni\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:v4f
+orientation	.\jni\autonomous.h	/^    v3f orientation;$/;"	m	struct:imu_state
+p2_old	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public float p2_old;$/;"	f	class:Mk2Teleop.PIDController
+p_old	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        public float p_old;$/;"	f	class:Mk2Teleop.PIDController
+past_acc_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int[] past_acc_x = new int[n_to_filter];$/;"	f	class:IMU
+past_acc_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int[] past_acc_y = new int[n_to_filter];$/;"	f	class:IMU
+past_acc_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int[] past_acc_z = new int[n_to_filter];$/;"	f	class:IMU
+past_buffers_size	.\jni\arm.h	66;"	d
+past_dts	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    float[] past_dts = new float[n_to_filter];$/;"	f	class:IMU
+past_shoulder_active	.\jni\arm.h	/^bool8 past_shoulder_active = 0;$/;"	v
+past_shoulder_thetas	.\jni\arm.h	/^float past_shoulder_thetas[past_buffers_size] = {}; \/\/looped buffer$/;"	v
+past_vel_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    float[] past_vel_x = new float[n_to_filter];$/;"	f	class:IMU
+past_vel_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    float[] past_vel_y = new float[n_to_filter];$/;"	f	class:IMU
+past_vel_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    float[] past_vel_z = new float[n_to_filter];$/;"	f	class:IMU
+pauseTime	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  double pauseTime = 2.0;$/;"	f	class:CompassCalibration
+pbeacon_right	.\jni\vision.h	/^int * pbeacon_right;$/;"	v
+pelbow_potentiometer	.\jni\arm.h	/^int * pelbow_potentiometer;$/;"	v
+performAction	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  private void performAction(String actionName, int port, int i2cAddress, int memAddress, int memLength) {$/;"	m	class:LinearI2cAddressChange	file:
+pgamepad1	.\jni\Button.h	/^gamepad * pgamepad1;$/;"	v
+pgamepad2	.\jni\Button.h	/^gamepad * pgamepad2;$/;"	v
+phand	.\jni\robotics.h	/^float * phand = 0;$/;"	v
+pheading	.\jni\drive.h	/^float * pheading;$/;"	v
+phook_left	.\jni\robotics.h	/^float * phook_left = 0;$/;"	v
+phook_right	.\jni\robotics.h	/^float * phook_right = 0;$/;"	v
+pi	.\jni\maths.h	8;"	d
+pimu_values	.\jni\autonomous.h	/^imu_state * pimu_values;$/;"	v
+pindicator	.\jni\vision.h	/^int * pindicator;$/;"	v
+pintake	.\jni\robotics.h	/^float * pintake = 0;$/;"	v
+pleft_drive	.\jni\drive.h	/^float * pleft_drive;$/;"	v
+pleft_drive_encoder	.\jni\drive.h	/^int * pleft_drive_encoder;$/;"	v
+port	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  int port = 5;$/;"	f	class:LinearI2cAddressChange
+potentiometer_range	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    public static final float potentiometer_range = 333.33333333333333333333333333333333333f;$/;"	f	class:Mk2Teleop
+potentiometer_range	.\jni\robotics.h	/^float potentiometer_range = 333.33333333333333333333333333333333333f;$/;"	v
+power_mode_low	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte power_mode_low     = 0b01;$/;"	f	class:IMU
+power_mode_normal	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte power_mode_normal  = 0b00;$/;"	f	class:IMU
+power_mode_suspend	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte power_mode_suspend = 0b10;    $/;"	f	class:IMU
+precision_mode	.\jni\Mk3Teleop.cpp	48;"	d	file:
+preferences	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected SharedPreferences preferences;$/;"	f	class:FtcRobotControllerActivity
+press	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    public boolean press(Buttons btn)$/;"	m	class:Button
+press	.\jni\Button.h	/^    bool press(int btn)$/;"	f	struct:Button
+prevStatus	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^        public boolean prevStatus;\/\/This should let us change a default if we want to.$/;"	f	class:Button.Buttons
+previousByte	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    private int previousByte = 0;\/\/Can assume this is 0 at init.$/;"	f	class:Button	file:
+previousByte	.\jni\Button.h	/^    int previousByte;$/;"	m	struct:Button
+pright_drive	.\jni\drive.h	/^float * pright_drive;$/;"	v
+pright_drive_encoder	.\jni\drive.h	/^int * pright_drive_encoder;$/;"	v
+private	.\jni\misc.h	7;"	d
+project	.\jni\maths.h	/^v2f project(v2f a, v2f b)$/;"	f
+project	.\jni\maths.h	/^v3f project(v3f a, v3f b)$/;"	f
+pshoulder	.\jni\arm.h	/^float * pshoulder;$/;"	v
+pshoulder_encoder	.\jni\arm.h	/^int * pshoulder_encoder;$/;"	v
+pshoulder_potentiometer	.\jni\arm.h	/^int * pshoulder_potentiometer;$/;"	v
+pslide	.\jni\robotics.h	/^float * pslide = 0;$/;"	v
+pslider0	.\jni\arm.h	/^int * pslider0;$/;"	v
+pslider1	.\jni\arm.h	/^int * pslider1;$/;"	v
+pslider2	.\jni\arm.h	/^int * pslider2;$/;"	v
+pslider3	.\jni\arm.h	/^int * pslider3;$/;"	v
+ptime	.\jni\robotics.h	/^double * ptime;$/;"	v
+pwinch	.\jni\arm.h	/^float * pwinch;$/;"	v
+pwinch_encoder	.\jni\arm.h	/^int * pwinch_encoder;$/;"	v
+qBezier	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static float qBezier(float t){$/;"	m	class:Mk2Teleop
+qua_w	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short qua_w = 0;$/;"	f	class:IMU
+qua_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short qua_x = 0;$/;"	f	class:IMU
+qua_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short qua_y = 0;$/;"	f	class:IMU
+qua_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short qua_z = 0;$/;"	f	class:IMU
+quadraticBezier	.\jni\maths.h	/^float quadraticBezier(float t, float p0, float p1, float p2)$/;"	f
+r	.\jni\maths.h	/^            float r;$/;"	m	struct:v4f::__anon7::__anon9
+r0	.\jni\maths.h	/^            v3f r0;$/;"	m	struct:m3x3f::__anon12::__anon13
+r0	.\jni\maths.h	/^            v4f r0;$/;"	m	struct:m4x4f::__anon14::__anon15
+r0	.\jni\maths.h	/^            v5f r0;$/;"	m	struct:m4x5f::__anon16::__anon17
+r1	.\jni\maths.h	/^            v3f r1;$/;"	m	struct:m3x3f::__anon12::__anon13
+r1	.\jni\maths.h	/^            v4f r1;$/;"	m	struct:m4x4f::__anon14::__anon15
+r1	.\jni\maths.h	/^            v5f r1;$/;"	m	struct:m4x5f::__anon16::__anon17
+r2	.\jni\maths.h	/^            v3f r2;$/;"	m	struct:m3x3f::__anon12::__anon13
+r2	.\jni\maths.h	/^            v4f r2;$/;"	m	struct:m4x4f::__anon14::__anon15
+r2	.\jni\maths.h	/^            v5f r2;$/;"	m	struct:m4x5f::__anon16::__anon17
+r3	.\jni\maths.h	/^            v4f r3;$/;"	m	struct:m4x4f::__anon14::__anon15
+r3	.\jni\maths.h	/^            v5f r3;$/;"	m	struct:m4x5f::__anon16::__anon17
+raw_x	.\jni\drive.h	/^float raw_x;$/;"	v
+raw_y	.\jni\drive.h	/^float raw_y;$/;"	v
+readCache	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  byte[] readCache;$/;"	f	class:LinearI2cAddressChange
+readLock	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  Lock readLock;$/;"	f	class:LinearI2cAddressChange
+read_cache	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public final byte[] read_cache;$/;"	f	class:IMU
+read_lock	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public final Lock read_lock;$/;"	f	class:IMU
+red	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static boolean red;$/;"	f	class:FtcRobotControllerActivity
+redBox	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    CheckBox redBox, blueBox, alignedBox;$/;"	f	class:FtcRobotControllerActivity
+reflectedLight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	LightSensor reflectedLight;$/;"	f	class:K9AutoTime
+reflectedLight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	LightSensor reflectedLight;$/;"	f	class:K9Line
+register	.\java\com\qualcomm\ftcrobotcontroller\opmodes\FtcOpModeRegister.java	/^    public void register(OpModeManager manager) {$/;"	m	class:FtcOpModeRegister
+reject	.\jni\maths.h	/^v2f reject(v2f a, v2f b)$/;"	f
+reject	.\jni\maths.h	/^v3f reject(v3f a, v3f b)$/;"	f
+release	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    private boolean release(Buttons btn)$/;"	m	class:Button	file:
+reqPixels	.\jni\vision.h	88;"	d
+requestRestart	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^        public void requestRestart() {$/;"	m	class:FtcRobotControllerActivity.RobotRestarter
+requestRobotRestart	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private void requestRobotRestart() {$/;"	m	class:FtcRobotControllerActivity	file:
+requestRobotSetup	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private void requestRobotSetup() {$/;"	m	class:FtcRobotControllerActivity	file:
+requestRobotShutdown	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private void requestRobotShutdown() {$/;"	m	class:FtcRobotControllerActivity	file:
+reset_drive_encoders	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public void reset_drive_encoders ()$/;"	m	class:PushBotHardware
+reset_left_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public void reset_left_drive_encoder ()$/;"	m	class:PushBotHardware
+reset_right_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public void reset_right_drive_encoder ()$/;"	m	class:PushBotHardware
+returnToMeasurementMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  private boolean returnToMeasurementMode = false;$/;"	f	class:CompassCalibration	file:
+rezero	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public void rezero()$/;"	m	class:IMU
+rightMotor	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotDriveTouch.java	/^    DcMotor rightMotor;$/;"	f	class:PushBotDriveTouch
+rightMotor	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrSeek.java	/^    DcMotor rightMotor;$/;"	f	class:PushBotIrSeek
+rightMotor	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotSquare.java	/^    DcMotor rightMotor;$/;"	f	class:PushBotSquare
+right_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    DcMotor right_drive;$/;"	f	class:Mk1Teleop
+right_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    DcMotor right_drive;$/;"	f	class:Mk2Teleop
+right_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^DcMotor right_drive;$/;"	f	class:Mk3Auto
+right_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^DcMotor right_drive;$/;"	f	class:Mk3Teleop
+right_drive	.\jni\drive.h	16;"	d
+right_drive_encoder	.\jni\drive.h	22;"	d
+right_trigger	.\jni\Button.h	/^    float right_trigger;$/;"	m	struct:gamepad
+robotStateIn	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^void robotStateIn()$/;"	m	class:Mk3Auto
+robotStateIn	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^void robotStateIn()$/;"	m	class:Mk3Teleop
+robotStateIn	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^void robotStateIn()$/;"	m	class:test
+robotStateIn	.\jni\jni_functions.h	456;"	d
+robotStateIn	.\jni\jni_functions.h	64;"	d
+robotStateInID	.\jni\jni_functions.h	/^jmethodID robotStateInID;$/;"	v
+robotStateOut	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^void robotStateOut()$/;"	m	class:Mk3Auto
+robotStateOut	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^void robotStateOut()$/;"	m	class:Mk3Teleop
+robotStateOut	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^void robotStateOut()$/;"	m	class:test
+robotStateOut	.\jni\jni_functions.h	457;"	d
+robotStateOut	.\jni\jni_functions.h	65;"	d
+robotStateOutID	.\jni\jni_functions.h	/^jmethodID robotStateOutID;$/;"	v
+robot_state	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public static byte[] robot_state;$/;"	f	class:Mk3Auto
+robot_state	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public static byte[] robot_state;$/;"	f	class:Mk3Teleop
+robot_state	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static byte[] robot_state;$/;"	f	class:Mk3TeleopRobotStateElements
+robot_state	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public static byte[] robot_state;$/;"	f	class:test
+robot_state	.\jni\jni_functions.h	/^RobotState robot_state;$/;"	v
+robot_state_first_address	.\jni\jni_functions.h	/^void * robot_state_first_address = malloc(robot_state_reserved_addresses);$/;"	v
+robot_state_reserved_addresses	.\jni\jni_functions.h	88;"	d
+robot_state_size	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static int robot_state_size = 156;$/;"	f	class:Mk3TeleopRobotStateElements
+roll	.\jni\maths.h	/^            float roll;$/;"	m	struct:v3f::__anon3::__anon6
+rotateContinuousHandServo	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    void rotateContinuousHandServo(float omega, int servo, float dt)$/;"	m	class:Mk1Teleop
+rotateHandServo	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    void rotateHandServo(float omega, int servo, float dt)$/;"	m	class:Mk1Teleop
+rows	.\jni\maths.h	/^        v3f rows[3];$/;"	m	union:m3x3f::__anon12
+rows	.\jni\maths.h	/^        v4f rows[4];$/;"	m	union:m4x4f::__anon14
+rows	.\jni\maths.h	/^        v5f rows[4];$/;"	m	union:m4x5f::__anon16
+rsid_current	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^int rsid_current = 0;$/;"	f	class:Mk3Auto
+rsid_current	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^int rsid_current = 0;$/;"	f	class:Mk3Teleop
+rsid_current	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^int rsid_current = 0;$/;"	f	class:test
+rsid_current	.\jni\jni_functions.h	/^uint rsid_current = 0;$/;"	v
+rsin_code	.\jni\jni_functions.h	/^char * rsin_code = str_malloc(max_java_code);$/;"	v
+rsin_code_current	.\jni\jni_functions.h	/^char * rsin_code_current = rsin_code;$/;"	v
+rsout_code	.\jni\jni_functions.h	/^char * rsout_code = str_malloc(max_java_code); \/\/TODO: expand if limit is reached$/;"	v
+rsout_code_current	.\jni\jni_functions.h	/^char * rsout_code_current = rsout_code;$/;"	v
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\DeadReckoningAutonomous.java	/^    public void runOpMode() throws InterruptedException{$/;"	m	class:DeadReckoningAutonomous
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMUTester.java	/^    public void runOpMode()$/;"	m	class:IMUTester
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\JoystickTest.java	/^    public void runOpMode()$/;"	m	class:JoystickTest
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\MenuTest.java	/^    public void runOpMode() throws InterruptedException$/;"	m	class:MenuTest
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    @Override public void runOpMode()$/;"	m	class:Mk1Teleop
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    @Override public void runOpMode()$/;"	m	class:Mk2Teleop
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^@Override public void runOpMode() throws InterruptedException$/;"	m	class:Mk3Auto
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^@Override public void runOpMode() throws InterruptedException$/;"	m	class:Mk3Teleop
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\AdafruitRGBExample.java	/^  public void runOpMode() throws InterruptedException {$/;"	m	class:AdafruitRGBExample
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  public void runOpMode() throws InterruptedException {$/;"	m	class:ColorSensorDriver
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\HTRGBExample.java	/^  public void runOpMode() throws InterruptedException {$/;"	m	class:HTRGBExample
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  public void runOpMode() throws InterruptedException {$/;"	m	class:LinearI2cAddressChange
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearIrExample.java	/^  public void runOpMode() throws InterruptedException {$/;"	m	class:LinearIrExample
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearK9TeleOp.java	/^  public void runOpMode() throws InterruptedException {$/;"	m	class:LinearK9TeleOp
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MRGyroTest.java	/^  public void runOpMode() throws InterruptedException {$/;"	m	class:MRGyroTest
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MRRGBExample.java	/^  public void runOpMode() throws InterruptedException {$/;"	m	class:MRRGBExample
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotDriveTouch.java	/^    public void runOpMode() throws InterruptedException {$/;"	m	class:PushBotDriveTouch
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotIrSeek.java	/^    public void runOpMode() throws InterruptedException {$/;"	m	class:PushBotIrSeek
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotSquare.java	/^    public void runOpMode() throws InterruptedException {$/;"	m	class:PushBotSquare
+runOpMode	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^@Override public void runOpMode() throws InterruptedException$/;"	m	class:test
+run_using_encoders	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public void run_using_encoders ()$/;"	m	class:PushBotHardware
+run_using_left_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public void run_using_left_drive_encoder ()$/;"	m	class:PushBotHardware
+run_using_right_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public void run_using_right_drive_encoder ()$/;"	m	class:PushBotHardware
+run_without_drive_encoders	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public void run_without_drive_encoders ()$/;"	m	class:PushBotHardware
+run_without_left_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public void run_without_left_drive_encoder ()$/;"	m	class:PushBotHardware
+run_without_right_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    public void run_without_right_drive_encoder ()$/;"	m	class:PushBotHardware
+runtime	.\java\com\qualcomm\ftcrobotcontroller\opmodes\NullOp.java	/^  private ElapsedTime runtime = new ElapsedTime();$/;"	f	class:NullOp	file:
+sc	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private ServoController sc;$/;"	f	class:MatrixControllerDemo	file:
+sc	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	ServoController sc;$/;"	f	class:MatrixK9TeleOp
+scalarTripleProduct	.\jni\maths.h	/^float scalarTripleProduct(v3f a, v3f b, v3f c)$/;"	f
+scale	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    static void scale(float[] v, float s)$/;"	m	class:IK_solver
+scale	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static float[] scale(float[] v, float s)$/;"	m	class:Mk2Teleop
+scaleInput	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	double scaleInput(double dVal)  {$/;"	m	class:K9TankDrive
+scaleInput	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	double scaleInput(double dVal)  {$/;"	m	class:K9TeleOp
+scaleInput	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	double scaleInput(double dVal)  {$/;"	m	class:MatrixK9TeleOp
+scale_motor_power	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    float scale_motor_power (float p_power)$/;"	m	class:PushBotHardware
+score_mode	.\jni\arm.h	/^bool8 score_mode = true;$/;"	v
+self	.\jni\jni_functions.h	/^jobject self;$/;"	v
+sensorRGB	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\AdafruitRGBExample.java	/^  ColorSensor sensorRGB;$/;"	f	class:AdafruitRGBExample
+sensorRGB	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\HTRGBExample.java	/^  ColorSensor sensorRGB;$/;"	f	class:HTRGBExample
+sensorRGB	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MRRGBExample.java	/^  ColorSensor sensorRGB;$/;"	f	class:MRRGBExample
+servo1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private Servo servo1;$/;"	f	class:MatrixControllerDemo	file:
+servo2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private Servo servo2;$/;"	f	class:MatrixControllerDemo	file:
+servo3	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private Servo servo3;$/;"	f	class:MatrixControllerDemo	file:
+servo4	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private Servo servo4;$/;"	f	class:MatrixControllerDemo	file:
+servoOscTimer	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private ElapsedTime servoOscTimer = new ElapsedTime(0);$/;"	f	class:MatrixControllerDemo	file:
+servoPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private double servoPosition = 0.0;$/;"	f	class:MatrixControllerDemo	file:
+setDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public void setDouble(int index, double a)$/;"	m	class:Mk3Auto
+setDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public void setDouble(int index, double a)$/;"	m	class:Mk3Teleop
+setDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public void setDouble(int index, double a)$/;"	m	class:test
+setFloat	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public void setFloat(int index, float a)$/;"	m	class:Mk3Auto
+setFloat	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public void setFloat(int index, float a)$/;"	m	class:Mk3Teleop
+setFloat	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public void setFloat(int index, float a)$/;"	m	class:test
+setInt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public void setInt(int index, int a)$/;"	m	class:Mk3Auto
+setInt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public void setInt(int index, int a)$/;"	m	class:Mk3Teleop
+setInt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public void setInt(int index, int a)$/;"	m	class:test
+setLong	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public void setLong(int index, long a)$/;"	m	class:Mk3Auto
+setLong	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public void setLong(int index, long a)$/;"	m	class:Mk3Teleop
+setLong	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public void setLong(int index, long a)$/;"	m	class:test
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public void setRelative(double a)$/;"	m	class:Mk3Auto
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public void setRelative(float a)$/;"	m	class:Mk3Auto
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public void setRelative(int a)$/;"	m	class:Mk3Auto
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public void setRelative(long a)$/;"	m	class:Mk3Auto
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public void setRelative(double a)$/;"	m	class:Mk3Teleop
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public void setRelative(float a)$/;"	m	class:Mk3Teleop
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public void setRelative(int a)$/;"	m	class:Mk3Teleop
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public void setRelative(long a)$/;"	m	class:Mk3Teleop
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public void setRelative(double a)$/;"	m	class:test
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public void setRelative(float a)$/;"	m	class:test
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public void setRelative(int a)$/;"	m	class:test
+setRelative	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public void setRelative(long a)$/;"	m	class:test
+set_current_color	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_current_color(int value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_drive_power	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    void set_drive_power (double p_left_power, double p_right_power)$/;"	m	class:PushBotHardware
+set_elbow_potentiometer	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_elbow_potentiometer(int value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_error_message	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetry.java	/^    public void set_error_message (String p_message)$/;"	m	class:PushBotTelemetry
+set_first_message	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetry.java	/^    public void set_first_message (String p_message)$/;"	m	class:PushBotTelemetry
+set_forearm_print_theta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_forearm_print_theta(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad1_buttons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad1_buttons(int value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad1_joystick1_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad1_joystick1_x(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad1_joystick1_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad1_joystick1_y(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad1_joystick2_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad1_joystick2_x(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad1_joystick2_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad1_joystick2_y(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad1_trigger1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad1_trigger1(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad1_trigger2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad1_trigger2(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad2_buttons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad2_buttons(int value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad2_joystick1_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad2_joystick1_x(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad2_joystick1_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad2_joystick1_y(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad2_joystick2_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad2_joystick2_x(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad2_joystick2_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad2_joystick2_y(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad2_trigger1	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad2_trigger1(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_gamepad2_trigger2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_gamepad2_trigger2(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_hand	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_hand(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_heading	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_heading(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_hook_left	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_hook_left(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_hook_right	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_hook_right(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_intake	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_intake(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_left_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_left_drive(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_left_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_left_drive_encoder(int value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_right_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_right_drive(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_right_drive_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_right_drive_encoder(int value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_roll	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_roll(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_shoulder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_shoulder(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_shoulder_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_shoulder_encoder(int value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_shoulder_potentiometer	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_shoulder_potentiometer(int value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_shoulder_print_theta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_shoulder_print_theta(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_slide	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_slide(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_tilt	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_tilt(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_time	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_time(double value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_winch	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_winch(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_winch_encoder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_winch_encoder(int value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_x_velocity	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_x_velocity(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+set_y_velocity	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3TeleopRobotStateElements.java	/^    public static void set_y_velocity(float value)$/;"	m	class:Mk3TeleopRobotStateElements
+shortFromCache	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public short shortFromCache(byte register)$/;"	m	class:IMU
+shoulder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    DcMotor shoulder;$/;"	f	class:Mk1Teleop
+shoulder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    DcMotor shoulder;$/;"	f	class:Mk2Teleop
+shoulder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^DcMotor shoulder;$/;"	f	class:Mk3Auto
+shoulder	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^DcMotor shoulder;$/;"	f	class:Mk3Teleop
+shoulder	.\jni\arm.h	14;"	d
+shoulder_active	.\jni\arm.h	/^bool8 shoulder_active = 0; \/\/0 stabalize mode, 1 stopping, 2 running$/;"	v
+shoulder_active_print	.\jni\Mk3Teleop.cpp	156;"	d	file:
+shoulder_compensation	.\jni\arm.h	/^float shoulder_compensation = 0; \/\/compensation for constant forces, modified PID I term$/;"	v
+shoulder_compensation_print	.\jni\Mk3Teleop.cpp	152;"	d	file:
+shoulder_encoder	.\jni\arm.h	19;"	d
+shoulder_gear_ratio	.\jni\arm.h	/^float shoulder_gear_ratio = 6.75;$/;"	v
+shoulder_kd	.\jni\arm.h	256;"	d
+shoulder_ki	.\jni\arm.h	257;"	d
+shoulder_kp	.\jni\arm.h	255;"	d
+shoulder_kslow	.\jni\arm.h	258;"	d
+shoulder_length	.\jni\arm.h	/^float shoulder_length = 16.5f;$/;"	v
+shoulder_max	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static final float shoulder_max = 2.0f*(float)Math.PI\/3.0f;$/;"	f	class:IK_solver
+shoulder_min	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static final float shoulder_min = 0;$/;"	f	class:IK_solver
+shoulder_omega	.\jni\arm.h	/^float shoulder_omega = 0.0;$/;"	v
+shoulder_potentiometer	.\jni\arm.h	11;"	d
+shoulder_potentiometer_angle	.\jni\arm.h	/^float shoulder_potentiometer_angle = 0.0;$/;"	v
+shoulder_potentiometer_port	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^int shoulder_potentiometer_port = 1;$/;"	f	class:Mk3Teleop
+shoulder_print_theta	.\jni\Mk3Teleop.cpp	148;"	d	file:
+shoulder_pulley_r	.\jni\arm.h	/^float shoulder_pulley_r = 1.0f;$/;"	v
+shoulder_speed_threshold	.\jni\arm.h	/^static float shoulder_speed_threshold = 0.1;$/;"	v
+shoulder_theta	.\jni\arm.h	/^float shoulder_theta = 0;$/;"	v
+showToast	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public void showToast(final Toast toast) {$/;"	m	class:FtcRobotControllerActivity
+side_slowing_constant	.\jni\autonomous.h	37;"	d
+signedCanonicalizeAngleDeg	.\jni\maths.h	/^float signedCanonicalizeAngleDeg(float a)$/;"	f
+singlePress	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    public boolean singlePress(Buttons btn)$/;"	m	class:Button
+singlePress	.\jni\Button.h	/^    bool singlePress(int btn)$/;"	f	struct:Button
+slide	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^Servo slide;$/;"	f	class:Mk3Auto
+slide	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^Servo slide;$/;"	f	class:Mk3Teleop
+slide	.\jni\robotics.h	22;"	d
+slide_blue_position	.\jni\Mk3Teleop.cpp	22;"	d	file:
+slide_left	.\jni\Mk3Teleop.cpp	53;"	d	file:
+slide_position_left	.\jni\Mk3Auto.cpp	52;"	d	file:
+slide_position_right	.\jni\Mk3Auto.cpp	51;"	d	file:
+slide_position_safe	.\jni\Mk3Auto.cpp	53;"	d	file:
+slide_red_position	.\jni\Mk3Teleop.cpp	23;"	d	file:
+slide_right	.\jni\Mk3Teleop.cpp	52;"	d	file:
+slide_rotations	.\jni\Mk3Teleop.cpp	17;"	d	file:
+slide_speed	.\jni\Mk3Teleop.cpp	21;"	d	file:
+slide_stored_position	.\jni\Mk3Teleop.cpp	24;"	d	file:
+slider0	.\jni\arm.h	246;"	d
+slider1	.\jni\arm.h	248;"	d
+slider2	.\jni\arm.h	250;"	d
+slider3	.\jni\arm.h	252;"	d
+slider_0	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static int slider_0;$/;"	f	class:FtcRobotControllerActivity
+slider_1	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static int slider_1;$/;"	f	class:FtcRobotControllerActivity
+slider_2	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static int slider_2;$/;"	f	class:FtcRobotControllerActivity
+slider_3	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    public static int slider_3;$/;"	f	class:FtcRobotControllerActivity
+slow_read8	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public byte slow_read8(int address)$/;"	m	class:IMU
+smoothConstant	.\jni\drive.h	54;"	d
+smoothJoysticks	.\jni\drive.h	/^v2f smoothJoysticks(v2f stick) \/\/TODO: Move to <robot_name>.h and have custom constants$/;"	f
+smoothJoysticks254Style	.\jni\drive.h	/^v2f smoothJoysticks254Style(v2f stick)\/\/TODO: Fix this$/;"	f
+solve	.\jni\maths.h	/^v4f solve(m4x5f equations)$/;"	f
+spamPrevention	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private ElapsedTime spamPrevention = new ElapsedTime(0);$/;"	f	class:MatrixControllerDemo	file:
+sprocket_pitch_radius	.\jni\drive.h	24;"	d
+sq	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    static float sq(float a)$/;"	m	class:IK_solver
+sq	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static float sq(float a)$/;"	m	class:Mk2Teleop
+sq	.\jni\maths.h	10;"	d
+squareDeadZone	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static void squareDeadZone(float[] stick)$/;"	m	class:Mk2Teleop
+squareDeadzone	.\jni\robotics.h	/^v2f squareDeadzone(v2f stick)$/;"	f
+start	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\IrSeekerOp.java	/^  public void start() {$/;"	m	class:IrSeekerOp
+start	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    public void start()$/;"	m	class:MatrixControllerDemo
+start	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAuto.java	/^    @Override public void start ()$/;"	m	class:PushBotAuto
+start	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAutoSensors.java	/^    @Override public void start ()$/;"	m	class:PushBotAutoSensors
+start	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    @Override public void start ()$/;"	m	class:PushBotHardware
+startDate	.\java\com\qualcomm\ftcrobotcontroller\opmodes\NullOp.java	/^  private String startDate;$/;"	f	class:NullOp	file:
+state	.\jni\jni_functions.h	/^    byte * state;$/;"	m	struct:RobotState
+stop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IntakeTest.java	/^    @Override public void stop() {}$/;"	m	class:IntakeTest
+stop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\K9AutoTime.java	/^	public void stop() {$/;"	m	class:K9AutoTime
+stop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9IrSeeker.java	/^	public void stop() {$/;"	m	class:K9IrSeeker
+stop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9Line.java	/^	public void stop() {$/;"	m	class:K9Line
+stop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TankDrive.java	/^	public void stop() {$/;"	m	class:K9TankDrive
+stop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\K9TeleOp.java	/^	public void stop() {$/;"	m	class:K9TeleOp
+stop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    public void stop()$/;"	m	class:MatrixControllerDemo
+stop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixK9TeleOp.java	/^	public void stop() {$/;"	m	class:MatrixK9TeleOp
+stop	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    @Override public void stop ()$/;"	m	class:PushBotHardware
+str_malloc	.\jni\jni_functions.h	/^char * str_malloc(uint max_string_size)$/;"	f
+surfaceChanged	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)$/;"	m	class:FtcRobotControllerActivity.CameraPreview
+surfaceCreated	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^        public void surfaceCreated(SurfaceHolder holder)$/;"	m	class:FtcRobotControllerActivity.CameraPreview
+surfaceDestroyed	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^        @Override public void surfaceDestroyed(SurfaceHolder holder)$/;"	m	class:FtcRobotControllerActivity.CameraPreview
+surface_holder	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^        public SurfaceHolder surface_holder;$/;"	f	class:FtcRobotControllerActivity.CameraPreview
+t	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\ColorSensorDriver.java	/^  TouchSensor t;$/;"	f	class:ColorSensorDriver
+target_arm_theta	.\jni\arm.h	/^float target_arm_theta;$/;"	v
+target_inside_elbow_theta	.\jni\arm.h	/^float target_inside_elbow_theta;$/;"	v
+target_shoulder_theta	.\jni\arm.h	/^float target_shoulder_theta;$/;"	v
+test	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public class test extends LinearOpMode {$/;"	c
+test	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public test()$/;"	m	class:test
+textDeviceName	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected TextView textDeviceName;$/;"	f	class:FtcRobotControllerActivity
+textErrorMessage	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected TextView textErrorMessage;$/;"	f	class:FtcRobotControllerActivity
+textGamepad	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected TextView[] textGamepad = new TextView[NUM_GAMEPADS];$/;"	f	class:FtcRobotControllerActivity
+textOpMode	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected TextView textOpMode;$/;"	f	class:FtcRobotControllerActivity
+textRobotStatus	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected TextView textRobotStatus;$/;"	f	class:FtcRobotControllerActivity
+textWifiDirectStatus	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected TextView textWifiDirectStatus;$/;"	f	class:FtcRobotControllerActivity
+threshold	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk1Teleop.java	/^    static final float threshold = 0.1f;$/;"	f	class:Mk1Teleop
+threshold	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    public static final float threshold = 0.1f;$/;"	f	class:Mk2Teleop
+tilt	.\jni\maths.h	/^            float tilt;$/;"	m	struct:v3f::__anon3::__anon6
+time	.\jni\robotics.h	40;"	d
+toggle	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    public boolean toggle(Buttons btn)$/;"	m	class:Button
+toggle	.\jni\Button.h	/^    bool toggle(int btn)$/;"	f	struct:Button
+toggleByte	.\jni\Button.h	/^    int toggleByte;$/;"	m	struct:Button
+tolerantEquals	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    private static boolean tolerantEquals(float val1, float val2, float absoluteTolerance)$/;"	m	class:Drive	file:
+tolerantEquals	.\jni\maths.h	/^bool tolerantEquals(float a, float b, float tolerance)$/;"	f
+touchSensor	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotDriveTouch.java	/^    TouchSensor touchSensor;$/;"	f	class:PushBotDriveTouch
+tractionControl	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    public static float[] tractionControl(float rightVelocity, float leftVelocity, float omega, float v)$/;"	m	class:Drive
+traction_reduction_constant	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    public static final float traction_reduction_constant = (float) 0.25;$/;"	f	class:Drive
+trigger_press_threshold	.\jni\Button.h	44;"	d
+turnRelDeg	.\jni\autonomous.h	/^void turnRelDeg(float angle, float vIs)$/;"	f
+turnTime	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  private double turnTime = 20.0;$/;"	f	class:CompassCalibration	file:
+type_bool	.\jni\jni_functions.h	/^enum types{ type_bool, type_byte, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_byte	.\jni\jni_functions.h	/^enum types{ type_bool, type_byte, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_double	.\jni\jni_functions.h	/^enum types{ type_bool, type_byte, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_float	.\jni\jni_functions.h	/^enum types{ type_bool, type_byte, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_int	.\jni\jni_functions.h	/^enum types{ type_bool, type_byte, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_java_names	.\jni\jni_functions.h	/^const char * type_java_names[] =$/;"	v
+type_long	.\jni\jni_functions.h	/^enum types{ type_bool, type_byte, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_names	.\jni\jni_functions.h	/^const char * type_names[] =$/;"	v
+type_sizes	.\jni\jni_functions.h	/^const int type_sizes[] =$/;"	v
+types	.\jni\jni_functions.h	/^enum types{ type_bool, type_byte, type_int, type_long, type_float, type_double, n_types };$/;"	g
+uint	.\jni\misc.h	/^typedef unsigned int uint;$/;"	t
+uint16	.\jni\misc.h	/^typedef uint16_t uint16;$/;"	t
+uint32	.\jni\misc.h	/^typedef uint32_t uint32;$/;"	t
+uint64	.\jni\misc.h	/^typedef uint64_t uint64;$/;"	t
+uint8	.\jni\misc.h	/^typedef uint8_t uint8;$/;"	t
+units_acc_g	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_acc_g                    =              0b1;$/;"	f	class:IMU
+units_acc_m_per_s2	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_acc_m_per_s2             =              0b0;$/;"	f	class:IMU
+units_angle_deg	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_angle_deg                =            0b000;$/;"	f	class:IMU
+units_angle_rad	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_angle_rad                =            0b100;$/;"	f	class:IMU
+units_angular_vel_deg_per_s	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_angular_vel_deg_per_s    =             0b00;$/;"	f	class:IMU
+units_angular_vel_rad_per_s	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_angular_vel_rad_per_s    =             0b10;$/;"	f	class:IMU
+units_pitch_convention_android	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_pitch_convention_android = (byte) 0b1000000;$/;"	f	class:IMU
+units_pitch_convention_windows	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_pitch_convention_windows = (byte) 0b0000000;$/;"	f	class:IMU
+units_temp_C	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_temp_C                   =          0b00000;$/;"	f	class:IMU
+units_temp_F	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final byte units_temp_F                   =          0b10000;$/;"	f	class:IMU
+updateArmSensors	.\jni\arm.h	/^void updateArmSensors()$/;"	f
+updateButtons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Button.java	/^    public void updateButtons(byte[] joystick) \/\/TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.$/;"	m	class:Button
+updateButtons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^public int updateButtons(byte[] joystick) \/\/TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.$/;"	m	class:Mk3Auto
+updateButtons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^public int updateButtons(byte[] joystick) \/\/TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.$/;"	m	class:Mk3Teleop
+updateButtons	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^public int updateButtons(byte[] joystick) \/\/TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.$/;"	m	class:test
+updateButtons	.\jni\Button.h	/^    void updateButtons(gamepad g)$/;"	f	struct:Button
+updateRobot	.\jni\jni_functions.h	/^void updateRobot()$/;"	f
+updateRobot	.\jni\jni_functions.h	67;"	d
+updateUI	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected UpdateUI updateUI;$/;"	f	class:FtcRobotControllerActivity
+update_arm_state	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAutoSensors.java	/^    public void update_arm_state ()$/;"	m	class:PushBotAutoSensors
+update_gamepad_telemetry	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetry.java	/^    public void update_gamepad_telemetry ()$/;"	m	class:PushBotTelemetry
+update_telemetry	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetry.java	/^    public void update_telemetry ()$/;"	m	class:PushBotTelemetry
+update_telemetry	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotTelemetrySensors.java	/^    public void update_telemetry ()$/;"	m	class:PushBotTelemetrySensors
+upperarm_len	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static final float upperarm_len = 15.0f;$/;"	f	class:IK_solver
+utility	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private Utility utility;$/;"	f	class:FtcRobotControllerActivity	file:
+v	.\jni\maths.h	/^            float v;$/;"	m	struct:v5f::__anon10::__anon11
+v2f	.\jni\maths.h	/^struct v2f$/;"	s
+v3f	.\jni\maths.h	/^struct v3f$/;"	s
+v4f	.\jni\maths.h	/^struct v4f$/;"	s
+v5f	.\jni\maths.h	/^struct v5f$/;"	s
+v_arm_state	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAutoSensors.java	/^    private int v_arm_state = 0;$/;"	f	class:PushBotAutoSensors	file:
+v_motor_left_arm	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private DcMotor v_motor_left_arm;$/;"	f	class:PushBotHardware	file:
+v_motor_left_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private DcMotor v_motor_left_drive;$/;"	f	class:PushBotHardware	file:
+v_motor_right_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private DcMotor v_motor_right_drive;$/;"	f	class:PushBotHardware	file:
+v_raise_arm_automatically	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotManualSensors.java	/^    private boolean v_raise_arm_automatically = false;$/;"	f	class:PushBotManualSensors	file:
+v_sensor_ir	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    private IrSeekerSensor v_sensor_ir;$/;"	f	class:PushBotHardwareSensors	file:
+v_sensor_ods	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    private OpticalDistanceSensor v_sensor_ods;$/;"	f	class:PushBotHardwareSensors	file:
+v_sensor_touch	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardwareSensors.java	/^    private TouchSensor v_sensor_touch;$/;"	f	class:PushBotHardwareSensors	file:
+v_servo_left_hand	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private Servo v_servo_left_hand;$/;"	f	class:PushBotHardware	file:
+v_servo_right_hand	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private Servo v_servo_right_hand;$/;"	f	class:PushBotHardware	file:
+v_state	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAuto.java	/^    private int v_state = 0;$/;"	f	class:PushBotAuto	file:
+v_state	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAutoSensors.java	/^    private int v_state = 0;$/;"	f	class:PushBotAutoSensors	file:
+v_warning_generated	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private boolean v_warning_generated = false;$/;"	f	class:PushBotHardware	file:
+v_warning_message	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private String v_warning_message;$/;"	f	class:PushBotHardware	file:
+vel_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public float vel_x = 0.0f;$/;"	f	class:IMU
+vel_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public float vel_y = 0.0f;$/;"	f	class:IMU
+vel_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public float vel_z = 0.0f;$/;"	f	class:IMU
+velocity	.\jni\autonomous.h	/^    v3f velocity;$/;"	m	struct:imu_state
+visionColor	.\jni\Mk3Auto.cpp	50;"	d	file:
+w	.\jni\maths.h	/^            float w;$/;"	m	struct:v4f::__anon7::__anon8
+w	.\jni\maths.h	/^            float w;$/;"	m	struct:v5f::__anon10::__anon11
+wait	.\jni\autonomous.h	/^void wait(float wait_time)$/;"	f
+waitForNextHardwareCycle	.\jni\jni_functions.h	455;"	d
+waitForNextHardwareCycle	.\jni\jni_functions.h	63;"	d
+waitForNextHardwareCycleID	.\jni\jni_functions.h	/^jmethodID waitForNextHardwareCycleID;$/;"	v
+waitForStart	.\jni\jni_functions.h	453;"	d
+waitForStart	.\jni\jni_functions.h	61;"	d
+waitForStartID	.\jni\jni_functions.h	/^jmethodID waitForStartID;$/;"	v
+waitOneFullHardwareCycle	.\jni\jni_functions.h	454;"	d
+waitOneFullHardwareCycle	.\jni\jni_functions.h	62;"	d
+waitOneFullHardwareCycleID	.\jni\jni_functions.h	/^jmethodID waitOneFullHardwareCycleID;$/;"	v
+wavelet_acc_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int[] wavelet_acc_x = new int[n_to_filter];$/;"	f	class:IMU
+wavelet_acc_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int[] wavelet_acc_y = new int[n_to_filter];$/;"	f	class:IMU
+wavelet_acc_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int[] wavelet_acc_z = new int[n_to_filter];$/;"	f	class:IMU
+wheelController	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  DcMotorController wheelController;$/;"	f	class:NxtTeleOp
+widest_read_range	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final int widest_read_range = 27;$/;"	f	class:IMU
+wifiLock	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected WifiManager.WifiLock wifiLock;$/;"	f	class:FtcRobotControllerActivity
+winch	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Auto.java	/^DcMotor winch;$/;"	f	class:Mk3Auto
+winch	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk3Teleop.java	/^DcMotor winch;$/;"	f	class:Mk3Teleop
+winch	.\jni\arm.h	16;"	d
+winch_encoder	.\jni\arm.h	21;"	d
+winch_gear_ratio	.\jni\arm.h	/^float winch_gear_ratio = 2.0;$/;"	v
+winch_omega	.\jni\arm.h	/^float winch_omega = 0.0;$/;"	v
+winch_pulley_r	.\jni\arm.h	/^float winch_pulley_r = 1.0f;$/;"	v
+winch_radius	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static final float winch_radius = 1.0f;$/;"	f	class:IK_solver
+winch_theta	.\jni\arm.h	/^float winch_theta = 0;$/;"	v
+wrist	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  Servo wrist;$/;"	f	class:NxtTeleOp
+wristDelta	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  double wristDelta = 0.01;$/;"	f	class:NxtTeleOp
+wristPosition	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\NxtTeleOp.java	/^  double wristPosition;$/;"	f	class:NxtTeleOp
+write	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public void write(int address, byte[] data)$/;"	m	class:IMU
+write8	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public void write8(int address, byte value)$/;"	m	class:IMU
+writeCache	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  byte[] writeCache;$/;"	f	class:LinearI2cAddressChange
+writeLock	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  Lock writeLock;$/;"	f	class:LinearI2cAddressChange
+writeNewAddress	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\LinearI2cAddressChange.java	/^  private void writeNewAddress() {$/;"	m	class:LinearI2cAddressChange	file:
+write_cache	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public final byte[] write_cache;$/;"	f	class:IMU
+write_lock	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public final Lock write_lock;$/;"	f	class:IMU
+x	.\jni\maths.h	/^            float x;$/;"	m	struct:v2f::__anon1::__anon2
+x	.\jni\maths.h	/^            float x;$/;"	m	struct:v3f::__anon3::__anon4
+x	.\jni\maths.h	/^            float x;$/;"	m	struct:v4f::__anon7::__anon8
+x	.\jni\maths.h	/^            float x;$/;"	m	struct:v5f::__anon10::__anon11
+y	.\jni\maths.h	/^            float y;$/;"	m	struct:v2f::__anon1::__anon2
+y	.\jni\maths.h	/^            float y;$/;"	m	struct:v3f::__anon3::__anon4
+y	.\jni\maths.h	/^            float y;$/;"	m	struct:v4f::__anon7::__anon8
+y	.\jni\maths.h	/^            float y;$/;"	m	struct:v5f::__anon10::__anon11
+z	.\jni\maths.h	/^            float z;$/;"	m	struct:v3f::__anon3::__anon4
+z	.\jni\maths.h	/^            float z;$/;"	m	struct:v4f::__anon7::__anon8
+z	.\jni\maths.h	/^            float z;$/;"	m	struct:v5f::__anon10::__anon11

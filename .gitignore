@@ -29,8 +29,8 @@ backup/
 *.a
 *.o
 *.d
+*.exe
 
 local.properties
 
 *ASUS_PC_01*
-
