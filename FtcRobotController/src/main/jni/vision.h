@@ -93,15 +93,14 @@ bool8 getBeaconColor()
     int blue_pos[2] = {0, 0};
     for(int i = 0; i < camera_w-5; i+=5)
     {
-        red_pixel_count[1] = 0;//TODO: make this an array for x and y
+        red_pixel_count[1] = 0;
         blue_pixel_count[1] = 0;
         for(int j = 0; j < camera_h-5; j+=5)
         {
-            if((image(i, j, 0) > 200)/* && (image(i, j, 2) < 160)*/){//If at some point there is a pixel that is sufficiently red and not blue
+            if((image(i, j, 0) > 200)){//If at some point there is a pixel that is sufficiently red
                 red_pixel_count[1]++;
                 red_pixel_count[0]++;
-                //printf("Flagged pixel as potentially red side %i\n", pixel_count);
-                if(red_pixel_count[0]*red_pixel_count[1] > reqPixels)//If there are enough pixels in this row TODO: add y dim to this for more accuracy
+                if(red_pixel_count[0]*red_pixel_count[1] > reqPixels)//If there are enough pixels in this row
                 {
                     red_pixel_count[0] = 0;
                     red_pixel_count[1] = 0;
@@ -113,8 +112,7 @@ bool8 getBeaconColor()
             {
                 blue_pixel_count[1]++;
                 blue_pixel_count[0]++;
-                //printf("Flagged pixel as potentially red side %i\n", pixel_count);
-                if(blue_pixel_count[0]*blue_pixel_count[1] > reqPixels)//If there are enough pixels in this row TODO: add y dim to this for more accuracy
+                if(blue_pixel_count[0]*blue_pixel_count[1] > reqPixels)//If there are enough pixels in this row
                 {
                     blue_pixel_count[0] = 0;
                     blue_pixel_count[1] = 0;
