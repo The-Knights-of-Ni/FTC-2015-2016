@@ -11,12 +11,15 @@
 #include "jni_functions.h"
 #include <stdlib.h>
 
-//TODO: maybe move this
+//TODO: move these
 float * pintake = 0;
 #define intake (*pintake)
 
 float * phand = 0;
 #define hand (*phand)
+
+float * pwrist = 0;
+#define wrist (*pwrist)
 
 float * pslide = 0;
 #define slide (*pslide)
@@ -27,10 +30,16 @@ float * phook_left = 0;
 float * phook_right = 0;
 #define hook_right (*phook_right)
 
+int * pdim_digital_pins = 0;
+#define dim_digital_pins (*pdim_digital_pins)
+#define dim_digital_pin(n) ((dim_digital_pins>>(n))&1)
+
 //Constants
 #define encoderticks_per_radian (1440.0f/(2.0f*pi))
 
 float potentiometer_range = 333.33333333333333333333333333333333333f;
+
+#define continuous_servo_stop 0.5
 
 //globals
 float dt;

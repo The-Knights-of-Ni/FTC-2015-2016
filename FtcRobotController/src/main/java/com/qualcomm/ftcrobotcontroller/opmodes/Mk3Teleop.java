@@ -26,7 +26,7 @@ int rsid_current = 0;
 public Mk3Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[160];
+    robot_state = new byte[172];
 }
 
 
@@ -131,24 +131,26 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-//left_drive.setPower(getFloat(52));;
-//right_drive.setPower(getFloat(56));;
-winch.setPower(getFloat(60));;
-shoulder.setPower(getFloat(64));;
-//intake.setPower(getFloat(68));;
-//hand.setPosition(getFloat(72));
-//slide.setPosition(getFloat(76));
-//hook_left.setPosition(getFloat(80));
-//hook_right.setPosition(getFloat(84));
-telemetry.addData("shoulder theta", getFloat(88));
-telemetry.addData("shoulder_compensation", getFloat(92));
-telemetry.addData("shoulder_active", getInt(96));
+left_drive.setPower(getFloat(56));;
+right_drive.setPower(getFloat(60));;
+winch.setPower(getFloat(64));;
+shoulder.setPower(getFloat(68));;
+intake.setPower(getFloat(72));;
+hand.setPosition(getFloat(76));
+wrist.setPosition(getFloat(80));
+slide.setPosition(getFloat(84));
+hook_left.setPosition(getFloat(88));
+hook_right.setPosition(getFloat(92));
+intake_tilt.setPosition(getFloat(96));
+telemetry.addData("shoulder theta", getFloat(100));
+telemetry.addData("shoulder_compensation", getFloat(104));
+telemetry.addData("shoulder_active", getInt(108));
 telemetry.addData("slider 0", getInt(36));
 telemetry.addData("slider 1", getInt(40));
 telemetry.addData("slider 2", getInt(44));
 telemetry.addData("slider 3", getInt(48));
-telemetry.addData("forearm theta", getFloat(100));
-telemetry.addData("shoulder power", getFloat(64));
+telemetry.addData("forearm theta", getFloat(112));
+telemetry.addData("shoulder power", getFloat(68));
 
 }
 
@@ -215,7 +217,12 @@ setInt(48, FtcRobotControllerActivity.slider_3);
 rsid_current = 52;
 }
 {
-rsid_current = 104;
+setInt(52, dim.getDigitalInputStateByte());
+
+rsid_current = 56;
+}
+{
+rsid_current = 116;
 int gamepad1_buttons = 0;
 try
 {
@@ -236,7 +243,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 132;
+rsid_current = 144;
 int gamepad2_buttons = 0;
 try
 {
@@ -269,9 +276,11 @@ DcMotor winch;
 DcMotor intake;
 
 Servo hand;
+Servo wrist;
 Servo slide;
 Servo hook_left;
 Servo hook_right;
+Servo intake_tilt;
 /* End Motor Definitions */
 
 native void main();
@@ -284,17 +293,17 @@ static
 @Override public void runOpMode() throws InterruptedException
 {
 dim = hardwareMap.deviceInterfaceModule.get("dim");
-//left_drive  = hardwareMap.dcMotor.get("leftd");
-//right_drive = hardwareMap.dcMotor.get("rightd");
+left_drive  = hardwareMap.dcMotor.get("leftd");
+right_drive = hardwareMap.dcMotor.get("rightd");
 shoulder    = hardwareMap.dcMotor.get("shoulder");
 winch       = hardwareMap.dcMotor.get("winch");
-//intake      = hardwareMap.dcMotor.get("intake");
-//right_drive.setDirection(DcMotor.Direction.REVERSE);
-//left_drive.setDirection(DcMotor.Direction.REVERSE);
+intake      = hardwareMap.dcMotor.get("intake");
+right_drive.setDirection(DcMotor.Direction.REVERSE);
+left_drive.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 waitOneFullHardwareCycle();
-//intake.setDirection(DcMotor.Direction.REVERSE);
+intake.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 winch.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 waitOneFullHardwareCycle();
@@ -303,11 +312,13 @@ waitOneFullHardwareCycle();
 shoulder.setDirection(DcMotor.Direction.REVERSE);
 //winch.setDirection(DcMotor.Direction.REVERSE);
 
-//hand = hardwareMap.servo.get("hand");
-//slide = hardwareMap.servo.get("slide");
-//hook_left = hardwareMap.servo.get("hook_left");
-//hook_right = hardwareMap.servo.get("hook_right");
-//hook_left.setDirection(Servo.Direction.REVERSE);
+hand = hardwareMap.servo.get("hand");
+wrist = hardwareMap.servo.get("wrist");
+slide = hardwareMap.servo.get("slide");
+hook_left = hardwareMap.servo.get("hook_left");
+hook_right = hardwareMap.servo.get("hook_right");
+hook_left.setDirection(Servo.Direction.REVERSE);
+intake_tilt = hardwareMap.servo.get("intake_tilt");
     main();
 }
 }

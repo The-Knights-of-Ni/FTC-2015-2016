@@ -20,6 +20,23 @@ int * pshoulder_encoder;
 int * pwinch_encoder;
 #define winch_encoder (*pwinch_encoder)
 
+//the intake needs to be synchronized with the arm
+float * pintake_tilt = 0;
+#define intake_tilt (*pintake_tilt)
+
+#define intake_out_switch dim_digital_pin(0)
+#define intake_in_switch dim_digital_pin(1)
+
+enum intake_state_enum
+{
+    intake_in,
+    intake_out,
+    intake_moving_in,
+    intake_moving_out
+};
+
+int intake_state = 0;
+
 //TODO: tune values
 float g = 384; //gravity in " per sec
 
@@ -293,7 +310,7 @@ void armToAngle()
         /* } */
         /* past_shoulder_active = shoulder_active; */
         
-        if(n_valid_shoulder_angles >= len(past_shoulder_thetas)
+        if(n_valid_shoulder_angles >= len(past_shoulder_thetas) // check if arm needs to start slowing down
            && fabs(max_shoulder_theta-min_shoulder_theta) < shoulder_speed_threshold)
         {
             shoulder_active = 0;
@@ -340,5 +357,132 @@ void armJointsToAngle()
     //TODO: update this for new arm stuff
     shoulder += 1*(target_shoulder_theta-shoulder_theta);
     winch += 1*(target_inside_elbow_theta-inside_elbow_theta);
+}
+
+enum arm_stage_enum
+{
+    arm_idle,
+    
+    arm_preparing,
+    arm_lowering,
+    arm_extending,
+    
+    arm_retracting,
+    arm_raising,
+    arm_going_to_score_position
+};
+int arm_stage = 0;
+
+bool8 armAtTarget()
+{
+    const float angle_tolerance = 0.5;
+    const float speed_tolerance = 0.25;
+    
+    return fabs(inside_elbow_theta-target_inside_elbow_theta) < angle_tolerance &&
+        inside_elbow_omega < speed_tolerance &&
+        fabs(shoulder_theta-target_shoulder_theta) < angle_tolerance &&
+        shoulder_omega < speed_tolerance;
+}
+
+void armSwitchModes()
+{
+    shoulder = 0;
+    winch = 0;
+    
+    #define arm_case(stage) case arm_##stage: arm_##stage##_case
+    #define goto_arm_case(stage) arm_stage = arm_##stage; goto arm_##stage##_case
+
+    //TODO: determine all these angles
+    switch(arm_stage)
+    {
+        //ENTERING INTAKE
+        arm_case(preparing):
+        {
+            //TODO: check that arm is not in intake
+            
+            target_shoulder_theta = 0.123456;
+            target_inside_elbow_theta = 0.123456;
+            armJointsToAngle();
+            
+            if(armAtTarget() && intake_state == intake_out) goto_arm_case(lowering);
+        } break;
+        
+        arm_case(lowering):
+        {
+            target_shoulder_theta = 0.123456;
+            armJointsToAngle();
+
+            if(armAtTarget()) goto_arm_case(extending);
+        } break;
+        
+        arm_case(extending):
+        {
+            target_shoulder_theta = 2.0;
+            target_inside_elbow_theta = 3.5;
+            armJointsToAngle();
+            if(armAtTarget()) arm_stage = arm_idle;
+        } break;
+        
+        //EXITING INTAKE
+        arm_case(retracting):
+        {
+            //TODO: check that arm is inside intake
+            
+            target_shoulder_theta = 0.123456;
+            target_inside_elbow_theta = 0.123456;
+            armJointsToAngle();
+            
+            if(armAtTarget() && intake_state == intake_out) goto_arm_case(raising);
+        } break;
+        
+        arm_case(raising):
+        {
+            target_shoulder_theta = 0.123456;
+            armJointsToAngle();
+
+            if(armAtTarget()  && intake_state == intake_out) goto_arm_case(going_to_score_position);
+        } break;
+        
+        arm_case(going_to_score_position):
+        {
+            target_shoulder_theta = 1.0;
+            target_inside_elbow_theta = pi*4/5;
+            armJointsToAngle();
+            
+            //TODO: compensate for momentum
+            float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+                                              -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+            target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+            
+            if(armAtTarget()) arm_stage = arm_idle;
+        } break;
+    }
+    
+    #undef arm_case
+    #undef goto_arm_case
+}
+
+void intakeOut()
+{
+    if(intake_state == intake_in) intake_state = intake_moving_out;
+    
+    if(intake_out_switch)
+    {
+        intake_tilt = continuous_servo_stop;
+        intake_state = intake_out;
+    }
+    else intake_tilt = 1.0;
+}
+
+void intakeIn()
+{
+    if(intake_state == intake_out) intake_state = intake_moving_in;
+    
+    if(intake_in_switch)
+    {
+        intake_tilt = continuous_servo_stop;
+        intake_state = intake_in;
+    }
+    else intake_tilt = 1.0;
 }
 #endif

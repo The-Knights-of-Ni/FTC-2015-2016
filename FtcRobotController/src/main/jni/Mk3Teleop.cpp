@@ -32,10 +32,14 @@ float hook_locked_position = 1.0f;
 #define drive_toggle pad1.toggle(LEFT_STICK_BUTTON)
 
 //Hopper
-#define intake_toggle pad1.toggle(LEFT_BUMPER)
-#define intake_reverse pad1.press(RIGHT_BUMPER)
 #define hopper_tilt pad2.toggle(RIGHT_BUMPER) //Might make this a stick or something
 #define hand_manual_control pad1stick2.x
+
+//Intake
+#define intake_toggle pad1.toggle(LEFT_BUMPER)
+#define intake_reverse pad1.press(RIGHT_BUMPER)
+
+#define intake_out_toggle pad1.toggle(A)
 
 //Arm
 // #define shoulder_manual pad2stick1
@@ -82,23 +86,25 @@ void jniMain(JNIEnv * _env, jobject _self)
                             "DcMotor intake;\n"
                             "\n"
                             "Servo hand;\n"
+                            "Servo wrist;\n"
                             "Servo slide;\n"
                             "Servo hook_left;\n"
                             "Servo hook_right;\n"
+                            "Servo intake_tilt;\n"
                             "/* End Motor Definitions */");
     
     jni_run_opmode_string = ("dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
-                             "//left_drive  = hardwareMap.dcMotor.get(\"leftd\");\n"
-                             "//right_drive = hardwareMap.dcMotor.get(\"rightd\");\n"
+                             "left_drive  = hardwareMap.dcMotor.get(\"leftd\");\n"
+                             "right_drive = hardwareMap.dcMotor.get(\"rightd\");\n"
                              "shoulder    = hardwareMap.dcMotor.get(\"shoulder\");\n"
                              "winch       = hardwareMap.dcMotor.get(\"winch\");\n"
-                             "//intake      = hardwareMap.dcMotor.get(\"intake\");\n"
-                             "//right_drive.setDirection(DcMotor.Direction.REVERSE);\n"
-                             "//left_drive.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "intake      = hardwareMap.dcMotor.get(\"intake\");\n"
+                             "right_drive.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "left_drive.setDirection(DcMotor.Direction.REVERSE);\n"
                              "shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
                              "shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);\n"
                              "waitOneFullHardwareCycle();\n"
-                             "//intake.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "intake.setDirection(DcMotor.Direction.REVERSE);\n"
                              "shoulder.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);\n"
                              "winch.setMode(DcMotorController.RunMode.RESET_ENCODERS);\n"
                              "waitOneFullHardwareCycle();\n"
@@ -107,11 +113,13 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
                              "//winch.setDirection(DcMotor.Direction.REVERSE);\n"
                              "\n"
-                             "//hand = hardwareMap.servo.get(\"hand\");\n"
-                             "//slide = hardwareMap.servo.get(\"slide\");\n"
-                             "//hook_left = hardwareMap.servo.get(\"hook_left\");\n"
-                             "//hook_right = hardwareMap.servo.get(\"hook_right\");\n"
-                             "//hook_left.setDirection(Servo.Direction.REVERSE);");
+                             "hand = hardwareMap.servo.get(\"hand\");\n"
+                             "wrist = hardwareMap.servo.get(\"wrist\");\n"
+                             "slide = hardwareMap.servo.get(\"slide\");\n"
+                             "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
+                             "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
+                             "hook_left.setDirection(Servo.Direction.REVERSE);\n"
+                             "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");");
     
     jni_misc_string = (
         "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
@@ -133,25 +141,29 @@ void jniMain(JNIEnv * _env, jobject _self)
     pslider2 = jniIntIn("return FtcRobotControllerActivity.slider_2;");
     pslider3 = jniIntIn("return FtcRobotControllerActivity.slider_3;");
     
-    jniOut("//left_drive.setPower(", pleft_drive, ");;");
-    jniOut("//right_drive.setPower(", pright_drive, ");;");
+    pdim_digital_pins = jniIntIn("return dim.getDigitalInputStateByte();");
+    
+    jniOut("left_drive.setPower(", pleft_drive, ");;");
+    jniOut("right_drive.setPower(", pright_drive, ");;");
     jniOut("winch.setPower(", pwinch, ");;");
     jniOut("shoulder.setPower(", pshoulder, ");;");
-    jniOut("//intake.setPower(", pintake, ");;");
+    jniOut("intake.setPower(", pintake, ");;");
     
-    jniOut("//hand.setPosition(", phand,");");
-    jniOut("//slide.setPosition(", pslide,");");
-    jniOut("//hook_left.setPosition(", phook_left,");");
-    jniOut("//hook_right.setPosition(", phook_right,");");
+    jniOut("hand.setPosition(", phand,");");
+    jniOut("wrist.setPosition(", pwrist,");");
+    jniOut("slide.setPosition(", pslide,");");
+    jniOut("hook_left.setPosition(", phook_left,");");
+    jniOut("hook_right.setPosition(", phook_right,");");
+    jniOut("intake_tilt.setPosition(", pintake_tilt,");");
     
     float * pshoulder_print_theta;
     #define shoulder_print_theta (*pshoulder_print_theta)
     jniOut("telemetry.addData(\"shoulder theta\", ", pshoulder_print_theta,");");
-
+    
     float * pshoulder_compensation_print;
     #define shoulder_compensation_print (*pshoulder_compensation_print)
     jniOut("telemetry.addData(\"shoulder_compensation\", ", pshoulder_compensation_print,");");
-
+    
     int * pshoulder_active_print;
     #define shoulder_active_print (*pshoulder_active_print)
     jniOut("telemetry.addData(\"shoulder_active\", ", pshoulder_active_print,");");
@@ -217,6 +229,11 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     shoulder_compensation = 0;
     
+     //TODO: figure out a better way to have things reset to their initial values
+    arm_stage = 0;
+    
+    intake_state = 0;
+    
     waitForStart();
     
     interruptable for ever
@@ -258,9 +275,9 @@ void jniMain(JNIEnv * _env, jobject _self)
         right_drive = clamp(right_drive, -1.0, 1.0);
         //Might need to add additional bounding in as a safety
         
-//============================== Arm =============================            
+//============================== Arm =============================
         updateArmSensors();
-
+        
         shoulder_compensation_print = shoulder_compensation;
         shoulder_print_theta = shoulder_theta;
         forearm_print_theta = shoulder_omega;
@@ -271,33 +288,18 @@ void jniMain(JNIEnv * _env, jobject _self)
             v2f target_arm_velocity = arm_stick;
             if(arm_score_mode_button)
             {
-                winch = 0;
-                shoulder = 0;
-                
                 score_mode = true;
-                target_shoulder_theta = 1.0;
-                target_inside_elbow_theta = pi*4/5;
-                
-                float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
-                                          -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-                target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
-                
-                shoulder = 1*(target_shoulder_theta-shoulder_theta);
-                winch = (1*(target_inside_elbow_theta-inside_elbow_theta)
-                         +shoulder*winch_gear_ratio/shoulder_gear_ratio);
+                arm_stage = arm_retracting;
             }
             else if(arm_intake_mode_button)
             {
-                winch = 0;
-                shoulder = 0;
-                
                 score_mode = false;
-                target_shoulder_theta = 2.0;
-                target_inside_elbow_theta = 3.5;
-                
-                shoulder = 1*(target_shoulder_theta-shoulder_theta);
-                winch = (1*(target_inside_elbow_theta-inside_elbow_theta)
-                         +shoulder*winch_gear_ratio/shoulder_gear_ratio);
+                arm_stage = arm_preparing;
+            }
+            
+            if(arm_stage != arm_idle)
+            {
+                armSwitchModes();
             }
             else
             {
@@ -353,7 +355,8 @@ void jniMain(JNIEnv * _env, jobject _self)
 //TODO: Precision mode
 //TODO: Rope tension
 //TODO: Locks
-//============================= Hopper ===========================
+        
+//====================== Intake & Hopper =======================
         if (intake_toggle)
         {
             intake = intake_reverse ? -1 : 1;
@@ -362,6 +365,16 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             intake = 0;
         }
+        
+        if(intake_out_toggle)
+        {
+            intakeOut();
+        }
+        else
+        {
+            intakeIn();
+        }
+        
         if (hopper_tilt)
         {
             if (current_color)
@@ -380,9 +393,9 @@ void jniMain(JNIEnv * _env, jobject _self)
         // if(pad1.singlePress(B)) hand_level_position += 0.1;
         // if(pad1.singlePress(X)) hand_level_position -= 0.1;
         // hand_print_position = hand_level_position;
-
-//TODO: Auto-score
-//TODO: Block count
+        
+        //TODO: Auto-score
+        //TODO: Block count
         //TODO: Tilt
 //============================ Slide ===========================
         slide = 0.5;
