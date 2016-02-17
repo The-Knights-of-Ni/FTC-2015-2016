@@ -15,9 +15,9 @@
 // #define current_color 0 //0 = red, 1 = blue
 
 #define slide_rotations 20 //TODO: Move this to <robotname>.h
-float hand_red_position = 0.9;
-float hand_blue_position = 0.3;
-float hand_level_position = 0.6;
+float wrist_red_position = 0.9;
+float wrist_blue_position = 0.3;
+float wrist_level_position = 0.6;
 #define slide_speed 5
 #define slide_blue_position 1
 #define slide_red_position -1
@@ -33,13 +33,14 @@ float hook_locked_position = 1.0f;
 
 //Hopper
 #define hopper_tilt pad2.toggle(RIGHT_BUMPER) //Might make this a stick or something
-#define hand_manual_control pad1stick2.x
+#define wrist_manual_control pad1stick2.x
 
 //Intake
 #define intake_toggle pad1.toggle(LEFT_BUMPER)
 #define intake_reverse pad1.press(RIGHT_BUMPER)
 
 #define intake_out_toggle pad1.toggle(A)
+#define intake_tilt_manual pad1stick2.y
 
 //Arm
 // #define shoulder_manual pad2stick1
@@ -87,7 +88,6 @@ void jniMain(JNIEnv * _env, jobject _self)
                             "\n"
                             "Servo hand;\n"
                             "Servo wrist;\n"
-                            "Servo slide;\n"
                             "Servo hook_left;\n"
                             "Servo hook_right;\n"
                             "Servo intake_tilt;\n"
@@ -115,7 +115,6 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "\n"
                              "hand = hardwareMap.servo.get(\"hand\");\n"
                              "wrist = hardwareMap.servo.get(\"wrist\");\n"
-                             "slide = hardwareMap.servo.get(\"slide\");\n"
                              "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
                              "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
                              "hook_left.setDirection(Servo.Direction.REVERSE);\n"
@@ -143,15 +142,14 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     pdim_digital_pins = jniIntIn("return dim.getDigitalInputStateByte();");
     
-    jniOut("left_drive.setPower(", pleft_drive, ");;");
-    jniOut("right_drive.setPower(", pright_drive, ");;");
-    jniOut("winch.setPower(", pwinch, ");;");
-    jniOut("shoulder.setPower(", pshoulder, ");;");
-    jniOut("intake.setPower(", pintake, ");;");
+    jniOut("left_drive.setPower(", pleft_drive, ");");
+    jniOut("right_drive.setPower(", pright_drive, ");");
+    jniOut("winch.setPower(", pwinch, ");");
+    jniOut("shoulder.setPower(", pshoulder, ");");
+    jniOut("intake.setPower(", pintake, ");");
     
     jniOut("hand.setPosition(", phand,");");
     jniOut("wrist.setPosition(", pwrist,");");
-    jniOut("slide.setPosition(", pslide,");");
     jniOut("hook_left.setPosition(", phook_left,");");
     jniOut("hook_right.setPosition(", phook_right,");");
     jniOut("intake_tilt.setPosition(", pintake_tilt,");");
@@ -263,13 +261,13 @@ void jniMain(JNIEnv * _env, jobject _self)
         //smoothJoysticks(&drive_stick);
         if(drive_toggle)
         {
-            left_drive = -drive_stick.y - drive_stick.x;
-            right_drive = -drive_stick.y + drive_stick.x;
+            left_drive = -drive_stick.y + drive_stick.x;
+            right_drive = -drive_stick.y - drive_stick.x;
         }
         else
         {
-            left_drive = drive_stick.y - drive_stick.x;
-            right_drive = drive_stick.y + drive_stick.x;
+            left_drive = drive_stick.y + drive_stick.x;
+            right_drive = drive_stick.y - drive_stick.x;
         }
         left_drive = clamp(left_drive, -1.0, 1.0);
         right_drive = clamp(right_drive, -1.0, 1.0);
@@ -366,27 +364,29 @@ void jniMain(JNIEnv * _env, jobject _self)
             intake = 0;
         }
         
-        if(intake_out_toggle)
-        {
-            intakeOut();
-        }
-        else
-        {
-            intakeIn();
-        }
+        // if(intake_out_toggle)
+        // {
+        //     intakeOut();
+        // }
+        // else
+        // {
+        //     intakeIn();
+        // }
+        intake_tilt = continuous_servo_stop+intake_tilt_manual/2.0;
         
         if (hopper_tilt)
         {
             if (current_color)
-                hand = hand_red_position;
+                wrist = wrist_red_position;
             else
-                hand = hand_blue_position;
+                wrist = wrist_blue_position;
         }
         else
         {
-            hand = hand_level_position+hand_manual_control;
+            wrist = wrist_level_position+wrist_manual_control;
         }
         
+        wrist = clamp(wrist, 0.0, 1.0);
         hand = clamp(hand, 0.0, 1.0);
         
         //for finding servo values
@@ -397,14 +397,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         //TODO: Auto-score
         //TODO: Block count
         //TODO: Tilt
-//============================ Slide ===========================
-        slide = 0.5;
-        if (slide_right)
-            slide = +slide_speed;
-        if (slide_left)
-            slide = -slide_speed;
         
-        slide = clamp(slide, 0.0, 1.0);
 //============================ Hook ===========================
         if(hook_toggle)
         {
@@ -418,6 +411,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         hook_left = clamp(hook_left, 0.0, 1.0);
         hook_right = clamp(hook_right, 0.0, 1.0);
+        
 //============================ Updates ===========================
         
         pad1.updateButtons(gamepad1);

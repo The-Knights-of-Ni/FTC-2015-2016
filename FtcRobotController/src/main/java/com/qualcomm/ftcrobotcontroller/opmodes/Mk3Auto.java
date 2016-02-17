@@ -28,7 +28,7 @@ int rsid_current = 0;
 public Mk3Auto()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[100];
+    robot_state = new byte[96];
 
 camera = FtcRobotControllerActivity.camera;
 Camera.Parameters parameters = camera.getParameters();
@@ -172,11 +172,10 @@ winch.setPower(getFloat(64));
 shoulder.setPower(getFloat(68));
 intake.setPower(getFloat(72));
 hand.setPosition(getFloat(76));
-slide.setPosition(getFloat(80));
-hook_left.setPosition(getFloat(84));
-hook_right.setPosition(getFloat(88));
-telemetry.addData("Indicator:", getInt(92));
-telemetry.addData("beacon right:", (getInt(96) == 1 ? "red" : "blue"));
+hook_left.setPosition(getFloat(80));
+hook_right.setPosition(getFloat(84));
+telemetry.addData("Indicator:", getInt(88));
+telemetry.addData("beacon right:", (getInt(92) == 1 ? "red" : "blue"));
 telemetry.addData("heading:", getFloat(28));
 
 }

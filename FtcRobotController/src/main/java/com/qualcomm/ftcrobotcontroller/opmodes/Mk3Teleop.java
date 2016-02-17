@@ -26,7 +26,7 @@ int rsid_current = 0;
 public Mk3Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[172];
+    robot_state = new byte[168];
 }
 
 
@@ -131,25 +131,24 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-left_drive.setPower(getFloat(56));;
-right_drive.setPower(getFloat(60));;
-winch.setPower(getFloat(64));;
-shoulder.setPower(getFloat(68));;
-intake.setPower(getFloat(72));;
+left_drive.setPower(getFloat(56));
+right_drive.setPower(getFloat(60));
+winch.setPower(getFloat(64));
+shoulder.setPower(getFloat(68));
+intake.setPower(getFloat(72));
 hand.setPosition(getFloat(76));
 wrist.setPosition(getFloat(80));
-slide.setPosition(getFloat(84));
-hook_left.setPosition(getFloat(88));
-hook_right.setPosition(getFloat(92));
-intake_tilt.setPosition(getFloat(96));
-telemetry.addData("shoulder theta", getFloat(100));
-telemetry.addData("shoulder_compensation", getFloat(104));
-telemetry.addData("shoulder_active", getInt(108));
+hook_left.setPosition(getFloat(84));
+hook_right.setPosition(getFloat(88));
+intake_tilt.setPosition(getFloat(92));
+telemetry.addData("shoulder theta", getFloat(96));
+telemetry.addData("shoulder_compensation", getFloat(100));
+telemetry.addData("shoulder_active", getInt(104));
 telemetry.addData("slider 0", getInt(36));
 telemetry.addData("slider 1", getInt(40));
 telemetry.addData("slider 2", getInt(44));
 telemetry.addData("slider 3", getInt(48));
-telemetry.addData("forearm theta", getFloat(112));
+telemetry.addData("forearm theta", getFloat(108));
 telemetry.addData("shoulder power", getFloat(68));
 
 }
@@ -222,7 +221,7 @@ setInt(52, dim.getDigitalInputStateByte());
 rsid_current = 56;
 }
 {
-rsid_current = 116;
+rsid_current = 112;
 int gamepad1_buttons = 0;
 try
 {
@@ -243,7 +242,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 144;
+rsid_current = 140;
 int gamepad2_buttons = 0;
 try
 {
@@ -277,7 +276,6 @@ DcMotor intake;
 
 Servo hand;
 Servo wrist;
-Servo slide;
 Servo hook_left;
 Servo hook_right;
 Servo intake_tilt;
@@ -314,7 +312,6 @@ shoulder.setDirection(DcMotor.Direction.REVERSE);
 
 hand = hardwareMap.servo.get("hand");
 wrist = hardwareMap.servo.get("wrist");
-slide = hardwareMap.servo.get("slide");
 hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);

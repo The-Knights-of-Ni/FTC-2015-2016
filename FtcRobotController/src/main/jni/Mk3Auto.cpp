@@ -37,7 +37,6 @@ void Mk3AutonomousUpdate()
     intake = clamp(intake, -1.0, 1.0);
     
     hand = clamp(hand, 0.0, 1.0);
-    slide = clamp(slide, 0.0, 1.0);
 }
 
 #ifndef GENERATE
@@ -205,7 +204,6 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("intake.setPower(", pintake, ");");
     
     jniOut("hand.setPosition(", phand,");");
-    jniOut("slide.setPosition(", pslide,");");
     jniOut("hook_left.setPosition(", phook_left,");");
     jniOut("hook_right.setPosition(", phook_right,");");
     
@@ -219,7 +217,6 @@ void jniMain(JNIEnv * _env, jobject _self)
     waitForStart();
     initCamera();
     
-    slide = 0.5;
     //waitForStart(); //needs to be called in java until IMU code is ported
     
     current_time = 0;

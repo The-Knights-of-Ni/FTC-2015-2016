@@ -104,7 +104,7 @@ void * robot_state_first_address = malloc(robot_state_reserved_addresses);
         {                                                               \
             if(constStrcmp(t, "return") == 0)                           \
             {                                                           \
-                int n_printed = sprintf(rsin_code_current, "{\n%.*s", t-s, s); \
+                int n_printed = sprintf(rsin_code_current, "{\n%.*s", (int) (t-s), s); \
                 assert(n_printed >= 0);                                 \
                 rsin_code_current += n_printed;                         \
                 t += sizeof("return");                                  \
@@ -153,7 +153,7 @@ void * jniStructIn_line(int struct_size, const char * s, const char * filename, 
     {
         if(constStrcmp(t, "return") == 0)
         {
-            int n_printed = sprintf(rsin_code_current, "{\nrsid_current = %d;\n%.*s",rsid_current, t-s, s);
+            int n_printed = sprintf(rsin_code_current, "{\nrsid_current = %d;\n%.*s",rsid_current, (int) (t-s), s);
             assert(n_printed >= 0);
             rsin_code_current += n_printed;
             t += sizeof("return");

@@ -2,22 +2,20 @@
 
 set JAVA_HOME=c:\Progra~1\Java\jdk1.7.0_40
 
-# pushd opmodes
-# for %%f in (*.javac) do (
-#     echo %%~nf
-#     clang -E -P -x c %%~nf.javac -o processed/%%~nf.java
-# )
-# popd
+rm generator/test.exe
+clang++ -O0 -D DEBUG -D GENERATE -Wno-deprecated-writable-strings -Wc++11-extensions jni/test.cpp --output generator/test
+generator/test
 
-clang++ -O0 -D DEBUG -Wc++11-extensions generator/robot_state_element_generator.cpp --output generator/robot_state_element_generator
+rm generator/Mk3Teleop.exe
+clang++ -O0 -D DEBUG -D GENERATE -Wno-deprecated-writable-strings -Wc++11-extensions jni/Mk3Teleop.cpp --output generator/Mk3Teleop
+generator/Mk3Teleop
 
-./generator/robot_state_element_generator jni/test.cpp
-./generator/robot_state_element_generator jni/Mk3Teleop.cpp
-./generator/robot_state_element_generator jni/Mk3Auto.cpp
+rm generator/Mk3Auto.exe
+clang++ -O0 -D DEBUG -D GENERATE -Wno-deprecated-writable-strings -Wc++11-extensions jni/Mk3Auto.cpp --output generator/Mk3Auto
+generator/Mk3Auto
 
-
-ndk-build clean NDK_LIBS_OUT=./jniLibs
-ndk-build NDK_LIBS_OUT=./jniLibs
+# ndk-build clean NDK_LIBS_OUT=./jniLibs
+ndk-build NDK_LIBS_OUT=./jniLibs -B V=0
 
 pushd ../../
 

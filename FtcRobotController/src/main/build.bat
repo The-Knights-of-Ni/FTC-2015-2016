@@ -3,15 +3,15 @@
 set JAVA_HOME=c:\Progra~1\Java\jdk1.8.0_66
 
 REM TODO: use native_robot or loop over all cpp files
-del generator\test.exe
+del generator\test
 clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/test.cpp --output generator\test
 generator\test
 
-del generator\Mk3Teleop.exe
+del generator\Mk3Teleop
 clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/Mk3Teleop.cpp --output generator\Mk3Teleop
 generator\Mk3Teleop
 
-del generator\Mk3Auto.exe
+del generator\Mk3Auto
 clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/Mk3Auto.cpp --output generator\Mk3Auto
 generator\Mk3Auto
 

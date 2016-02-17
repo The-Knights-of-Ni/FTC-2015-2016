@@ -21,9 +21,6 @@ float * phand = 0;
 float * pwrist = 0;
 #define wrist (*pwrist)
 
-float * pslide = 0;
-#define slide (*pslide)
-
 float * phook_left = 0;
 #define hook_left (*phook_left)
 

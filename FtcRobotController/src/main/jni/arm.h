@@ -25,7 +25,7 @@ float * pintake_tilt = 0;
 #define intake_tilt (*pintake_tilt)
 
 #define intake_out_switch dim_digital_pin(0)
-#define intake_in_switch dim_digital_pin(1)
+//#define intake_in_switch dim_digital_pin(1)
 
 enum intake_state_enum
 {
@@ -463,22 +463,29 @@ void armSwitchModes()
 }
 
 void intakeOut()
-{
+{    
     if(intake_state == intake_in) intake_state = intake_moving_out;
     
     if(intake_out_switch)
     {
-        intake_tilt = continuous_servo_stop;
+        intake_tilt = 0.0;
         intake_state = intake_out;
     }
-    else intake_tilt = 1.0;
+    else intake_tilt = continuous_servo_stop;
 }
 
+float intake_in_time = 0;
 void intakeIn()
 {
-    if(intake_state == intake_out) intake_state = intake_moving_in;
+    intake_in_time += dt;
     
-    if(intake_in_switch)
+    if(intake_state == intake_out)
+    {
+        intake_state = intake_moving_in;
+        intake_in_time = 0;
+    }
+    
+    if(intake_in_time > 1.0)
     {
         intake_tilt = continuous_servo_stop;
         intake_state = intake_in;
