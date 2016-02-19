@@ -12,22 +12,22 @@
 #include <stdlib.h>
 
 //TODO: move these
-float * pintake = 0;
+float *pintake = 0;
 #define intake (*pintake)
 
-float * phand = 0;
+float *phand = 0;
 #define hand (*phand)
 
-float * pwrist = 0;
+float *pwrist = 0;
 #define wrist (*pwrist)
 
-float * phook_left = 0;
+float *phook_left = 0;
 #define hook_left (*phook_left)
 
-float * phook_right = 0;
+float *phook_right = 0;
 #define hook_right (*phook_right)
 
-int * pdim_digital_pins = 0;
+int *pdim_digital_pins = 0;
 #define dim_digital_pins (*pdim_digital_pins)
 #define dim_digital_pin(n) ((dim_digital_pins>>(n))&1)
 
@@ -42,7 +42,7 @@ float potentiometer_range = 333.33333333333333333333333333333333333f;
 float dt;
 float current_time;
 
-double * ptime;
+double *ptime;
 #define time (*ptime)
 
 #define min_motor_power 0.05
@@ -52,8 +52,8 @@ double * ptime;
 
 float deadzoneAdjust(float a)
 {
-    if(a > deadzone_radius) return (a-deadzone_radius)/(1-deadzone_radius);
-    if(a < -deadzone_radius) return (a+deadzone_radius)/(1-deadzone_radius);
+    if (a > deadzone_radius) return (a - deadzone_radius) / (1 - deadzone_radius);
+    if (a < -deadzone_radius) return (a + deadzone_radius) / (1 - deadzone_radius);
     return 0;
 }
 
@@ -67,8 +67,7 @@ v2f deadzone(v2f stick)
     }
     else
     {
-        stick * ((stick_norm - deadzone_radius) / (1.0f - deadzone_radius)) /
-        stick_norm;
+        stick * ((stick_norm - deadzone_radius) / (1.0f - deadzone_radius)) / stick_norm;
     } //Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
     return stick;
 }

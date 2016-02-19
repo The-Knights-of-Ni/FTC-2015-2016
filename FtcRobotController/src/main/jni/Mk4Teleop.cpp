@@ -1,27 +1,18 @@
-#include "drive.h"
-#include "arm.h"
-#include "robotics.h"
-#include "Button.h"
+#include "white_rabbit.h"
 
 #include "jni_functions.h"
 
 //TODO: generate this
 #ifndef GENERATE
 #undef jniMain
-#define jniMain Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk3Teleop_main
+#define jniMain Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk4Teleop_main
 #endif
 
 //TODO: Get RED/BLUE Status
-// #define current_color 0 //0 = red, 1 = blue
 
-#define slide_rotations 20 //TODO: Move this to <robotname>.h
 float wrist_red_position = 0.9;
 float wrist_blue_position = 0.3;
 float wrist_level_position = 0.6;
-#define slide_speed 5
-#define slide_blue_position 1
-#define slide_red_position -1
-#define slide_stored_position 0
 
 float hook_level_position = 0.0f;
 float hook_locked_position = 1.0f;
@@ -51,11 +42,6 @@ float hook_locked_position = 1.0f;
 #define arm_score_mode_button pad2.press(LEFT_TRIGGER)
 #define arm_intake_mode_button pad2.press(LEFT_BUMPER)
 #define precision_mode pad2.toggle(A)
-
-//Slide
-//#define slide_toggle pad1.toggle(Y)
-#define slide_right pad1.press(DPAD_RIGHT)
-#define slide_left pad1.press(DPAD_LEFT)
 
 //Hook
 #define hook_toggle pad1.toggle(B)
@@ -257,8 +243,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         pad2stick2.y = gamepad2.joystick2.y;
         
 //============================= Drive ============================
-        drive_stick = deadzone(drive_stick);
-        //smoothJoysticks(&drive_stick);
+        drive_stick = smoothJoysticks(drive_stick, 0, 0.2, 0.8, 1);
         if(drive_toggle)
         {
             left_drive = -drive_stick.y + drive_stick.x;
@@ -271,7 +256,6 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         left_drive = clamp(left_drive, -1.0, 1.0);
         right_drive = clamp(right_drive, -1.0, 1.0);
-        //Might need to add additional bounding in as a safety
         
 //============================== Arm =============================
         updateArmSensors();
@@ -339,8 +323,6 @@ void jniMain(JNIEnv * _env, jobject _self)
             
             float shoulder_control = filterArmJoystick(arm_stick[0]);
             float elbow_control = filterArmJoystick(arm_stick[1]);
-            // smoothJoysticks(&elbow_manual);//This needs to be fixed.
-            // smoothJoysticks(&shoulder_manual);
             shoulder = shoulder_control*(precision_mode ? 0.6 : 1);
             winch = elbow_control*(precision_mode ? 0.6 : 1);
             
