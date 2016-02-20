@@ -8,11 +8,11 @@ clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -
 generator\test
 
 del generator\Mk3Teleop
-clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/Mk3Teleop.cpp --output generator\Mk3Teleop
+clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/Mk4Teleop.cpp --output generator\Mk3Teleop
 generator\Mk3Teleop
 
 del generator\Mk3Auto
-clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/Mk3Auto.cpp --output generator\Mk3Auto
+clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-compat-deprecated-writable-strings -Wc++11-extensions jni/Mk4Auto.cpp --output generator\Mk3Auto
 generator\Mk3Auto
 
 REM call ndk-build clean NDK_LIBS_OUT=.\jniLibs V=0

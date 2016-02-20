@@ -59,7 +59,7 @@ public class FtcOpModeRegister implements OpModeRegister {
         manager.register("test", test.class);
         manager.register("Mk3Auto", Mk3Auto.class);
         manager.register("Menu Test", MenuTest.class);
-        manager.register("FSR Test", fsrTest.class);
+        manager.register("LED Test", LEDTest.class);
 
         //manager.register("IntakeTest", IntakeTest.class);
         //manager.register("IMUTester", IMUTester.class);

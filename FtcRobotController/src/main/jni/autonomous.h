@@ -1,8 +1,7 @@
 #ifndef AUTONOMOUS
 #define AUTONOMOUS
-
-#include "arm.h"
-#include "drive.h"
+#define BUTTON //This should make it so we don't have buttons we don't need in auto
+#include "white_rabbit.h"
 
 struct imu_state
 {
@@ -36,14 +35,13 @@ void wait(float wait_time)
 
 #define side_slowing_constant 10
 
-//this doesn't compile right now
 //TODO: go 0-100 for vis instead of 0-1, for clarity
 void driveDistIn(float dist, float vIs)
 {
     if (dist < 0)
     {
         dist = fabs(dist);
-        vIs = -vIs;
+        vIs *= -1;
     }
 
     bool doInit = true;

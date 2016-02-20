@@ -1,4 +1,4 @@
-#ifndef ROBOT_ARM //because it is possible that some compilers will have ARM predefined for the chip archutecture
+#ifndef ROBOT_ARM //because it is possible that some compilers will have ARM predefined for the chip architecture
 #define ROBOT_ARM
 
 #include "maths.h"

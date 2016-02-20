@@ -482,15 +482,6 @@ v4f solve(m4x5f equations)
 }
 /* End of 4x5 matrix Functions */
 
-float bound(float bounded, float lower, float upper)
-{
-    if (bounded > upper)
-        return upper;
-    if (bounded < lower)
-        return lower;
-    return bounded;
-}
-
 float lerp(float a, float b, float t)
 {
     if (t > 1.0f) return b;
@@ -523,8 +514,9 @@ float cubicBezier(float t, float p0, float p1, float p2, float p3)
     return (1-t)*(1-t)*(1-t)*p0 + 3*t*(1-t)*(1-t)*p1 + 3*t*t*(1-t)*p2 + t*t*t*p3;
 }
 
-float quadraticBezier(float t, float p0, float p1, float p2)
+float quadraticBezier(float t, float p0, float p1, float p2)//https://www.desmos.com/calculator/4ut4smjf8g
 {
+    if(t < 0) t *= -1;//Produces unexpected results if you pass negatives
     return (1-t)*(1-t)*p0 + 2*t*(1-t)*p1 + t*t*p2;
 }
 

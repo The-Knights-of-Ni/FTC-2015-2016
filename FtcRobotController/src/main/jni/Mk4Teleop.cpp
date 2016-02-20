@@ -1,7 +1,4 @@
-#include "drive.h"
-#include "arm.h"
-#include "robotics.h"
-#include "Button.h"
+#include "white_rabbit.h"
 
 #include "jni_functions.h"
 
@@ -11,15 +8,10 @@
 #endif
 
 //TODO: Get RED/BLUE Status
-// #define current_color 0 //0 = red, 1 = blue
 
 float wrist_red_position = 1.0;
 float wrist_blue_position = 0.0;
 float wrist_level_position = 0.5;
-// #define slide_speed 5
-// #define slide_blue_position 1
-// #define slide_red_position -1
-// #define slide_stored_position 0
 
 float hook_level_position = 0.0f;
 float hook_locked_position = 1.0f;
@@ -54,11 +46,6 @@ float hook_locked_position = 1.0f;
 #define winch_precision_mode (false)//pad2.press(RIGHT_STICK_BUTTON))
 
 #define arm_slow_factor 0.4
-    
-//Slide
-//#define slide_toggle pad1.toggle(Y)
-#define slide_right pad1.press(DPAD_RIGHT)
-#define slide_left pad1.press(DPAD_LEFT)
 
 //Hook
 #define hook_toggle pad1.toggle(B)
@@ -267,8 +254,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         pad2stick2.y = gamepad2.joystick2.y;
         
 //============================= Drive ============================
-        drive_stick = deadzone(drive_stick);
-        //smoothJoysticks(&drive_stick);
+        drive_stick = smoothJoysticks(drive_stick, 0, 0.2, 0.8, 1);
         if(drive_toggle)
         {
             left_drive = -drive_stick.y + drive_stick.x;
@@ -281,7 +267,6 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         left_drive = clamp(left_drive, -1.0, 1.0);
         right_drive = clamp(right_drive, -1.0, 1.0);
-        //Might need to add additional bounding in as a safety
         
 //============================== Arm =============================
         updateArmSensors();
@@ -372,8 +357,6 @@ void jniMain(JNIEnv * _env, jobject _self)
             
             float shoulder_control = filterArmJoystick(arm_stick[0]);
             float winch_control = filterArmJoystick(arm_stick[1]);
-            // smoothJoysticks(&winch_manual);//This needs to be fixed.
-            // smoothJoysticks(&shoulder_manual);
             
             if(shoulder_precision_mode) shoulder_control *= arm_slow_factor;
             if(winch_precision_mode) winch_control *= arm_slow_factor;
