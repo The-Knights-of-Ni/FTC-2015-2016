@@ -26,7 +26,7 @@ int rsid_current = 0;
 public Mk3Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[168];
+    robot_state = new byte[172];
 }
 
 
@@ -150,6 +150,7 @@ telemetry.addData("slider 2", getInt(44));
 telemetry.addData("slider 3", getInt(48));
 telemetry.addData("forearm theta", getFloat(108));
 telemetry.addData("shoulder power", getFloat(68));
+telemetry.addData("arm stage", getFloat(112));
 
 }
 
@@ -221,7 +222,7 @@ setInt(52, dim.getDigitalInputStateByte());
 rsid_current = 56;
 }
 {
-rsid_current = 112;
+rsid_current = 116;
 int gamepad1_buttons = 0;
 try
 {
@@ -242,7 +243,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 140;
+rsid_current = 144;
 int gamepad2_buttons = 0;
 try
 {
@@ -316,6 +317,7 @@ hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
 intake_tilt = hardwareMap.servo.get("intake_tilt");
+intake_tilt.setDirection(Servo.Direction.REVERSE);
     main();
 }
 }

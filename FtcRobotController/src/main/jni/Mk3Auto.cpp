@@ -28,7 +28,7 @@ void Mk3AutonomousUpdate()
     
     shoulder = 0;
     winch = 0;
-    armJointsToAngle();
+    armToJointTarget();
     
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);

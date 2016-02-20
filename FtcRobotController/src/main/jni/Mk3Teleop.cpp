@@ -5,23 +5,21 @@
 
 #include "jni_functions.h"
 
-//TODO: generate this
 #ifndef GENERATE
 #undef jniMain
-#define jniMain Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk3Teleop_main
+#define jniMain Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk3Teleop_main //TODO: generate this
 #endif
 
 //TODO: Get RED/BLUE Status
 // #define current_color 0 //0 = red, 1 = blue
 
-#define slide_rotations 20 //TODO: Move this to <robotname>.h
-float wrist_red_position = 0.9;
-float wrist_blue_position = 0.3;
-float wrist_level_position = 0.6;
-#define slide_speed 5
-#define slide_blue_position 1
-#define slide_red_position -1
-#define slide_stored_position 0
+float wrist_red_position = 1.0;
+float wrist_blue_position = 0.0;
+float wrist_level_position = 0.5;
+// #define slide_speed 5
+// #define slide_blue_position 1
+// #define slide_red_position -1
+// #define slide_stored_position 0
 
 float hook_level_position = 0.0f;
 float hook_locked_position = 1.0f;
@@ -39,8 +37,10 @@ float hook_locked_position = 1.0f;
 #define intake_toggle pad1.toggle(LEFT_BUMPER)
 #define intake_reverse pad1.press(RIGHT_BUMPER)
 
+//TODO: look through controls again
 #define intake_out_toggle pad1.toggle(A)
-#define intake_tilt_manual pad1stick2.y
+#define intake_tilt_manual -pad1stick2.y
+#define intake_manual_toggle pad1.toggle(B)
 
 //Arm
 // #define shoulder_manual pad2stick1
@@ -48,10 +48,13 @@ float hook_locked_position = 1.0f;
 //                       [0] shoulder, [1] winch/elbow
 #define arm_stick ((v2f){pad2stick1.y, -pad2stick2.y})
 #define arm_manual_toggle pad2.toggle(Y)
-#define arm_score_mode_button pad2.press(LEFT_TRIGGER)
-#define arm_intake_mode_button pad2.press(LEFT_BUMPER)
-#define precision_mode pad2.toggle(A)
+#define arm_score_mode_button pad2.singlePress(LEFT_TRIGGER)
+#define arm_intake_mode_button pad2.singlePress(LEFT_BUMPER)
+#define shoulder_precision_mode (!pad2.press(LEFT_STICK_BUTTON))
+#define winch_precision_mode (false)//pad2.press(RIGHT_STICK_BUTTON))
 
+#define arm_slow_factor 0.4
+    
 //Slide
 //#define slide_toggle pad1.toggle(Y)
 #define slide_right pad1.press(DPAD_RIGHT)
@@ -118,7 +121,8 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
                              "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
                              "hook_left.setDirection(Servo.Direction.REVERSE);\n"
-                             "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");");
+                             "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
+                             "intake_tilt.setDirection(Servo.Direction.REVERSE);");
     
     jni_misc_string = (
         "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
@@ -177,6 +181,10 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     jniOut("telemetry.addData(\"shoulder power\", ", pshoulder,");");
     
+    float * parm_stage_print;
+    #define arm_stage_print (*parm_stage_print)
+    jniOut("telemetry.addData(\"arm stage\", ", parm_stage_print,");");
+    
     pgamepad1 = jniStructIn(
         gamepad,
         "int gamepad1_buttons = 0;\n"
@@ -232,6 +240,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     intake_state = 0;
     
+    score_mode = true;
+    
     waitForStart();
     
     interruptable for ever
@@ -278,21 +288,37 @@ void jniMain(JNIEnv * _env, jobject _self)
         
         shoulder_compensation_print = shoulder_compensation;
         shoulder_print_theta = shoulder_theta;
-        forearm_print_theta = shoulder_omega;
+        forearm_print_theta = inside_elbow_theta;
         shoulder_active_print = shoulder_active;
+        arm_stage_print = arm_stage;
         
         if(arm_manual_toggle) //IK
         {
             v2f target_arm_velocity = arm_stick;
+            
             if(arm_score_mode_button)
             {
                 score_mode = true;
-                arm_stage = arm_retracting;
+                if(arm_stage != arm_idle) //cancle motion
+                {
+                    float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+                                                      -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+                    target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+                    
+                    arm_stage = arm_idle;
+                }
+                else arm_stage = arm_retracting;
             }
             else if(arm_intake_mode_button)
             {
                 score_mode = false;
-                arm_stage = arm_preparing;
+                if(arm_stage != arm_idle) //cancle motion
+                {
+                    target_shoulder_theta = shoulder_theta;
+                    
+                    arm_stage = arm_idle;
+                }
+                else arm_stage = arm_preparing;
             }
             
             if(arm_stage != arm_idle)
@@ -301,36 +327,43 @@ void jniMain(JNIEnv * _env, jobject _self)
             }
             else
             {
+                target_arm_velocity.x = filterArmJoystick(target_arm_velocity.x);
+                target_arm_velocity.y = filterArmJoystick(target_arm_velocity.y);
+                if(shoulder_precision_mode) target_arm_velocity.x *= arm_slow_factor;
+                if(winch_precision_mode) target_arm_velocity.y *= arm_slow_factor;
+                
                 if(score_mode)
                 {
                     armAtVelocity(target_arm_velocity);
                     
+                    //set the unused target angle so it won't move when the mode is switched
                     target_shoulder_theta = shoulder_theta;
+                    
+                    armToPolarTarget();
                 }
                 else
                 {
                     armJointsAtVelocity(target_arm_velocity);
                     
+                    //set the unused target angle so it won't move when the mode is switched
                     float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                                       -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
                     target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
-                }
-                
-                if(score_mode)
-                {
-                    armToAngle();
-                }
-                else
-                {
-                    armJointsToAngle();
+                    
+                    armToJointTarget();
                 }
             }
+            
+            //clamp the integral factors to stop integral build up
+            shoulder_compensation = clamp(shoulder_compensation, -1.0, 1.0);
+            winch_compensation = clamp(winch_compensation, -1.0, 1.0);
             
             shoulder = clamp(shoulder, -1.0, 1.0);
             winch = clamp(winch, -1.0, 1.0);
         }
         else //Manual
         {
+            //set targets to current position so it will remember the current value when arm control is enabled
             float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                               -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
             target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
@@ -338,18 +371,22 @@ void jniMain(JNIEnv * _env, jobject _self)
             target_inside_elbow_theta = inside_elbow_theta;
             
             float shoulder_control = filterArmJoystick(arm_stick[0]);
-            float elbow_control = filterArmJoystick(arm_stick[1]);
-            // smoothJoysticks(&elbow_manual);//This needs to be fixed.
+            float winch_control = filterArmJoystick(arm_stick[1]);
+            // smoothJoysticks(&winch_manual);//This needs to be fixed.
             // smoothJoysticks(&shoulder_manual);
-            shoulder = shoulder_control*(precision_mode ? 0.6 : 1);
-            winch = elbow_control*(precision_mode ? 0.6 : 1);
             
+            if(shoulder_precision_mode) shoulder_control *= arm_slow_factor;
+            if(winch_precision_mode) winch_control *= arm_slow_factor;
+            
+            shoulder = shoulder_control;
+            winch = winch_control;
+            
+            //filter low power to remove annoying buzzing noise and ensure the motor powers remain in bounds
             shoulder = debuzz(clamp(shoulder, -1.0, 1.0));
             winch = debuzz(clamp(winch, -1.0, 1.0));
         }
         
 //TODO: Feed-Forward
-//TODO: Position macros (DPAD on second controller)
 //TODO: Precision mode
 //TODO: Rope tension
 //TODO: Locks
@@ -363,16 +400,23 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             intake = 0;
         }
-        
-        // if(intake_out_toggle)
-        // {
-        //     intakeOut();
-        // }
-        // else
-        // {
-        //     intakeIn();
-        // }
-        intake_tilt = continuous_servo_stop+intake_tilt_manual/2.0;
+
+        if(!intake_manual_toggle)
+        {
+            if(intake_out_toggle)
+            {
+                intakeOut();
+            }
+            else
+            {
+                intakeIn();
+            }
+        }
+        else
+        {
+            intake_tilt = 0;
+        }
+        intake_tilt += intake_tilt_manual/2.0;
         
         if (hopper_tilt)
         {
@@ -385,6 +429,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             wrist = wrist_level_position+wrist_manual_control;
         }
+
+        intake_tilt = clamp(intake_tilt, 0.0, 1.0);
         
         wrist = clamp(wrist, 0.0, 1.0);
         hand = clamp(hand, 0.0, 1.0);
