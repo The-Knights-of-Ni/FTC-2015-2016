@@ -15,13 +15,19 @@ public class LEDTest extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
         dim = hardwareMap.deviceInterfaceModule.get("dim");
-        //LED strip = new LED(hardwareMap.i2cDevice.get("led"));
+        LED strip = new LED(dim, 0, 0);
 
         waitForStart();
         dim.setLED(0, false);
         dim.setLED(1, false);
-        //strip.ledFrame();
-        //strip.ledFrame();
+        for(int i = 0; i < 10; i++)
+            strip.startFrame();
+        strip.startFrame();
+        for(int i = 0; i < 10; i++)
+            strip.ledFrame(1,1,1);
+        strip.ledFrame(1,1,1);
+        strip.ledFrame(1,1,1);
+        strip.ledFrame(1,1,1);
         boolean byte0_toggled = false;
         boolean byte1_toggled = true;
         for(;;)
