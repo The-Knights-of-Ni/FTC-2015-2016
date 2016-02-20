@@ -168,6 +168,37 @@ struct v3f
     }
 };
 
+struct v3s
+{
+    union
+    {
+        struct
+        {
+            short x;
+            short y;
+            short z;
+        };
+        struct
+        {
+            short i;
+            short j;
+            short k;
+        };
+        struct //euler angles
+        {
+            short heading;
+            short tilt;
+            short roll;
+        };
+        short data[3];
+    };
+
+    inline short &operator[](int a)
+    {
+        return data[a];
+    }
+};
+
 v3f operator+(v3f a, v3f b)
 {
     v3f output;

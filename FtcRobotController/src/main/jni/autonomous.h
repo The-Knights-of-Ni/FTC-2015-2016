@@ -5,7 +5,7 @@
 
 struct imu_state
 {
-    v3f orientation;
+    v3s orientation;
     v3f velocity;
 };
 
@@ -102,7 +102,7 @@ void driveOnCourseIn(float dist, float vIs,
         dist = fabs(dist);
         vIs = -vIs;
     }
-
+    
     bool doInit = true;
     int right_enc_net = 0;
     int left_enc_net = 0;

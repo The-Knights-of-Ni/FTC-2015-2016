@@ -26,13 +26,36 @@ int rsid_current = 0;
 public Mk4Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[168];
+    robot_state = new byte[172];
 }
 
 
 public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
 {
     return ByteBuffer.wrap(joystick, 42, 4).getInt();
+}
+
+public void setShort(int index, short a)
+{
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 2).order(ByteOrder.nativeOrder()).putShort(a);
+    rsid_current = index+2;
+}
+public void setRelative(short a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 2).order(ByteOrder.nativeOrder()).putShort(a);
+    rsid_current += 2;
+}
+public short getShort(int index)
+{
+    rsid_current = index+2;
+    return ByteBuffer.wrap(robot_state, index, 2).order(ByteOrder.nativeOrder()).getShort();
+}
+public short getRelativeShort()
+{
+    short out = ByteBuffer.wrap(robot_state, rsid_current, 2).order(ByteOrder.nativeOrder()).getShort();
+    rsid_current += 2;
+    return out;
 }
 
 public void setInt(int index, int a)
@@ -150,6 +173,7 @@ telemetry.addData("slider 2", getInt(44));
 telemetry.addData("slider 3", getInt(48));
 telemetry.addData("forearm theta", getFloat(108));
 telemetry.addData("shoulder power", getFloat(68));
+telemetry.addData("arm stage", getFloat(112));
 
 }
 
@@ -221,7 +245,7 @@ setInt(52, dim.getDigitalInputStateByte());
 rsid_current = 56;
 }
 {
-rsid_current = 112;
+rsid_current = 116;
 int gamepad1_buttons = 0;
 try
 {
@@ -242,7 +266,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 140;
+rsid_current = 144;
 int gamepad2_buttons = 0;
 try
 {
@@ -316,6 +340,7 @@ hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
 intake_tilt = hardwareMap.servo.get("intake_tilt");
+intake_tilt.setDirection(Servo.Direction.REVERSE);
     main();
 }
 }

@@ -232,7 +232,6 @@ public class FtcRobotControllerActivity extends Activity {
         }
     }
     
-    public static Camera camera;
     public static CameraPreview camera_preview;
     ////////////
     

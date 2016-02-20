@@ -28,9 +28,9 @@ int rsid_current = 0;
 public Mk4Auto()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[96];
+    robot_state = new byte[104];
 
-camera = FtcRobotControllerActivity.camera;
+camera = FtcRobotControllerActivity.camera_preview.camera;
 Camera.Parameters parameters = camera.getParameters();
 Camera.Size camera_size = parameters.getPreviewSize();
 camera_w = camera_size.width;
@@ -63,11 +63,27 @@ class CameraPreviewCallback implements Camera.PreviewCallback
     }
 }
 
-public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
+public void setShort(int index, short a)
 {
-    ByteBuffer stick = ByteBuffer.allocate(45);
-    stick.put(joystick);
-    return stick.getInt(40);//Offset value
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 2).order(ByteOrder.nativeOrder()).putShort(a);
+    rsid_current = index+2;
+}
+public void setRelative(short a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 2).order(ByteOrder.nativeOrder()).putShort(a);
+    rsid_current += 2;
+}
+public short getShort(int index)
+{
+    rsid_current = index+2;
+    return ByteBuffer.wrap(robot_state, index, 2).order(ByteOrder.nativeOrder()).getShort();
+}
+public short getRelativeShort()
+{
+    short out = ByteBuffer.wrap(robot_state, rsid_current, 2).order(ByteOrder.nativeOrder()).getShort();
+    rsid_current += 2;
+    return out;
 }
 
 public void setInt(int index, int a)
@@ -172,11 +188,13 @@ winch.setPower(getFloat(64));
 shoulder.setPower(getFloat(68));
 intake.setPower(getFloat(72));
 hand.setPosition(getFloat(76));
-hook_left.setPosition(getFloat(80));
-hook_right.setPosition(getFloat(84));
-telemetry.addData("Indicator:", getInt(88));
-telemetry.addData("beacon right:", (getInt(92) == 1 ? "red" : "blue"));
-telemetry.addData("heading:", getFloat(28));
+wrist.setPosition(getFloat(80));
+hook_left.setPosition(getFloat(84));
+hook_right.setPosition(getFloat(88));
+intake_tilt.setPosition(getFloat(92));
+telemetry.addData("Indicator:", getInt(96));
+telemetry.addData("beacon right:", (getInt(100) == 1 ? "red" : "blue"));
+telemetry.addData("heading:", getShort(32));
 
 }
 
@@ -188,13 +206,13 @@ setDouble(0, time);
 rsid_current = 8;
 }
 {
-setInt(8, right_drive.getCurrentPosition());
-
+setInt(8, 0);
+//right_drive.getCurrentPosition();
 rsid_current = 12;
 }
 {
-setInt(12, left_drive.getCurrentPosition());
-
+setInt(12, 0);
+//left_drive.getCurrentPosition();
 rsid_current = 16;
 }
 {
@@ -213,7 +231,12 @@ setInt(24, dim.getAnalogInputValue(elbow_potentiometer_port));
 rsid_current = 28;
 }
 {
-rsid_current = 28;
+setInt(28, dim.getAnalogInputValue(shoulder_potentiometer_port));
+
+rsid_current = 32;
+}
+{
+rsid_current = 32;
 if(imu.checkForUpdate()) {
     setRelative(imu.eul_x);
 setRelative( imu.eul_y);
@@ -235,6 +258,7 @@ rsid_current = 56;
 /* Start Motor Definitions */
 DeviceInterfaceModule dim;
 IMU imu;int elbow_potentiometer_port = 7;
+int shoulder_potentiometer_port = 1;
 
 DcMotor left_drive;
 DcMotor right_drive;
@@ -243,9 +267,10 @@ DcMotor winch;
 DcMotor intake;
 
 Servo hand;
-Servo slide;
+Servo wrist;
 Servo hook_left;
 Servo hook_right;
+Servo intake_tilt;
 /* End Motor Definitions */
 
 native void main();
@@ -292,13 +317,16 @@ winch.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 waitOneFullHardwareCycle();
 winch.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 waitOneFullHardwareCycle();
-//shoulder.setDirection(DcMotor.Direction.REVERSE);
-//elbow.setDirection(DcMotor.Direction.REVERSE);
+shoulder.setDirection(DcMotor.Direction.REVERSE);
+//winch.setDirection(DcMotor.Direction.REVERSE);
 
 hand = hardwareMap.servo.get("hand");
+wrist = hardwareMap.servo.get("wrist");
 hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
+intake_tilt = hardwareMap.servo.get("intake_tilt");
+intake_tilt.setDirection(Servo.Direction.REVERSE);
 dim.setLED(0, false);
 dim.setLED(1, false);
 while (!FtcRobotControllerActivity.aligned || (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue))
@@ -307,20 +335,20 @@ while (!FtcRobotControllerActivity.aligned || (!FtcRobotControllerActivity.red &
     waitForNextHardwareCycle();
 }
 if(FtcRobotControllerActivity.red)
-            {
-                dim.setLED(0, false);
-                dim.setLED(1, true);
-            }
-            else if(FtcRobotControllerActivity.blue)
-            {
-                dim.setLED(0, true);
-                dim.setLED(1, false);
-            }
-            else
-            {
-                dim.setLED(0, false);
-                dim.setLED(1, false);
-            }waitForStart();
+{
+    dim.setLED(0, false);
+    dim.setLED(1, true);
+}
+else if(FtcRobotControllerActivity.blue)
+{
+    dim.setLED(0, true);
+    dim.setLED(1, false);
+}
+else
+{
+    dim.setLED(0, false);
+    dim.setLED(1, false);
+}waitForStart();
 imu.rezero();
 
     main();

@@ -35,6 +35,29 @@ public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks 
     return ByteBuffer.wrap(joystick, 42, 4).getInt();
 }
 
+public void setShort(int index, short a)
+{
+    rsid_current = index;
+    ByteBuffer.wrap(robot_state, rsid_current, 2).order(ByteOrder.nativeOrder()).putShort(a);
+    rsid_current = index+2;
+}
+public void setRelative(short a)
+{
+    ByteBuffer.wrap(robot_state, rsid_current, 2).order(ByteOrder.nativeOrder()).putShort(a);
+    rsid_current += 2;
+}
+public short getShort(int index)
+{
+    rsid_current = index+2;
+    return ByteBuffer.wrap(robot_state, index, 2).order(ByteOrder.nativeOrder()).getShort();
+}
+public short getRelativeShort()
+{
+    short out = ByteBuffer.wrap(robot_state, rsid_current, 2).order(ByteOrder.nativeOrder()).getShort();
+    rsid_current += 2;
+    return out;
+}
+
 public void setInt(int index, int a)
 {
     rsid_current = index;
