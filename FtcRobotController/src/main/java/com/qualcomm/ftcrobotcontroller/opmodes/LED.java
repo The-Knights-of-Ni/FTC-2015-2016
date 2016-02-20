@@ -35,7 +35,7 @@ public class LED {
             //TODO:
         }
     }
-
+    
     public void initClock()//TODO: Use a square wave at 5V and 5000Hz, figure out if timing is possible
     {
         dim.setAnalogOutputMode(0, (byte) 2);//Set port 0 to square wave
@@ -48,11 +48,11 @@ public class LED {
         byte output = dim.getDigitalOutputStateByte();
         if(bit)
             output = (byte) (output ^ (byte) (1 << clockPin));
-        dim.setDigitalOutputByte();
+        dim.setDigitalOutputByte(output);
     }
     public void write(boolean bit)
     {
-        pushBit();
+        pushBit(bit);
     }
 
     public void write8(byte value)

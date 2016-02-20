@@ -232,7 +232,6 @@ public class FtcRobotControllerActivity extends Activity {
         }
     }
     
-    public static Camera camera;
     public static CameraPreview camera_preview;
     ////////////
     
@@ -293,49 +292,49 @@ public class FtcRobotControllerActivity extends Activity {
         FrameLayout frame_layout_preview = (FrameLayout) findViewById(R.id.camera_preview);
         frame_layout_preview.addView(camera_preview);
         
-        SeekBar slider0 = (SeekBar) findViewById(R.id.slider_0);
-        slider0.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-                                           {
-                                               public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
-                                               {
-                                                   slider_0 = progress;
-                                               }
-                                               public void onStartTrackingTouch(SeekBar seek_bar){}
-                                               public void onStopTrackingTouch(SeekBar seek_bar){}
-                                           });
+        /* SeekBar slider0 = (SeekBar) findViewById(R.id.slider_0); */
+        /* slider0.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() */
+        /*                                    { */
+        /*                                        public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user) */
+        /*                                        { */
+        /*                                            slider_0 = progress; */
+        /*                                        } */
+        /*                                        public void onStartTrackingTouch(SeekBar seek_bar){} */
+        /*                                        public void onStopTrackingTouch(SeekBar seek_bar){} */
+        /*                                    }); */
         
-        SeekBar slider1 = (SeekBar) findViewById(R.id.slider_1);
-        slider1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-                                           {
-                                               public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
-                                               {
-                                                   slider_1 = progress;
-                                               }
-                                               public void onStartTrackingTouch(SeekBar seek_bar){}
-                                               public void onStopTrackingTouch(SeekBar seek_bar){}
-                                           });
+        /* SeekBar slider1 = (SeekBar) findViewById(R.id.slider_1); */
+        /* slider1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() */
+        /*                                    { */
+        /*                                        public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user) */
+        /*                                        { */
+        /*                                            slider_1 = progress; */
+        /*                                        } */
+        /*                                        public void onStartTrackingTouch(SeekBar seek_bar){} */
+        /*                                        public void onStopTrackingTouch(SeekBar seek_bar){} */
+        /*                                    }); */
         
-        SeekBar slider2 = (SeekBar) findViewById(R.id.slider_2);
-        slider2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-                                           {
-                                               public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
-                                               {
-                                                   slider_2 = progress;
-                                               }
-                                               public void onStartTrackingTouch(SeekBar seek_bar){}
-                                               public void onStopTrackingTouch(SeekBar seek_bar){}
-                                           });
+        /* SeekBar slider2 = (SeekBar) findViewById(R.id.slider_2); */
+        /* slider2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() */
+        /*                                    { */
+        /*                                        public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user) */
+        /*                                        { */
+        /*                                            slider_2 = progress; */
+        /*                                        } */
+        /*                                        public void onStartTrackingTouch(SeekBar seek_bar){} */
+        /*                                        public void onStopTrackingTouch(SeekBar seek_bar){} */
+        /*                                    }); */
         
-        SeekBar slider3 = (SeekBar) findViewById(R.id.slider_3);
-        slider3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-                                           {
-                                               public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user)
-                                               {
-                                                   slider_3 = progress;
-                                               }
-                                               public void onStartTrackingTouch(SeekBar seek_bar){}
-                                               public void onStopTrackingTouch(SeekBar seek_bar){}
-                                           });
+        /* SeekBar slider3 = (SeekBar) findViewById(R.id.slider_3); */
+        /* slider3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() */
+        /*                                    { */
+        /*                                        public void onProgressChanged(SeekBar seek_bar, int progress, boolean from_user) */
+        /*                                        { */
+        /*                                            slider_3 = progress; */
+        /*                                        } */
+        /*                                        public void onStartTrackingTouch(SeekBar seek_bar){} */
+        /*                                        public void onStopTrackingTouch(SeekBar seek_bar){} */
+        /*                                    }); */
         
         // End of Custom Stuff
         utility = new Utility(this);

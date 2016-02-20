@@ -4,7 +4,7 @@
 
 #ifndef GENERATE
 #undef jniMain
-#define jniMain Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk3Teleop_main //TODO: generate this
+#define jniMain Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk4Teleop_main //TODO: generate this
 #endif
 
 //TODO: Get RED/BLUE Status
@@ -145,6 +145,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("hook_right.setPosition(", phook_right,");");
     jniOut("intake_tilt.setPosition(", pintake_tilt,");");
     
+    //TODO: telemetry queue
     float * pshoulder_print_theta;
     #define shoulder_print_theta (*pshoulder_print_theta)
     jniOut("telemetry.addData(\"shoulder theta\", ", pshoulder_print_theta,");");
@@ -284,7 +285,7 @@ void jniMain(JNIEnv * _env, jobject _self)
             if(arm_score_mode_button)
             {
                 score_mode = true;
-                if(arm_stage != arm_idle) //cancle motion
+                if(arm_stage != arm_idle) //cancel motion
                 {
                     float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                                       -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
@@ -297,7 +298,7 @@ void jniMain(JNIEnv * _env, jobject _self)
             else if(arm_intake_mode_button)
             {
                 score_mode = false;
-                if(arm_stage != arm_idle) //cancle motion
+                if(arm_stage != arm_idle) //cancel motion
                 {
                     target_shoulder_theta = shoulder_theta;
                     

@@ -10,31 +10,23 @@ void Mk4AutonomousUpdate()
     current_time = time;
 
     //TODO: make this sensor filter stuff a function in arm.h
-    elbow_potentiometer_angle = lerp(
-        (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+12.0f))*pi/180.0f,
-        elbow_potentiometer_angle,
-        exp(-500.0*dt));
 
-    float new_shoulder_theta = shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
-    float new_inside_elbow_theta = elbow_potentiometer_angle;
-    float new_winch_theta = winch_encoder/winch_gear_ratio/encoderticks_per_radian;
-    shoulder_omega = lerp((new_shoulder_theta-shoulder_theta)/dt, shoulder_omega, 0.1);
-    winch_omega = lerp((new_winch_theta-winch_theta)/dt, winch_omega, 0.1);
-    float inside_elbow_omega = (new_inside_elbow_theta-inside_elbow_theta)/dt;
-
-    shoulder_theta = new_shoulder_theta;
-    inside_elbow_theta = new_inside_elbow_theta;
-    winch_theta = new_winch_theta;
-
+    updateArmSensors();
+    
     shoulder = 0;
     winch = 0;
-    armToJointTarget();
+    armToJointTarget(); //TODO; might want to use armToPreset
+    
+    //clamp the integral factors to stop integral build up
+    shoulder_compensation = clamp(shoulder_compensation, -1.0, 1.0);
+    winch_compensation = clamp(winch_compensation, -1.0, 1.0);
+    
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
     left_drive = clamp(left_drive, -1.0, 1.0);
     right_drive = clamp(right_drive, -1.0, 1.0);
     intake = clamp(intake, -1.0, 1.0);
-
+    
     hand = clamp(hand, 0.0, 1.0);
 }
 
@@ -42,8 +34,6 @@ void Mk4AutonomousUpdate()
 #undef jniMain
 #define jniMain Java_com_qualcomm_ftcrobotcontroller_opmodes_Mk4Auto_main
 #endif
-
-
 
 extern "C"
 void jniMain(JNIEnv * _env, jobject _self)
@@ -54,7 +44,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     initJNI();
 
     customAutonomousUpdate = Mk4AutonomousUpdate;
-
+    
     jni_import_string = (
         "import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;\n"
         "import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\n"
@@ -65,13 +55,14 @@ void jniMain(JNIEnv * _env, jobject _self)
         "import com.qualcomm.robotcore.hardware.I2cDevice;\n"
         "import com.qualcomm.robotcore.hardware.Servo;\n"
         "import android.hardware.Camera;\n");
-
+    
     //TODO: shortcut for defining and declaring motors, servos, etc.
     jni_variables_string = (
         "/* Start Motor Definitions */\n"
         "DeviceInterfaceModule dim;\n"
         "IMU imu;"
         "int elbow_potentiometer_port = 7;\n"
+        "int shoulder_potentiometer_port = 1;\n"
         "\n"
         "DcMotor left_drive;\n"
         "DcMotor right_drive;\n"
@@ -80,11 +71,12 @@ void jniMain(JNIEnv * _env, jobject _self)
         "DcMotor intake;\n"
         "\n"
         "Servo hand;\n"
-        "Servo slide;\n"
+        "Servo wrist;\n"
         "Servo hook_left;\n"
         "Servo hook_right;\n"
+        "Servo intake_tilt;\n"
         "/* End Motor Definitions */");
-
+    
     jni_run_opmode_string = (
         "dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
         "I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get(\"imu\");\n"
@@ -121,38 +113,42 @@ void jniMain(JNIEnv * _env, jobject _self)
         "waitOneFullHardwareCycle();\n"
         "winch.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);\n"
         "waitOneFullHardwareCycle();\n"
-        "//shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
-        "//elbow.setDirection(DcMotor.Direction.REVERSE);\n"
+        "shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
+        "//winch.setDirection(DcMotor.Direction.REVERSE);\n"
         "\n"
         "hand = hardwareMap.servo.get(\"hand\");\n"
+        "wrist = hardwareMap.servo.get(\"wrist\");\n"
         "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
         "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
         "hook_left.setDirection(Servo.Direction.REVERSE);\n"
+        "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
+        "intake_tilt.setDirection(Servo.Direction.REVERSE);"
+        "\n"
         "dim.setLED(0, false);\n"
-                "dim.setLED(1, false);\n"
+        "dim.setLED(1, false);\n"
         "while (!FtcRobotControllerActivity.aligned || (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue))\n"
         "{\n"
         "    telemetry.addData(\"unchecked boxes\", \"fix it\");\n"
         "    waitForNextHardwareCycle();\n"
         "}\n"
         "if(FtcRobotControllerActivity.red)\n"
-                "            {\n"
-                "                dim.setLED(0, false);\n"
-                "                dim.setLED(1, true);\n"
-                "            }\n"
-                "            else if(FtcRobotControllerActivity.blue)\n"
-                "            {\n"
-                "                dim.setLED(0, true);\n"
-                "                dim.setLED(1, false);\n"
-                "            }\n"
-                "            else\n"
-                "            {\n"
-                "                dim.setLED(0, false);\n"
-                "                dim.setLED(1, false);\n"
-                "            }"
+        "{\n"
+        "    dim.setLED(0, false);\n"
+        "    dim.setLED(1, true);\n"
+        "}\n"
+        "else if(FtcRobotControllerActivity.blue)\n"
+        "{\n"
+        "    dim.setLED(0, true);\n"
+        "    dim.setLED(1, false);\n"
+        "}\n"
+        "else\n"
+        "{\n"
+        "    dim.setLED(0, false);\n"
+        "    dim.setLED(1, false);\n"
+        "}"
         "waitForStart();\n"
         "imu.rezero();\n");
-
+    
     jni_misc_string = (
         "Camera camera = null;\n"
         "int camera_w = 0;\n"
@@ -170,16 +166,9 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    {\n"
         "        camera.addCallbackBuffer(camera_buffer);\n"
         "    }\n"
-        "}\n"
-        "\n"
-        "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
-        "{\n"
-        "    ByteBuffer stick = ByteBuffer.allocate(45);\n"
-        "    stick.put(joystick);\n"
-        "    return stick.getInt(40);//Offset value\n"
         "}\n");
-
-    jni_constructor_string = ("camera = FtcRobotControllerActivity.camera;\n"
+    
+    jni_constructor_string = ("camera = FtcRobotControllerActivity.camera_preview.camera;\n"
                               "Camera.Parameters parameters = camera.getParameters();\n"
                               "Camera.Size camera_size = parameters.getPreviewSize();\n"
                               "camera_w = camera_size.width;\n"
@@ -190,59 +179,68 @@ void jniMain(JNIEnv * _env, jobject _self)
                               "\n"
                               "camera.setPreviewCallbackWithBuffer(camera_preview_callback);\n"
                               "camera.addCallbackBuffer(camera_buffer);\n");
-
+    
     ptime = jniDoubleIn("return time;");
-    pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
-    pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
+    pright_drive_encoder = jniIntIn("return 0;//right_drive.getCurrentPosition();");
+    pleft_drive_encoder = jniIntIn("return 0;//left_drive.getCurrentPosition();");
     pwinch_encoder = jniIntIn("return winch.getCurrentPosition();");
     pshoulder_encoder = jniIntIn("return shoulder.getCurrentPosition();");
     pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
-
+    pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
+    
     pimu_values = jniStructIn(
         imu_state,
         "if(imu.checkForUpdate()) {\n"
         "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
         "}\n");
+    
     int * pcurrent_color;
-#define current_color (*pcurrent_color)
+    #define current_color (*pcurrent_color)
     pcurrent_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
-
+    
     jniOut("left_drive.setPower(", pleft_drive, ");");
     jniOut("right_drive.setPower(", pright_drive, ");");
     jniOut("winch.setPower(", pwinch, ");");
     jniOut("shoulder.setPower(", pshoulder, ");");
     jniOut("intake.setPower(", pintake, ");");
-
+    
     jniOut("hand.setPosition(", phand,");");
+    jniOut("wrist.setPosition(", pwrist,");");
     jniOut("hook_left.setPosition(", phook_left,");");
     jniOut("hook_right.setPosition(", phook_right,");");
-
+    jniOut("intake_tilt.setPosition(", pintake_tilt,");");
+    
     jniOut("telemetry.addData(\"Indicator:\", ", pindicator, ");");
     jniOut("telemetry.addData(\"beacon right:\", (", pbeacon_right," == 1 ? \"red\" : \"blue\"));");
-    float * pimu_heading = &imu_heading;
+    short * pimu_heading = &imu_heading;
     jniOut("telemetry.addData(\"heading:\", ", pimu_heading, ");");
-
+    
     jniGenerate();
-
-
-
-    waitForStart();
+    
+    
     initCamera();
-
-    //waitForStart(); //needs to be called in java until IMU code is ported
-
+    
+    //waitForStart(); //NOTE: needs to be called in java until IMU code is ported
+    
     current_time = 0;
     //Config
     //hopper down
-    #define colorAdjustedAngle(a) (currentColor ? a : -a)
+    #define colorAdjustedAngle(a) (currentColor ? (a) : -(a))
     #define blocks_in_hopper 1
     interruptable
     {
+        driveOnCourseIn(24, -0.8, 45);
+        driveOnCourseIn(24, 0.8, 45);
+        for ever
+        {
+            autonomousUpdate();
+        }
+        
         //Deploy Robot
         //Wait time delay
         //Turn on intake
         intake = 1;
-
+        
         //Drive to goal
         driveOnCourseIn(120, -0.8, 45);//Drive 120 in at 45 degrees, relative to the driver box
         //Once 5 blocks are reached, reverse intake direction

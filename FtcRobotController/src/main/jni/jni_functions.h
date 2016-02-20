@@ -318,13 +318,13 @@ int main(int n_args, char ** args)
 }
 
 //char not included because it has different sizes in c and java
-enum types{ type_bool, type_byte, type_int, type_long, type_float, type_double, n_types };
+enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };
 const char * type_java_names[] =
-{            "boolean",   "byte",     "int",    "long",    "float",    "double"};
+{            "boolean",   "byte",    "short",     "int",    "long",    "float",    "double"};
 const char * type_names[] =
-{               "bool",   "byte",     "int",    "long",    "float",    "double"};
+{               "bool",   "byte",    "short",     "int",    "long",    "float",    "double"};
 const int type_sizes[] =
-{                   1,         1,        4,         8,          4,          8};
+{                   1,         1,          2,         4,         8,          4,          8};
 
 //TODO: prettier formatting
 void jniGenerate()
@@ -444,22 +444,32 @@ void jniGenerate()
 
 #include <jni.h>
 
+JNIEnv * env;
+jobject self;
+
 jmethodID waitForStartID;
 jmethodID waitOneFullHardwareCycleID;
 jmethodID waitForNextHardwareCycleID;
 jmethodID robotStateInID;
 jmethodID robotStateOutID;
 
-#define waitForStart() env->CallVoidMethod(self, waitForStartID)
+void cleanupJNI();
+
+void waitForStart()
+{
+    env->CallVoidMethod(self, waitForStartID);
+    if(env->ExceptionOccurred() != 0)
+    {
+        cleanupJNI();
+        longjmp(exit_jump, 1); //TODO: this might not be setup yet
+    }
+}
 #define waitOneFullHardwareCycle() env->CallVoidMethod(self, waitOneFullHardwareCycleID)
 #define waitForNextHardwareCycle() env->CallVoidMethod(self, waitForNextHardwareCycleID)
 #define robotStateIn() env->CallVoidMethod(self, robotStateInID)
 #define robotStateOut() env->CallVoidMethod(self, robotStateOutID)
 
 jbyteArray jrobot_state;
-
-JNIEnv * env;
-jobject self;
 
 void initJNI()
 {    
@@ -491,8 +501,6 @@ void initJNI()
     
     rsid_current = 0;
 }
-
-void cleanupJNI();
 
 void updateRobot()
 {
@@ -560,6 +568,10 @@ jniOutStruct operator, (jniOutStruct jos, const char * s)
 //defineJni(byte, Byte)
 //not using defineJni because byte has a different syntax for putting into a byte buffer
 //#define jniByteIn(s) jniByteIn_line(s, __FILE__, __LINE__)
+
+
+defineJni(short, Short)
+#define jniShortIn(s) jniShortIn_line(s, __FILE__, __LINE__)
 
 defineJni(int, Int)
 #define jniIntIn(s) jniIntIn_line(s, __FILE__, __LINE__)
