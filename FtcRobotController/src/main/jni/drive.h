@@ -21,12 +21,34 @@ int * pleft_drive_encoder;
 int * pright_drive_encoder;
 #define right_drive_encoder (*pright_drive_encoder)
 
-#define sprocket_pitch_radius 3.13 //Inches
+#define sprocket_pitch_radius 3.13 //inches
 #define encoderticks_per_inch sprocket_pitch_radius*encoderticks_per_radian
 #define encoderticks_per_cm sprocket_pitch_radius*2.54*encoderticks_per_radian
 #define acceptableAngleError 2
 
+//constants
+#define drive_gear_ratio (80.0/64.0)
 
+float left_drive_theta = 0;
+float left_drive_omega = 0;
+
+float right_drive_theta = 0;
+float right_drive_omega = 0;
+
+float avg_drive_theta = 0;
+float avg_drive_omega = 0;
+
+void initDriveSensors()
+{
+}
+
+void updateDriveSensors()
+{
+    lowpassFirstDerivativeUpdate(left_drive_encoder*radians_per_encodertick, &left_drive_theta, &left_drive_omega, 10);
+    lowpassFirstDerivativeUpdate(right_drive_encoder*radians_per_encodertick, &right_drive_theta, &right_drive_omega, 10);
+    avg_drive_theta = (left_drive_theta+right_drive_theta)/2.0;
+    avg_drive_omega = (left_drive_omega+right_drive_omega)/2.0;
+}
 
 //Bounds and Smooths joystick values for better handling.
 

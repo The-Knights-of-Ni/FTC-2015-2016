@@ -49,14 +49,6 @@ float shoulder_gear_ratio = 6.75;
 float forearm_length = 16.0f;
 float shoulder_length = 16.5f;
 
-float neverest_max_torque = 4334000; //in g in^2/s^2
-float neverest_max_speed = 13.51; //in rad/s
-
-float dc_motor_voltage = 12;
-
-float neverest_k_i = dc_motor_voltage/neverest_max_speed;
-float neverest_k_t_over_R = neverest_max_torque/dc_motor_voltage;
-
 //current values
 float elbow_potentiometer_angle = 0.0;
 float shoulder_potentiometer_angle = 0.0;
@@ -113,6 +105,7 @@ void updateArmSensors()
     float new_winch_theta = winch_encoder/winch_gear_ratio/encoderticks_per_radian;
     
     if(shoulder_omega != shoulder_omega) shoulder_omega = 0;
+    //TODO: switch to use lowpassFirstDerivativeUpdate function
     shoulder_omega = lerp((new_shoulder_theta-shoulder_theta)/dt, shoulder_omega, exp(-10*dt));
     
     if(winch_omega != winch_omega) winch_omega = 0;
@@ -348,7 +341,7 @@ void armJointStabalizationFunction(float * motor,
 
 inline void armToAngle(float * target_theta, float current_theta)
 {
-    float shoulder_omega_error = (neverest_max_speed*shoulder-shoulder_omega);
+    float shoulder_omega_error = (neverest_max_omega*shoulder-shoulder_omega);
     
     armJointStabalizationFunction(&shoulder,
                                   current_theta, shoulder_omega_error,

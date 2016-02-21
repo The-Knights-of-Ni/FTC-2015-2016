@@ -9,6 +9,8 @@
 #define e  2.71828182845904523536
 #define sq(a) ((a)*(a))
 
+#define sign(a) ((a) > 0 ? 1 : -1)
+
 #pragma pack(push, 16)
 
 struct v2f

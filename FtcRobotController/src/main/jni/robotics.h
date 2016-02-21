@@ -32,7 +32,14 @@ int *pdim_digital_pins = 0;
 #define dim_digital_pin(n) ((dim_digital_pins>>(n))&1)
 
 //Constants
+#define lbs 453.592
+#define cm 2.54
+
+#define robot_m (30*lbs) //robot mass in grams
+#define robot_I (robot_m*sq(sprocket_pitch_radius))
+
 #define encoderticks_per_radian (1440.0f/(2.0f*pi))
+#define radians_per_encodertick (1.0/encoderticks_per_radian)
 
 float potentiometer_range = 333.33333333333333333333333333333333333f;
 
@@ -45,8 +52,25 @@ float current_time;
 double *ptime;
 #define time (*ptime)
 
+
+float neverest_max_torque = 4334000; //in g in^2/s^2
+float neverest_max_omega = 13.51; //in rad/s
+
+float dc_motor_voltage = 12;
+
+float neverest_k_i = dc_motor_voltage/neverest_max_omega;
+float neverest_k_t_over_R = neverest_max_torque/dc_motor_voltage;
+
+
 #define min_motor_power 0.05
 #define debuzz(a) (a)//(((a) < min_motor_power && (a) > -min_motor_power) ? 0 : (a))
+
+//TODO: find shorter but descriptive name
+void lowpassFirstDerivativeUpdate(float new_theta, float * current_theta, float * omega, float decay_constant)
+{
+    *omega = lerp((new_theta-(*current_theta))/dt, (*omega), exp(-decay_constant*dt));
+    *current_theta = new_theta;
+}
 
 #define deadzone_radius 0.1
 
