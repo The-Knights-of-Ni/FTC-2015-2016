@@ -38,12 +38,22 @@ float right_drive_omega = 0;
 float avg_drive_theta = 0;
 float avg_drive_omega = 0;
 
-void initDriveSensors()
+void zeroDriveSensors()
 {
+    left_drive_theta = 0;
+    left_drive_omega = 0;
+
+    right_drive_theta = 0;
+    right_drive_omega = 0;
+
+    avg_drive_theta = 0;
+    avg_drive_omega = 0;
 }
 
 void updateDriveSensors()
 {
+    if(left_drive_omega != left_drive_omega) left_drive_omega = 0;
+    if(right_drive_omega != right_drive_omega) right_drive_omega = 0;
     lowpassFirstDerivativeUpdate(left_drive_encoder*radians_per_encodertick, &left_drive_theta, &left_drive_omega, 10);
     lowpassFirstDerivativeUpdate(right_drive_encoder*radians_per_encodertick, &right_drive_theta, &right_drive_omega, 10);
     avg_drive_theta = (left_drive_theta+right_drive_theta)/2.0;

@@ -33,7 +33,7 @@ struct gamepad
 {
     v2f joystick1;
     v2f joystick2;
-
+    
     float left_trigger;
     float right_trigger;
     

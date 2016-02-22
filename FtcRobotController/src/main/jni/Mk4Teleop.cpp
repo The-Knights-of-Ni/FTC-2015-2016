@@ -22,17 +22,19 @@ float hook_locked_position = 1.0f;
 #define drive_toggle pad1.toggle(LEFT_STICK_BUTTON)
 
 //Hopper
-#define hopper_tilt pad2.toggle(RIGHT_BUMPER) //Might make this a stick or something
-#define wrist_manual_control pad1stick2.x
+#define hand_open_toggle pad2.singlePress(A)
+#define wrist_tilt pad2.toggle(RIGHT_BUMPER) //Might make this a stick or something
+float wrist_manual_control = 0;
+#define wrist_manual_increase pad2.press(X)
+#define wrist_manual_decrease pad2.press(B)
 
 //Intake
 #define intake_toggle pad1.toggle(LEFT_BUMPER)
 #define intake_reverse pad1.press(RIGHT_BUMPER)
 
 //TODO: look through controls again
-#define intake_out_toggle pad1.toggle(A)
+#define intake_out_toggle pad1.singlePress(A)
 #define intake_tilt_manual -pad1stick2.y
-#define intake_manual_toggle pad1.toggle(B)
 
 //Arm
 // #define shoulder_manual pad2stick1
@@ -40,8 +42,8 @@ float hook_locked_position = 1.0f;
 //                       [0] shoulder, [1] winch/elbow
 #define arm_stick ((v2f){pad2stick1.y, -pad2stick2.y})
 #define arm_manual_toggle pad2.toggle(Y)
-#define arm_score_mode_button pad2.singlePress(LEFT_TRIGGER)
-#define arm_intake_mode_button pad2.singlePress(LEFT_BUMPER)
+#define arm_score_mode_button pad2.singlePress(LEFT_BUMPER)
+#define arm_intake_mode_button pad2.singlePress(LEFT_TRIGGER)
 #define shoulder_precision_mode (!pad2.press(LEFT_STICK_BUTTON))
 #define winch_precision_mode (false)//pad2.press(RIGHT_STICK_BUTTON))
 
@@ -104,6 +106,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "//winch.setDirection(DcMotor.Direction.REVERSE);\n"
                              "\n"
                              "hand = hardwareMap.servo.get(\"hand\");\n"
+                             "hand.setDirection(Servo.Direction.REVERSE);\n"
                              "wrist = hardwareMap.servo.get(\"wrist\");\n"
                              "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
                              "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
@@ -226,11 +229,19 @@ void jniMain(JNIEnv * _env, jobject _self)
      //TODO: figure out a better way to have things reset to their initial values
     arm_stage = 0;
     
-    intake_state = 0;
+    hand_time = 1000000;
+    intake_time = 1000000;
     
     score_mode = true;
     
     waitForStart();
+    
+    // updateArmSensors();
+    // float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+    //                                   -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+    // target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+    // target_shoulder_theta = shoulder_theta;
+    // target_inside_elbow_theta = inside_elbow_theta;
     
     interruptable for ever
     {
@@ -258,13 +269,13 @@ void jniMain(JNIEnv * _env, jobject _self)
         drive_stick = smoothJoysticks(drive_stick, 0, 0.2, 0.8, 1);
         if(drive_toggle)
         {
-            left_drive = -drive_stick.y + drive_stick.x;
-            right_drive = -drive_stick.y - drive_stick.x;
+            left_drive = -drive_stick.y - drive_stick.x;
+            right_drive = -drive_stick.y + drive_stick.x;
         }
         else
         {
-            left_drive = drive_stick.y + drive_stick.x;
-            right_drive = drive_stick.y - drive_stick.x;
+            left_drive = drive_stick.y - drive_stick.x;
+            right_drive = drive_stick.y + drive_stick.x;
         }
         left_drive = clamp(left_drive, -1.0, 1.0);
         right_drive = clamp(right_drive, -1.0, 1.0);
@@ -384,25 +395,22 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             intake = 0;
         }
-
-        if(!intake_manual_toggle)
+        
+        if(shoulder_theta > 1.5 && intake_out == false)
         {
-            if(intake_out_toggle)
-            {
-                intakeOut();
-            }
-            else
-            {
-                intakeIn();
-            }
+            intake_out = true;
+            intake_time = 0;
         }
-        else
+        
+        if(intake_out_toggle)
         {
-            intake_tilt = 0;
+            intake_out = !intake_out;
+            intake_time = 0;
         }
+        doIntake();
         intake_tilt += intake_tilt_manual/2.0;
         
-        if (hopper_tilt)
+        if(wrist_tilt && shoulder_theta < 1.5)
         {
             if (current_color)
                 wrist = wrist_red_position;
@@ -411,11 +419,20 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         else
         {
-            wrist = wrist_level_position+wrist_manual_control;
+            wrist = wrist_level_position;
+            wrist_manual_control = 0;
         }
-
-        intake_tilt = clamp(intake_tilt, 0.0, 1.0);
+        wrist_manual_control += 0.5*((int) wrist_manual_increase - (int)wrist_manual_decrease)*dt;
+        wrist += wrist_manual_control;
         
+        if(hand_open_toggle)
+        {
+            hand_open = !hand_open;
+            hand_time = 0;
+        }
+        doHand();
+        
+        intake_tilt = clamp(intake_tilt, 0.0, 1.0);
         wrist = clamp(wrist, 0.0, 1.0);
         hand = clamp(hand, 0.0, 1.0);
         

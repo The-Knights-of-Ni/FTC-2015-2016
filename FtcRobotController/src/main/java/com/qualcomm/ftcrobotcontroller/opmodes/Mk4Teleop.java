@@ -335,6 +335,7 @@ shoulder.setDirection(DcMotor.Direction.REVERSE);
 //winch.setDirection(DcMotor.Direction.REVERSE);
 
 hand = hardwareMap.servo.get("hand");
+hand.setDirection(Servo.Direction.REVERSE);
 wrist = hardwareMap.servo.get("wrist");
 hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");

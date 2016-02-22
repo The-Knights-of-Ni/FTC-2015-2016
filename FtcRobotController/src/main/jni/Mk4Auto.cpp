@@ -16,6 +16,8 @@ void Mk4AutonomousUpdate()
     shoulder = 0;
     winch = 0;
     armToJointTarget(); //TODO; might want to use armToPreset
+    doIntake();
+    doHand();
     
     //clamp the integral factors to stop integral build up
     shoulder_compensation = clamp(shoulder_compensation, -1.0, 1.0);
@@ -221,6 +223,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     initCamera();
     
     //waitForStart(); //NOTE: needs to be called in java until IMU code is ported
+    zeroDriveSensors();
     
     current_time = 0;
     //Config
@@ -251,24 +254,24 @@ void jniMain(JNIEnv * _env, jobject _self)
         //Drive forward a bit
         driveDistIn(10, -0.8);
         //Score climbers
-        intakeIn();
+        setIntakeIn();
         driveDistIn(5, -0.5);
-        intakeOut();//TODO: Make this less, we just need to tap it on the top to release the climbers
+        setIntakeOut();//TODO: Make this less, we just need to tap it on the top to release the climbers
         //Push button
         driveDistIn(5, 0.5);
         //TODO: Function for setting the intake to any angle
         bool color = getBeaconColor();
         if(color == current_color)
-            intakeOut();//The right side is the right color
+            setIntakeOut();//The right side is the right color
         else
-            intakeOut();//The left side is the right color
+            setIntakeOut();//The left side is the right color
         driveDistIn(1, -0.5);//Pushing button
         //Drive out of parking zone
         driveDistIn(11, 0.5);
         //Turn and park on nearest low mountain
         turnRelDeg(45, -0.8);
         driveDistIn(60, 0.8);
-        intakeIn();
+        setIntakeIn();
         //Arm to partial extension for teleop
         turnRelDeg(90, -0.8);
         driveDistIn(40, 0.8);

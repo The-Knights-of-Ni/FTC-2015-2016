@@ -255,9 +255,12 @@ void driveOnCourseIn(float dist, float vIs,
             compensation = 0;
         }
         
-        drive_vIs = sign(vIs)*clamp(drive_vIs, -vIs, vIs); /* this works even when the desired acceleration is greater than the max
-                                                    possible motor acceleration because the max impulse during the first half
-                                                    of the drive will always be the negative max impulse during the second half */
+        drive_vIs = sign(vIs)*clamp(drive_vIs, -vIs, vIs); /* this works even when the desired acceleration is
+                                                              greater than the max possible motor acceleration
+                                                              because the max impulse during the first half
+                                                              of the drive will always be the negative max
+                                                              impulse during the second half <--this is incorrect,
+                                                              it can decellerate faster than it can accelerate */
         
         //TODO: account for distance driven to the side        
         float heading_error = target_heading-imu_heading;
