@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.I2cController;
 import java.util.concurrent.locks.Lock;
 import com.qualcomm.ftccommon.DbgLog;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 //import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import java.nio.ByteBuffer;
@@ -140,10 +142,13 @@ public class IMU
     
     public long old_time;
     public double dt = 0;
+
+    public LinearOpMode opmode;
     
-    public IMU(I2cDevice I2CD)
+    public IMU(I2cDevice I2CD, LinearOpMode OPMODE)
     {
         i2cd = I2CD;
+        opmode = OPMODE;
         
         this.read_cache  = i2cd.getI2cReadCache();
         this.read_lock   = i2cd.getI2cReadCacheLock();
@@ -183,7 +188,7 @@ public class IMU
     */
     
     //TODO: add pre-set option to enable all reads from all readable registers
-    public int init(byte mode, byte unit_flags)
+    public int init(byte mode, byte unit_flags) throws InterruptedException
     {
         DbgLog.error("imu init");
         
@@ -192,7 +197,7 @@ public class IMU
         
         byte chip_id = slow_read8(CHIP_ID);
         DbgLog.error(String.format("chip_id 0x%X", chip_id));
-        if (chip_id != bCHIP_ID_VALUE)
+        for(int tries = 0; chip_id != bCHIP_ID_VALUE; tries++)
         {
             delay(650); //delay value is from from Table 0-2
             chip_id = slow_read8(CHIP_ID);
@@ -201,6 +206,11 @@ public class IMU
             if (chip_id != bCHIP_ID_VALUE)
             {
                 DbgLog.error("wrong chip id");
+                //return -1;
+            }
+            if(tries > 10)
+            {
+                DbgLog.error(String.format("%dth wrong chip id, stopping", tries));
                 return -1;
             }
         }
@@ -272,18 +282,28 @@ public class IMU
         return 0;
     }
     
-    public void delay(int time)
+    public void delay(int time) throws InterruptedException
     {
+        double start_time = opmode.time;
+        while((opmode.time-start_time)*1000 < time /* +50 */)
+        {
+            opmode.waitForNextHardwareCycle();
+        }
+
         /* long start_time = System.nanoTime(); */
-        /* while((System.nanoTime()-start_time)/1000 < time +50){} */
-        try
-        {
-            Thread.sleep(time);
-        }
-        catch (InterruptedException e)
-        {
-            //TODO:
-        }
+        /* while((System.nanoTime()-start_time) < time*1000 /\* +50 *\/) */
+        /* { */
+        /*     opmode.waitForNextHardwareCycle(); */
+        /* } */
+        
+        /* try */
+        /* { */
+        /*     Thread.sleep(time); */
+        /* } */
+        /* catch (InterruptedException e) */
+        /* { */
+        /*     //TODO: */
+        /* } */
     }
     
     //read_lock must be obtained before calling this or any of the functions that use it
@@ -292,7 +312,7 @@ public class IMU
             return ByteBuffer.wrap(read_cache, register-lowest_read_address+dib_cache_overhead, 2).order(ByteOrder.nativeOrder()).getShort();
     }
     
-    public byte slow_read8(int address)
+    public byte slow_read8(int address) throws InterruptedException
     {
         i2cd.enableI2cReadMode(i2c_address, address, 1);
         while(!i2cd.isI2cPortReady())
@@ -319,7 +339,7 @@ public class IMU
         }
     }
     
-    public void write(int address, byte[] data)
+    public void write(int address, byte[] data) throws InterruptedException
     {
         while(!i2cd.isI2cPortReady())
         {
@@ -349,7 +369,7 @@ public class IMU
         i2cd.writeI2cCacheToController();
     }
     
-    public void write8(int address, byte value)
+    public void write8(int address, byte value) throws InterruptedException
     {
         byte[] data = new byte[]{value};
         write(address, data);

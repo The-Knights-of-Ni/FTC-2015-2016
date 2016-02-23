@@ -9,21 +9,18 @@
 
 //TODO: Get RED/BLUE Status
 
-float wrist_red_position = 1.0;
-float wrist_blue_position = 0.0;
-float wrist_level_position = 0.5;
-
 float hook_level_position = 0.0f;
 float hook_locked_position = 1.0f;
 //KEYBINDS
 
 //Drive
-#define drive_stick pad1stick1
+#define drive_stick ((v2f){pad1stick1.x, -pad1stick1.y})
 #define drive_toggle pad1.toggle(LEFT_STICK_BUTTON)
 
 //Hopper
-#define hand_open_toggle pad2.singlePress(A)
-#define wrist_tilt pad2.toggle(RIGHT_BUMPER) //Might make this a stick or something
+#define hand_open_toggle pad2.singlePress(RIGHT_TRIGGER)
+#define wrist_tilt_toggle pad2.singlePress(RIGHT_BUMPER)
+bool8 wrist_tilt = 0;
 float wrist_manual_control = 0;
 #define wrist_manual_increase pad2.press(X)
 #define wrist_manual_decrease pad2.press(B)
@@ -33,8 +30,8 @@ float wrist_manual_control = 0;
 #define intake_reverse pad1.press(RIGHT_BUMPER)
 
 //TODO: look through controls again
-#define intake_out_toggle pad1.singlePress(A)
-#define intake_tilt_manual -pad1stick2.y
+#define intake_out_toggle false //pad1.singlePress(A)
+#define intake_tilt_manual pad1stick2.y
 
 //Arm
 // #define shoulder_manual pad2stick1
@@ -42,15 +39,19 @@ float wrist_manual_control = 0;
 //                       [0] shoulder, [1] winch/elbow
 #define arm_stick ((v2f){pad2stick1.y, -pad2stick2.y})
 #define arm_manual_toggle pad2.toggle(Y)
-#define arm_score_mode_button pad2.singlePress(LEFT_BUMPER)
-#define arm_intake_mode_button pad2.singlePress(LEFT_TRIGGER)
+#define arm_score_mode_button pad2.singlePress(LEFT_TRIGGER)
+#define arm_intake_mode_button pad2.singlePress(LEFT_BUMPER)
 #define shoulder_precision_mode (!pad2.press(LEFT_STICK_BUTTON))
-#define winch_precision_mode (false)//pad2.press(RIGHT_STICK_BUTTON))
+#define winch_precision_mode (false)//(pad2.press(RIGHT_STICK_BUTTON))
 
-#define arm_slow_factor 0.4
+#define arm_slow_factor 0.6
 
 //Hook
 #define hook_toggle pad1.toggle(B)
+
+//Climber Release    
+#define climber_release_toggle pad1.toggle(A)
+
 extern "C"
 void jniMain(JNIEnv * _env, jobject _self)
 {
@@ -91,7 +92,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "shoulder    = hardwareMap.dcMotor.get(\"shoulder\");\n"
                              "winch       = hardwareMap.dcMotor.get(\"winch\");\n"
                              "intake      = hardwareMap.dcMotor.get(\"intake\");\n"
-                             "right_drive.setDirection(DcMotor.Direction.REVERSE);\n"
+                             "//right_drive.setDirection(DcMotor.Direction.REVERSE);\n"
                              "left_drive.setDirection(DcMotor.Direction.REVERSE);\n"
                              "shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
                              "shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);\n"
@@ -112,7 +113,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
                              "hook_left.setDirection(Servo.Direction.REVERSE);\n"
                              "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
-                             "intake_tilt.setDirection(Servo.Direction.REVERSE);");
+                             "//intake_tilt.setDirection(Servo.Direction.REVERSE);");
     
     jni_misc_string = (
         "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
@@ -121,13 +122,13 @@ void jniMain(JNIEnv * _env, jobject _self)
         "}\n");
     
     ptime = jniDoubleIn("return time;");
-    pright_drive_encoder = jniIntIn("return 0;//right_drive.getCurrentPosition();");
-    pleft_drive_encoder = jniIntIn("return 0;//left_drive.getCurrentPosition();");
+    pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
+    pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
     pwinch_encoder = jniIntIn("return winch.getCurrentPosition();");
     pshoulder_encoder = jniIntIn("return shoulder.getCurrentPosition();");
     pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
     pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
-    int * current_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
+    pcurrent_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
     
     pslider0 = jniIntIn("return FtcRobotControllerActivity.slider_0;");
     pslider1 = jniIntIn("return FtcRobotControllerActivity.slider_1;");
@@ -226,6 +227,9 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     shoulder_compensation = 0;
     
+    wrist_tilt = 0;
+    wrist_manual_control = 0;
+    
      //TODO: figure out a better way to have things reset to their initial values
     arm_stage = 0;
     
@@ -269,13 +273,13 @@ void jniMain(JNIEnv * _env, jobject _self)
         drive_stick = smoothJoysticks(drive_stick, 0, 0.2, 0.8, 1);
         if(drive_toggle)
         {
-            left_drive = -drive_stick.y - drive_stick.x;
-            right_drive = -drive_stick.y + drive_stick.x;
+            left_drive = -drive_stick.y + drive_stick.x;
+            right_drive = -drive_stick.y - drive_stick.x;
         }
         else
         {
-            left_drive = drive_stick.y - drive_stick.x;
-            right_drive = drive_stick.y + drive_stick.x;
+            left_drive = drive_stick.y + drive_stick.x;
+            right_drive = drive_stick.y - drive_stick.x;
         }
         left_drive = clamp(left_drive, -1.0, 1.0);
         right_drive = clamp(right_drive, -1.0, 1.0);
@@ -315,15 +319,18 @@ void jniMain(JNIEnv * _env, jobject _self)
                     
                     arm_stage = arm_idle;
                 }
-                else arm_stage = arm_preparing;
+                else arm_stage = arm_pre_preparing;
             }
             
             if(arm_stage != arm_idle)
             {
                 armSwitchModes();
             }
-            else
+            
+            if(arm_stage == arm_idle) //since arm_stage can change in armSwitchModes()
             {
+                arm_switching = 0;
+                
                 target_arm_velocity.x = filterArmJoystick(target_arm_velocity.x);
                 target_arm_velocity.y = filterArmJoystick(target_arm_velocity.y);
                 if(shoulder_precision_mode) target_arm_velocity.x *= arm_slow_factor;
@@ -357,6 +364,7 @@ void jniMain(JNIEnv * _env, jobject _self)
             
             shoulder = clamp(shoulder, -1.0, 1.0);
             winch = clamp(winch, -1.0, 1.0);
+            if(winch > 0.0 && !tension_switch && inside_elbow_theta > pi) winch = 0.0;
         }
         else //Manual
         {
@@ -396,13 +404,11 @@ void jniMain(JNIEnv * _env, jobject _self)
             intake = 0;
         }
         
-        if(shoulder_theta > 1.5 && intake_out == false)
+        if(armOnIntakeSide())
         {
-            intake_out = true;
-            intake_time = 0;
+            setIntakeOut();
         }
-        
-        if(intake_out_toggle)
+        else if(intake_out_toggle)
         {
             intake_out = !intake_out;
             intake_time = 0;
@@ -410,12 +416,17 @@ void jniMain(JNIEnv * _env, jobject _self)
         doIntake();
         intake_tilt += intake_tilt_manual/2.0;
         
-        if(wrist_tilt && shoulder_theta < 1.5)
+        if(wrist_tilt_toggle) wrist_tilt = !wrist_tilt;
+        
+        if(shoulder_theta > 1.3 && inside_elbow_theta > pi)
         {
-            if (current_color)
-                wrist = wrist_red_position;
-            else
-                wrist = wrist_blue_position;
+            wrist_tilt = false;
+        }
+        
+        if(wrist_tilt)
+        {
+            if(current_color) wrist = wrist_red_position;
+            else              wrist = wrist_blue_position;
         }
         else
         {
@@ -458,6 +469,16 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         hook_left = clamp(hook_left, 0.0, 1.0);
         hook_right = clamp(hook_right, 0.0, 1.0);
+
+//========================= Climber Release ======================
+        if(climber_release_toggle)
+        {
+            //TODO: climber release out
+        }
+        else
+        {
+            //TODO: climber release in       
+        }
         
 //============================ Updates ===========================
         

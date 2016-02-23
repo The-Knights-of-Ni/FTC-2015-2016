@@ -62,7 +62,7 @@ public class FtcOpModeRegister implements OpModeRegister {
         manager.register("LED Test", LEDTest.class);
 
         //manager.register("IntakeTest", IntakeTest.class);
-        //manager.register("IMUTester", IMUTester.class);
+        manager.register("IMUTester", IMUTester.class);
         //manager.register("JoystickTest", JoystickTest.class);
         //manager.register("MR Gyro Test", MRGyroTest.class);
     }

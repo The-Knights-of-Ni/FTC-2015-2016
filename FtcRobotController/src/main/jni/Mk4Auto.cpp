@@ -6,16 +6,10 @@
 //stuff that need to be constantly updated in the background but is not intensive enough to deserve a seperate thread
 void Mk4AutonomousUpdate()
 {
-    dt = time-current_time;
-    current_time = time;
-
-    //TODO: make this sensor filter stuff a function in arm.h
-
-    updateArmSensors();
-    
+    //TODO: make this sensor filter stuff a function in arm.h    
     shoulder = 0;
     winch = 0;
-    armToJointTarget(); //TODO; might want to use armToPreset
+    //armToPreset(1.0, 1.0);
     doIntake();
     doHand();
     
@@ -25,11 +19,25 @@ void Mk4AutonomousUpdate()
     
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
+    if(winch > 0.0 && !tension_switch && inside_elbow_theta > pi) winch = 0.0;
     left_drive = clamp(left_drive, -1.0, 1.0);
     right_drive = clamp(right_drive, -1.0, 1.0);
     intake = clamp(intake, -1.0, 1.0);
     
+    intake_tilt = clamp(intake_tilt, 0.0, 1.0);
+    wrist = clamp(wrist, 0.0, 1.0);
     hand = clamp(hand, 0.0, 1.0);
+    hook_left = clamp(hook_left, 0.0, 1.0);
+    hook_right = clamp(hook_right, 0.0, 1.0);
+
+    intake = 0;
+    shoulder = 0;
+    winch = 0;
+    intake_tilt = continuous_servo_stop;
+    wrist = wrist_level_position;
+    hand = 0;
+    hook_left = 0;
+    hook_right = 0;
 }
 
 #ifndef GENERATE
@@ -82,7 +90,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     jni_run_opmode_string = (
         "dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
         "I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get(\"imu\");\n"
-        "imu = new IMU(imu_i2c_device);\n"
+        "imu = new IMU(imu_i2c_device, this);\n"
         "int error = imu.init(IMU.mode_ndof,\n"
         "        (byte) (IMU.units_acc_m_per_s2 |\n"
         "                IMU.units_angle_deg |\n"
@@ -104,7 +112,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "shoulder    = hardwareMap.dcMotor.get(\"shoulder\");\n"
         "winch       = hardwareMap.dcMotor.get(\"winch\");\n"
         "intake      = hardwareMap.dcMotor.get(\"intake\");\n"
-        "right_drive.setDirection(DcMotor.Direction.REVERSE);\n"
+        "//right_drive.setDirection(DcMotor.Direction.REVERSE);\n"
         "left_drive.setDirection(DcMotor.Direction.REVERSE);\n"
         "shoulder.setDirection(DcMotor.Direction.REVERSE);\n"
         "shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);\n"
@@ -119,12 +127,13 @@ void jniMain(JNIEnv * _env, jobject _self)
         "//winch.setDirection(DcMotor.Direction.REVERSE);\n"
         "\n"
         "hand = hardwareMap.servo.get(\"hand\");\n"
+        "hand.setDirection(Servo.Direction.REVERSE);\n"
         "wrist = hardwareMap.servo.get(\"wrist\");\n"
         "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
         "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
         "hook_left.setDirection(Servo.Direction.REVERSE);\n"
         "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
-        "intake_tilt.setDirection(Servo.Direction.REVERSE);"
+        "//intake_tilt.setDirection(Servo.Direction.REVERSE);"
         "\n"
         "dim.setLED(0, false);\n"
         "dim.setLED(1, false);\n"
@@ -148,6 +157,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    dim.setLED(0, false);\n"
         "    dim.setLED(1, false);\n"
         "}"
+        "telemetry.addData(\"ready\", \"\");\n"
         "waitForStart();\n"
         "imu.rezero();\n");
     
@@ -183,12 +193,14 @@ void jniMain(JNIEnv * _env, jobject _self)
                               "camera.addCallbackBuffer(camera_buffer);\n");
     
     ptime = jniDoubleIn("return time;");
-    pright_drive_encoder = jniIntIn("return 0;//right_drive.getCurrentPosition();");
-    pleft_drive_encoder = jniIntIn("return 0;//left_drive.getCurrentPosition();");
+    pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
+    pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
     pwinch_encoder = jniIntIn("return winch.getCurrentPosition();");
     pshoulder_encoder = jniIntIn("return shoulder.getCurrentPosition();");
     pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
     pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
+    
+    pdim_digital_pins = jniIntIn("return dim.getDigitalInputStateByte();");
     
     pimu_values = jniStructIn(
         imu_state,
@@ -196,8 +208,6 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
         "}\n");
     
-    int * pcurrent_color;
-    #define current_color (*pcurrent_color)
     pcurrent_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
     
     jniOut("left_drive.setPower(", pleft_drive, ");");
@@ -213,27 +223,81 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("intake_tilt.setPosition(", pintake_tilt,");");
     
     jniOut("telemetry.addData(\"Indicator:\", ", pindicator, ");");
+    jniOut("telemetry.addData(\"left_drive_encoder:\", ", pleft_drive_encoder, ");");
+    jniOut("telemetry.addData(\"right_drive_encoder:\", ", pright_drive_encoder, ");");
     jniOut("telemetry.addData(\"beacon right:\", (", pbeacon_right," == 1 ? \"red\" : \"blue\"));");
-    short * pimu_heading = &imu_heading;
+    short * pimu_heading = &(pimu_values->orientation.x);
     jniOut("telemetry.addData(\"heading:\", ", pimu_heading, ");");
+    
+    jniOut("telemetry.addData(\"target time:\", ", pdrive_time, ");");
+    jniOut("telemetry.addData(\"acceleration time:\", ", pacceleration_time, ");");
+    
+    pslider0 = jniIntIn("return FtcRobotControllerActivity.slider_0;");
+    pslider1 = jniIntIn("return FtcRobotControllerActivity.slider_1;");
+    pslider2 = jniIntIn("return FtcRobotControllerActivity.slider_2;");
+    pslider3 = jniIntIn("return FtcRobotControllerActivity.slider_3;");
+    
+    jniOut("telemetry.addData(\"slider 0\", ", pslider0,");");
+    jniOut("telemetry.addData(\"slider 1\", ", pslider1,");");
+    jniOut("telemetry.addData(\"slider 2\", ", pslider2,");");
+    jniOut("telemetry.addData(\"slider 3\", ", pslider3,");");
     
     jniGenerate();
     
+    intake_out = true;
+    intake_time = 1000;
+    wrist = wrist_level_position;
+    hand_open = false;
+    hand_time = 1000;
+
+    shoulder_omega = 0;
+    winch_omega = 0;
+    inside_elbow_omega = 0;
+    
+    shoulder_compensation = 0;
+    
+     //TODO: figure out a better way to have things reset to their initial values
+    arm_stage = 0;
+    
+    score_mode = false;
     
     initCamera();
     
     //waitForStart(); //NOTE: needs to be called in java until IMU code is ported
     zeroDriveSensors();
-    
-    current_time = 0;
+
+    updateRobot();
+    current_time = time;
     //Config
     //hopper down
     #define colorAdjustedAngle(a) (currentColor ? (a) : -(a))
     #define blocks_in_hopper 1
     interruptable
     {
-        driveOnCourseIn(24, -0.8, 45);
-        driveOnCourseIn(24, 0.8, 45);
+        for(int i = 0; i < 2; i++)
+        {
+            float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+                                              -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+            target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+            target_shoulder_theta = shoulder_theta;
+            target_inside_elbow_theta = inside_elbow_theta;
+            
+            autonomousUpdate();
+        }
+        
+        float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+                                          -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+        target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+        target_shoulder_theta = shoulder_theta;
+        target_inside_elbow_theta = inside_elbow_theta;
+
+        turnRelDeg(90, 1.0);
+        wait(1.0);
+        turnRelDeg(-90, 1.0);
+        
+        //driveDistIn(10, 0.8, 1);
+        //driveOnCourseIn(10, -0.8, 45);
+        // driveOnCourseIn(24, 0.8, 45);
         for ever
         {
             autonomousUpdate();

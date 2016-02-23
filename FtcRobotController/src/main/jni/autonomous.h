@@ -10,7 +10,9 @@ struct imu_state
 };
 
 imu_state * pimu_values;
-#define imu_heading (pimu_values->orientation.x)
+//#define imu_heading (pimu_values->orientation.x)
+float imu_heading = 0;
+float imu_heading_omega = 0;
 #define imu_tilt (pimu_values->orientation.y)
 #define imu_roll (pimu_values->orientation.z)
 #define imu_vel (pimu_values->velocity)
@@ -19,10 +21,15 @@ void (*customAutonomousUpdate)();
 
 void autonomousUpdate()
 {
-    customAutonomousUpdate();
+    dt = time-current_time;
+    current_time = time;
+
     updateDriveSensors();
+    updateArmSensors();
+    customAutonomousUpdate();
     updateRobot();
-    imu_heading /= 16.0;
+    if(imu_heading_omega != imu_heading_omega) imu_heading_omega = 0;
+    lowpassFirstDerivativeUpdate(pimu_values->orientation.x/-16.0, &imu_heading, &imu_heading_omega, 10);
 }
 
 void wait(float wait_time)
@@ -45,14 +52,17 @@ void waitForEnd()
 #define drive_kp 0.5
 #define drive_ki 0.5
 
-#define turn_kp 1
-#define turn_ki 0
-#define turn_kd 0
+#define turn_kp 0.058 //0.1*(slider0/100.0)
+#define turn_ki 0.0 //0.05  //0.1*(slider1/100.0)
+#define turn_kd 0.0   //0.1*(slider2/100.0)
 
 #define default_max_acceleration 18
 
-#define drive_dist_tolerance 1 //1 inch of acceptable error per drive
-#define turning_deadband 15 //15 degrees
+#define drive_dist_tolerance 0.1 //1 inch of acceptable error per drive
+#define turning_deadband 15 //if there is more than this many degrees of error, the robot will stop driving and just turn
+
+float * pdrive_time = 0;
+float * pacceleration_time = 0;
 
 //TODO: go 0-100 for vis instead of 0-1, for clarity //NOTE (Kyler): I like 0-1
 void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acceleration)
@@ -65,37 +75,67 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
     
     #if 1 //feedforward+pid
     
-    float max_speed = vIs*neverest_max_omega/drive_gear_ratio;
-
+    float max_speed = (neverest_max_omega/drive_gear_ratio)*sprocket_pitch_radius;
+    
     float start_drive_theta = avg_drive_theta;
     float current_dist = 0;
+    float drive_time = 0;
+    
+    float acceleration_time = max_speed/max_acceleration;
+    float acceleration_dist = (0.5*max_speed*acceleration_time);
+    float cruise_dist = dist-2.0*acceleration_dist;
+    float target_time = 0;
+    
+    if(cruise_dist > 0)
+    {
+        target_time = 2.0*acceleration_time+cruise_dist/max_speed;
+    }
+    else
+    {
+        acceleration_time = sqrt((dist/2.0)*(2.0/max_acceleration));
+        target_time = 2.0*acceleration_time;
+    }
     
     float compensation = 0;
     
-    while(fabs((
+    *pdrive_time = target_time;
+    *pacceleration_time = acceleration_time;
+    
+    while(drive_time < target_time ||
+          fabs((
                    current_dist = sign(vIs)*(avg_drive_theta-start_drive_theta)*sprocket_pitch_radius)
                - dist) > drive_dist_tolerance)
     {
+        drive_time += dt;
+        
         //feedforward component
         
         //trapezoidal motion plan
         float desired_acceleration = 0;
         float desired_velocity = 0;
-        if (current_dist < dist/2)
+        float desired_displacement = 0;
+        if(drive_time < acceleration_time) //accelerating
         {
-            float acceleration_dist = 0.5*sq(max_speed)/max_acceleration;
-            desired_velocity = current_dist/acceleration_dist*max_speed;
+            desired_displacement = 1.0/2.0*max_acceleration*sq(drive_time);
+            desired_velocity = max_speed*drive_time/acceleration_time;
             desired_acceleration = +max_acceleration;
         }
-        else
+        else if(drive_time > target_time) //stopping
         {
-            float acceleration_dist = 0.5*sq(max_speed)/max_acceleration;
-            desired_velocity = (dist-current_dist)/acceleration_dist*max_speed;
+            desired_displacement = dist;
+            desired_velocity = 0;
+            desired_acceleration = 0;
+        }
+        else if(drive_time > target_time-acceleration_time) //deccelerating
+        {
+            desired_displacement = acceleration_dist + cruise_dist
+                + acceleration_dist -1.0/2.0*max_acceleration*sq(target_time-drive_time);
+            desired_velocity = max_speed*(target_time-drive_time)/acceleration_time;
             desired_acceleration = -max_acceleration;
         }
-        if(current_dist*max_acceleration > 0.5*sq(max_speed) || //consv. of mechanical energy
-           (dist-current_dist)*max_acceleration > 0.5*sq(max_speed))
+        else //cruising
         {
+            desired_displacement = acceleration_dist + max_speed*(drive_time-acceleration_time);
             desired_velocity = max_speed;
             desired_acceleration = 0;
         }
@@ -103,27 +143,32 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
         //compensate for velocity error
         float velocity_error = desired_velocity-sign(vIs)*avg_drive_omega/sprocket_pitch_radius;
         desired_acceleration += drive_kv*velocity_error; /*TODO; might want to have this completely replace the
-                                                           normal acceleration if the velocity error is too great*/
+                                                           normal acceleration component if the velocity error is too great*/
         
-        float drive_vIs = (desired_acceleration/sprocket_pitch_radius*robot_I/neverest_max_torque
-                           + sign(vIs)*avg_drive_omega/(neverest_max_omega/drive_gear_ratio));
+        float drive_vIs =
+            (robot_I*desired_acceleration + sign(vIs)*avg_drive_omega/(neverest_max_omega/drive_gear_ratio))
+            /(neverest_max_torque*4*drive_gear_ratio);
         
         //pid component
-        if(fabs(current_dist - dist) < 1.0)
+        float dist_error = desired_displacement-current_dist;
+        drive_vIs += drive_kp*dist_error;
+        if(drive_time > target_time)
         {
-            float dist_error = dist-current_dist;
             compensation += drive_ki*(dist_error)*dt;
             compensation = clamp(compensation, -2*vIs, 2*vIs);
-            drive_vIs += compensation + drive_kp*dist_error;
+            drive_vIs += compensation;
         }
         else
         {
             compensation = 0;
         }
         
-        drive_vIs = sign(vIs)*clamp(drive_vIs, -vIs, vIs); /* this works even when the desired acceleration is greater than the max
-                                                    possible motor acceleration because the max impulse during the first half
-                                                    of the drive will always be the negative max impulse during the second half */
+        drive_vIs = sign(vIs)*clamp(drive_vIs, -vIs, vIs); /* this works even when the desired acceleration is
+                                                              greater than the max possible motor acceleration
+                                                              because the max impulse during the first half
+                                                              of the drive will always be the negative max
+                                                              impulse during the second half <--this is incorrect,
+                                                              it can decellerate faster than it can accelerate */
         left_drive = drive_vIs;
         right_drive = drive_vIs;
         
@@ -133,20 +178,16 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
     #else
     
     bool doInit = true;
-    int right_enc_net = 0;
-    int left_enc_net = 0;
-    int right_prev = 0;
-    int left_prev = 0;
-    right_prev = right_drive_encoder;
-    left_prev = left_drive_encoder;
+    float start_drive_theta = avg_drive_theta;
+    float current_dist = 0;
     
     #if 1 //use right encoder only //TODO: use average?
-    while (right_enc_net < dist * encoderticks_per_inch)
+    while (current_dist < dist)
     {
         right_drive = vIs;
         left_drive = vIs;
         autonomousUpdate();
-        right_enc_net = right_drive_encoder-right_prev;
+        current_dist = sign(vIs)*(avg_drive_theta-start_drive_theta)*sprocket_pitch_radius;
     }
     #else //use both encoder
     while (right_enc_net < dist * encoderticks_per_inch ||
@@ -263,7 +304,7 @@ void driveOnCourseIn(float dist, float vIs,
                                                               it can decellerate faster than it can accelerate */
         
         //TODO: account for distance driven to the side        
-        float heading_error = target_heading-imu_heading;
+        float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading);
         turning_compensation += turn_ki*heading_error;
         float turning_factor = turn_kp*heading_error + turning_compensation;
         if(heading_error > turning_deadband)
@@ -274,7 +315,7 @@ void driveOnCourseIn(float dist, float vIs,
         left_drive = drive_vIs - turning_factor;
         right_drive = drive_vIs + turning_factor;
         left_drive = clamp(left_drive, -vIs, vIs);
-        right_drive = clamp(left_drive, -vIs, vIs);
+        right_drive = clamp(right_drive, -vIs, vIs);
         
         autonomousUpdate();
     }
@@ -370,10 +411,17 @@ inline void driveOnCourseCm(float dist, float vIs,
 //TODO: predict when to start decelerating (drive feedforward)
 void turnRelDeg(float angle, float vIs)
 {
+    if(vIs < 0)
+    {
+        vIs = fabs(vIs);
+        angle = -angle;
+    }
+    
     float target_heading = imu_heading + angle;
     float turning_compensation = 0;
     
-    while (!tolerantEquals(imu_heading, target_heading, acceptableAngleError))
+    while (fabs(signedCanonicalizeAngleDeg(imu_heading-target_heading)) > acceptableAngleError
+           || fabs(imu_heading_omega) > 2)
     {
         #if 0 //turn with constant speed
         if (isAngleGreaterDeg(imu_heading, target_heading))
@@ -387,15 +435,23 @@ void turnRelDeg(float angle, float vIs)
             right_drive = vIs;
         }
         #else //turn with proportional control
-        float heading_error = target_heading-imu_heading;
-        turning_compensation += turn_ki*heading_error;
-        float turning_factor = turn_kp*heading_error + turning_compensation;
+        float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading);
+        float turning_factor = turn_kp*heading_error;
+        if(turning_factor < 0.1)
+        {
+            turning_compensation += turn_ki*heading_error*dt;
+            turning_factor += turning_compensation;
+        }
+        else
+        {
+            turning_compensation = 0;
+        }
         
-        left_drive = turning_factor;
-        right_drive = turning_factor;
+        left_drive = -turning_factor;
+        right_drive = +turning_factor;
         
         left_drive = clamp(left_drive, -vIs, vIs);
-        right_drive = clamp(left_drive, -vIs, vIs);
+        right_drive = clamp(right_drive, -vIs, vIs);
         #endif
         autonomousUpdate();
     }

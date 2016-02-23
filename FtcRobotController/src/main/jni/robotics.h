@@ -43,6 +43,14 @@ int *pdim_digital_pins = 0;
 
 float potentiometer_range = 333.33333333333333333333333333333333333f;
 
+float neverest_max_torque = 4334000; //in g in^2/s^2
+float neverest_max_omega = 13.51; //in rad/s
+
+float dc_motor_voltage = 12;
+
+float neverest_k_i = dc_motor_voltage/neverest_max_omega;
+float neverest_k_t_over_R = neverest_max_torque/dc_motor_voltage;
+
 #define continuous_servo_stop 0.5
 
 //globals
@@ -52,14 +60,8 @@ float current_time;
 double *ptime;
 #define time (*ptime)
 
-
-float neverest_max_torque = 4334000; //in g in^2/s^2
-float neverest_max_omega = 13.51; //in rad/s
-
-float dc_motor_voltage = 12;
-
-float neverest_k_i = dc_motor_voltage/neverest_max_omega;
-float neverest_k_t_over_R = neverest_max_torque/dc_motor_voltage;
+int * pcurrent_color;
+#define current_color (*pcurrent_color)
 
 
 #define min_motor_power 0.05
