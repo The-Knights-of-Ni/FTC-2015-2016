@@ -29,9 +29,8 @@ float wrist_manual_control = 0;
 #define intake_toggle pad1.toggle(LEFT_BUMPER)
 #define intake_reverse pad1.press(RIGHT_BUMPER)
 
-//TODO: look through controls again
 #define intake_out_toggle false //pad1.singlePress(A)
-#define intake_tilt_manual pad1stick2.y
+#define intake_tilt_manual -pad1stick2.y
 
 //Arm
 // #define shoulder_manual pad2stick1

@@ -75,7 +75,7 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
     
     #if 1 //feedforward+pid
     
-    float max_speed = (neverest_max_omega/drive_gear_ratio)*sprocket_pitch_radius;
+    float max_speed = fabs(vIs)*(neverest_max_omega/drive_gear_ratio)*sprocket_pitch_radius;
     
     float start_drive_theta = avg_drive_theta;
     float current_dist = 0;
@@ -102,9 +102,7 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
     *pacceleration_time = acceleration_time;
     
     while(drive_time < target_time ||
-          fabs((
-                   current_dist = sign(vIs)*(avg_drive_theta-start_drive_theta)*sprocket_pitch_radius)
-               - dist) > drive_dist_tolerance)
+          fabs((current_dist - dist) > drive_dist_tolerance)
     {
         drive_time += dt;
         
@@ -116,7 +114,7 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
         float desired_displacement = 0;
         if(drive_time < acceleration_time) //accelerating
         {
-            desired_displacement = 1.0/2.0*max_acceleration*sq(drive_time);
+            desired_displacement = 0.5*max_acceleration*sq(drive_time);
             desired_velocity = max_speed*drive_time/acceleration_time;
             desired_acceleration = +max_acceleration;
         }
@@ -129,7 +127,7 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
         else if(drive_time > target_time-acceleration_time) //deccelerating
         {
             desired_displacement = acceleration_dist + cruise_dist
-                + acceleration_dist -1.0/2.0*max_acceleration*sq(target_time-drive_time);
+                + acceleration_dist -0.5*max_acceleration*sq(target_time-drive_time);
             desired_velocity = max_speed*(target_time-drive_time)/acceleration_time;
             desired_acceleration = -max_acceleration;
         }
@@ -140,13 +138,8 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
             desired_acceleration = 0;
         }
         
-        //compensate for velocity error
-        float velocity_error = desired_velocity-sign(vIs)*avg_drive_omega/sprocket_pitch_radius;
-        desired_acceleration += drive_kv*velocity_error; /*TODO; might want to have this completely replace the
-                                                           normal acceleration component if the velocity error is too great*/
-        
         float drive_vIs =
-            (robot_I*desired_acceleration + sign(vIs)*avg_drive_omega/(neverest_max_omega/drive_gear_ratio))
+            (robot_I*desired_acceleration + (desired_velocity/sprocket_pitch_radius)/(neverest_max_omega/drive_gear_ratio))
             /(neverest_max_torque*4*drive_gear_ratio);
         
         //pid component
@@ -171,6 +164,8 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
                                                               it can decellerate faster than it can accelerate */
         left_drive = drive_vIs;
         right_drive = drive_vIs;
+        
+        current_dist = sign(vIs)*(avg_drive_theta-start_drive_theta)*sprocket_pitch_radius;
         
         autonomousUpdate();
     }
