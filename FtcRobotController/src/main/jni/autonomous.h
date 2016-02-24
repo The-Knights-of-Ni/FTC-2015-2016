@@ -102,7 +102,7 @@ void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acc
     *pacceleration_time = acceleration_time;
     
     while(drive_time < target_time ||
-          fabs((current_dist - dist) > drive_dist_tolerance)
+          (fabs(current_dist - dist) > drive_dist_tolerance))
     {
         drive_time += dt;
         
