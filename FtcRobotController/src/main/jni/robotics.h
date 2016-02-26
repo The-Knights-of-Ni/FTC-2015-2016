@@ -8,7 +8,11 @@
 #define ROBOTICS
 
 #include "maths.h"
+
+#ifndef USING_SIMULATOR
 #include "jni_functions.h"
+#endif
+
 #include <stdlib.h>
 
 //TODO: move these

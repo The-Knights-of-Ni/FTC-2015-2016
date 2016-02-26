@@ -1,0 +1,574 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+A	.\Button.h	/^    A,$/;"	e	enum:Buttons
+APP_ABI	.\Application.mk	/^APP_ABI := armeabi-v7a$/;"	m
+APP_PLATFORM	.\Application.mk	/^APP_PLATFORM := android-19$/;"	m
+AUTONOMOUS	.\autonomous.h	2;"	d
+B	.\Button.h	/^    B,$/;"	e	enum:Buttons
+BACK	.\Button.h	/^    BACK,$/;"	e	enum:Buttons
+BLUE	.\robotics.h	/^    BLUE,$/;"	e	enum:Colors
+BUTTON	.\Button.h	2;"	d
+BUTTON	.\autonomous.h	3;"	d
+Button	.\Button.h	/^struct Button$/;"	s
+Buttons	.\Button.h	/^enum Buttons$/;"	g
+Colors	.\robotics.h	/^enum Colors$/;"	g
+DPAD_DOWN	.\Button.h	/^    DPAD_DOWN,$/;"	e	enum:Buttons
+DPAD_LEFT	.\Button.h	/^    DPAD_LEFT,$/;"	e	enum:Buttons
+DPAD_RIGHT	.\Button.h	/^    DPAD_RIGHT,$/;"	e	enum:Buttons
+DPAD_UP	.\Button.h	/^    DPAD_UP,$/;"	e	enum:Buttons
+DRIVE	.\drive.h	2;"	d
+GUIDE	.\Button.h	/^    GUIDE,$/;"	e	enum:Buttons
+GetByteArrayElements	.\jni_functions.h	/^    void * GetByteArrayElements(jbyteArray, void *){return 0;}$/;"	f	struct:JNIEnv
+GetFieldID	.\jni_functions.h	/^    jfieldID GetFieldID(jclass, const char *, const char *){return 0;}$/;"	f	struct:JNIEnv
+GetIntField	.\jni_functions.h	/^    int GetIntField(jclass, jfieldID){return 0;}$/;"	f	struct:JNIEnv
+GetObjectClass	.\jni_functions.h	/^    jclass GetObjectClass(jobject){return 0;}$/;"	f	struct:JNIEnv
+GetObjectField	.\jni_functions.h	/^    jclass GetObjectField(jobject, jfieldID){return 0;}$/;"	f	struct:JNIEnv
+JNIEnv	.\jni_functions.h	/^struct JNIEnv$/;"	s
+JNI_COMMIT	.\jni_functions.h	69;"	d
+JNI_FUNCTIONS	.\jni_functions.h	2;"	d
+JNI_main	.\test.cpp	6;"	d	file:
+LEFT_BUMPER	.\Button.h	/^    LEFT_BUMPER,$/;"	e	enum:Buttons
+LEFT_STICK_BUTTON	.\Button.h	/^    LEFT_STICK_BUTTON,$/;"	e	enum:Buttons
+LEFT_TRIGGER	.\Button.h	/^    LEFT_TRIGGER,$/;"	e	enum:Buttons
+LOCAL_ARM_NEON	.\Android.mk	/^    LOCAL_ARM_NEON := true$/;"	m
+LOCAL_MODULE	.\Android.mk	/^LOCAL_MODULE    := native_robot$/;"	m
+LOCAL_PATH	.\Android.mk	/^LOCAL_PATH := $(call my-dir)$/;"	m
+LOCAL_SRC_FILES	.\Android.mk	/^LOCAL_SRC_FILES := native_robot.cpp$/;"	m
+MATHS	.\maths.h	6;"	d
+MISC	.\misc.h	2;"	d
+Mk4AutonomousUpdate	.\Mk4Auto.cpp	/^void Mk4AutonomousUpdate()$/;"	f
+NDK_TOOLCHAIN_VERSION	.\Application.mk	/^NDK_TOOLCHAIN_VERSION := clang$/;"	m
+RED	.\robotics.h	/^    RED$/;"	e	enum:Colors
+RIGHT_BUMPER	.\Button.h	/^    RIGHT_BUMPER,$/;"	e	enum:Buttons
+RIGHT_STICK_BUTTON	.\Button.h	/^    RIGHT_STICK_BUTTON,$/;"	e	enum:Buttons
+RIGHT_TRIGGER	.\Button.h	/^    RIGHT_TRIGGER,$/;"	e	enum:Buttons
+ROBOTICS	.\robotics.h	8;"	d
+ROBOT_ARM	.\arm.h	2;"	d
+ReleaseByteArrayElements	.\jni_functions.h	/^    void ReleaseByteArrayElements(jbyteArray, jbyte *, int){}$/;"	f	struct:JNIEnv
+RobotState	.\jni_functions.h	/^struct RobotState$/;"	s
+SIZEOF_BUTTON	.\Button.h	/^    SIZEOF_BUTTON$/;"	e	enum:Buttons
+START	.\Button.h	/^    START,$/;"	e	enum:Buttons
+TARGET_PLATFORM	.\Application.mk	/^TARGET_PLATFORM := android-19$/;"	m
+Type	.\jni_functions.h	375;"	d
+USING_SIMULATOR	.\robotics.h	13;"	d
+VISION	.\vision.h	2;"	d
+WHITE_RABBIT	.\white_rabbit.h	2;"	d
+X	.\Button.h	/^    X,$/;"	e	enum:Buttons
+Y	.\Button.h	/^    Y,$/;"	e	enum:Buttons
+acceptableAngleError	.\drive.h	27;"	d
+armAtVelocity	.\arm.h	/^void armAtVelocity(v2f target_velocity)$/;"	f
+armIsAtTarget	.\arm.h	/^bool8 armIsAtTarget(float shoulder_tolerance, float inside_elbow_tolerance)$/;"	f
+armJointStabalizationFunction	.\arm.h	/^void armJointStabalizationFunction(float * motor,$/;"	f
+armJointsAtVelocity	.\arm.h	/^void armJointsAtVelocity(v2f target_velocity)$/;"	f
+armOnScoreSide	.\arm.h	/^bool8 armOnScoreSide()$/;"	f
+armSwitchModes	.\arm.h	/^void armSwitchModes()$/;"	f
+armToAngle	.\arm.h	/^inline void armToAngle(float * target_theta, float current_theta)$/;"	f
+armToJointTarget	.\arm.h	/^void armToJointTarget()$/;"	f
+armToPolarTarget	.\arm.h	/^void armToPolarTarget()$/;"	f
+armToPreset	.\arm.h	/^void armToPreset(float shoulder_speed, float winch_speed, float tolerance = 0.5)$/;"	f
+arm_case	.\arm.h	579;"	d
+arm_case	.\arm.h	678;"	d
+arm_extending	.\arm.h	/^    arm_extending,$/;"	e	enum:arm_stage_enum
+arm_going_to_score_position	.\arm.h	/^    arm_going_to_score_position$/;"	e	enum:arm_stage_enum
+arm_idle	.\arm.h	/^    arm_idle,$/;"	e	enum:arm_stage_enum
+arm_intake_mode_button	.\Mk4Teleop.cpp	46;"	d	file:
+arm_lowering	.\arm.h	/^    arm_lowering,$/;"	e	enum:arm_stage_enum
+arm_manual_toggle	.\Mk4Teleop.cpp	44;"	d	file:
+arm_preparing	.\arm.h	/^    arm_preparing,$/;"	e	enum:arm_stage_enum
+arm_raising	.\arm.h	/^    arm_raising,$/;"	e	enum:arm_stage_enum
+arm_retracting	.\arm.h	/^    arm_retracting,$/;"	e	enum:arm_stage_enum
+arm_running_to_pos	.\arm.h	/^bool8 arm_running_to_pos = 0;$/;"	v
+arm_score_mode_button	.\Mk4Teleop.cpp	45;"	d	file:
+arm_slow_factor	.\Mk4Teleop.cpp	50;"	d	file:
+arm_stage	.\arm.h	/^int arm_stage = 0;$/;"	v
+arm_stage_enum	.\arm.h	/^enum arm_stage_enum$/;"	g
+arm_stage_print	.\Mk4Teleop.cpp	176;"	d	file:
+arm_stick	.\Mk4Teleop.cpp	43;"	d	file:
+assert	.\misc.h	40;"	d
+assert	.\misc.h	42;"	d
+autonomousUpdate	.\autonomous.h	/^void autonomousUpdate()$/;"	f
+avg_drive_omega	.\drive.h	/^float avg_drive_omega = 0;$/;"	v
+avg_drive_theta	.\drive.h	/^float avg_drive_theta = 0;$/;"	v
+beacon_right	.\vision.h	10;"	d
+blocks_in_hopper	.\Mk4Auto.cpp	232;"	d	file:
+bool8	.\misc.h	/^typedef uint8 bool8;$/;"	t
+btn_offset	.\Button.h	6;"	d
+buttons	.\Button.h	/^    int buttons;$/;"	m	struct:gamepad
+byte	.\misc.h	/^typedef uint8_t byte;$/;"	t
+camera_buffer	.\vision.h	/^byte * camera_buffer = 0;$/;"	v
+camera_buffer_rgb	.\vision.h	/^byte * camera_buffer_rgb;$/;"	v
+camera_bytes_per_pixel	.\vision.h	20;"	d
+camera_h	.\vision.h	/^int camera_h;$/;"	v
+camera_w	.\vision.h	/^int camera_w;$/;"	v
+clamp	.\misc.h	13;"	d
+class	.\misc.h	8;"	d
+cleanupCamera	.\vision.h	/^void cleanupCamera()$/;"	f
+cleanupJNI	.\jni_functions.h	/^void cleanupJNI()$/;"	f
+cleanupJNI	.\jni_functions.h	68;"	d
+cm	.\robotics.h	41;"	d
+colorAdjustedAngle	.\Mk4Auto.cpp	231;"	d	file:
+complexMultiply	.\maths.h	/^v2f complexMultiply(v2f a, v2f b)$/;"	f
+constStrcmp	.\jni_functions.h	86;"	d
+constStrncmp	.\jni_functions.h	84;"	d
+continuous_servo_stop	.\robotics.h	51;"	d
+convertPixelToRGB	.\vision.h	/^void convertPixelToRGB(int x, int y, int v_val, int u_val)$/;"	f
+convertToRGB	.\vision.h	/^void convertToRGB()$/;"	f
+crash	.\misc.h	36;"	d
+cross	.\maths.h	/^v3f cross(v3f a, v3f b)$/;"	f
+cubicBezier	.\maths.h	/^float cubicBezier(float t, float p0, float p1, float p2, float p3)$/;"	f
+currentByte	.\Button.h	/^    int currentByte;$/;"	m	struct:Button
+current_arm_frame	.\arm.h	/^int current_arm_frame = 0;$/;"	v
+current_color	.\Mk4Auto.cpp	200;"	d	file:
+current_time	.\robotics.h	/^float current_time;$/;"	v
+customAutonomousUpdate	.\autonomous.h	/^void (*customAutonomousUpdate)();$/;"	v
+data	.\maths.h	/^        float data[16];$/;"	m	union:m4x4f::__anon18
+data	.\maths.h	/^        float data[20];$/;"	m	union:m4x5f::__anon20
+data	.\maths.h	/^        float data[2];$/;"	m	union:v2f::__anon1
+data	.\maths.h	/^        float data[3];$/;"	m	union:v3f::__anon3
+data	.\maths.h	/^        float data[4];$/;"	m	union:v4f::__anon11
+data	.\maths.h	/^        float data[5];$/;"	m	union:v5f::__anon14
+data	.\maths.h	/^        float data[9];$/;"	m	union:m3x3f::__anon16
+data	.\maths.h	/^        short data[3];$/;"	m	union:v3s::__anon7
+dc_motor_voltage	.\robotics.h	/^float dc_motor_voltage = 12;$/;"	v
+deadzone	.\robotics.h	/^v2f deadzone(v2f stick)$/;"	f
+deadzoneAdjust	.\robotics.h	/^float deadzoneAdjust(float a)$/;"	f
+deadzone_radius	.\robotics.h	80;"	d
+debuzz	.\robotics.h	71;"	d
+default_max_acceleration	.\autonomous.h	52;"	d
+defineJni	.\jni_functions.h	565;"	d
+defineJniIn	.\jni_functions.h	523;"	d
+defineJniIn	.\jni_functions.h	98;"	d
+defineJniOut	.\jni_functions.h	223;"	d
+defineJniOut	.\jni_functions.h	545;"	d
+dim_digital_pin	.\robotics.h	37;"	d
+dim_digital_pins	.\robotics.h	36;"	d
+doHand	.\arm.h	/^void doHand()$/;"	f
+doIntake	.\arm.h	/^void doIntake()$/;"	f
+dot	.\maths.h	/^float dot(v2f a, v2f b)$/;"	f
+dot	.\maths.h	/^float dot(v3f a, v3f b)$/;"	f
+doubleCloseHand	.\arm.h	/^bool8 doubleCloseHand()$/;"	f
+double_close_case	.\arm.h	/^int double_close_case = 0;$/;"	v
+driveDistCm	.\autonomous.h	/^inline void driveDistCm(float dist, float vIs, float max_acceleration = default_max_acceleration*cm)$/;"	f
+driveDistIn	.\autonomous.h	/^void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acceleration)$/;"	f
+driveOnCourseCm	.\autonomous.h	/^inline void driveOnCourseCm(float dist, float vIs,$/;"	f
+driveOnCourseIn	.\autonomous.h	/^void driveOnCourseIn(float dist, float vIs,$/;"	f
+drive_dist_tolerance	.\autonomous.h	54;"	d
+drive_gear_ratio	.\drive.h	30;"	d
+drive_ki	.\autonomous.h	46;"	d
+drive_kp	.\autonomous.h	45;"	d
+drive_kv	.\autonomous.h	44;"	d
+drive_stick	.\Mk4Teleop.cpp	21;"	d	file:
+drive_toggle	.\Mk4Teleop.cpp	22;"	d	file:
+dt	.\robotics.h	/^float dt;$/;"	v
+e_math	.\maths.h	9;"	d
+elbow_potentiometer	.\arm.h	8;"	d
+elbow_potentiometer_angle	.\arm.h	/^float elbow_potentiometer_angle = 0.0;$/;"	v
+elbow_pulley_r	.\arm.h	/^float elbow_pulley_r = 2.0f;$/;"	v
+encoderticks_per_cm	.\drive.h	26;"	d
+encoderticks_per_inch	.\drive.h	25;"	d
+encoderticks_per_radian	.\robotics.h	46;"	d
+env	.\jni_functions.h	/^JNIEnv * env;$/;"	v
+ever	.\misc.h	31;"	d
+exit_jump	.\jni_functions.h	/^static jmp_buf exit_jump;$/;"	v
+filterArmJoystick	.\arm.h	/^float filterArmJoystick(float a)$/;"	f
+float32	.\misc.h	/^typedef float float32;$/;"	t
+float64	.\misc.h	/^typedef double float64;$/;"	t
+forearm_active	.\arm.h	/^bool8 forearm_active = 0; \/\/0 stabalize mode, 1 stopping, 2 running$/;"	v
+forearm_length	.\arm.h	/^float forearm_length = 16.0f;$/;"	v
+forearm_print_theta	.\Mk4Teleop.cpp	170;"	d	file:
+g	.\arm.h	/^float g = 384; \/\/gravity in " per sec$/;"	v
+gamepad	.\Button.h	/^struct gamepad$/;"	s
+gamepad1	.\Button.h	87;"	d
+gamepad2	.\Button.h	90;"	d
+getBeaconColor	.\vision.h	/^bool8 getBeaconColor()$/;"	f
+getState	.\Button.h	/^    static bool getState(int btn, int allBits)$/;"	f	struct:Button
+gigabyte	.\misc.h	47;"	d
+goto_arm_case	.\arm.h	580;"	d
+goto_arm_case	.\arm.h	679;"	d
+hand	.\robotics.h	24;"	d
+hand_open	.\arm.h	/^bool8 hand_open = 0;$/;"	v
+hand_open_time	.\arm.h	493;"	d
+hand_open_toggle	.\Mk4Teleop.cpp	25;"	d	file:
+hand_time	.\arm.h	/^float hand_time = 0;$/;"	v
+heading	.\drive.h	18;"	d
+heading	.\maths.h	/^            float heading;$/;"	m	struct:v3f::__anon3::__anon6
+heading	.\maths.h	/^            short heading;$/;"	m	struct:v3s::__anon7::__anon10
+hook_left	.\robotics.h	30;"	d
+hook_level_position	.\Mk4Teleop.cpp	/^float hook_level_position = 0.0f;$/;"	v
+hook_locked_position	.\Mk4Teleop.cpp	/^float hook_locked_position = 1.0f;$/;"	v
+hook_right	.\robotics.h	33;"	d
+hook_toggle	.\Mk4Teleop.cpp	53;"	d	file:
+i	.\maths.h	/^            float i;$/;"	m	struct:v3f::__anon3::__anon5
+i	.\maths.h	/^            float i;$/;"	m	struct:v4f::__anon11::__anon13
+i	.\maths.h	/^            short i;$/;"	m	struct:v3s::__anon7::__anon9
+image	.\vision.h	126;"	d
+image	.\vision.h	86;"	d
+imu_heading	.\autonomous.h	13;"	d
+imu_roll	.\autonomous.h	15;"	d
+imu_state	.\autonomous.h	/^struct imu_state$/;"	s
+imu_tilt	.\autonomous.h	14;"	d
+imu_vel	.\autonomous.h	16;"	d
+indicator	.\vision.h	7;"	d
+initCamera	.\vision.h	/^void initCamera()$/;"	f
+initJNI	.\jni_functions.h	/^void initJNI()$/;"	f
+initJNI	.\jni_functions.h	66;"	d
+input_filename	.\jni_functions.h	/^const char * input_filename = __BASE_FILE__;$/;"	v
+input_name_part_len	.\jni_functions.h	/^int input_name_part_len = 0;$/;"	v
+input_path_part_len	.\jni_functions.h	/^int input_path_part_len = 0;$/;"	v
+inside_elbow_omega	.\arm.h	/^float inside_elbow_omega = 0.0;$/;"	v
+inside_elbow_speed_threshold	.\arm.h	/^static const float inside_elbow_speed_threshold = 0.1;$/;"	v
+inside_elbow_theta	.\arm.h	/^float inside_elbow_theta = 0;$/;"	v
+int16	.\misc.h	/^typedef int16_t int16;$/;"	t
+int32	.\misc.h	/^typedef int32_t int32;$/;"	t
+int64	.\misc.h	/^typedef int64_t int64;$/;"	t
+int8	.\misc.h	/^typedef int8_t int8;$/;"	t
+intake	.\robotics.h	21;"	d
+intake_out	.\arm.h	/^bool8 intake_out = 0;$/;"	v
+intake_out_switch	.\arm.h	27;"	d
+intake_out_toggle	.\Mk4Teleop.cpp	36;"	d	file:
+intake_reverse	.\Mk4Teleop.cpp	33;"	d	file:
+intake_swing_time	.\arm.h	459;"	d
+intake_tilt	.\arm.h	25;"	d
+intake_tilt_manual	.\Mk4Teleop.cpp	37;"	d	file:
+intake_time	.\arm.h	/^float intake_time = intake_swing_time;$/;"	v
+intake_toggle	.\Mk4Teleop.cpp	32;"	d	file:
+interruptable	.\jni_functions.h	23;"	d
+invSqrt	.\maths.h	/^float invSqrt(float a)$/;"	f
+isAngleGreaterDeg	.\maths.h	/^bool isAngleGreaterDeg(float a, float b)\/\/TODO: Better name$/;"	f
+is_copy	.\jni_functions.h	/^    bool8 is_copy;$/;"	m	struct:RobotState
+j	.\maths.h	/^            float j;$/;"	m	struct:v3f::__anon3::__anon5
+j	.\maths.h	/^            float j;$/;"	m	struct:v4f::__anon11::__anon13
+j	.\maths.h	/^            short j;$/;"	m	struct:v3s::__anon7::__anon9
+java_out_file_prefix	.\jni_functions.h	248;"	d
+java_out_file_suffix	.\jni_functions.h	249;"	d
+java_output_file	.\jni_functions.h	/^FILE * java_output_file;$/;"	v
+java_output_filename	.\jni_functions.h	/^char * java_output_filename = 0;$/;"	v
+java_output_name_part_len	.\jni_functions.h	/^uint java_output_name_part_len = 0;$/;"	v
+java_output_path_part_len	.\jni_functions.h	/^uint java_output_path_part_len = 0;$/;"	v
+jbyte	.\jni_functions.h	/^typedef byte jbyte;$/;"	t
+jbyteArray	.\jni_functions.h	/^typedef byte jbyteArray;$/;"	t
+jcamera_buffer	.\vision.h	/^jbyteArray jcamera_buffer;$/;"	v
+jclass	.\jni_functions.h	/^typedef byte jclass;$/;"	t
+jfieldID	.\jni_functions.h	/^typedef byte jfieldID;$/;"	t
+jniDoubleIn	.\jni_functions.h	586;"	d
+jniFloatIn	.\jni_functions.h	583;"	d
+jniGenerate	.\jni_functions.h	/^void jniGenerate()$/;"	f
+jniGenerate	.\jni_functions.h	/^void jniGenerate(){}$/;"	f
+jniIntIn	.\jni_functions.h	577;"	d
+jniLongIn	.\jni_functions.h	580;"	d
+jniMain	.\Mk4Auto.cpp	/^void jniMain(JNIEnv * _env, jobject _self)$/;"	f
+jniMain	.\Mk4Auto.cpp	36;"	d	file:
+jniMain	.\Mk4Auto.cpp	37;"	d	file:
+jniMain	.\Mk4Teleop.cpp	/^void jniMain(JNIEnv * _env, jobject _self)$/;"	f
+jniMain	.\Mk4Teleop.cpp	6;"	d	file:
+jniMain	.\Mk4Teleop.cpp	7;"	d	file:
+jniMain	.\test.cpp	/^extern "C" void jniMain(JNIEnv * _env, jobject _self)$/;"	f
+jniMain	.\test.cpp	7;"	d	file:
+jniOut	.\jni_functions.h	563;"	d
+jniOutStruct	.\jni_functions.h	/^struct jniOutStruct{};$/;"	s
+jniOutVar	.\jni_functions.h	/^jniOutStruct jniOutVar;$/;"	v
+jniShortIn	.\jni_functions.h	574;"	d
+jniStructIn	.\jni_functions.h	588;"	d
+jniStructIn_line	.\jni_functions.h	/^void * jniStructIn_line(int struct_size, const char * s, const char * filename, int line)$/;"	f
+jni_constructor_string	.\jni_functions.h	/^char * jni_constructor_string = 0;$/;"	v
+jni_import_string	.\jni_functions.h	/^char * jni_import_string = 0;$/;"	v
+jni_misc_string	.\jni_functions.h	/^char * jni_misc_string = 0;$/;"	v
+jni_run_opmode_string	.\jni_functions.h	/^char * jni_run_opmode_string = 0;$/;"	v
+jni_variables_string	.\jni_functions.h	/^char * jni_variables_string = 0;$/;"	v
+jobject	.\jni_functions.h	/^typedef byte jobject;$/;"	t
+joystick1	.\Button.h	/^    v2f joystick1;$/;"	m	struct:gamepad
+joystick2	.\Button.h	/^    v2f joystick2;$/;"	m	struct:gamepad
+jrobot_state	.\jni_functions.h	/^jbyteArray jrobot_state;$/;"	v
+k	.\maths.h	/^            float k;$/;"	m	struct:v3f::__anon3::__anon5
+k	.\maths.h	/^            float k;$/;"	m	struct:v4f::__anon11::__anon13
+k	.\maths.h	/^            short k;$/;"	m	struct:v3s::__anon7::__anon9
+kilobyte	.\misc.h	45;"	d
+lbs	.\robotics.h	40;"	d
+left_drive	.\drive.h	14;"	d
+left_drive_encoder	.\drive.h	20;"	d
+left_drive_omega	.\drive.h	/^float left_drive_omega = 0;$/;"	v
+left_drive_theta	.\drive.h	/^float left_drive_theta = 0;$/;"	v
+left_trigger	.\Button.h	/^    float left_trigger;$/;"	m	struct:gamepad
+len	.\misc.h	33;"	d
+lerp	.\maths.h	/^float lerp(float a, float b, float t)$/;"	f
+low_passed_inside_elbow_theta	.\arm.h	/^float low_passed_inside_elbow_theta = 0;$/;"	v
+lowpassFirstDerivativeUpdate	.\robotics.h	/^void lowpassFirstDerivativeUpdate(float new_theta, float * current_theta, float * omega, float decay_constant)$/;"	f
+m3x3f	.\maths.h	/^struct m3x3f$/;"	s
+m4x4f	.\maths.h	/^struct m4x4f$/;"	s
+m4x5f	.\maths.h	/^struct m4x5f$/;"	s
+main	.\jni_functions.h	/^int main(int n_args, char ** args)$/;"	f
+max	.\misc.h	12;"	d
+max_java_code	.\jni_functions.h	39;"	d
+megabyte	.\misc.h	46;"	d
+min	.\misc.h	11;"	d
+min_motor_power	.\robotics.h	70;"	d
+momentum_compensation_angle_threshold	.\arm.h	271;"	d
+momentum_compensation_speed_threshold	.\arm.h	270;"	d
+n_types	.\jni_functions.h	/^enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+n_valid_inside_elbow_angles	.\arm.h	/^int n_valid_inside_elbow_angles = 0;$/;"	v
+n_valid_shoulder_angles	.\arm.h	/^int n_valid_shoulder_angles = 0;$/;"	v
+neverest_k_i	.\robotics.h	/^float neverest_k_i = dc_motor_voltage\/neverest_max_omega;$/;"	v
+neverest_k_t_over_R	.\robotics.h	/^float neverest_k_t_over_R = neverest_max_torque\/dc_motor_voltage;$/;"	v
+neverest_max_omega	.\robotics.h	/^float neverest_max_omega = 13.51; \/\/in rad\/s$/;"	v
+neverest_max_torque	.\robotics.h	/^float neverest_max_torque = 4334000; \/\/in g in^2\/s^2$/;"	v
+new	.\misc.h	9;"	d
+norm	.\maths.h	/^float norm(v2f a)$/;"	f
+norm	.\maths.h	/^float norm(v3f a)$/;"	f
+normSq	.\maths.h	/^float normSq(v2f a)$/;"	f
+normSq	.\maths.h	/^float normSq(v3f a)$/;"	f
+normalize	.\maths.h	/^v2f normalize(v2f a)$/;"	f
+normalize	.\maths.h	/^v3f normalize(v3f a)$/;"	f
+normalizeScale	.\maths.h	/^v2f normalizeScale(v2f a, float s)$/;"	f
+normalizeScale	.\maths.h	/^v3f normalizeScale(v3f a, float s)$/;"	f
+old_inside_elbow_side	.\arm.h	/^bool8 old_inside_elbow_side = 0;$/;"	v
+old_shoulder_side	.\arm.h	/^bool8 old_shoulder_side = 0;$/;"	v
+operator *	.\maths.h	/^v2f operator*(float b, v2f a)$/;"	f
+operator *	.\maths.h	/^v2f operator*(v2f a, float b)$/;"	f
+operator *	.\maths.h	/^v3f operator*(float b, v3f a)$/;"	f
+operator *	.\maths.h	/^v3f operator*(v3f a, float b)$/;"	f
+operator *	.\maths.h	/^v5f operator*(v5f a, float b)$/;"	f
+operator +	.\maths.h	/^v2f operator+(v2f a, v2f b)$/;"	f
+operator +	.\maths.h	/^v3f operator+(v3f a, v3f b)$/;"	f
+operator ,	.\jni_functions.h	/^jniOutStruct operator, (jniOutStruct jos, const char * s)$/;"	f
+operator -	.\maths.h	/^v2f operator-(v2f a, v2f b)$/;"	f
+operator -	.\maths.h	/^v3f operator-(v3f a, v3f b)$/;"	f
+operator -	.\maths.h	/^v5f operator-(v5f a, v5f b)$/;"	f
+operator /	.\maths.h	/^v2f operator\/(v2f a, float b)\/\/Shouldn't need other configuration, since it makes no sense$/;"	f
+operator /	.\maths.h	/^v3f operator\/(v3f a, float b)\/\/Shouldn't need other configuration, since it makes no sense$/;"	f
+operator []	.\maths.h	/^    inline float & operator[](int a)$/;"	f	struct:m4x5f
+operator []	.\maths.h	/^    inline float & operator[](int a)$/;"	f	struct:v5f
+operator []	.\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:m3x3f
+operator []	.\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:m4x4f
+operator []	.\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:v2f
+operator []	.\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:v3f
+operator []	.\maths.h	/^    inline float &operator[](int a)$/;"	f	struct:v4f
+operator []	.\maths.h	/^    inline short &operator[](int a)$/;"	f	struct:v3s
+orientation	.\autonomous.h	/^    v3s orientation;$/;"	m	struct:imu_state
+passed_inside_elbow_target	.\arm.h	/^bool8 passed_inside_elbow_target = 0;$/;"	v
+passed_shoulder_target	.\arm.h	/^bool8 passed_shoulder_target = 0;$/;"	v
+past_buffers_size	.\arm.h	69;"	d
+past_forearm_active	.\arm.h	/^bool8 past_forearm_active = 0;$/;"	v
+past_inside_elbow_thetas	.\arm.h	/^float past_inside_elbow_thetas[past_buffers_size] = {}; \/\/looped buffer$/;"	v
+past_shoulder_active	.\arm.h	/^bool8 past_shoulder_active = 0;$/;"	v
+past_shoulder_thetas	.\arm.h	/^float past_shoulder_thetas[past_buffers_size] = {}; \/\/looped buffer$/;"	v
+pbeacon_right	.\vision.h	/^int * pbeacon_right;$/;"	v
+pdim_digital_pins	.\robotics.h	/^int *pdim_digital_pins = 0;$/;"	v
+pelbow_potentiometer	.\arm.h	/^int * pelbow_potentiometer;$/;"	v
+pgamepad1	.\Button.h	/^gamepad * pgamepad1;$/;"	v
+pgamepad2	.\Button.h	/^gamepad * pgamepad2;$/;"	v
+phand	.\robotics.h	/^float *phand = 0;$/;"	v
+pheading	.\drive.h	/^float * pheading;$/;"	v
+phook_left	.\robotics.h	/^float *phook_left = 0;$/;"	v
+phook_right	.\robotics.h	/^float *phook_right = 0;$/;"	v
+pi	.\maths.h	8;"	d
+pimu_values	.\autonomous.h	/^imu_state * pimu_values;$/;"	v
+pindicator	.\vision.h	/^int * pindicator;$/;"	v
+pintake	.\robotics.h	/^float *pintake = 0;$/;"	v
+pintake_tilt	.\arm.h	/^float * pintake_tilt = 0;$/;"	v
+pleft_drive	.\drive.h	/^float * pleft_drive;$/;"	v
+pleft_drive_encoder	.\drive.h	/^int * pleft_drive_encoder;$/;"	v
+potentiometer_range	.\robotics.h	/^float potentiometer_range = 333.33333333333333333333333333333333333f;$/;"	v
+press	.\Button.h	/^    bool press(int btn)$/;"	f	struct:Button
+previousByte	.\Button.h	/^    int previousByte;$/;"	m	struct:Button
+pright_drive	.\drive.h	/^float * pright_drive;$/;"	v
+pright_drive_encoder	.\drive.h	/^int * pright_drive_encoder;$/;"	v
+private	.\misc.h	7;"	d
+project	.\maths.h	/^v2f project(v2f a, v2f b)$/;"	f
+project	.\maths.h	/^v3f project(v3f a, v3f b)$/;"	f
+pshoulder	.\arm.h	/^float * pshoulder;$/;"	v
+pshoulder_encoder	.\arm.h	/^int * pshoulder_encoder;$/;"	v
+pshoulder_potentiometer	.\arm.h	/^int * pshoulder_potentiometer;$/;"	v
+pslider0	.\arm.h	/^int * pslider0;$/;"	v
+pslider1	.\arm.h	/^int * pslider1;$/;"	v
+pslider2	.\arm.h	/^int * pslider2;$/;"	v
+pslider3	.\arm.h	/^int * pslider3;$/;"	v
+ptime	.\robotics.h	/^double *ptime;$/;"	v
+pwinch	.\arm.h	/^float * pwinch;$/;"	v
+pwinch_encoder	.\arm.h	/^int * pwinch_encoder;$/;"	v
+pwrist	.\robotics.h	/^float *pwrist = 0;$/;"	v
+quadraticBezier	.\maths.h	/^float quadraticBezier(float t, float p0, float p1, float p2)\/\/https:\/\/www.desmos.com\/calculator\/4ut4smjf8g$/;"	f
+r	.\maths.h	/^            float r;$/;"	m	struct:v4f::__anon11::__anon13
+r0	.\maths.h	/^            v3f r0;$/;"	m	struct:m3x3f::__anon16::__anon17
+r0	.\maths.h	/^            v4f r0;$/;"	m	struct:m4x4f::__anon18::__anon19
+r0	.\maths.h	/^            v5f r0;$/;"	m	struct:m4x5f::__anon20::__anon21
+r1	.\maths.h	/^            v3f r1;$/;"	m	struct:m3x3f::__anon16::__anon17
+r1	.\maths.h	/^            v4f r1;$/;"	m	struct:m4x4f::__anon18::__anon19
+r1	.\maths.h	/^            v5f r1;$/;"	m	struct:m4x5f::__anon20::__anon21
+r2	.\maths.h	/^            v3f r2;$/;"	m	struct:m3x3f::__anon16::__anon17
+r2	.\maths.h	/^            v4f r2;$/;"	m	struct:m4x4f::__anon18::__anon19
+r2	.\maths.h	/^            v5f r2;$/;"	m	struct:m4x5f::__anon20::__anon21
+r3	.\maths.h	/^            v4f r3;$/;"	m	struct:m4x4f::__anon18::__anon19
+r3	.\maths.h	/^            v5f r3;$/;"	m	struct:m4x5f::__anon20::__anon21
+radians_per_encodertick	.\robotics.h	47;"	d
+raw_x	.\drive.h	/^float raw_x;$/;"	v
+raw_y	.\drive.h	/^float raw_y;$/;"	v
+reject	.\maths.h	/^v2f reject(v2f a, v2f b)$/;"	f
+reject	.\maths.h	/^v3f reject(v3f a, v3f b)$/;"	f
+reqPixels	.\vision.h	88;"	d
+right_drive	.\drive.h	16;"	d
+right_drive_encoder	.\drive.h	22;"	d
+right_drive_omega	.\drive.h	/^float right_drive_omega = 0;$/;"	v
+right_drive_theta	.\drive.h	/^float right_drive_theta = 0;$/;"	v
+right_trigger	.\Button.h	/^    float right_trigger;$/;"	m	struct:gamepad
+robotStateIn	.\jni_functions.h	469;"	d
+robotStateIn	.\jni_functions.h	64;"	d
+robotStateInID	.\jni_functions.h	/^jmethodID robotStateInID;$/;"	v
+robotStateOut	.\jni_functions.h	470;"	d
+robotStateOut	.\jni_functions.h	65;"	d
+robotStateOutID	.\jni_functions.h	/^jmethodID robotStateOutID;$/;"	v
+robot_I	.\robotics.h	44;"	d
+robot_m	.\robotics.h	43;"	d
+robot_state	.\jni_functions.h	/^RobotState robot_state;$/;"	v
+robot_state_first_address	.\jni_functions.h	/^void * robot_state_first_address = malloc(robot_state_reserved_addresses);$/;"	v
+robot_state_reserved_addresses	.\jni_functions.h	88;"	d
+roll	.\maths.h	/^            float roll;$/;"	m	struct:v3f::__anon3::__anon6
+roll	.\maths.h	/^            short roll;$/;"	m	struct:v3s::__anon7::__anon10
+rows	.\maths.h	/^        v3f rows[3];$/;"	m	union:m3x3f::__anon16
+rows	.\maths.h	/^        v4f rows[4];$/;"	m	union:m4x4f::__anon18
+rows	.\maths.h	/^        v5f rows[4];$/;"	m	union:m4x5f::__anon20
+rsid_current	.\jni_functions.h	/^uint rsid_current = 0;$/;"	v
+rsin_code	.\jni_functions.h	/^char * rsin_code = str_malloc(max_java_code);$/;"	v
+rsin_code_current	.\jni_functions.h	/^char * rsin_code_current = rsin_code;$/;"	v
+rsout_code	.\jni_functions.h	/^char * rsout_code = str_malloc(max_java_code); \/\/TODO: expand if limit is reached$/;"	v
+rsout_code_current	.\jni_functions.h	/^char * rsout_code_current = rsout_code;$/;"	v
+scalarTripleProduct	.\maths.h	/^float scalarTripleProduct(v3f a, v3f b, v3f c)$/;"	f
+score_mode	.\arm.h	/^bool8 score_mode = true;$/;"	v
+self	.\jni_functions.h	/^jobject self;$/;"	v
+setHandOpen	.\arm.h	/^void setHandOpen()$/;"	f
+setHandShut	.\arm.h	/^void setHandShut()$/;"	f
+setIntakeIn	.\arm.h	/^void setIntakeIn()$/;"	f
+setIntakeOut	.\arm.h	/^void setIntakeOut()$/;"	f
+shoulder	.\arm.h	14;"	d
+shoulder_active	.\arm.h	/^bool8 shoulder_active = 0; \/\/0 stabalize mode, 1 stopping, 2 running$/;"	v
+shoulder_active_print	.\Mk4Teleop.cpp	161;"	d	file:
+shoulder_compensation	.\arm.h	/^float shoulder_compensation = 0; \/\/compensation for constant forces, modified PID I term$/;"	v
+shoulder_compensation_print	.\Mk4Teleop.cpp	157;"	d	file:
+shoulder_encoder	.\arm.h	19;"	d
+shoulder_gear_ratio	.\arm.h	/^float shoulder_gear_ratio = 6.75;$/;"	v
+shoulder_kd	.\arm.h	257;"	d
+shoulder_ki	.\arm.h	258;"	d
+shoulder_kp	.\arm.h	256;"	d
+shoulder_kslow	.\arm.h	259;"	d
+shoulder_length	.\arm.h	/^float shoulder_length = 16.5f;$/;"	v
+shoulder_mode_threshold	.\arm.h	567;"	d
+shoulder_omega	.\arm.h	/^float shoulder_omega = 0.0;$/;"	v
+shoulder_potentiometer	.\arm.h	11;"	d
+shoulder_potentiometer_angle	.\arm.h	/^float shoulder_potentiometer_angle = 0.0;$/;"	v
+shoulder_precision_mode	.\Mk4Teleop.cpp	47;"	d	file:
+shoulder_print_theta	.\Mk4Teleop.cpp	153;"	d	file:
+shoulder_pulley_r	.\arm.h	/^float shoulder_pulley_r = 3.0f\/25.4f;$/;"	v
+shoulder_speed_threshold	.\arm.h	/^static const float shoulder_speed_threshold = 0.1;$/;"	v
+shoulder_theta	.\arm.h	/^float shoulder_theta = 0;$/;"	v
+side_slowing_constant	.\autonomous.h	42;"	d
+sign	.\maths.h	12;"	d
+signedCanonicalizeAngleDeg	.\maths.h	/^float signedCanonicalizeAngleDeg(float a)$/;"	f
+singlePress	.\Button.h	/^    bool singlePress(int btn)$/;"	f	struct:Button
+slider0	.\arm.h	246;"	d
+slider1	.\arm.h	248;"	d
+slider2	.\arm.h	250;"	d
+slider3	.\arm.h	252;"	d
+smoothAxis	.\white_rabbit.h	/^float smoothAxis(float axis, float min_power, float mod, float max_power)$/;"	f
+smoothConstant	.\drive.h	68;"	d
+smoothJoysticks	.\white_rabbit.h	/^v2f smoothJoysticks(v2f stick, float min_power, float x_mod, float y_mod, float max_power)$/;"	f
+smoothJoysticks254Style	.\drive.h	/^v2f smoothJoysticks254Style(v2f stick)\/\/TODO: Fix this$/;"	f
+solve	.\maths.h	/^v4f solve(m4x5f equations)$/;"	f
+sprocket_pitch_radius	.\drive.h	24;"	d
+sq	.\maths.h	10;"	d
+squareDeadzone	.\robotics.h	/^v2f squareDeadzone(v2f stick)$/;"	f
+state	.\jni_functions.h	/^    byte * state;$/;"	m	struct:RobotState
+str_malloc	.\jni_functions.h	/^char * str_malloc(uint max_string_size)$/;"	f
+target_arm_theta	.\arm.h	/^float target_arm_theta;$/;"	v
+target_inside_elbow_theta	.\arm.h	/^float target_inside_elbow_theta;$/;"	v
+target_shoulder_theta	.\arm.h	/^float target_shoulder_theta;$/;"	v
+tilt	.\maths.h	/^            float tilt;$/;"	m	struct:v3f::__anon3::__anon6
+tilt	.\maths.h	/^            short tilt;$/;"	m	struct:v3s::__anon7::__anon10
+time	.\robotics.h	58;"	d
+toggle	.\Button.h	/^    bool toggle(int btn)$/;"	f	struct:Button
+toggleByte	.\Button.h	/^    int toggleByte;$/;"	m	struct:Button
+tolerantEquals	.\maths.h	/^bool tolerantEquals(float a, float b, float tolerance)$/;"	f
+trigger_press_threshold	.\Button.h	44;"	d
+turnRelDeg	.\autonomous.h	/^void turnRelDeg(float angle, float vIs)$/;"	f
+turn_kd	.\autonomous.h	50;"	d
+turn_ki	.\autonomous.h	49;"	d
+turn_kp	.\autonomous.h	48;"	d
+turning_deadband	.\autonomous.h	55;"	d
+type_bool	.\jni_functions.h	/^enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_byte	.\jni_functions.h	/^enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_double	.\jni_functions.h	/^enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_float	.\jni_functions.h	/^enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_int	.\jni_functions.h	/^enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_java_names	.\jni_functions.h	/^const char * type_java_names[] =$/;"	v
+type_long	.\jni_functions.h	/^enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_names	.\jni_functions.h	/^const char * type_names[] =$/;"	v
+type_short	.\jni_functions.h	/^enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };$/;"	e	enum:types
+type_sizes	.\jni_functions.h	/^const int type_sizes[] =$/;"	v
+types	.\jni_functions.h	/^enum types{ type_bool, type_byte, type_short, type_int, type_long, type_float, type_double, n_types };$/;"	g
+uint	.\misc.h	/^typedef unsigned int uint;$/;"	t
+uint16	.\misc.h	/^typedef uint16_t uint16;$/;"	t
+uint32	.\misc.h	/^typedef uint32_t uint32;$/;"	t
+uint64	.\misc.h	/^typedef uint64_t uint64;$/;"	t
+uint8	.\misc.h	/^typedef uint8_t uint8;$/;"	t
+updateArmSensors	.\arm.h	/^void updateArmSensors()$/;"	f
+updateButtons	.\Button.h	/^    void updateButtons(gamepad g)$/;"	f	struct:Button
+updateDriveSensors	.\drive.h	/^void updateDriveSensors()$/;"	f
+updateRobot	.\jni_functions.h	/^void updateRobot()$/;"	f
+updateRobot	.\jni_functions.h	67;"	d
+v	.\maths.h	/^            float v;$/;"	m	struct:v5f::__anon14::__anon15
+v2f	.\maths.h	/^struct v2f$/;"	s
+v3f	.\maths.h	/^struct v3f$/;"	s
+v3s	.\maths.h	/^struct v3s$/;"	s
+v4f	.\maths.h	/^struct v4f$/;"	s
+v5f	.\maths.h	/^struct v5f$/;"	s
+velocity	.\autonomous.h	/^    v3f velocity;$/;"	m	struct:imu_state
+w	.\maths.h	/^            float w;$/;"	m	struct:v4f::__anon11::__anon12
+w	.\maths.h	/^            float w;$/;"	m	struct:v5f::__anon14::__anon15
+wait	.\autonomous.h	/^void wait(float wait_time)$/;"	f
+waitForEnd	.\autonomous.h	/^void waitForEnd()$/;"	f
+waitForNextHardwareCycle	.\jni_functions.h	468;"	d
+waitForNextHardwareCycle	.\jni_functions.h	63;"	d
+waitForNextHardwareCycleID	.\jni_functions.h	/^jmethodID waitForNextHardwareCycleID;$/;"	v
+waitForStart	.\jni_functions.h	/^void waitForStart()$/;"	f
+waitForStart	.\jni_functions.h	61;"	d
+waitForStartID	.\jni_functions.h	/^jmethodID waitForStartID;$/;"	v
+waitOneFullHardwareCycle	.\jni_functions.h	467;"	d
+waitOneFullHardwareCycle	.\jni_functions.h	62;"	d
+waitOneFullHardwareCycleID	.\jni_functions.h	/^jmethodID waitOneFullHardwareCycleID;$/;"	v
+winch	.\arm.h	16;"	d
+winch_compensation	.\arm.h	/^float winch_compensation = 0; \/\/compensation for constant forces, modified PID I term$/;"	v
+winch_encoder	.\arm.h	21;"	d
+winch_gear_ratio	.\arm.h	/^float winch_gear_ratio = 2.0;$/;"	v
+winch_kd	.\arm.h	265;"	d
+winch_ki	.\arm.h	266;"	d
+winch_kp	.\arm.h	264;"	d
+winch_kslow	.\arm.h	267;"	d
+winch_omega	.\arm.h	/^float winch_omega = 0.0;$/;"	v
+winch_precision_mode	.\Mk4Teleop.cpp	48;"	d	file:
+winch_pulley_r	.\arm.h	/^float winch_pulley_r = 1.0f;$/;"	v
+winch_theta	.\arm.h	/^float winch_theta = 0;$/;"	v
+wrist	.\robotics.h	27;"	d
+wrist_blue_position	.\Mk4Teleop.cpp	/^float wrist_blue_position = 0.0;$/;"	v
+wrist_level_position	.\Mk4Teleop.cpp	/^float wrist_level_position = 0.5;$/;"	v
+wrist_manual_control	.\Mk4Teleop.cpp	/^float wrist_manual_control = 0;$/;"	v
+wrist_manual_decrease	.\Mk4Teleop.cpp	29;"	d	file:
+wrist_manual_increase	.\Mk4Teleop.cpp	28;"	d	file:
+wrist_red_position	.\Mk4Teleop.cpp	/^float wrist_red_position = 1.0;$/;"	v
+wrist_tilt	.\Mk4Teleop.cpp	26;"	d	file:
+x	.\maths.h	/^            float x;$/;"	m	struct:v2f::__anon1::__anon2
+x	.\maths.h	/^            float x;$/;"	m	struct:v3f::__anon3::__anon4
+x	.\maths.h	/^            float x;$/;"	m	struct:v4f::__anon11::__anon12
+x	.\maths.h	/^            float x;$/;"	m	struct:v5f::__anon14::__anon15
+x	.\maths.h	/^            short x;$/;"	m	struct:v3s::__anon7::__anon8
+y	.\maths.h	/^            float y;$/;"	m	struct:v2f::__anon1::__anon2
+y	.\maths.h	/^            float y;$/;"	m	struct:v3f::__anon3::__anon4
+y	.\maths.h	/^            float y;$/;"	m	struct:v4f::__anon11::__anon12
+y	.\maths.h	/^            float y;$/;"	m	struct:v5f::__anon14::__anon15
+y	.\maths.h	/^            short y;$/;"	m	struct:v3s::__anon7::__anon8
+z	.\maths.h	/^            float z;$/;"	m	struct:v3f::__anon3::__anon4
+z	.\maths.h	/^            float z;$/;"	m	struct:v4f::__anon11::__anon12
+z	.\maths.h	/^            float z;$/;"	m	struct:v5f::__anon14::__anon15
+z	.\maths.h	/^            short z;$/;"	m	struct:v3s::__anon7::__anon8
+zeroDriveSensors	.\drive.h	/^void zeroDriveSensors()$/;"	f

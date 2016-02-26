@@ -1,18 +1,19 @@
 #include "misc.h"
+#include <emmintrin.h>
 #include <math.h>
+
 //#include <arm_neon.h>
 
 #ifndef MATHS
 #define MATHS
 
 #define pi 3.1415926535897932384626433832795
-#define e  2.71828182845904523536
+#define e_math  2.71828182845904523536
 #define sq(a) ((a)*(a))
 
 #define sign(a) ((a) > 0 ? 1 : -1)
 
 #pragma pack(push, 16)
-
 struct v2f
 {
     union
@@ -31,6 +32,201 @@ struct v2f
     }
 
 };
+
+struct v3f
+{
+    union
+    {
+        struct
+        {
+            float x;
+            float y;
+            float z;
+        };
+        struct
+        {
+            float i;
+            float j;
+            float k;
+        };
+        struct //euler angles
+        {
+            float heading;
+            float tilt;
+            float roll;
+        };
+        float data[3];
+    };
+
+    inline float &operator[](int a)
+    {
+        return data[a];
+    }
+};
+
+struct v3s
+{
+    union
+    {
+        struct
+        {
+            short x;
+            short y;
+            short z;
+        };
+        struct
+        {
+            short i;
+            short j;
+            short k;
+        };
+        struct //euler angles
+        {
+            short heading;
+            short tilt;
+            short roll;
+        };
+        short data[3];
+    };
+
+    inline short &operator[](int a)
+    {
+        return data[a];
+    }
+};
+
+struct v4f
+{
+    union
+    {
+        struct
+        {
+            float x;
+            float y;
+            float z;
+            float w;
+        };
+        struct
+        { //quaternion notation
+            float i;
+            float j;
+            float k;
+            float r;
+        };
+        float data[4];
+    };
+
+    inline float &operator[](int a)
+    {
+        return data[a];
+    }
+};
+
+struct v5f
+{
+    union
+    {
+        struct
+        {
+            float x;
+            float y;
+            float z;
+            float w;
+            float v;
+        };
+        float data[5];
+    };
+
+    inline float & operator[](int a)
+    {
+        return data[a];
+    }
+};
+/*End of Vector Structs*/
+/*Start of Matrix Structs*/
+struct m3x3f
+{
+    union
+    {
+        float data[9];
+        struct
+        {
+            v3f r0;
+            v3f r1;
+            v3f r2;
+        };
+        v3f rows[3];
+    };
+
+    inline float & operator[](int a)
+    {
+        return data[a];
+    }
+};
+
+struct __attribute__((aligned(16)))  m3x4f
+{
+    union
+    {
+        float data[12];
+        struct
+        {
+            v4f r0;
+            v4f r1;
+            v4f r2;
+        };
+        v4f rows[3];
+    };
+
+    inline float & operator[](int a)
+    {
+        return data[a];
+    }
+};
+
+struct __attribute__((aligned(16)))  m4x4f
+{
+    union
+    {
+        float data[16];
+        struct
+        {
+            v4f r0;
+            v4f r1;
+            v4f r2;
+            v4f r3;
+        };
+        v4f rows[4];
+    };
+
+    inline float & operator[](int a)
+    {
+        return data[a];
+    }
+};
+
+struct m4x5f
+{
+    union
+    {
+        float data[20];
+        struct
+        {
+            v5f r0;
+            v5f r1;
+            v5f r2;
+            v5f r3;
+        };
+        v5f rows[4];
+    };
+
+    inline float & operator[](int a)
+    {
+        return data[a];
+    }
+};
+#pragma pack(pop)
+
 
 //x^(-1/2)
 float invSqrt(float a)
@@ -139,68 +335,7 @@ v2f normalizeScale(v2f a, float s)
 }
 /* End of 2D Vector Functions */
 
-struct v3f
-{
-    union
-    {
-        struct
-        {
-            float x;
-            float y;
-            float z;
-        };
-        struct
-        {
-            float i;
-            float j;
-            float k;
-        };
-        struct //euler angles
-        {
-            float heading;
-            float tilt;
-            float roll;
-        };
-        float data[3];
-    };
-
-    inline float &operator[](int a)
-    {
-        return data[a];
-    }
-};
-
-struct v3s
-{
-    union
-    {
-        struct
-        {
-            short x;
-            short y;
-            short z;
-        };
-        struct
-        {
-            short i;
-            short j;
-            short k;
-        };
-        struct //euler angles
-        {
-            short heading;
-            short tilt;
-            short roll;
-        };
-        short data[3];
-    };
-
-    inline short &operator[](int a)
-    {
-        return data[a];
-    }
-};
-
+/*Start of 3D Vector Functions*/
 v3f operator+(v3f a, v3f b)
 {
     v3f output;
@@ -303,54 +438,40 @@ v3f normalizeScale(v3f a, float s)
     output.z = a.z * invSqrt(normsq) * s;
     return output;
 }
+
+v3f multiply(m3x3f m, v3f v)
+{
+    v3f product;
+    for(int r = 0; r < 3; r++)
+    {
+        product[r] = dot(m.rows[r], v);
+    }
+    return product;
+}
 /* End of 3D Vector Functions */
-struct v4f
+/* Start of 4D Vector Functions */
+inline v4f inverseQuaternion(v4f q)
 {
-    union
-    {
-        struct
-        {
-            float x;
-            float y;
-            float z;
-            float w;
-        };
-        struct
-        { //quaternion notation
-            float i;
-            float j;
-            float k;
-            float r;
-        };
-        float data[4];
-    };
-
-    inline float &operator[](int a)
-    {
-        return data[a];
-    }
-};
-
-struct v5f
+    q.r = -q.r;
+    return q;
+}
+v4f sub(v4f a, v4f b)
 {
-    union
-    {
-        struct
-        {
-            float x;
-            float y;
-            float z;
-            float w;
-            float v;
-        };
-        float data[5];
-    };
-    
-    inline float & operator[](int a)
-    {
-        return data[a];
-    }
-};
+    v4f sum = {a[0]-b[0],
+               a[1]-b[1],
+               a[2]-b[2],
+               a[3]-b[3]};
+    return sum;
+}
+v4f scale(v4f v, float s)
+{
+    v4f product = {v[0]*s,
+                   v[1]*s,
+                   v[2]*s,
+                   v[3]*s};
+    return product;
+}
+/* End of 4D Vector Functions */
 /* Start of 5D Vector Functions */
 v5f operator*(v5f a, float b)
 {
@@ -373,72 +494,105 @@ v5f operator-(v5f a, v5f b)
     output[4] = a[4] * b[4];
     return output;
 }
-
 /* End of 5D Vector Functions */
 
-struct m3x3f
+/* Start of 3x3 matrix functions */
+inline m3x3f quaternionToMatrix(v4f q)
 {
-    union
-    {
-        float data[9];
-        struct
-        {
-            v3f r0;
-            v3f r1;
-            v3f r2;
-        };
-        v3f rows[3];
+    m3x3f matrix = {
+        1-2*sq(q.j)-2*sq(q.k), 2*(q.i*q.j-q.k*q.r)  , 2*(q.i*q.k+q.j*q.r)  ,
+        2*(q.i*q.j+q.k*q.r)  , 1-2*sq(q.i)-2*sq(q.k), 2*(q.j*q.k-q.i*q.r)  ,
+        2*(q.i*q.k+q.j*q.r)  , 2*(q.j*q.k+q.i*q.r)  , 1-2*sq(q.i)-2*sq(q.j),
     };
-
-    inline float &operator[](int a)
-    {
-        return data[a];
-    }
-};
-
-struct m4x4f
+    return matrix;
+}
+/* End of 3x3 matrix Functions */
+inline v3f applyQuaternion(v4f q, v3f p)
 {
-    union
-    {
-        float data[16];
-        struct
-        {
-            v4f r0;
-            v4f r1;
-            v4f r2;
-            v4f r3;
-        };
-        v4f rows[4];
-    };
-
-    inline float &operator[](int a)
-    {
-        return data[a];
-    }
-};
-
-struct m4x5f
+    return multiply(quaternionToMatrix(q), p);
+}
+/* Start of 4x4 matrix Functions */
+inline m4x4f quaternionTo4x4Matrix(v4f q)
 {
-    union
-    {
-        float data[20];
-        struct
-        {
-            v5f r0;
-            v5f r1;
-            v5f r2;
-            v5f r3;
-        };
-        v5f rows[4];
+    m4x4f matrix = {
+        1-2*sq(q.j)-2*sq(q.k), 2*(q.i*q.j-q.k*q.r)  , 2*(q.i*q.k+q.j*q.r)  , 0.0,
+        2*(q.i*q.j+q.k*q.r)  , 1-2*sq(q.i)-2*sq(q.k), 2*(q.j*q.k-q.i*q.r)  , 0.0,
+        2*(q.i*q.k+q.j*q.r)  , 2*(q.j*q.k+q.i*q.r)  , 1-2*sq(q.i)-2*sq(q.j), 0.0,
+        0.0                  , 0.0                  , 0.0                  , 1.0,
     };
+    return matrix;
+}
 
-    inline float & operator[](int a)
+//matrix multiplication of aligned matrices a and b
+inline m4x4f multiplyA( m4x4f a, m4x4f b)
+{
     {
-        return data[a];
+        __m128 a_element = _mm_load1_ps(&a[0]);
+        __m128 b_row = _mm_load_ps((float *) b.rows);
+        __m128 current_row = _mm_mul_ps(a_element, b_row);
+        a_element = _mm_load1_ps(&a[1]);
+        b_row = _mm_load_ps((float *) (b.rows+1));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        a_element = _mm_load1_ps(&a[2]);
+        b_row = _mm_load_ps((float *) (b.rows+2));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        a_element = _mm_load1_ps(&a[3]);
+        b_row = _mm_load_ps((float *) (b.rows+3));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        _mm_store_ps((float *) a.rows, current_row);
     }
-};
-#pragma pack(pop)
 
+    {
+        __m128 a_element = _mm_load1_ps(&a[4]);
+        __m128 b_row = _mm_load_ps((float *) b.rows);
+        __m128 current_row = _mm_mul_ps(a_element, b_row);
+        a_element = _mm_load1_ps(&a[5]);
+        b_row = _mm_load_ps((float *) (b.rows+1));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        a_element = _mm_load1_ps(&a[6]);
+        b_row = _mm_load_ps((float *) (b.rows+2));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        a_element = _mm_load1_ps(&a[7]);
+        b_row = _mm_load_ps((float *) (b.rows+3));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        _mm_store_ps((float *) (a.rows+1), current_row);
+    }
+
+    {
+        __m128 a_element = _mm_load1_ps(&a[8]);
+        __m128 b_row = _mm_load_ps((float *) b.rows);
+        __m128 current_row = _mm_mul_ps(a_element, b_row);
+        a_element = _mm_load1_ps(&a[9]);
+        b_row = _mm_load_ps((float *) (b.rows+1));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        a_element = _mm_load1_ps(&a[10]);
+        b_row = _mm_load_ps((float *) (b.rows+2));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        a_element = _mm_load1_ps(&a[11]);
+        b_row = _mm_load_ps((float *) (b.rows+3));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        _mm_store_ps((float *) (a.rows+2), current_row);
+    }
+
+    {
+        __m128 a_element = _mm_load1_ps(&a[12]);
+        __m128 b_row = _mm_load_ps((float *) b.rows);
+        __m128 current_row = _mm_mul_ps(a_element, b_row);
+        a_element = _mm_load1_ps(&a[13]);
+        b_row = _mm_load_ps((float *) (b.rows+1));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        a_element = _mm_load1_ps(&a[14]);
+        b_row = _mm_load_ps((float *) (b.rows+2));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        a_element = _mm_load1_ps(&a[15]);
+        b_row = _mm_load_ps((float *) (b.rows+3));
+        current_row = _mm_add_ps(current_row, _mm_mul_ps(a_element, b_row));
+        _mm_store_ps((float *) (a.rows+3), current_row);
+    }
+
+    return a;
+}
+/* End of 4x4 matrix Functions */
 /* Start of 4x5 matrix Functions */
 //TODO: handle 0s in unfortunate spots
 v4f solve(m4x5f equations)
@@ -453,7 +607,7 @@ v4f solve(m4x5f equations)
     /*     printf("\n"); */
     /* } */
     /* printf("\n"); */
-    
+
     float epsilon = 0.1;
     float zero = 0.0001;
 
@@ -481,7 +635,7 @@ v4f solve(m4x5f equations)
             {
                 equations.rows[r] = equations.rows[r] - equations.rows[i]*equations.rows[r][j];
             } while(fabs(equations.rows[r][j]) > zero); //for floating point error
-            
+
         /*     for(int r = 0; r < 4; r++) */
         /*     { */
         /*         for(int c = 0; c < 5; c++) */
@@ -504,7 +658,7 @@ v4f solve(m4x5f equations)
     /*     printf("\n"); */
     /* } */
     /* printf("\n"); */
-    
+
     v4f solutions;
     for(int i = 0; i < 4; i++)
     {

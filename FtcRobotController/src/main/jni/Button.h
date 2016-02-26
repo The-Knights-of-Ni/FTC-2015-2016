@@ -3,7 +3,7 @@
 
 #include "maths.h"
 
-#define offset 40
+#define btn_offset 40 //Modified for simulator
 
 //TODO: BTN_ prefix
 enum Buttons
