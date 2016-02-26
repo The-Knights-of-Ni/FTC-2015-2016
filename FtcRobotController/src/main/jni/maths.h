@@ -1,5 +1,7 @@
 #include "misc.h"
+#ifdef USING_SIMULATOR
 #include <emmintrin.h>
+#endif
 #include <math.h>
 
 //#include <arm_neon.h>
@@ -524,6 +526,7 @@ inline m4x4f quaternionTo4x4Matrix(v4f q)
 }
 
 //matrix multiplication of aligned matrices a and b
+#ifdef USING_SIMULATOR //TODO: Make it so we can use this in native too
 inline m4x4f multiplyA( m4x4f a, m4x4f b)
 {
     {
@@ -592,6 +595,7 @@ inline m4x4f multiplyA( m4x4f a, m4x4f b)
 
     return a;
 }
+#endif
 /* End of 4x4 matrix Functions */
 /* Start of 4x5 matrix Functions */
 //TODO: handle 0s in unfortunate spots
