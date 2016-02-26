@@ -20,7 +20,8 @@ static jmp_buf exit_jump;
 
 //interruptable blocks are exited when update robot detects an interuptted exception
 //NOTE: only the most recent interuptable block will be exited, only one is intended for use
-#define interruptable if(!setjmp(exit_jump))
+bool8 exiting = false;
+#define interruptable interuptable_goto: if(!exiting && !setjmp(exit_jump))
 
 //dummy struct and variable to operator overload on
 struct jniOutStruct{};
@@ -98,12 +99,14 @@ void * robot_state_first_address = malloc(robot_state_reserved_addresses);
 #define defineJniIn(type, Type)                                         \
     type * jni##Type##In_line(const char * s, const char * filename, int line) \
     {                                                                   \
+        bool8 return_exists = 0;                                        \
         int rsid_original = rsid_current;                               \
         const char * t = s;                                             \
         for(; *t; t++)                                                  \
         {                                                               \
             if(constStrcmp(t, "return") == 0)                           \
             {                                                           \
+                return_exists = true;                                   \
                 int n_printed = sprintf(rsin_code_current, "{\n%.*s", (int) (t-s), s); \
                 assert(n_printed >= 0);                                 \
                 rsin_code_current += n_printed;                         \
@@ -138,6 +141,11 @@ void * robot_state_first_address = malloc(robot_state_reserved_addresses);
                                                                         \
                 break;                                                  \
             }                                                           \
+        }                                                               \
+        if(!return_exists)                                              \
+        {                                                               \
+            printf("%s:%d: error: no return value\n", filename, line);  \
+                return 0;                                               \
         }                                                               \
         return (type*)((byte*) robot_state_first_address+rsid_original); \
     }
@@ -455,15 +463,21 @@ jmethodID robotStateOutID;
 
 void cleanupJNI();
 
-void waitForStart()
-{
-    env->CallVoidMethod(self, waitForStartID);
-    if(env->ExceptionOccurred() != 0)
-    {
-        cleanupJNI();
-        longjmp(exit_jump, 1); //TODO: this might not be setup yet
+#define waitForStart()                                  \
+    {                                                   \
+        env->CallVoidMethod(self, waitForStartID);      \
+        if(env->ExceptionOccurred() != 0)               \
+        {                                               \
+            cleanupJNI();                               \
+            exiting = true;                             \
+            goto interuptable_goto;                     \
+        }                                               \
+        else                                            \
+        {                                               \
+            exiting = false;                            \
+        }                                               \
     }
-}
+
 #define waitOneFullHardwareCycle() env->CallVoidMethod(self, waitOneFullHardwareCycleID)
 #define waitForNextHardwareCycle() env->CallVoidMethod(self, waitForNextHardwareCycleID)
 #define robotStateIn() env->CallVoidMethod(self, robotStateInID)

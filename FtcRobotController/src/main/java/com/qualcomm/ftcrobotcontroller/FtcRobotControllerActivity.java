@@ -39,6 +39,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -73,6 +74,8 @@ import com.qualcomm.robotcore.wifi.WifiDirectAssistant;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 //custom gui
 import android.widget.SeekBar;
@@ -121,6 +124,7 @@ public class FtcRobotControllerActivity extends Activity {
     protected FtcRobotControllerService controllerService;
     
     protected FtcEventLoop eventLoop;
+    protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
     
     protected class RobotRestarter implements Restarter {
 
@@ -140,15 +144,7 @@ public class FtcRobotControllerActivity extends Activity {
             controllerService = null;
         }
     };
-
-    @Override protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(intent.getAction())) {
-            // a new USB device has been attached
-            DbgLog.msg("USB Device attached; app restart may be needed");
-        }
-    }
-
+    
     //custom gui
     public static boolean aligned;
     public static boolean red;
@@ -277,12 +273,74 @@ public class FtcRobotControllerActivity extends Activity {
     }
     
     //custom gui
+    
+    @Override protected void onStart() {
+        super.onStart();
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+        // save 4MB of logcat to the SD card
+        RobotLog.writeLogcatToDisk(this, 4 * 1024);
+
+        Intent intent = new Intent(this, FtcRobotControllerService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+        utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
+
+        callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
+
+        entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
+                @Override public boolean onTouch(View v, MotionEvent event) {
+                    dimmer.handleDimTimer();
+                    return false;
+                }
+            });
+
+        wifiLock.acquire();
+    }
+    
+    @Override
+        protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
+            UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            if (usbDevice != null) {  // paranoia
+                // We might get attachment notifications before the event loop is set up, so
+                // we hold on to them and pass them along only when we're good and ready.
+                if (receivedUsbAttachmentNotifications != null) { // *total* paranoia
+                    receivedUsbAttachmentNotifications.add(usbDevice);
+                    passReceivedUsbAttachmentsToEventLoop();
+                }
+            }
+        }
+    }
+
+    protected void passReceivedUsbAttachmentsToEventLoop() {
+        if (this.eventLoop != null) {
+            for (;;) {
+                UsbDevice usbDevice = receivedUsbAttachmentNotifications.poll();
+                if (usbDevice == null)
+                    break;
+                this.eventLoop.onUsbDeviceAttached(usbDevice);
+            }
+        }
+        else {
+            // Paranoia: we don't want the pending list to grow without bound when we don't
+            // (yet) have an event loop
+            while (receivedUsbAttachmentNotifications.size() > 100) {
+                receivedUsbAttachmentNotifications.poll();
+            }
+        }
+    }
+
+    @Override
+        protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        receivedUsbAttachmentNotifications = new ConcurrentLinkedQueue<UsbDevice>();
+        eventLoop = null;
+
         setContentView(R.layout.activity_ftc_controller);
-        
+
         //custom gui
         addListenerOnRed();
         addListenerOnBlue();
@@ -337,12 +395,14 @@ public class FtcRobotControllerActivity extends Activity {
         /*                                    }); */
         
         // End of Custom Stuff
+        
         utility = new Utility(this);
         context = this;
         entireScreenLayout = (LinearLayout) findViewById(R.id.entire_screen);
         buttonMenu = (ImageButton) findViewById(R.id.menu_buttons);
         buttonMenu.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
+                @Override
+                    public void onClick(View v) {
                     openOptionsMenu();
                 }
             });
@@ -375,39 +435,19 @@ public class FtcRobotControllerActivity extends Activity {
 
         if (USE_DEVICE_EMULATION) { HardwareFactory.enableDeviceEmulation(); }
     }
-
-    @Override protected void onStart() {
-        super.onStart();
-
-        // save 4MB of logcat to the SD card
-        RobotLog.writeLogcatToDisk(this, 4 * 1024);
-
-        Intent intent = new Intent(this, FtcRobotControllerService.class);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
-
-        utility.updateHeader(Utility.NO_FILE, R.string.pref_hardware_config_filename, R.id.active_filename, R.id.included_header);
-
-        callback.wifiDirectUpdate(WifiDirectAssistant.Event.DISCONNECTED);
-
-        entireScreenLayout.setOnTouchListener(new View.OnTouchListener() {
-                @Override public boolean onTouch(View v, MotionEvent event) {
-                    dimmer.handleDimTimer();
-                    return false;
-                }
-            });
-
-        wifiLock.acquire();
-    }
-
-    @Override protected void onResume() {
+    
+    @Override
+        protected void onResume() {
         super.onResume();
     }
 
-    @Override public void onPause() {
+    @Override
+        public void onPause() {
         super.onPause();
     }
 
-    @Override protected void onStop() {
+    @Override
+        protected void onStop() {
         super.onStop();
 
         if (controllerService != null) unbindService(connection);
@@ -416,7 +456,9 @@ public class FtcRobotControllerActivity extends Activity {
 
         wifiLock.release();
     }
-    @Override public void onWindowFocusChanged(boolean hasFocus){
+
+    @Override
+        public void onWindowFocusChanged(boolean hasFocus){
         super.onWindowFocusChanged(hasFocus);
         // When the window loses focus (e.g., the action overflow is shown),
         // cancel any pending hide action. When the window gains focus,
@@ -430,8 +472,7 @@ public class FtcRobotControllerActivity extends Activity {
             immersion.cancelSystemUIHide();
         }
     }
-
-
+    
     @Override public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.ftc_robot_controller, menu);
         return true;
@@ -520,13 +561,15 @@ public class FtcRobotControllerActivity extends Activity {
 
         controllerService.setCallback(callback);
         controllerService.setupRobot(eventLoop);
+    
+        passReceivedUsbAttachmentsToEventLoop();
     }
-
+    
     private FileInputStream fileSetup() {
 
         final String filename = Utility.CONFIG_FILES_DIR
             + utility.getFilenameFromPrefs(R.string.pref_hardware_config_filename, Utility.NO_FILE) + Utility.FILE_EXT;
-
+        
         FileInputStream fis;
         try {
             fis = new FileInputStream(filename);

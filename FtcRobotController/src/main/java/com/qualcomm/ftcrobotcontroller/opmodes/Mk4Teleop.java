@@ -185,13 +185,13 @@ setDouble(0, time);
 rsid_current = 8;
 }
 {
-setInt(8, 0);
-//right_drive.getCurrentPosition();
+setInt(8, right_drive.getCurrentPosition());
+
 rsid_current = 12;
 }
 {
-setInt(12, 0);
-//left_drive.getCurrentPosition();
+setInt(12, left_drive.getCurrentPosition());
+
 rsid_current = 16;
 }
 {
@@ -320,7 +320,7 @@ right_drive = hardwareMap.dcMotor.get("rightd");
 shoulder    = hardwareMap.dcMotor.get("shoulder");
 winch       = hardwareMap.dcMotor.get("winch");
 intake      = hardwareMap.dcMotor.get("intake");
-right_drive.setDirection(DcMotor.Direction.REVERSE);
+//right_drive.setDirection(DcMotor.Direction.REVERSE);
 left_drive.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
@@ -341,7 +341,7 @@ hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
 intake_tilt = hardwareMap.servo.get("intake_tilt");
-intake_tilt.setDirection(Servo.Direction.REVERSE);
+//intake_tilt.setDirection(Servo.Direction.REVERSE);
     main();
 }
 }

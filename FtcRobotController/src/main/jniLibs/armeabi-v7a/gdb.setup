@@ -1,3 +1,8 @@
 set solib-search-path ./obj/local/armeabi-v7a
+<<<<<<< HEAD
 source C:/Users/Dev/AppData/Local/Android/sdk/ndk-bundle/prebuilt/common/gdb/common.setup
 directory C:/Users/Dev/AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-arm/usr/include C:/Users/Dev/AppData/Local/Android/sdk/ndk-bundle/sources/cxx-stl/system/include jni
+=======
+source c:/android-ndk-r10e/prebuilt/common/gdb/common.setup
+directory c:/android-ndk-r10e/platforms/android-19/arch-arm/usr/include c:/android-ndk-r10e/sources/cxx-stl/system/include jni
+>>>>>>> e442e7d17de372fbcebd24ff50012ffeebbb1a15

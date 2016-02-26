@@ -21,13 +21,13 @@ int * pleft_drive_encoder;
 int * pright_drive_encoder;
 #define right_drive_encoder (*pright_drive_encoder)
 
-#define sprocket_pitch_radius 3.13 //inches
+#define sprocket_pitch_radius 3.13/2.0 //inches
 #define encoderticks_per_inch sprocket_pitch_radius*encoderticks_per_radian
 #define encoderticks_per_cm sprocket_pitch_radius*2.54*encoderticks_per_radian
 #define acceptableAngleError 2
 
 //constants
-#define drive_gear_ratio (80.0/64.0)
+#define drive_gear_ratio (64.0/80.0)
 
 float left_drive_theta = 0;
 float left_drive_omega = 0;

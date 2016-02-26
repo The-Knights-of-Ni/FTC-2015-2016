@@ -28,7 +28,7 @@ int rsid_current = 0;
 public Mk4Auto()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[104];
+    robot_state = new byte[132];
 
 camera = FtcRobotControllerActivity.camera_preview.camera;
 Camera.Parameters parameters = camera.getParameters();
@@ -182,19 +182,27 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-left_drive.setPower(getFloat(56));
-right_drive.setPower(getFloat(60));
-winch.setPower(getFloat(64));
-shoulder.setPower(getFloat(68));
-intake.setPower(getFloat(72));
-hand.setPosition(getFloat(76));
-wrist.setPosition(getFloat(80));
-hook_left.setPosition(getFloat(84));
-hook_right.setPosition(getFloat(88));
-intake_tilt.setPosition(getFloat(92));
-telemetry.addData("Indicator:", getInt(96));
-telemetry.addData("beacon right:", (getInt(100) == 1 ? "red" : "blue"));
-telemetry.addData("heading:", getShort(32));
+left_drive.setPower(getFloat(60));
+right_drive.setPower(getFloat(64));
+winch.setPower(getFloat(68));
+shoulder.setPower(getFloat(72));
+intake.setPower(getFloat(76));
+hand.setPosition(getFloat(80));
+wrist.setPosition(getFloat(84));
+hook_left.setPosition(getFloat(88));
+hook_right.setPosition(getFloat(92));
+intake_tilt.setPosition(getFloat(96));
+telemetry.addData("Indicator:", getInt(100));
+telemetry.addData("left_drive_encoder:", getInt(12));
+telemetry.addData("right_drive_encoder:", getInt(8));
+telemetry.addData("beacon right:", (getInt(104) == 1 ? "red" : "blue"));
+telemetry.addData("heading:", getShort(36));
+telemetry.addData("target time:", getFloat(108));
+telemetry.addData("acceleration time:", getFloat(112));
+telemetry.addData("slider 0", getInt(116));
+telemetry.addData("slider 1", getInt(120));
+telemetry.addData("slider 2", getInt(124));
+telemetry.addData("slider 3", getInt(128));
 
 }
 
@@ -206,13 +214,13 @@ setDouble(0, time);
 rsid_current = 8;
 }
 {
-setInt(8, 0);
-//right_drive.getCurrentPosition();
+setInt(8, right_drive.getCurrentPosition());
+
 rsid_current = 12;
 }
 {
-setInt(12, 0);
-//left_drive.getCurrentPosition();
+setInt(12, left_drive.getCurrentPosition());
+
 rsid_current = 16;
 }
 {
@@ -236,7 +244,12 @@ setInt(28, dim.getAnalogInputValue(shoulder_potentiometer_port));
 rsid_current = 32;
 }
 {
-rsid_current = 32;
+setInt(32, dim.getDigitalInputStateByte());
+
+rsid_current = 36;
+}
+{
+rsid_current = 36;
 if(imu.checkForUpdate()) {
     setRelative(imu.eul_x);
 setRelative( imu.eul_y);
@@ -249,9 +262,29 @@ setRelative( imu.vel_z);
 
 }
 {
-setInt(52, (FtcRobotControllerActivity.red ? 1 : 0));
+setInt(56, (FtcRobotControllerActivity.red ? 1 : 0));
 
-rsid_current = 56;
+rsid_current = 60;
+}
+{
+setInt(116, FtcRobotControllerActivity.slider_0);
+
+rsid_current = 120;
+}
+{
+setInt(120, FtcRobotControllerActivity.slider_1);
+
+rsid_current = 124;
+}
+{
+setInt(124, FtcRobotControllerActivity.slider_2);
+
+rsid_current = 128;
+}
+{
+setInt(128, FtcRobotControllerActivity.slider_3);
+
+rsid_current = 132;
 }
 
 }
@@ -284,7 +317,7 @@ static
 {
 dim = hardwareMap.deviceInterfaceModule.get("dim");
 I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
-imu = new IMU(imu_i2c_device);
+imu = new IMU(imu_i2c_device, this);
 int error = imu.init(IMU.mode_ndof,
         (byte) (IMU.units_acc_m_per_s2 |
                 IMU.units_angle_deg |
@@ -306,7 +339,7 @@ right_drive = hardwareMap.dcMotor.get("rightd");
 shoulder    = hardwareMap.dcMotor.get("shoulder");
 winch       = hardwareMap.dcMotor.get("winch");
 intake      = hardwareMap.dcMotor.get("intake");
-right_drive.setDirection(DcMotor.Direction.REVERSE);
+//right_drive.setDirection(DcMotor.Direction.REVERSE);
 left_drive.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setDirection(DcMotor.Direction.REVERSE);
 shoulder.setMode(DcMotorController.RunMode.RESET_ENCODERS);
@@ -321,12 +354,13 @@ shoulder.setDirection(DcMotor.Direction.REVERSE);
 //winch.setDirection(DcMotor.Direction.REVERSE);
 
 hand = hardwareMap.servo.get("hand");
+hand.setDirection(Servo.Direction.REVERSE);
 wrist = hardwareMap.servo.get("wrist");
 hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
 intake_tilt = hardwareMap.servo.get("intake_tilt");
-intake_tilt.setDirection(Servo.Direction.REVERSE);
+//intake_tilt.setDirection(Servo.Direction.REVERSE);
 dim.setLED(0, false);
 dim.setLED(1, false);
 while (!FtcRobotControllerActivity.aligned || (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue))
@@ -348,7 +382,8 @@ else
 {
     dim.setLED(0, false);
     dim.setLED(1, false);
-}waitForStart();
+}telemetry.addData("ready", "");
+waitForStart();
 imu.rezero();
 
     main();

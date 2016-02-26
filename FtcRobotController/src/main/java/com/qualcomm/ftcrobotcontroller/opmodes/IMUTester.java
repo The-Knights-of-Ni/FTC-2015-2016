@@ -32,7 +32,7 @@ public class IMUTester extends LinearOpMode
         dim = hardwareMap.deviceInterfaceModule.get("dim");
         I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
         
-        imu = new IMU(imu_i2c_device);
+        imu = new IMU(imu_i2c_device, this);
         
         int error = imu.init(IMU.mode_ndof,
                              (byte)(IMU.units_acc_m_per_s2|
@@ -62,6 +62,42 @@ public class IMUTester extends LinearOpMode
         double last_update_time = 0.0;
         double update_cycle_time = 0.0;
 
+        waitForStart();
+
+        imu.rezero(); //Make sure you call rezero before starting, it resets the velocity integration timers and values
+            
+        for(;;)
+        {
+            double new_time = time;
+            double dt = new_time-old_time;
+            old_time = new_time;
+            if(imu.checkForUpdate())
+            {
+                update_cycle_time = new_time-last_update_time;
+                last_update_time = new_time;                    
+            }
+            
+            int ls = dim.getAnalogInputValue(0);
+            telemetry.addData("number of reads", imu.n_reads);
+            telemetry.addData("limit switch", ls);
+            telemetry.addData("IMU heading", ((float)imu.eul_x)/16.0f);
+            telemetry.addData("acceleration x", imu.lia_x/100.0f);
+            telemetry.addData("acceleration y", imu.lia_y/100.0f);
+            telemetry.addData("acceleration z", imu.lia_z/100.0f);
+            telemetry.addData("IMU cycle time 1", imu.dt);
+            telemetry.addData("IMU cycle time 2", update_cycle_time);
+            telemetry.addData("high_passed_acceleration x", imu.acc_x/100.0f);
+            telemetry.addData("high_passed_acceleration y", imu.acc_y/100.0f);
+            telemetry.addData("high_passed_acceleration z", imu.acc_z/100.0f);
+            telemetry.addData("velocity x", imu.vel_x/100.0f);
+            telemetry.addData("velocity y", imu.vel_y/100.0f);
+            telemetry.addData("velocity z", imu.vel_z/100.0f);
+            telemetry.addData("cycle time", dt);
+            
+            waitForNextHardwareCycle();
+        }
+        
+        /*
         String log = "";
         String log_file_info = "";
         try
@@ -138,5 +174,6 @@ public class IMUTester extends LinearOpMode
             telemetry.addData("test complete, file saved to", log_file_info);
             waitOneFullHardwareCycle();
         }
+        */
     }
 }
