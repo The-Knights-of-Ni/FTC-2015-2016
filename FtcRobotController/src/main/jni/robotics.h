@@ -78,7 +78,7 @@ void lowpassFirstDerivativeUpdate(float new_theta, float * current_theta, float 
     *current_theta = new_theta;
 }
 
-#define deadzone_radius 0.1
+#define deadzone_radius 0.125
 
 float deadzoneAdjust(float a)
 {
@@ -100,6 +100,38 @@ v2f deadzone(v2f stick)
         stick * ((stick_norm - deadzone_radius) / (1.0f - deadzone_radius)) / stick_norm;
     } //Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
     return stick;
+}
+
+struct smoothed_joystick
+{
+    union
+    {
+        v2f stick;
+        struct
+        {
+            float x;
+            float y;
+        };
+    };
+    bool dead;
+};
+
+smoothed_joystick deadzoneWDead(v2f stick)
+{
+    smoothed_joystick out = {stick, false};
+    auto stick_norm = norm(out.stick);
+    if (stick_norm < deadzone_radius)
+    {
+        out.dead = true;
+        out.x = 0;
+        out.y = 0;
+    }
+    else
+    {
+        out.dead = false;
+        out.stick * ((stick_norm - deadzone_radius) / (1.0f - deadzone_radius)) / stick_norm;
+    } //Remap non-deadzone to full range. Unnecessary if we can't move at 10% pwm
+    return out;
 }
 
 v2f squareDeadzone(v2f stick)

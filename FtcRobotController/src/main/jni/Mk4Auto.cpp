@@ -9,7 +9,16 @@ void Mk4AutonomousUpdate()
     //TODO: make this sensor filter stuff a function in arm.h    
     shoulder = 0;
     winch = 0;
-    //armToPreset(1.0, 1.0);
+    
+    if(arm_stage != arm_idle)
+    {
+        armSwitchModes();
+    }
+    if(arm_stage == arm_idle)
+    {
+        armToPreset(1.0, 1.0);
+    }
+    
     doIntake();
     doHand();
     
@@ -20,6 +29,7 @@ void Mk4AutonomousUpdate()
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
     if(winch > 0.0 && !tension_switch && inside_elbow_theta > pi) winch = 0.0;
+    
     left_drive = clamp(left_drive, -1.0, 1.0);
     right_drive = clamp(right_drive, -1.0, 1.0);
     intake = clamp(intake, -1.0, 1.0);
@@ -29,15 +39,15 @@ void Mk4AutonomousUpdate()
     hand = clamp(hand, 0.0, 1.0);
     hook_left = clamp(hook_left, 0.0, 1.0);
     hook_right = clamp(hook_right, 0.0, 1.0);
-
-    intake = 0;
-    shoulder = 0;
-    winch = 0;
-    intake_tilt = continuous_servo_stop;
-    wrist = wrist_level_position;
-    hand = 0;
-    hook_left = 0;
-    hook_right = 0;
+    
+    // intake = 0;
+    // shoulder = 0;
+    // winch = 0;
+    // //intake_tilt = continuous_servo_stop;
+    // wrist = wrist_level_position;
+    // hand = 0;
+    // hook_left = 0;
+    // hook_right = 0;
 }
 
 #ifndef GENERATE
@@ -265,12 +275,12 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     //waitForStart(); //NOTE: needs to be called in java until IMU code is ported
     zeroDriveSensors();
-
+    
     updateRobot();
     current_time = time;
     //Config
     //hopper down
-    #define colorAdjustedAngle(a) (currentColor ? (a) : -(a))
+    #define colorAdjustedAngle(a) ((current_color) ? (a) : -(a))
     #define blocks_in_hopper 1
     interruptable
     {
@@ -285,20 +295,32 @@ void jniMain(JNIEnv * _env, jobject _self)
             autonomousUpdate();
         }
         
-        float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
-                                          -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-        target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+        #if 0 // test driveOnCourseIn
         target_shoulder_theta = shoulder_theta;
         target_inside_elbow_theta = inside_elbow_theta;
-
-        turnRelDeg(90, 1.0);
-        wait(1.0);
-        turnRelDeg(-90, 1.0);
+        driveOnCourseIn(112, -1.0, colorAdjustedAngle(45));//Drive 120 in at 45 degrees, relative to the driver box
         
-        //driveDistIn(10, 0.8, 1);
-        //driveOnCourseIn(10, -0.8, 45);
-        // driveOnCourseIn(24, 0.8, 45);
-        for ever
+        waitForEnd();
+        #endif
+        
+        intake_out = true;
+        intake_time = 0.0;
+        
+        driveOnCourseIn(10, -1.0, 0);
+        
+        target_shoulder_theta = pi/2;
+        target_inside_elbow_theta = 5.0*pi/4.0;
+        while(!armIsAtTarget(0.1, 0.1))
+        {
+            autonomousUpdate();
+        }
+        
+        wait(0.5);
+        
+        score_mode = false;
+        arm_stage = arm_pre_preparing;
+        
+        while(arm_stage != arm_idle)
         {
             autonomousUpdate();
         }
@@ -306,15 +328,23 @@ void jniMain(JNIEnv * _env, jobject _self)
         //Deploy Robot
         //Wait time delay
         //Turn on intake
-        intake = 1;
+        intake = -1;
         
         //Drive to goal
-        driveOnCourseIn(120, -0.8, 45);//Drive 120 in at 45 degrees, relative to the driver box
+        turnRelDeg(colorAdjustedAngle(45), 1.0);
+        driveOnCourseIn(112, -1.0, colorAdjustedAngle(45));//Drive 120 in at 45 degrees, relative to the driver box
         //Once 5 blocks are reached, reverse intake direction
-        if(blocks_in_hopper >= 5)
-            intake = -1;
+        // if(blocks_in_hopper >= 5)
+        //     intake = -1;
+        
+        intake = 1;
+        
+        driveOnCourseIn(8, -1.0, colorAdjustedAngle(45));
+        
+        intake = 0;
+        
         //Turn and align with beacon
-        turnRelDeg(45, 0.8);
+        turnRelDeg(colorAdjustedAngle(45), 1.0);
         //Drive forward a bit
         driveDistIn(10, -0.8);
         //Score climbers
@@ -333,11 +363,11 @@ void jniMain(JNIEnv * _env, jobject _self)
         //Drive out of parking zone
         driveDistIn(11, 0.5);
         //Turn and park on nearest low mountain
-        turnRelDeg(45, -0.8);
+        turnRelDeg(colorAdjustedAngle(45), -0.8);
         driveDistIn(60, 0.8);
         setIntakeIn();
         //Arm to partial extension for teleop
-        turnRelDeg(90, -0.8);
+        turnRelDeg(colorAdjustedAngle(90), -0.8);
         driveDistIn(40, 0.8);
         //Might need some sort of traction type thing, or use the imu until we're over the first churro/stuck on it
         //Flash LEDs to show auto is done

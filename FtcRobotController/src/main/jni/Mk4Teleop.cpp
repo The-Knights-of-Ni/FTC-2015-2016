@@ -30,7 +30,7 @@ float wrist_manual_control = 0;
 #define intake_reverse pad1.press(RIGHT_BUMPER)
 
 #define intake_out_toggle false //pad1.singlePress(A)
-#define intake_tilt_manual -pad1stick2.y
+#define intake_tilt_manual (+pad1stick2.y)
 
 //Arm
 // #define shoulder_manual pad2stick1
@@ -47,7 +47,8 @@ float wrist_manual_control = 0;
 
 //Hook
 #define hook_toggle pad1.toggle(B)
-
+#define score_hook_toggle pad1.toggle(RIGHT_TRIGGER)
+    
 //Climber Release    
 #define climber_release_toggle pad1.toggle(A)
 
@@ -83,6 +84,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                             "Servo hook_left;\n"
                             "Servo hook_right;\n"
                             "Servo intake_tilt;\n"
+                            "Servo score_hook;\n"
                             "/* End Motor Definitions */");
     
     jni_run_opmode_string = ("dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
@@ -112,7 +114,8 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
                              "hook_left.setDirection(Servo.Direction.REVERSE);\n"
                              "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
-                             "//intake_tilt.setDirection(Servo.Direction.REVERSE);");
+                             "//intake_tilt.setDirection(Servo.Direction.REVERSE);\n"
+                             "score_hook = hardwareMap.servo.get(\"score_hook\");");
     
     jni_misc_string = (
         "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
@@ -147,17 +150,38 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("hook_left.setPosition(", phook_left,");");
     jniOut("hook_right.setPosition(", phook_right,");");
     jniOut("intake_tilt.setPosition(", pintake_tilt,");");
+    jniOut("score_hook.setPosition(", pscore_hook,");");
     
     //TODO: telemetry queue
     float * pshoulder_print_theta;
     #define shoulder_print_theta (*pshoulder_print_theta)
     jniOut("telemetry.addData(\"shoulder theta\", ", pshoulder_print_theta,");");
     
-    float * pshoulder_compensation_print;
+    float * pshoulder_compensation_print = 0;
     #define shoulder_compensation_print (*pshoulder_compensation_print)
     jniOut("telemetry.addData(\"shoulder_compensation\", ", pshoulder_compensation_print,");");
     
-    int * pshoulder_active_print;
+    float * pleft_drive_compensation_print = 0;
+    #define left_drive_compensation_print (*pleft_drive_compensation_print)
+    jniOut("telemetry.addData(\"left_drive_compensation\", ", pleft_drive_compensation_print,");");
+    
+    float * pright_drive_compensation_print = 0;
+    #define right_drive_compensation_print (*pright_drive_compensation_print)
+    jniOut("telemetry.addData(\"right_drive_compensation\", ", pright_drive_compensation_print,");");
+    
+    float * pleft_drive_print_theta = 0;
+    #define left_drive_print_theta (*pleft_drive_print_theta)
+    jniOut("telemetry.addData(\"left_drive_theta\", ", pleft_drive_print_theta,");");
+    
+    float * pright_drive_print_theta = 0;
+    #define right_drive_print_theta (*pright_drive_print_theta)
+    jniOut("telemetry.addData(\"right_drive_theta\", ", pright_drive_print_theta,");");
+
+    int * pleft_drive_print_active = 0;
+    #define left_drive_print_active (*pleft_drive_print_active)
+    jniOut("telemetry.addData(\"left_drive_active\", ", pleft_drive_print_active,");");
+    
+    int * pshoulder_active_print = 0;
     #define shoulder_active_print (*pshoulder_active_print)
     jniOut("telemetry.addData(\"shoulder_active\", ", pshoulder_active_print,");");
     
@@ -237,7 +261,14 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     score_mode = true;
     
+    zeroDriveSensors();
+    
     waitForStart();
+    
+    robotStateIn();
+    updateDriveSensors();
+    left_drive_hold_theta = left_drive_theta;
+    right_drive_hold_theta = right_drive_theta;
     
     // updateArmSensors();
     // float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
@@ -269,17 +300,52 @@ void jniMain(JNIEnv * _env, jobject _self)
         pad2stick2.y = gamepad2.joystick2.y;
         
 //============================= Drive ============================
-        drive_stick = smoothJoysticks(drive_stick, 0, 0.2, 0.8, 1);
-        if(drive_toggle)
+        updateDriveSensors();
+        
+        auto drive_control = smoothJoysticks(drive_stick, 0, 0.2, 0.8, 1.0);
+        
+        if(!drive_toggle)
         {
-            left_drive = -drive_stick.y + drive_stick.x;
-            right_drive = -drive_stick.y - drive_stick.x;
+            left_drive = -drive_control.y + drive_control.x;
+            right_drive = -drive_control.y - drive_control.x;
         }
         else
         {
-            left_drive = drive_stick.y + drive_stick.x;
-            right_drive = drive_stick.y - drive_stick.x;
+            left_drive = drive_control.y + drive_control.x;
+            right_drive = drive_control.y - drive_control.x;
         }
+        
+        if(!drive_control.dead)
+        {
+            left_drive_active = 2;
+            right_drive_active = 2;
+        }
+        
+        armJointStabalizationFunction(&left_drive,
+                                      left_drive_theta, left_drive_omega,
+                                      &left_drive_active, &left_drive_compensation,
+                                      past_left_drive_thetas, &n_valid_left_drive_angles, left_drive_speed_threshold,
+                                      drive_kp, 0, drive_ki, drive_kslow,
+                                      &left_drive_hold_theta,
+                                      false);
+        
+        armJointStabalizationFunction(&right_drive,
+                                      right_drive_theta, right_drive_omega,
+                                      &right_drive_active, &right_drive_compensation,
+                                      past_right_drive_thetas, &n_valid_right_drive_angles, right_drive_speed_threshold,
+                                      drive_kp, 0, drive_ki, drive_kslow,
+                                      &right_drive_hold_theta,
+                                      false);
+        
+        left_drive_compensation = clamp(left_drive_compensation, -1.0, 1.0);
+        right_drive_compensation = clamp(right_drive_compensation, -1.0, 1.0);
+        
+        left_drive_compensation_print = left_drive_compensation;
+        right_drive_compensation_print = right_drive_compensation;
+        left_drive_print_theta = left_drive_theta;
+        right_drive_print_theta = right_drive_theta;
+        left_drive_print_active = left_drive_active;
+        
         left_drive = clamp(left_drive, -1.0, 1.0);
         right_drive = clamp(right_drive, -1.0, 1.0);
         
@@ -455,29 +521,39 @@ void jniMain(JNIEnv * _env, jobject _self)
         //TODO: Block count
         //TODO: Tilt
         
-//============================ Hook ===========================
+//============================= Hook =============================
         if(hook_toggle)
         {
             hook_left = hook_locked_position;
-            hook_right = hook_locked_position;
         }
         else
         {
             hook_left = hook_level_position;
-            hook_right = hook_level_position;
         }
         hook_left = clamp(hook_left, 0.0, 1.0);
-        hook_right = clamp(hook_right, 0.0, 1.0);
-
-//========================= Climber Release ======================
-        if(climber_release_toggle)
+        
+//=========================Score Hook ============================
+        if(score_hook_toggle)
         {
-            //TODO: climber release out
+            score_hook = 1.0;
         }
         else
         {
-            //TODO: climber release in       
+            score_hook = 0.0;
         }
+        score_hook = clamp(score_hook, 0.0, 1.0);
+        
+//========================= Climber Release ======================
+        if(climber_release_toggle)
+        {
+            //TODO: rename to climber release
+            hook_right = 1.0;
+        }
+        else
+        {
+            hook_right = 0.0;
+        }
+        hook_right = clamp(hook_right, 0.0, 1.0);
         
 //============================ Updates ===========================
         

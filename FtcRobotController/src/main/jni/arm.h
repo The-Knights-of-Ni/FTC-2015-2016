@@ -28,6 +28,9 @@ int * pwinch_encoder;
 float * pintake_tilt = 0;
 #define intake_tilt (*pintake_tilt)
 
+float * pscore_hook = 0;
+#define score_hook (*pscore_hook)
+
 #define tension_switch dim_digital_pin(7)
 #define intake_out_switch dim_digital_pin(0)
 //#define intake_in_switch dim_digital_pin(1)
@@ -231,6 +234,8 @@ void armJointsAtVelocity(v2f target_velocity)
         target_inside_elbow_theta = inside_elbow_theta;
         
         low_passed_inside_elbow_theta = inside_elbow_theta;
+        
+        forearm_active = 2;
     }
     
     shoulder = 0;
@@ -296,9 +301,9 @@ void armJointStabalizationFunction(float * motor,
         if(*joint_active == 2)
         {
             *n_valid_angles = 0;
-            *joint_compensation = clamp(*motor, -0.0, 0.1);
+            *joint_compensation = 0;//clamp(*motor, -0.0, 0.1);
         }
-
+        
         if(*joint_active != 2 || stabalize_while_running)
         {
             if(*n_valid_angles >= past_buffers_size
@@ -315,12 +320,11 @@ void armJointStabalizationFunction(float * motor,
                     +(*joint_compensation);
                 
                 *target_theta = joint_theta;
-                
-                if((*joint_active) == 2)
-                {
-                    *joint_active = 1;
-                }
             }
+        }
+        if((*joint_active) == 2)
+        {
+            *joint_active = 1;
         }
     }
     
@@ -350,13 +354,13 @@ inline void armToAngle(float * target_theta, float current_theta)
                                   target_theta,
                                   true);
     
-    armJointStabalizationFunction(&winch,
-                                  inside_elbow_theta, -inside_elbow_omega,
-                                  &forearm_active, &winch_compensation,
-                                  past_inside_elbow_thetas, &n_valid_inside_elbow_angles, inside_elbow_speed_threshold,
-                                  winch_kp, winch_kd, winch_ki, winch_kslow,
-                                  &target_inside_elbow_theta,
-                                  false);
+    /* armJointStabalizationFunction(&winch, */
+    /*                               inside_elbow_theta, -inside_elbow_omega, */
+    /*                               &forearm_active, &winch_compensation, */
+    /*                               past_inside_elbow_thetas, &n_valid_inside_elbow_angles, inside_elbow_speed_threshold, */
+    /*                               winch_kp, winch_kd, winch_ki, winch_kslow, */
+    /*                               &target_inside_elbow_theta, */
+    /*                               false); */
 }
 
 void armToPolarTarget()
@@ -471,8 +475,8 @@ void doIntake()
     intake_time += dt;
     if(intake_time < intake_swing_time)
     {
-        if(intake_out) intake_tilt = 0.0;
-        else           intake_tilt = 1.0;
+        if(intake_out) intake_tilt = 1.0;
+        else           intake_tilt = 0.0;
     }
     else intake_tilt = continuous_servo_stop;
 }
@@ -626,7 +630,7 @@ void armSwitchModes()
             target_inside_elbow_theta = 4.0;
             armToPreset(1.0, 1.0);
             
-            if(armIsAtTarget(0.25, 0.25) && arm_time > 0.7 /* && intake_time > intake_swing_time */) goto_arm_case(preparing);
+            if(armIsAtTarget(0.20, 0.20) && arm_time > 0.7 /* && intake_time > intake_swing_time */) goto_arm_case(preparing);
         } break;
         
         arm_case(preparing):
@@ -644,10 +648,10 @@ void armSwitchModes()
         
         arm_case(lowering):
         {
-            target_shoulder_theta = 2.50;
+            target_shoulder_theta = 2.35;
             target_inside_elbow_theta = 4.4;
             
-            armToPreset(0.8, 0.5);
+            armToPreset(0.1, 0.5);
             
             setIntakeOut();
             setHandShut();
@@ -656,10 +660,10 @@ void armSwitchModes()
         
         arm_case(extending):
         {
-            target_shoulder_theta = 2.55;
-            target_inside_elbow_theta = 4.37;
+            target_shoulder_theta = 2.46;
+            target_inside_elbow_theta = 4.43;
             
-            armToPreset(0.8, 0.5);
+            armToPreset(0.1, 0.5);
             
             setIntakeOut();
             setHandShut();

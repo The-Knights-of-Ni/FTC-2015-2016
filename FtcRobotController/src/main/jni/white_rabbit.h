@@ -6,14 +6,14 @@
 #include "Button.h"
 
 //Deadzones, bounds, and smooths the joysticks completely.
-v2f smoothJoysticks(v2f stick, float min_power, float x_mod, float y_mod, float max_power)
+smoothed_joystick smoothJoysticks(v2f stick, float min_power, float x_mod, float y_mod, float max_power)
 {
-    stick = deadzone(stick);
-    stick.x = clamp(stick.x, -1, 1);
-    stick.y = clamp(stick.y, -1, 1);
-    stick.x = (stick.x < 0 ? -1 : 1) * quadraticBezier(stick.x, min_power, x_mod, max_power);
-    stick.y = (stick.y < 0 ? -1 : 1) * quadraticBezier(stick.y, min_power, y_mod, max_power);
-    return stick;
+    smoothed_joystick out = deadzoneWDead(stick);
+    out.x = clamp(out.x, -1, 1);
+    out.y = clamp(out.y, -1, 1);
+    out.x = (out.x < 0 ? -1 : 1) * quadraticBezier(out.x, min_power, x_mod, max_power);
+    out.y = (out.y < 0 ? -1 : 1) * quadraticBezier(out.y, min_power, y_mod, max_power);
+    return out;
 }
 //Deadzones, bounds, and smooths an axis completely.
 float smoothAxis(float axis, float min_power, float mod, float max_power)

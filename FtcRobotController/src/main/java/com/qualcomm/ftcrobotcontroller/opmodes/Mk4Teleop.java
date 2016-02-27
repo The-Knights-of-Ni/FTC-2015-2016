@@ -26,7 +26,7 @@ int rsid_current = 0;
 public Mk4Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[172];
+    robot_state = new byte[196];
 }
 
 
@@ -164,16 +164,22 @@ wrist.setPosition(getFloat(80));
 hook_left.setPosition(getFloat(84));
 hook_right.setPosition(getFloat(88));
 intake_tilt.setPosition(getFloat(92));
-telemetry.addData("shoulder theta", getFloat(96));
-telemetry.addData("shoulder_compensation", getFloat(100));
-telemetry.addData("shoulder_active", getInt(104));
+score_hook.setPosition(getFloat(96));
+telemetry.addData("shoulder theta", getFloat(100));
+telemetry.addData("shoulder_compensation", getFloat(104));
+telemetry.addData("left_drive_compensation", getFloat(108));
+telemetry.addData("right_drive_compensation", getFloat(112));
+telemetry.addData("left_drive_theta", getFloat(116));
+telemetry.addData("right_drive_theta", getFloat(120));
+telemetry.addData("left_drive_active", getInt(124));
+telemetry.addData("shoulder_active", getInt(128));
 telemetry.addData("slider 0", getInt(36));
 telemetry.addData("slider 1", getInt(40));
 telemetry.addData("slider 2", getInt(44));
 telemetry.addData("slider 3", getInt(48));
-telemetry.addData("forearm theta", getFloat(108));
+telemetry.addData("forearm theta", getFloat(132));
 telemetry.addData("shoulder power", getFloat(68));
-telemetry.addData("arm stage", getFloat(112));
+telemetry.addData("arm stage", getFloat(136));
 
 }
 
@@ -245,7 +251,7 @@ setInt(52, dim.getDigitalInputStateByte());
 rsid_current = 56;
 }
 {
-rsid_current = 116;
+rsid_current = 140;
 int gamepad1_buttons = 0;
 try
 {
@@ -266,7 +272,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 144;
+rsid_current = 168;
 int gamepad2_buttons = 0;
 try
 {
@@ -303,6 +309,7 @@ Servo wrist;
 Servo hook_left;
 Servo hook_right;
 Servo intake_tilt;
+Servo score_hook;
 /* End Motor Definitions */
 
 native void main();
@@ -342,6 +349,7 @@ hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
 intake_tilt = hardwareMap.servo.get("intake_tilt");
 //intake_tilt.setDirection(Servo.Direction.REVERSE);
+score_hook = hardwareMap.servo.get("score_hook");
     main();
 }
 }
