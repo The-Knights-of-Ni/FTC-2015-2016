@@ -14,6 +14,12 @@ float * pleft_drive;
 #define left_drive (*pleft_drive)
 float * pright_drive;
 #define right_drive (*pright_drive)
+
+float * pleft_drive_voltage;
+#define left_drive_voltage (*pleft_drive_voltage)
+float * pright_drive_voltage;
+#define right_drive_voltage (*pright_drive_voltage)
+
 float * pheading;
 #define heading (*pheading)
 int * pleft_drive_encoder;
@@ -24,20 +30,20 @@ int * pright_drive_encoder;
 #define sprocket_pitch_radius (3.13/2.0) //inches
 #define encoderticks_per_inch (sprocket_pitch_radius*encoderticks_per_radian)
 #define encoderticks_per_cm (sprocket_pitch_radius*2.54*encoderticks_per_radian)
-#define acceptableAngleError 2
+#define acceptableAngleError 3
 
 //constants
 #define drive_gear_ratio (64.0/80.0)
 
 #define drive_kv 1
 
-#define drive_kp 0.25
+#define drive_kp 0.35
 #define drive_ki 0.0
 
 #define drive_kslow 0.15
 
-#define turn_kp 0.058 //0.1*(slider0/100.0)
-#define turn_ki 0.0 //0.05  //0.1*(slider1/100.0)
+#define turn_kp 0.025 //0.1*(slider0/100.0)
+#define turn_ki 0.05 //0.05  //0.1*(slider1/100.0)
 #define turn_kd 0.0   //0.1*(slider2/100.0)
 
 static const float left_drive_speed_threshold = 0.1;
@@ -74,16 +80,16 @@ void zeroDriveSensors()
     current_drive_frame = 0;
     n_valid_left_drive_angles = 0;
     n_valid_right_drive_angles = 0;
-
+    
     left_drive_theta = 0;
     left_drive_omega = 0;
-
+    
     right_drive_theta = 0;
     right_drive_omega = 0;
-
+    
     avg_drive_theta = 0;
     avg_drive_omega = 0;
-
+    
     left_drive_hold_theta = 0;
     right_drive_hold_theta = 0;
     

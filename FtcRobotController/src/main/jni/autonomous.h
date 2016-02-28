@@ -12,12 +12,18 @@ struct imu_state
 imu_state * pimu_values;
 //#define imu_heading (pimu_values->orientation.x)
 float imu_heading = 0;
+float imu_tilt = 0;
+float imu_roll = 0;
 float imu_heading_omega = 0;
-#define imu_tilt (pimu_values->orientation.y)
-#define imu_roll (pimu_values->orientation.z)
+float imu_tilt_omega = 0;
+float imu_roll_omega = 0;
+/* #define imu_tilt (pimu_values->orientation.y) */
+/* #define imu_roll (pimu_values->orientation.z) */
 #define imu_vel (pimu_values->velocity)
 
 void (*customAutonomousUpdate)();
+
+v3f imu_orientation_offsets;
 
 void autonomousUpdate()
 {
@@ -29,7 +35,11 @@ void autonomousUpdate()
     customAutonomousUpdate();
     updateRobot();
     if(imu_heading_omega != imu_heading_omega) imu_heading_omega = 0;
-    lowpassFirstDerivativeUpdate(pimu_values->orientation.x/-16.0, &imu_heading, &imu_heading_omega, 10);
+    v3f current_orientation = {pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};
+    v3f imu_orientation = current_orientation - imu_orientation_offsets;
+    lowpassFirstDerivativeUpdate(imu_orientation.x/-16.0, &imu_heading, &imu_heading_omega, 10);
+    lowpassFirstDerivativeUpdate(imu_orientation.y/-16.0, &imu_tilt, &imu_tilt_omega, 10);
+    lowpassFirstDerivativeUpdate(imu_orientation.z/-16.0, &imu_roll, &imu_roll_omega, 10);
 }
 
 void wait(float wait_time)
@@ -51,7 +61,7 @@ void waitForEnd()
 #define default_max_acceleration 18
 
 #define drive_dist_tolerance 0.1 //0.1 inch of acceptable error per drive
-#define turning_deadband 5 //if there is more than this many degrees of error, the robot will stop driving and just turn
+#define turning_deadband 10 //if there is more than this many degrees of error, the robot will stop driving and just turn
 
 float * pdrive_time = 0;
 float * pacceleration_time = 0;
@@ -101,31 +111,39 @@ void driveOnCourseIn(float dist, float vIs,
     float start_drive_theta = avg_drive_theta;
     float current_dist = 0;
     
+    float horizontal_error = 0;
+    float old_dist = current_dist;
+    
     while(fabs(dist-current_dist) > drive_dist_tolerance)
     {
         float drive_error = dist-current_dist;
         left_drive = sign(vIs)*drive_kp*drive_error;
         right_drive = sign(vIs)*drive_kp*drive_error;
         
-        float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading);
-        float turning_factor = turn_kp*heading_error;
+        left_drive = clamp(left_drive, -fabs(vIs), fabs(vIs));
+        right_drive = clamp(right_drive, -fabs(vIs), fabs(vIs));
         
-        if(heading_error > turning_deadband)
+        float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading)-horizontal_error;
+        float turning_factor = 0.04*heading_error;
+        
+        if(false)//heading_error > turning_deadband)
         {
             left_drive = -turning_factor;
             right_drive = +turning_factor;
         }
         else
         {
+            float drive_factor = (1-clamp(fabs(turning_factor), 0.0, 1.0));
+            left_drive *= drive_factor;
+            right_drive *= drive_factor;
             left_drive +=  -turning_factor;
             right_drive += +turning_factor;
         }
         
-        left_drive = clamp(left_drive, -fabs(vIs), fabs(vIs));
-        right_drive = clamp(right_drive, -fabs(vIs), fabs(vIs));
-        
         autonomousUpdate();
         current_dist = sign(vIs)*(avg_drive_theta-start_drive_theta)*sprocket_pitch_radius;
+        horizontal_error = (current_dist-old_dist)*sin(heading_error);
+        old_dist = current_dist;
     }
     
     right_drive = 0;
@@ -154,27 +172,25 @@ void turnRelDeg(float angle, float vIs)
     while (fabs(signedCanonicalizeAngleDeg(imu_heading-target_heading)) > acceptableAngleError
            || fabs(imu_heading_omega) > 2)
     {
-        #if 0 //turn with constant speed
-        if (isAngleGreaterDeg(imu_heading, target_heading))
+        float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading);
+        float turning_factor = turn_kp*heading_error;
+        
+        if(left_drive_omega < 0.5 && right_drive_omega < 0.5)
         {
-            left_drive = vIs;
-            right_drive = -vIs;
+            turning_compensation += turn_ki*heading_error*dt;
         }
         else
         {
-            left_drive = -vIs;
-            right_drive = vIs;
+            turning_compensation = lerp(0.0, turning_compensation, exp(-1.0*dt));
         }
-        #else //turn with proportional control
-        float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading);
-        float turning_factor = turn_kp*heading_error;
+        turning_compensation = clamp(turning_compensation, -2.0, 2.0);
+        turning_factor += turning_compensation;
         
         left_drive = -turning_factor;
         right_drive = +turning_factor;
         
         left_drive = clamp(left_drive, -vIs, vIs);
         right_drive = clamp(right_drive, -vIs, vIs);
-        #endif
         autonomousUpdate();
     }
     right_drive = 0;

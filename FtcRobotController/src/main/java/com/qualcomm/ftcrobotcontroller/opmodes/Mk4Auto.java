@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import android.hardware.Camera;
 
 
@@ -28,7 +29,7 @@ int rsid_current = 0;
 public Mk4Auto()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[132];
+    robot_state = new byte[140];
 
 camera = FtcRobotControllerActivity.camera_preview.camera;
 Camera.Parameters parameters = camera.getParameters();
@@ -182,27 +183,27 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-left_drive.setPower(getFloat(60));
-right_drive.setPower(getFloat(64));
-winch.setPower(getFloat(68));
-shoulder.setPower(getFloat(72));
-intake.setPower(getFloat(76));
-hand.setPosition(getFloat(80));
-wrist.setPosition(getFloat(84));
-hook_left.setPosition(getFloat(88));
-hook_right.setPosition(getFloat(92));
-intake_tilt.setPosition(getFloat(96));
-telemetry.addData("Indicator:", getInt(100));
+left_drive.setPower(getFloat(68));
+right_drive.setPower(getFloat(72));
+winch.setPower(getFloat(76));
+shoulder.setPower(getFloat(80));
+intake.setPower(getFloat(84));
+hand.setPosition(getFloat(88));
+wrist.setPosition(getFloat(92));
+hook_left.setPosition(getFloat(96));
+hook_right.setPosition(getFloat(100));
+intake_tilt.setPosition(getFloat(104));
+telemetry.addData("Indicator:", getInt(108));
 telemetry.addData("left_drive_encoder:", getInt(12));
 telemetry.addData("right_drive_encoder:", getInt(8));
-telemetry.addData("beacon right:", (getInt(104) == 1 ? "red" : "blue"));
-telemetry.addData("heading:", getShort(36));
-telemetry.addData("target time:", getFloat(108));
-telemetry.addData("acceleration time:", getFloat(112));
-telemetry.addData("slider 0", getInt(116));
-telemetry.addData("slider 1", getInt(120));
-telemetry.addData("slider 2", getInt(124));
-telemetry.addData("slider 3", getInt(128));
+telemetry.addData("beacon right:", (getInt(112) == 1 ? "red" : "blue"));
+telemetry.addData("heading:", getShort(44));
+telemetry.addData("target time:", getFloat(116));
+telemetry.addData("acceleration time:", getFloat(120));
+telemetry.addData("slider 0", getInt(124));
+telemetry.addData("slider 1", getInt(128));
+telemetry.addData("slider 2", getInt(132));
+telemetry.addData("slider 3", getInt(136));
 
 }
 
@@ -244,12 +245,22 @@ setInt(28, dim.getAnalogInputValue(shoulder_potentiometer_port));
 rsid_current = 32;
 }
 {
-setInt(32, dim.getDigitalInputStateByte());
+setFloat(32, (float)left_drive_voltage.getVoltage());
 
 rsid_current = 36;
 }
 {
-rsid_current = 36;
+setFloat(36, (float)right_drive_voltage.getVoltage());
+
+rsid_current = 40;
+}
+{
+setInt(40, dim.getDigitalInputStateByte());
+
+rsid_current = 44;
+}
+{
+rsid_current = 44;
 if(imu.checkForUpdate()) {
     setRelative(imu.eul_x);
 setRelative( imu.eul_y);
@@ -262,33 +273,35 @@ setRelative( imu.vel_z);
 
 }
 {
-setInt(56, (FtcRobotControllerActivity.red ? 1 : 0));
+setInt(64, (FtcRobotControllerActivity.red ? 1 : 0));
 
-rsid_current = 60;
+rsid_current = 68;
 }
 {
-setInt(116, FtcRobotControllerActivity.slider_0);
-
-rsid_current = 120;
-}
-{
-setInt(120, FtcRobotControllerActivity.slider_1);
-
-rsid_current = 124;
-}
-{
-setInt(124, FtcRobotControllerActivity.slider_2);
+setInt(124, FtcRobotControllerActivity.slider_0);
 
 rsid_current = 128;
 }
 {
-setInt(128, FtcRobotControllerActivity.slider_3);
+setInt(128, FtcRobotControllerActivity.slider_1);
 
 rsid_current = 132;
+}
+{
+setInt(132, FtcRobotControllerActivity.slider_2);
+
+rsid_current = 136;
+}
+{
+setInt(136, FtcRobotControllerActivity.slider_3);
+
+rsid_current = 140;
 }
 
 }
 /* Start Motor Definitions */
+VoltageSensor left_drive_voltage;
+VoltageSensor right_drive_voltage;
 DeviceInterfaceModule dim;
 IMU imu;int elbow_potentiometer_port = 7;
 int shoulder_potentiometer_port = 1;
@@ -315,6 +328,8 @@ static
 
 @Override public void runOpMode() throws InterruptedException
 {
+left_drive_voltage = hardwareMap.voltageSensor.get("Left Drive + Shoulder");
+right_drive_voltage = hardwareMap.voltageSensor.get("Intake + Right Drive");
 dim = hardwareMap.deviceInterfaceModule.get("dim");
 I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
 imu = new IMU(imu_i2c_device, this);

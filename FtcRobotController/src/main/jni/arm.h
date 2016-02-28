@@ -466,7 +466,7 @@ void armToPreset(float shoulder_speed, float winch_speed, float tolerance = 0.5)
     }
 }
 
-#define intake_swing_time 1.0
+#define intake_swing_time 1.3
 
 bool8 intake_out = 0;
 float intake_time = intake_swing_time;

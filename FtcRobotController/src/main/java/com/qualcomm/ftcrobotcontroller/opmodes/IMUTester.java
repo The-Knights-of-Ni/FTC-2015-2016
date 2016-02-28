@@ -63,9 +63,9 @@ public class IMUTester extends LinearOpMode
         double update_cycle_time = 0.0;
 
         waitForStart();
-
+        
         imu.rezero(); //Make sure you call rezero before starting, it resets the velocity integration timers and values
-            
+        
         for(;;)
         {
             double new_time = time;

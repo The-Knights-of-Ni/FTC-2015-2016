@@ -3,6 +3,10 @@
 
 #include "jni_functions.h"
 
+#include <stdio.h>
+#include <unistd.h>
+FILE * log_file;
+
 //stuff that need to be constantly updated in the background but is not intensive enough to deserve a seperate thread
 void Mk4AutonomousUpdate()
 {
@@ -30,6 +34,9 @@ void Mk4AutonomousUpdate()
     winch = clamp(winch, -1.0, 1.0);
     if(winch > 0.0 && !tension_switch && inside_elbow_theta > pi) winch = 0.0;
     
+    left_drive *= 14.0/left_drive_voltage;
+    right_drive *= 14.0/right_drive_voltage;
+    
     left_drive = clamp(left_drive, -1.0, 1.0);
     right_drive = clamp(right_drive, -1.0, 1.0);
     intake = clamp(intake, -1.0, 1.0);
@@ -39,6 +46,8 @@ void Mk4AutonomousUpdate()
     hand = clamp(hand, 0.0, 1.0);
     hook_left = clamp(hook_left, 0.0, 1.0);
     hook_right = clamp(hook_right, 0.0, 1.0);
+    
+    if(log_file) fprintf(log_file, "%f %f %f  %f %f %f  %d %d  %f %f",  imu_heading, imu_tilt, imu_roll, imu_vel.x, imu_vel.y, imu_vel.z, left_drive_encoder, right_drive_encoder, left_drive, right_drive);
     
     // intake = 0;
     // shoulder = 0;
@@ -62,7 +71,45 @@ void jniMain(JNIEnv * _env, jobject _self)
     env = _env;
     self = _self;
     initJNI();
-
+    
+    // exiting = false;
+    // {        
+    //     jclass class_env = env->FindClass(env, "android/os/Environment");
+    //     if(!class_env)
+    //     {
+    //         cleanupJNI();
+    //         exiting = true;
+    //         goto interuptable_goto;
+    //     }
+    //     jmethodID getExternalStorageDirectoryID = env->GetStaticMethod(env, class_env,
+    //                                                                         "getExternalStorageDirectory",
+    //                                                                         "()Ljava/io/File;");
+    //     if(!getExternalStorageDirectoryID)
+    //     {
+    //         cleanupJNI();
+    //         exiting = true;
+    //         goto interuptable_goto;
+    //     }
+    //     jobject log_file_object = env->CallStaticObjectMethod(env, class_env, getExternalStorageDirectoryID);
+    //     auto exception = env->ExceptionOccurred(env);
+    //     if(exception)
+    //     {
+    //         env->ExceptionDescribe(env);
+    //         env->ExceptionClear(env);
+    //         cleanupJNI();
+    //         exiting = true;
+    //         goto interuptable_goto;
+    //     }
+    //     jclass log_file_class = env->GetObjectClass(env, log_file_object);
+    //     if(!log_file_class)
+    //     {
+    //         cleanupJNI();
+    //         exiting = true;
+    //         goto interuptable_goto;
+    //     }
+    //     jmethodIDgetAbsolutePath = env->GetMethodId(env, log_file_object, "getAb");
+    // }
+    
     customAutonomousUpdate = Mk4AutonomousUpdate;
     
     jni_import_string = (
@@ -74,11 +121,14 @@ void jniMain(JNIEnv * _env, jobject _self)
         "import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;\n"
         "import com.qualcomm.robotcore.hardware.I2cDevice;\n"
         "import com.qualcomm.robotcore.hardware.Servo;\n"
+        "import com.qualcomm.robotcore.hardware.VoltageSensor;\n"
         "import android.hardware.Camera;\n");
     
     //TODO: shortcut for defining and declaring motors, servos, etc.
     jni_variables_string = (
         "/* Start Motor Definitions */\n"
+        "VoltageSensor left_drive_voltage;\n"
+        "VoltageSensor right_drive_voltage;\n"
         "DeviceInterfaceModule dim;\n"
         "IMU imu;"
         "int elbow_potentiometer_port = 7;\n"
@@ -98,6 +148,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         "/* End Motor Definitions */");
     
     jni_run_opmode_string = (
+        "left_drive_voltage = hardwareMap.voltageSensor.get(\"Left Drive + Shoulder\");\n"
+        "right_drive_voltage = hardwareMap.voltageSensor.get(\"Intake + Right Drive\");\n"
         "dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
         "I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get(\"imu\");\n"
         "imu = new IMU(imu_i2c_device, this);\n"
@@ -209,6 +261,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     pshoulder_encoder = jniIntIn("return shoulder.getCurrentPosition();");
     pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
     pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
+    pleft_drive_voltage = jniFloatIn("return (float)left_drive_voltage.getVoltage();");
+    pright_drive_voltage = jniFloatIn("return (float)right_drive_voltage.getVoltage();");
     
     pdim_digital_pins = jniIntIn("return dim.getDigitalInputStateByte();");
     
@@ -259,7 +313,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     wrist = wrist_level_position;
     hand_open = false;
     hand_time = 1000;
-
+    hook_right = 0.0;
+    
     shoulder_omega = 0;
     winch_omega = 0;
     inside_elbow_omega = 0;
@@ -273,10 +328,21 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     initCamera();
     
+    // char * log_file_name = "autonomous_log_0.txt";
+    
+    // for(int i = 1; access(log_file_name, F_OK) != -1; i++)
+    // {
+    //     sprintf(log_file_name, "autonomus_log_%d.txt", i);
+    // }
+    // log_file = fopen(log_file_name, "w");
+    
     //waitForStart(); //NOTE: needs to be called in java until IMU code is ported
     zeroDriveSensors();
+    //enableKillerAI();
     
+    imu_orientation_offsets = (v3f){0, 0, 0};
     updateRobot();
+    imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};
     current_time = time;
     //Config
     //hopper down
@@ -298,7 +364,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         #if 0 // test driveOnCourseIn
         target_shoulder_theta = shoulder_theta;
         target_inside_elbow_theta = inside_elbow_theta;
-        driveOnCourseIn(112, -1.0, colorAdjustedAngle(45));//Drive 120 in at 45 degrees, relative to the driver box
+        driveOnCourseIn(60, -0.8, colorAdjustedAngle(0));//Drive 120 in at 45 degrees, relative to the driver box
         
         waitForEnd();
         #endif
@@ -307,6 +373,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         intake_time = 0.0;
         
         driveOnCourseIn(10, -1.0, 0);
+        
+        #if 1 //enable arm
         
         target_shoulder_theta = pi/2;
         target_inside_elbow_theta = 5.0*pi/4.0;
@@ -324,6 +392,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             autonomousUpdate();
         }
+        #endif
         
         //Deploy Robot
         //Wait time delay
@@ -332,7 +401,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         
         //Drive to goal
         turnRelDeg(colorAdjustedAngle(45), 1.0);
-        driveOnCourseIn(112, -1.0, colorAdjustedAngle(45));//Drive 120 in at 45 degrees, relative to the driver box
+        driveOnCourseIn(38, -1.0, colorAdjustedAngle(45));//Drive 120 in at 45 degrees, relative to the driver box
         //Once 5 blocks are reached, reverse intake direction
         // if(blocks_in_hopper >= 5)
         //     intake = -1;
@@ -344,37 +413,71 @@ void jniMain(JNIEnv * _env, jobject _self)
         intake = 0;
         
         //Turn and align with beacon
-        turnRelDeg(colorAdjustedAngle(45), 1.0);
-        //Drive forward a bit
-        driveDistIn(10, -0.8);
-        //Score climbers
-        setIntakeIn();
-        driveDistIn(5, -0.5);
-        setIntakeOut();//TODO: Make this less, we just need to tap it on the top to release the climbers
-        //Push button
-        driveDistIn(5, 0.5);
-        //TODO: Function for setting the intake to any angle
-        bool color = getBeaconColor();
-        if(color == current_color)
-            setIntakeOut();//The right side is the right color
-        else
-            setIntakeOut();//The left side is the right color
-        driveDistIn(1, -0.5);//Pushing button
-        //Drive out of parking zone
-        driveDistIn(11, 0.5);
-        //Turn and park on nearest low mountain
-        turnRelDeg(colorAdjustedAngle(45), -0.8);
-        driveDistIn(60, 0.8);
-        setIntakeIn();
-        //Arm to partial extension for teleop
-        turnRelDeg(colorAdjustedAngle(90), -0.8);
-        driveDistIn(40, 0.8);
-        //Might need some sort of traction type thing, or use the imu until we're over the first churro/stuck on it
-        //Flash LEDs to show auto is done
-        for ever
+        score_mode = false;
+        arm_stage = arm_retracting;
+        
+        while(arm_stage != arm_idle)
         {
             autonomousUpdate();
         }
+        
+        turnRelDeg(colorAdjustedAngle(45), 1.0);
+        wait(0.25);
+        bool color = 0;//getBeaconColor();
+        setIntakeIn();
+        wait(0.75);
+        //Drive forward a bit
+        driveDistIn(10, -0.8);
+        
+        //Score climbers
+        driveDistIn(10, -0.8);
+        hook_right = 1.0;
+        wait(3.0);
+        hook_right = 0.0;
+        
+        //Push button
+        driveDistIn(10, 0.8);
+        hook_right = 1.0;
+        //TODO: Function for setting the intake to any angle
+        if(color == current_color)
+        {
+            turnRelDeg(5, 0.8);
+            driveDistIn(10, -0.8);//Pushing button
+            wait(0.5);
+            driveDistIn(10, 0.8);//Pushing button
+            turnRelDeg(5, -0.8);
+        }
+        else
+        {
+            turnRelDeg(5, -0.8);
+            driveDistIn(10, -0.8);//Pushing button
+            wait(0.5);
+            driveDistIn(10, 0.8);//Pushing button
+            turnRelDeg(5, 0.8);
+        }
+        //Drive out of parking zone
+        //driveDistIn(11, 0.5);
+        
+        //Turn and park on nearest low mountain
+        //turnRelDeg(colorAdjustedAngle(45), -0.8);
+        driveOnCourseIn(10, 0.8, colorAdjustedAngle(45));
+        // setIntakeIn();
+        //Arm to partial extension for teleop
+        //turnRelDeg(colorAdjustedAngle(-90), -0.8);
+        driveOnCourseIn(30, 0.8, colorAdjustedAngle(135));
+        while(fabs(imu_tilt) < 20)
+        {
+            left_drive = 0.7;
+            right_drive = 0.7;
+            autonomousUpdate();
+        }
+        score_hook = 1.0;
+        //Might need some sort of traction type thing, or use the imu until we're over the first churro/stuck on it
+        //Flash LEDs to show auto is done
+        waitForEnd();
     }
+    if(log_file) fclose(log_file);
+    
     cleanupCamera();
 }
+ 
