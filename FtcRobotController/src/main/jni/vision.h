@@ -98,6 +98,7 @@ inline HSL getHue(int R, int G, int B) //TODO: SIMD
     hsl[2] *= 100;
     return hsl;
 }
+
 void convertToRGB()
 {
     env->ReleaseByteArrayElements(jcamera_buffer, (jbyte *) camera_buffer, JNI_COMMIT);
@@ -124,14 +125,15 @@ bool8 getBeaconColor()
     
     #define image(x, y, color) camera_buffer[(x+y*camera_w)*camera_bytes_per_pixel+color]
     
-    #define reqPixels (camera_w*camera_h/32) //TODO: Make this smarter
+    #define reqPixelz (camera_w*camera_h/512) //TODO: Make this smarter
+    int reqPixels = reqPixelz;
     int red_pixel_count[2], blue_pixel_count[2];
     red_pixel_count[0] = 0;
     blue_pixel_count[0] = 0;
     int red_pos[2] = {0, 0};
     int blue_pos[2] = {0, 0};
     HSL value;
-    for(int i = 0; i < camera_w-5; i+=5)
+    for(int i = 0; i < camera_w/2-5; i+=5)
     {
         red_pixel_count[1] = 0;
         blue_pixel_count[1] = 0;
@@ -170,10 +172,11 @@ bool8 getBeaconColor()
             }
             else
             {
-                const unsigned char colorz[] = {image(i,j,0), image(i,j,1), image(i,j,2)};
+                // const unsigned char colorz[] = {image(i,j,0), image(i,j,1), image(i,j,2)};
                 //				highlight.draw_point(i, j, colorz,1.0f);//There has to be a better way than this
             }
         }
+        autonomousUpdate();
     }
     //TODO: Add beacon not found case
     #undef image

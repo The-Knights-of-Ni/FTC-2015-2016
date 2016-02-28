@@ -37,7 +37,7 @@ int * pright_drive_encoder;
 
 #define drive_kv 1
 
-#define drive_kp 0.35
+#define drive_kp 0.25
 #define drive_ki 0.0
 
 #define drive_kslow 0.15

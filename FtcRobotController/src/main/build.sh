@@ -16,6 +16,10 @@ rm generator/Mk4Auto
 clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-extensions -Wno-deprecated-writable-strings jni/Mk4Auto.cpp --output ./generator/Mk4Auto
 generator/Mk4Auto
 
+rm generator/Mk4AutoDeploy
+clang++ -O0 -D DEBUG -D GENERATE -Wno-c++11-extensions -Wno-deprecated-writable-strings jni/Mk4AutoDeploy.cpp --output ./generator/Mk4AutoDeploy
+generator/Mk4AutoDeploy
+
 # ndk-build clean NDK_LIBS_OUT=./jniLibs
 ndk-build NDK_LIBS_OUT=./jniLibs -B V=0
 echo ndk build done

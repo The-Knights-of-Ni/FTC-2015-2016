@@ -21,7 +21,7 @@ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
     LOCAL_CFLAGS += -D __ARM_NEON
 endif
 
-LOCAL_CFLAGS += -Wno-c++11-compat-deprecated-writable-strings -Wno-c++11-extensions
+LOCAL_CFLAGS += -Wno-c++11-compat-deprecated-writable-strings -Wno-c++11-extensions -O2
 LOCAL_MODULE    := native_robot
 LOCAL_SRC_FILES := native_robot.cpp
 

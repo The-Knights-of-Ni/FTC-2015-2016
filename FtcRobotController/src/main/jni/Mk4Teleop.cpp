@@ -43,7 +43,7 @@ float wrist_manual_control = 0;
 #define shoulder_precision_mode (!pad2.press(LEFT_STICK_BUTTON))
 #define winch_precision_mode (false)//(pad2.press(RIGHT_STICK_BUTTON))
 
-#define arm_slow_factor 0.6
+#define arm_slow_factor 0.4
 
 //Hook
 #define hook_toggle pad1.toggle(B)
@@ -315,27 +315,27 @@ void jniMain(JNIEnv * _env, jobject _self)
             right_drive = drive_control.y - drive_control.x;
         }
         
-        if(!drive_control.dead)
-        {
-            left_drive_active = 2;
-            right_drive_active = 2;
-        }
+        // if(!drive_control.dead)
+        // {
+        //     left_drive_active = 2;
+        //     right_drive_active = 2;
+        // }
         
-        armJointStabalizationFunction(&left_drive,
-                                      left_drive_theta, left_drive_omega,
-                                      &left_drive_active, &left_drive_compensation,
-                                      past_left_drive_thetas, &n_valid_left_drive_angles, left_drive_speed_threshold,
-                                      drive_kp, 0, drive_ki, drive_kslow,
-                                      &left_drive_hold_theta,
-                                      false);
+        // armJointStabalizationFunction(&left_drive,
+        //                               left_drive_theta, left_drive_omega,
+        //                               &left_drive_active, &left_drive_compensation,
+        //                               past_left_drive_thetas, &n_valid_left_drive_angles, left_drive_speed_threshold,
+        //                               drive_kp, 0, drive_ki, drive_kslow,
+        //                               &left_drive_hold_theta,
+        //                               false);
         
-        armJointStabalizationFunction(&right_drive,
-                                      right_drive_theta, right_drive_omega,
-                                      &right_drive_active, &right_drive_compensation,
-                                      past_right_drive_thetas, &n_valid_right_drive_angles, right_drive_speed_threshold,
-                                      drive_kp, 0, drive_ki, drive_kslow,
-                                      &right_drive_hold_theta,
-                                      false);
+        // armJointStabalizationFunction(&right_drive,
+        //                               right_drive_theta, right_drive_omega,
+        //                               &right_drive_active, &right_drive_compensation,
+        //                               past_right_drive_thetas, &n_valid_right_drive_angles, right_drive_speed_threshold,
+        //                               drive_kp, 0, drive_ki, drive_kslow,
+        //                               &right_drive_hold_theta,
+        //                               false);
         
         left_drive_compensation = clamp(left_drive_compensation, -1.0, 1.0);
         right_drive_compensation = clamp(right_drive_compensation, -1.0, 1.0);
