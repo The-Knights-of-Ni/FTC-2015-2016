@@ -127,7 +127,7 @@ public class FtcRobotControllerActivity extends Activity {
     protected Queue<UsbDevice> receivedUsbAttachmentNotifications;
     
     protected class RobotRestarter implements Restarter {
-
+        
         public void requestRestart() {
             requestRobotRestart();
         }
@@ -139,7 +139,7 @@ public class FtcRobotControllerActivity extends Activity {
             FtcRobotControllerBinder binder = (FtcRobotControllerBinder) service;
             onServiceBind(binder.getService());
         }
-
+        
         @Override public void onServiceDisconnected(ComponentName name) {
             controllerService = null;
         }
@@ -171,15 +171,16 @@ public class FtcRobotControllerActivity extends Activity {
         
         public void surfaceCreated(SurfaceHolder holder)
         {
-            try {
-                camera = Camera.open(1);
-            } catch (Exception e) {
-                DbgLog.error("could not open camera, camera is in use or does not exist");
-            }
+            /* try { */
+            /*     camera = Camera.open(1); */
+            /* } catch (Exception e) { */
+            /*     DbgLog.error("could not open camera, camera is in use or does not exist"); */
+            /* } */
             
             try
             {
-                try {
+                try
+                {
                     camera = Camera.open(1);
                 } catch (Exception e) {
                     DbgLog.error("could not open camera, camera is in use or does not exist");

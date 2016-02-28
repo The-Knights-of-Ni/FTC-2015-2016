@@ -101,7 +101,7 @@ inline HSL getHue(int R, int G, int B) //TODO: SIMD
 void convertToRGB()
 {
     env->ReleaseByteArrayElements(jcamera_buffer, (jbyte *) camera_buffer, JNI_COMMIT);
-
+    
     int uv_offset = camera_w*camera_h;
     for(int y = 0; y < camera_h; y+=2)
     {
@@ -109,7 +109,7 @@ void convertToRGB()
         {
             int v_val = camera_buffer[uv_offset+(x)+(y>>1)*camera_w];
             int u_val = camera_buffer[uv_offset+1+(x)+(y>>1)*camera_w];
-
+            
             convertPixelToRGB(x  , y  , v_val, u_val);
             convertPixelToRGB(x+1, y  , v_val, u_val);
             convertPixelToRGB(x  , y+1, v_val, u_val);
@@ -121,9 +121,9 @@ void convertToRGB()
 bool8 getBeaconColor()
 {
     convertToRGB();
-
+    
     #define image(x, y, color) camera_buffer[(x+y*camera_w)*camera_bytes_per_pixel+color]
-
+    
     #define reqPixels (camera_w*camera_h/32) //TODO: Make this smarter
     int red_pixel_count[2], blue_pixel_count[2];
     red_pixel_count[0] = 0;
@@ -131,61 +131,53 @@ bool8 getBeaconColor()
     int red_pos[2] = {0, 0};
     int blue_pos[2] = {0, 0};
     HSL value;
-    for(int k = 0; k < 10; k++)
+    for(int i = 0; i < camera_w-5; i+=5)
     {
-        int red_pixel_count[2], blue_pixel_count[2];
-        red_pixel_count[0] = 0;
-        blue_pixel_count[0] = 0;
-        int red_pos[2] = {0, 0};
-        int blue_pos[2] = {0, 0};
-        for(int i = 0; i < camera_w-5; i+=5)
+        red_pixel_count[1] = 0;
+        blue_pixel_count[1] = 0;
+        for(int j = 0; j < camera_h-5; j+=5)
         {
-            red_pixel_count[1] = 0;
-            blue_pixel_count[1] = 0;
-            for(int j = 0; j < camera_h-5; j+=5)
+            value = getHue(image(i, j, 0), image(i, j, 1), image(i, j, 2));
+            int hue = value[0];
+            int saturation = value[1];
+            int light = value[2];
+            if((hue > 300 || hue < 45) && ((saturation + light) > 140)){//If at some point there is a pixel that is sufficiently red and not blue
+                red_pixel_count[1]++;
+                red_pixel_count[0]++;
+                //highlight.draw_circle(i,j,5,red,1.0f).display(main_disp);
+                if(red_pixel_count[0]*red_pixel_count[1] > reqPixels)//If there are enough pixels in this row
+                {
+                    //printf("Red Flag has reached high enough value @ %i, %i, %i, %i\n", i, j, red_pixel_count[0], red_pixel_count[1]);
+                    red_pixel_count[0] = 0;
+                    red_pixel_count[1] = 0;
+                    red_pos[0] = i;
+                    red_pos[1] = j;
+                }
+            }
+            else if((hue > 170 && hue < 200) && ((saturation + light) > 140))
             {
-                value = getHue(image(i, j, 0), image(i, j, 1), image(i, j, 2));
-                int hue = value[0];
-                int saturation = value[1];
-                int light = value[2];
-                if((hue > 300 || hue < 45) && ((saturation + light) > 140)){//If at some point there is a pixel that is sufficiently red and not blue
-                    red_pixel_count[1]++;
-                    red_pixel_count[0]++;
-                    //highlight.draw_circle(i,j,5,red,1.0f).display(main_disp);
-                    if(red_pixel_count[0]*red_pixel_count[1] > reqPixels)//If there are enough pixels in this row
-                    {
-                        //printf("Red Flag has reached high enough value @ %i, %i, %i, %i\n", i, j, red_pixel_count[0], red_pixel_count[1]);
-                        red_pixel_count[0] = 0;
-                        red_pixel_count[1] = 0;
-                        red_pos[0] = i;
-                        red_pos[1] = j;
-                    }
-                }
-                else if((hue > 170 && hue < 200) && ((saturation + light) > 140))
+                blue_pixel_count[1]++;
+                blue_pixel_count[0]++;
+                //highlight.draw_circle(i,j,5,blue,1.0f).display(main_disp);
+                if(blue_pixel_count[0]*blue_pixel_count[1] > reqPixels)//If there are enough pixels in this row TODO: add y dim to this for more accuracy
                 {
-                    blue_pixel_count[1]++;
-                    blue_pixel_count[0]++;
-                    //highlight.draw_circle(i,j,5,blue,1.0f).display(main_disp);
-                    if(blue_pixel_count[0]*blue_pixel_count[1] > reqPixels)//If there are enough pixels in this row TODO: add y dim to this for more accuracy
-                    {
-                        //					printf("Blue Flag has reached high enough value @ %i, %i, %i, %i\n", i, j, blue_pixel_count[0], blue_pixel_count[1]);
-                        blue_pixel_count[0] = 0;
-                        blue_pixel_count[1] = 0;
-                        blue_pos[0] = i;
-                        blue_pos[1] = j;
-                    }
+                    //					printf("Blue Flag has reached high enough value @ %i, %i, %i, %i\n", i, j, blue_pixel_count[0], blue_pixel_count[1]);
+                    blue_pixel_count[0] = 0;
+                    blue_pixel_count[1] = 0;
+                    blue_pos[0] = i;
+                    blue_pos[1] = j;
                 }
-                else
-                {
-                    const unsigned char colorz[] = {image(i,j,0), image(i,j,1), image(i,j,2)};
-                    //				highlight.draw_point(i, j, colorz,1.0f);//There has to be a better way than this
-                }
+            }
+            else
+            {
+                const unsigned char colorz[] = {image(i,j,0), image(i,j,1), image(i,j,2)};
+                //				highlight.draw_point(i, j, colorz,1.0f);//There has to be a better way than this
             }
         }
     }
     //TODO: Add beacon not found case
     #undef image
-
+    
     return red_pos[0] > blue_pos[0];
 }
 #endif

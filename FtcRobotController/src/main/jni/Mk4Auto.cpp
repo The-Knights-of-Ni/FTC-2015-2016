@@ -369,21 +369,34 @@ void jniMain(JNIEnv * _env, jobject _self)
         waitForEnd();
         #endif
         
-        intake_out = true;
-        intake_time = 0.0;
-        
         driveOnCourseIn(10, -1.0, 0);
+        turnRelDeg(colorAdjustedAngle(45), 1.0);
         
         #if 1 //enable arm
         
-        target_shoulder_theta = pi/2;
-        target_inside_elbow_theta = 5.0*pi/4.0;
-        while(!armIsAtTarget(0.1, 0.1))
+        intake_out = true;
+        intake_time = 0.0;
+        
+        intake = -1;
+        driveOnCourseIn(10, -1.0, colorAdjustedAngle(45));
+        driveOnCourseIn(10, 1.0, colorAdjustedAngle(45));
+        intake = 0;
+        
+        target_shoulder_theta = 1.4;
+        target_inside_elbow_theta = 9.0*pi/8.0;
+        while(!armIsAtTarget(0.25, 0.25))
         {
             autonomousUpdate();
         }
-        
         wait(0.5);
+        
+        target_shoulder_theta = 1.5;
+        target_inside_elbow_theta = 4.0;
+        while(!armIsAtTarget(0.25, 0.25))
+        {
+            autonomousUpdate();
+        }
+        #endif
         
         score_mode = false;
         arm_stage = arm_pre_preparing;
@@ -392,7 +405,6 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             autonomousUpdate();
         }
-        #endif
         
         //Deploy Robot
         //Wait time delay
@@ -400,7 +412,6 @@ void jniMain(JNIEnv * _env, jobject _self)
         intake = -1;
         
         //Drive to goal
-        turnRelDeg(colorAdjustedAngle(45), 1.0);
         driveOnCourseIn(38, -1.0, colorAdjustedAngle(45));//Drive 120 in at 45 degrees, relative to the driver box
         //Once 5 blocks are reached, reverse intake direction
         // if(blocks_in_hopper >= 5)
@@ -421,9 +432,16 @@ void jniMain(JNIEnv * _env, jobject _self)
             autonomousUpdate();
         }
         
+        target_shoulder_theta = 1.4;
+        target_inside_elbow_theta = 9.0*pi/8.0;
+        while(!armIsAtTarget(0.25, 0.25))
+        {
+            autonomousUpdate();
+        }
+        
         turnRelDeg(colorAdjustedAngle(45), 1.0);
         wait(0.25);
-        bool color = 0;//getBeaconColor();
+        bool color = 0; //getBeaconColor();
         setIntakeIn();
         wait(0.75);
         //Drive forward a bit
@@ -460,11 +478,11 @@ void jniMain(JNIEnv * _env, jobject _self)
         
         //Turn and park on nearest low mountain
         //turnRelDeg(colorAdjustedAngle(45), -0.8);
-        driveOnCourseIn(10, 0.8, colorAdjustedAngle(45));
+        driveOnCourseIn(13, 0.8, colorAdjustedAngle(45));
         // setIntakeIn();
         //Arm to partial extension for teleop
         //turnRelDeg(colorAdjustedAngle(-90), -0.8);
-        driveOnCourseIn(30, 0.8, colorAdjustedAngle(135));
+        driveOnCourseIn(30, 0.8, colorAdjustedAngle(133));
         while(fabs(imu_tilt) < 20)
         {
             left_drive = 0.7;
