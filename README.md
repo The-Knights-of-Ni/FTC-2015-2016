@@ -1,4 +1,4 @@
-This is our teams copy of the ftc app. Robot code can be found in: FtcRobotController/src/main/java/com/qualcomm/ftcrobotcontroller/opmodes/
+This is FTC Team 5206 The Knights of Ni's copy of the ftc app. Robot code can be found in: FtcRobotController/src/main/java/com/qualcomm/ftcrobotcontroller/opmodes/
 
 and
 
