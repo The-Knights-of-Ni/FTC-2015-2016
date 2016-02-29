@@ -4,6 +4,8 @@
 #include "maths.h"
 #include "robotics.h"
 
+bool8 suppress_arm = 0; //used in auto only
+
 float wrist_red_position = 1.0;
 float wrist_blue_position = 0.0;
 float wrist_level_position = 0.5;

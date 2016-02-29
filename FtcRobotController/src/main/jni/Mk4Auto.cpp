@@ -13,7 +13,7 @@ float start_time = 0;
 //stuff that need to be constantly updated in the background but is not intensive enough to deserve a seperate thread
 void Mk4AutonomousUpdate()
 {
-    if(time-start_time > 20.0) longjmp(exit_jump, 1);
+    //if(time-start_time > 20.0) longjmp(exit_jump, 1);
     
     //TODO: make this sensor filter stuff a function in arm.h    
     shoulder = 0;
@@ -37,7 +37,7 @@ void Mk4AutonomousUpdate()
     
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
-    if(winch > 0.0 && !tension_switch && inside_elbow_theta > pi) winch = 0.0;
+    if(winch > 0.0 && !tension_switch) winch = 0.0;
     
     left_drive *= 14.0/left_drive_voltage;
     right_drive *= 14.0/right_drive_voltage;
@@ -55,8 +55,11 @@ void Mk4AutonomousUpdate()
     if(log_file) fprintf(log_file, "%f %f %f  %f %f %f  %d %d  %f %f",  imu_heading, imu_tilt, imu_roll, imu_vel.x, imu_vel.y, imu_vel.z, left_drive_encoder, right_drive_encoder, left_drive, right_drive);
     
     // intake = 0;
-    // shoulder = 0;
-    // winch = 0;
+    if(suppress_arm)
+    {
+        shoulder = 0;
+        winch = 0;
+    }
     // //intake_tilt = continuous_servo_stop;
     // wrist = wrist_level_position;
     // hand = 0;
@@ -330,6 +333,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     arm_stage = 0;
     
     score_mode = false;
+
+    suppress_arm = true;
     
     initCamera();
     
@@ -344,7 +349,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     //waitForStart(); //NOTE: needs to be called in java until IMU code is ported
     zeroDriveSensors();
     //enableKillerAI();
-
+    
     start_time = time;
     
     imu_orientation_offsets = (v3f){0, 0, 0};
@@ -357,105 +362,127 @@ void jniMain(JNIEnv * _env, jobject _self)
     #define blocks_in_hopper 1
     interruptable
     {
-        if(!setjmp(deploy_jump))
+        for(int i = 0; i < 2; i++)
         {
-            for(int i = 0; i < 2; i++)
-            {
-                float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
-                                                  -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-                target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
-                target_shoulder_theta = shoulder_theta;
-                target_inside_elbow_theta = inside_elbow_theta;
-                
-                autonomousUpdate();
-            }
-            
-            #if 0 // test driveOnCourseIn
+            float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+                                              -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+            target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
             target_shoulder_theta = shoulder_theta;
             target_inside_elbow_theta = inside_elbow_theta;
-            driveOnCourseIn(60, -0.8, colorAdjustedAngle(0));//Drive 120 in at 45 degrees, relative to the driver box
+                
+            autonomousUpdate();
+        }
             
-            waitForEnd();
-            #endif
+        #if 0 // test driveOnCourseIn
+        target_shoulder_theta = shoulder_theta;
+        target_inside_elbow_theta = inside_elbow_theta;
+        driveOnCourseIn(60, -0.8, colorAdjustedAngle(0));//Drive 120 in at 45 degrees, relative to the driver box
             
-            driveOnCourseIn(10, -0.8, 0);
-            turnRelDeg(colorAdjustedAngle(45), 1.0);
-            
-            //Deploy Robot
-            //Wait time delay
-            //Turn on intake
-            //intake = 1;
-        
-            //Drive to goal
-            driveOnCourseIn(46, -0.8, colorAdjustedAngle(45));//Drive 120 in at 45 degrees, relative to the driver box
-            //Once 5 blocks are reached, reverse intake direction
-            // if(blocks_in_hopper >= 5)
-            //     intake = -1;
-        
-            //intake = 0;
-        
-            //Turn and align with beacon
-            #if 0
-            score_mode = false;
-            arm_stage = arm_retracting;
-        
-            while(arm_stage != arm_idle)
-            {
-                autonomousUpdate();
-            }
-        
-            target_shoulder_theta = 1.4;
-            target_inside_elbow_theta = 4.0*pi/8.0;
-            while(!armIsAtTarget(0.25, 0.25))
-            {
-                autonomousUpdate();
-            }
-            #endif
-        
-            turnRelDeg(colorAdjustedAngle(45), 1.0);
-            wait(0.25);
-            // bool color = getBeaconColor(); //TODO: NOTE: this crashes auto
-            // setIntakeIn();
-            //wait(0.75);
-            //Drive forward a bit
-            driveDistIn(1, -0.6);
-        
-            //Score climbers
-            driveDistIn(1, -0.8);
-            hook_right = 1.0;
-            wait(3.0);
-            hook_right = 0.0;
+        waitForEnd();
+        #endif
 
-            driveDistIn(10, 0.8);
-            
-            //Push button
-            #if 0
-            hook_right = 1.0;
-            //TODO: Function for setting the intake to any angle
-            // if(color == current_color)
-            // {
-            //     turnRelDeg(5, 0.8);
-            //     driveDistIn(10, -0.8);//Pushing button
-            //     wait(0.5);
-            //     driveDistIn(10, 0.8);//Pushing button
-            //     turnRelDeg(5, -0.8);
-            // }
-            // else
-            // {
-            //     turnRelDeg(5, -0.8);
-            //     driveDistIn(10, -0.8);//Pushing button
-            //     wait(0.5);
-            //     driveDistIn(10, 0.8);//Pushing button
-            //     turnRelDeg(5, 0.8);
-            // }
-            //Drive out of parking zone
-            //driveDistIn(11, 0.5);
-            #endif
-            //Turn and park on nearest low mountain
-            //turnRelDeg(colorAdjustedAngle(45), -0.8);
+        if(current_color)
+        {
+            driveOnCourseIn(17, -0.8, 0);
+        }
+        else
+        {
+            driveOnCourseIn(10, -0.8, 0);
+        }
+        turnRelDeg(colorAdjustedAngle(45), 1.0);
+        
+        //Deploy Robot
+        //Wait time delay
+        //Turn on intake
+        //intake = 1;
+        
+        //Drive to goal
+        
+        if(current_color)
+        {
+            driveOnCourseIn(46, -0.8, colorAdjustedAngle(45));//Drive 120 in at 45 degrees, relative to the driver box
+        }
+        else
+        {
+            driveOnCourseIn(41, -0.8, colorAdjustedAngle(45));//Drive 120 in at 45 degrees, relative to the driver box
         }
         
+        //Once 5 blocks are reached, reverse intake direction
+        // if(blocks_in_hopper >= 5)
+        //     intake = -1;
+        
+        //intake = 0;
+        
+        //Turn and align with beacon
+        #if 0
+        score_mode = false;
+        arm_stage = arm_retracting;
+        
+        while(arm_stage != arm_idle)
+        {
+            autonomousUpdate();
+        }
+        
+        target_shoulder_theta = 1.4;
+        target_inside_elbow_theta = 4.0*pi/8.0;
+        while(!armIsAtTarget(0.25, 0.25))
+        {
+            autonomousUpdate();
+        }
+        #endif
+        
+        turnRelDeg(colorAdjustedAngle(45), 1.0);
+        
+        wait(0.25);
+        // bool color = getBeaconColor(); //TODO: NOTE: this function crashes auto
+        // setIntakeIn();
+        //wait(0.75);
+        //Drive forward a bit
+        //driveDistIn(1, -0.6);
+        
+        //Score climbers
+        if(current_color)
+        {
+            driveDistIn(3, -0.8);
+        }
+        else
+        {
+            driveDistIn(15, -0.8);
+        }
+        hook_right = 1.0;
+        wait(3.0);
+        hook_right = 0.0;
+        
+        driveDistIn(10, 0.8);
+        
+        //Push button
+        #if 0
+        hook_right = 1.0;
+        //TODO: Function for setting the intake to any angle
+        // if(color == current_color)
+        // {
+        //     turnRelDeg(5, 0.8);
+        //     driveDistIn(10, -0.8);//Pushing button
+        //     wait(0.5);
+        //     driveDistIn(10, 0.8);//Pushing button
+        //     turnRelDeg(5, -0.8);
+        // }
+        // else
+        // {
+        //     turnRelDeg(5, -0.8);
+        //     driveDistIn(10, -0.8);//Pushing button
+        //     wait(0.5);
+        //     driveDistIn(10, 0.8);//Pushing button
+        //     turnRelDeg(5, 0.8);
+        // }
+        //Drive out of parking zone
+        //driveDistIn(11, 0.5);
+        #endif
+        //Turn and park on nearest low mountain
+        //turnRelDeg(colorAdjustedAngle(45), -0.8);
+        
         #if 1 //enable arm
+        suppress_arm = false;
         
         intake_out = true;
         intake_time = 0.0;
@@ -480,22 +507,41 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             autonomousUpdate();
         }
-
+        
         wait(0.2);
         
         score_mode = false;
         arm_stage = arm_pre_preparing;
         
+        float arm_timer = 0;
         while(arm_stage != arm_idle)
         {
+            arm_timer += dt;
+            if(arm_timer > 3)
+            {
+                target_shoulder_theta = 2.0;
+                target_inside_elbow_theta = 4.43;
+                wait(0.5);
+                intake = -1;
+                driveDistIn(10, -0.1);
+                intake = 0;
+                arm_stage = arm_idle;
+                arm_timer = 0;
+            }
             autonomousUpdate();
         }
         wait(0.2);
         
-        turnRelDeg(180, 1.0);;
+        turnRelDeg(180, 1.0);
+        
+        intake = 1;
+        driveDistIn(15, -0.8);
+        driveDistIn(15, 0.8);
+        intake = 0;
+        turnRelDeg(45, 1.0);
         
         #endif
-                
+        
         // driveOnCourseIn(33, 0.8, colorAdjustedAngle(45));
         // // setIntakeIn();
         // //Arm to partial extension for teleop

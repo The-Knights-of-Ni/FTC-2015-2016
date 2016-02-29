@@ -22,7 +22,7 @@ byte * camera_buffer_rgb;
 void initCamera()
 {
     jclass cls = env->GetObjectClass(self);
-
+    
     camera_buffer = 0;
     {//get camera buffer
         jfieldID jcamera_bufferID = env->GetFieldID(cls, "camera_buffer", "[B");
@@ -51,7 +51,7 @@ void cleanupCamera()
 void convertPixelToRGB(int x, int y, int v_val, int u_val)
 {
     int y_val = camera_buffer[x+y*camera_w];
-
+    
     int r = y_val + (1.370705 * (v_val-128));
     int g = y_val - (0.698001 * (v_val-128)) - (0.337633 * (u_val-128));
     int b = y_val + (1.732446 * (u_val-128));

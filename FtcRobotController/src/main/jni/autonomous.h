@@ -60,7 +60,7 @@ void waitForEnd()
 
 #define default_max_acceleration 18
 
-#define drive_dist_tolerance 0.1 //0.1 inch of acceptable error per drive
+#define drive_dist_tolerance 0.5 //0.1 inch of acceptable error per drive
 #define turning_deadband 10 //if there is more than this many degrees of error, the robot will stop driving and just turn
 
 float * pdrive_time = 0;

@@ -31,7 +31,7 @@ void Mk4AutonomousDeployUpdate()
     
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
-    if(winch > 0.0 && !tension_switch && inside_elbow_theta > pi) winch = 0.0;
+    if(winch > 0.0 && !tension_switch) winch = 0.0;
     
     left_drive *= 14.0/left_drive_voltage;
     right_drive *= 14.0/right_drive_voltage;
@@ -45,6 +45,12 @@ void Mk4AutonomousDeployUpdate()
     hand = clamp(hand, 0.0, 1.0);
     hook_left = clamp(hook_left, 0.0, 1.0);
     hook_right = clamp(hook_right, 0.0, 1.0);
+
+    if(suppress_arm)
+    {
+        shoulder = 0;
+        winch = 0;
+    }
     
     // intake = 0;
     // shoulder = 0;
@@ -322,6 +328,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     arm_stage = 0;
     
     score_mode = false;
+
+    suppress_arm = true;
     
     initCamera();
     
@@ -347,7 +355,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     #define blocks_in_hopper 1
     interruptable
     {
-        for(int i = 0; i < 1; i++)
+        for(int i = 0; i < 2; i++)
         {
             float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                               -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
@@ -358,9 +366,13 @@ void jniMain(JNIEnv * _env, jobject _self)
             autonomousUpdate();
         }
         
+        wait(10.0);
+        
         driveOnCourseIn(10, -1.0, 0);
+        turnRelDeg(colorAdjustedAngle(45), 1.0);
         
         #if 1 //enable arm
+        suppress_arm = false;
         
         intake_out = true;
         intake_time = 0.0;
@@ -385,17 +397,35 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             autonomousUpdate();
         }
-
+        
         wait(0.2);
         
         score_mode = false;
         arm_stage = arm_pre_preparing;
         
+        float arm_timer = 0;
         while(arm_stage != arm_idle)
         {
+            arm_timer += dt;
+            if(arm_timer > 3)
+            {
+                target_shoulder_theta = 2.0;
+                target_inside_elbow_theta = 4.43;
+                wait(0.5);
+                intake = -1;
+                driveDistIn(10, -0.1);
+                intake = 0;
+                arm_stage = arm_idle;
+                arm_timer = 0;
+            }
             autonomousUpdate();
         }
         wait(0.2);
+        
+        intake = 1;
+        driveDistIn(30, -0.8);
+        driveDistIn(30, 0.8);
+        intake = 0;
         
         #endif
         
