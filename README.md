@@ -1,10 +1,10 @@
-This is our teams copy of the ftc app. OP modes can be found in: FtcRobotController/src/main/java/com/qualcomm/ftcrobotcontroller/opmodes/
+This is FTC Team 5206 The Knights of Ni's copy of the ftc app. Robot code can be found in: FtcRobotController/src/main/java/com/qualcomm/ftcrobotcontroller/opmodes/
 
-**Do NOT directly edit the files in:**
-FtcRobotControllersrc/main/java/com/qualcomm/ftcrobotcontroller/opmodes/processed/  
-Those files are generated from their corisponding .javac files in opmodes/.
+and
 
-Run build.bat in FtcRobotController/src/main/java/com/qualcomm/ftcrobotcontroller/ to process the javac files and build the app.
+FtcRobotController/src/main/jni
+
+Run build.bat or build.sh in FtcRobotController/src/main/ to build the app.
 
 # ftc_app
 FTC Android Studio project to create FTC Robot Controller app.
