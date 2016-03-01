@@ -130,7 +130,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         "import com.qualcomm.robotcore.hardware.I2cDevice;\n"
         "import com.qualcomm.robotcore.hardware.Servo;\n"
         "import com.qualcomm.robotcore.hardware.VoltageSensor;\n"
-        "import android.hardware.Camera;\n");
+        "import android.hardware.Camera;\n"
+        "import android.graphics.ImageFormat;\n");
     
     //TODO: shortcut for defining and declaring motors, servos, etc.
     jni_variables_string = (
@@ -260,8 +261,15 @@ void jniMain(JNIEnv * _env, jobject _self)
                               "camera_preview_callback = new CameraPreviewCallback();\n"
                               "\n"
                               "camera.setPreviewCallbackWithBuffer(camera_preview_callback);\n"
-                              "camera.addCallbackBuffer(camera_buffer);\n");
-    
+                              "camera.addCallbackBuffer(camera_buffer);\n"
+                                "parameters.setPreviewFormat(ImageFormat.NV21);\n"
+                                "parameters.setExposureCompensation(0);\n"
+                                "parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);\n"
+                               "parameters.set(\"iso\", \"ISO100\");\n"
+                                  "parameters.set(\"max-exposure-time\", 2000000);\n"
+                                   "parameters.set(\"min-exposure-time\", 2000000);\n"
+                                   "        DbgLog.error(\"Camera parameters: \"+parameters.flatten());");
+
     ptime = jniDoubleIn("return time;");
     pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
     pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");

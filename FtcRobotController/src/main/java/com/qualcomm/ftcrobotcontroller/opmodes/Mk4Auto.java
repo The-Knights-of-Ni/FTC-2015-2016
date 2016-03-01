@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import android.hardware.Camera;
+import android.graphics.ImageFormat;
 
 
 public class Mk4Auto extends LinearOpMode {
@@ -42,7 +43,13 @@ camera_preview_callback = new CameraPreviewCallback();
 
 camera.setPreviewCallbackWithBuffer(camera_preview_callback);
 camera.addCallbackBuffer(camera_buffer);
-
+parameters.setPreviewFormat(ImageFormat.NV21);
+parameters.setExposureCompensation(0);
+parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);
+parameters.set("iso", "ISO100");
+parameters.set("max-exposure-time", 2000000);
+parameters.set("min-exposure-time", 2000000);
+        DbgLog.error("Camera parameters: "+parameters.flatten());
 }
 
 
