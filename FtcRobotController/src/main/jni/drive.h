@@ -5,8 +5,6 @@
 //TODO: Traction control
 //TODO: Negative Inertia
 //TODO: D-PAD Turn macros (90, 180, 270, simulated shift)
-//TODO: Drive on course (turn by bearing)
-//TODO: Stabilized driving (if we get slammed, we should correct)
 //TODO: Delete this comment
 
 //TODO:
@@ -80,22 +78,22 @@ void zeroDriveSensors()
     current_drive_frame = 0;
     n_valid_left_drive_angles = 0;
     n_valid_right_drive_angles = 0;
-    
+
     left_drive_theta = 0;
     left_drive_omega = 0;
-    
+
     right_drive_theta = 0;
     right_drive_omega = 0;
-    
+
     avg_drive_theta = 0;
     avg_drive_omega = 0;
-    
+
     left_drive_hold_theta = 0;
     right_drive_hold_theta = 0;
-    
+
     left_drive_active = 0;
     right_drive_active = 0;
-    
+
     left_drive_compensation = 0; //TODO: this type of stabalization is used alot, maybe make the stuff it uses a struct
     right_drive_compensation = 0;
 }
@@ -108,7 +106,7 @@ void updateDriveSensors()
     lowpassFirstDerivativeUpdate(right_drive_encoder*radians_per_encodertick, &right_drive_theta, &right_drive_omega, 10);
     avg_drive_theta = (left_drive_theta+right_drive_theta)/2.0;
     avg_drive_omega = (left_drive_omega+right_drive_omega)/2.0;
-    
+
     past_left_drive_thetas[current_drive_frame] = left_drive_theta;
     past_right_drive_thetas[current_drive_frame] = right_drive_theta;
     current_drive_frame = (current_drive_frame+1)%past_buffers_size;

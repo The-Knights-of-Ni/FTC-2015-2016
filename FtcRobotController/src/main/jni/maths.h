@@ -12,6 +12,7 @@
 #define pi 3.1415926535897932384626433832795
 #define e_math  2.71828182845904523536
 #define sq(a) ((a)*(a))
+#define pow3(a) ((a)*(a)*(a))
 
 #define sign(a) (((a) >= 0.0) ? 1.0 : -1.0)
 
@@ -110,10 +111,10 @@ struct v4f
         };
         struct
         { //quaternion notation
+            float r;
             float i;
             float j;
             float k;
-            float r;
         };
         float data[4];
     };
@@ -509,10 +510,6 @@ inline m3x3f quaternionToMatrix(v4f q)
     return matrix;
 }
 /* End of 3x3 matrix Functions */
-inline v3f applyQuaternion(v4f q, v3f p)
-{
-    return multiply(quaternionToMatrix(q), p);
-}
 /* Start of 4x4 matrix Functions */
 inline m4x4f quaternionTo4x4Matrix(v4f q)
 {
@@ -525,6 +522,10 @@ inline m4x4f quaternionTo4x4Matrix(v4f q)
     return matrix;
 }
 
+inline v3f applyQuaternion(v4f q, v3f p)
+{
+    return multiply(quaternionToMatrix(q), p);
+}
 //matrix multiplication of aligned matrices a and b
 #ifdef USING_SIMULATOR //TODO: Make it so we can use this in native too
 inline m4x4f multiplyA( m4x4f a, m4x4f b)
