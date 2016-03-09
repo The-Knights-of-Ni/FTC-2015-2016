@@ -34,11 +34,6 @@ float * pscore_hook = 0;
 #define score_hook (*pscore_hook)
 
 #define tension_switch dim_digital_pin(7)
-#define intake_out_switch dim_digital_pin(0)
-//#define intake_in_switch dim_digital_pin(1)
-
-//TODO: tune values
-float g = 384; //gravity in " per sec
 
 float winch_pulley_r = 1.0f;
 float shoulder_pulley_r = 3.0f/25.4f;
@@ -47,7 +42,7 @@ float elbow_pulley_r = 2.0f;
 float winch_gear_ratio = 2.0;
 float shoulder_gear_ratio = 6.75;
 
-float forearm_length = 16.0f;
+float forearm_length = 16.0f; //TODO: this might have changed
 float shoulder_length = 16.5f;
 
 //current values
@@ -66,10 +61,8 @@ float winch_omega = 0.0;
 float inside_elbow_omega = 0.0;
 
 bool8 shoulder_active = 0; //0 stabalize mode, 1 stopping, 2 running
-bool8 past_shoulder_active = 0;
 
 bool8 forearm_active = 0; //0 stabalize mode, 1 stopping, 2 running
-bool8 past_forearm_active = 0;
 
 //target values
 float target_arm_theta;
@@ -86,38 +79,21 @@ int n_valid_inside_elbow_angles = 0;
 float low_passed_inside_elbow_theta = 0;
 
 void updateArmSensors()
-{   
+{
     elbow_potentiometer_angle = (((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))
                                       -8.050688f))*pi/180.0f;
-    // lerp(
-    // (360-((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))+9.6383f))*pi/180.0f,
-    // elbow_potentiometer_angle,
-    // exp(-500.0*dt));
     
     shoulder_potentiometer_angle = (-90+((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))
                                           -2.1190f))*pi/180.0f;
-    // lerp(
-    // (((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))+95.047f))*pi/180.0f,
-    // shoulder_potentiometer_angle,
-    // exp(-500.0*dt));
-    
-    float new_shoulder_theta = shoulder_potentiometer_angle;//shoulder_encoder/shoulder_gear_ratio/encoderticks_per_radian+pi*150/180.0;
-    float new_inside_elbow_theta = elbow_potentiometer_angle;
-    float new_winch_theta = winch_encoder/winch_gear_ratio/encoderticks_per_radian;
     
     if(shoulder_omega != shoulder_omega) shoulder_omega = 0;
-    //TODO: switch to use lowpassFirstDerivativeUpdate function
-    shoulder_omega = lerp((new_shoulder_theta-shoulder_theta)/dt, shoulder_omega, exp(-10*dt));
+    lowpassFirstDerivativeUpdate(shoulder_potentiometer_angle, &shoulder_theta, &shoulder_omega, 10);
     
     if(winch_omega != winch_omega) winch_omega = 0;
-    winch_omega = lerp((new_winch_theta-winch_theta)/dt/winch_gear_ratio, winch_omega, exp(-10*dt));
+    lowpassFirstDerivativeUpdate(winch_encoder/winch_gear_ratio/encoderticks_per_radian, &winch_theta, &winch_omega, 10);
     
     if(inside_elbow_omega != inside_elbow_omega) inside_elbow_omega = 0;
-    inside_elbow_omega = lerp((new_inside_elbow_theta-inside_elbow_theta)/dt, inside_elbow_omega, exp(-10*dt));
-    
-    shoulder_theta = new_shoulder_theta;
-    inside_elbow_theta = new_inside_elbow_theta;
-    winch_theta = new_winch_theta;
+    lowpassFirstDerivativeUpdate(elbow_potentiometer_angle, &inside_elbow_theta, &inside_elbow_omega, 10);
     
     past_shoulder_thetas[current_arm_frame] = shoulder_theta;
     past_inside_elbow_thetas[current_arm_frame] = inside_elbow_theta;
@@ -269,10 +245,10 @@ int * pslider3;
 #define shoulder_kd    0.036 //(0.2*(slider1/100.0))
 #define shoulder_ki    0.9   //(10*(slider2/100.0))
 #define shoulder_kslow 0.15  //(1.0*(slider3/100.0))
-// the minimum speed the shoulder needs to be rotating for the shoulder to be considered active
+// the minimum speed the shoulder needs to be rotating at for the shoulder to be considered active
 static const float shoulder_speed_threshold = 0.1;
 
-//TODO: actually tune these? work fairly well, but most of these are the values from the old arm
+//TODO: actually tune these? works fairly well, but most of these are the values from the old arm
 #define winch_kp    1.5  //(4*(slider0/100.0))
 #define winch_kd    0.036 //(0.2*(slider1/100.0))
 #define winch_ki    1.7 //0.9   //(10*(slider2/100.0))
@@ -303,7 +279,11 @@ void armJointStabalizationFunction(float * motor,
         if(*joint_active == 2)
         {
             *n_valid_angles = 0;
-            *joint_compensation = 0;//clamp(*motor, -0.0, 0.1);
+            
+            #if 1
+            #else //this was what was running at the tournament
+            *joint_compensation = 0;
+            #endif
         }
         
         if(*joint_active != 2 || stabalize_while_running)
@@ -346,8 +326,9 @@ void armJointStabalizationFunction(float * motor,
 
 inline void armToAngle(float * target_theta, float current_theta)
 {
-    float shoulder_omega_error = (neverest_max_omega*shoulder-shoulder_omega);
+    float shoulder_omega_error = (neverest_max_omega/shoulder_gear_ratio*shoulder-shoulder_omega);
     
+    //TODO: merge all the parameters only used here into a struct
     armJointStabalizationFunction(&shoulder,
                                   current_theta, shoulder_omega_error,
                                   &shoulder_active, &shoulder_compensation,
@@ -395,49 +376,8 @@ enum arm_stage_enum
 };
 int arm_stage = 0;
 
-bool8 arm_running_to_pos = 0;
-bool8 old_shoulder_side = 0;
-bool8 passed_shoulder_target = 0;
-bool8 old_inside_elbow_side = 0;
-bool8 passed_inside_elbow_target = 0;
-
 bool8 armIsAtTarget(float shoulder_tolerance, float inside_elbow_tolerance)
-{
-    #if 0
-    bool8 at_target = false;
-    
-    if(!arm_running_to_pos)
-    {
-        arm_running_to_pos = true;
-        passed_shoulder_target = false;
-        passed_inside_elbow_target = false;
-    }
-    else
-    {
-        if(!passed_shoulder_target)
-        {
-            passed_shoulder_target = (old_shoulder_side) != (shoulder_theta > target_shoulder_theta);
-        }
-                
-        if(!passed_inside_elbow_target)
-        {
-            passed_inside_elbow_target = (old_inside_elbow_side) != (inside_elbow_theta > target_inside_elbow_theta);
-        }
-        
-        at_target = passed_shoulder_target && passed_inside_elbow_target;
-    }
-    
-    old_inside_elbow_side = (inside_elbow_theta > target_inside_elbow_theta);
-    old_shoulder_side = (shoulder_theta > target_shoulder_theta);
-
-    if(at_target) arm_running_to_pos = false;
-    return at_target;
-
-    #else
-    
-    //const float angle_tolerance = 0.1;
-    const float speed_tolerance = 0.25;
-    
+{        
     return (fabs(inside_elbow_theta-target_inside_elbow_theta) < shoulder_tolerance &&
             /* fabs(inside_elbow_omega) < speed_tolerance && */
             fabs(shoulder_theta-target_shoulder_theta)         < inside_elbow_tolerance /* && */
@@ -453,8 +393,17 @@ void armToPreset(float shoulder_speed, float winch_speed, float tolerance = 0.5)
     else if(shoulder_theta < target_shoulder_theta-tolerance){ shoulder = +shoulder_speed; shoulder_active = 2; shoulder_compensation = 0;}
     else
     {
+        #if 1
+        shoulder = 3*shoulder_error;
+        float shoulder_omega_error = neverest_max_omega/shoulder_gear_ratio*shoulder-shoulder_omega;
+        
+        shoulder_compensation += shoulder_kslow*shoulder_omega_error*dt;
+        shoulder += shoulder_omega_error+shoulder_compensation;
+        
+        #else //this was what was running at the tournament
         shoulder_compensation += shoulder_ki*shoulder_error*dt;
         shoulder = 3*shoulder_error+shoulder_compensation;
+        #endif
     }
     
     float inside_elbow_error = target_inside_elbow_theta-inside_elbow_theta;
@@ -463,8 +412,17 @@ void armToPreset(float shoulder_speed, float winch_speed, float tolerance = 0.5)
     else if(inside_elbow_theta < target_inside_elbow_theta-tolerance){ winch = +winch_speed; forearm_active = 2; winch_compensation = 0;}
     else
     {
+        #if 1
+        winch = winch_kp*(inside_elbow_error);
+        float winch_omega_error = neverest_max_omega/winch_gear_ratio*winch-winch_omega;
+        
+        winch_compensation += winch_kslow*winch_omega_error*dt;
+        winch = winch_kp*(inside_elbow_error)+winch_compensation;
+        
+        #else //this was what was running at the tournament
         winch_compensation += winch_ki*inside_elbow_error*dt;
         winch = winch_kp*(inside_elbow_error)+winch_compensation;
+        #endif
     }
 }
 
@@ -501,7 +459,6 @@ void setIntakeOut()
     }
 }
 
-
 #define hand_open_time 0.5
 
 bool8 hand_open = 0;
@@ -511,12 +468,6 @@ void doHand()
     if(hand_open) hand = 1.0;
     else          hand = 0.0;
     hand_time += dt;
-    /* if(hand_time < hand_open_time) */
-    /* { */
-    /*     if(hand_open) hand = 1.0; */
-    /*     else hand = 0.0; */
-    /* } */
-    /* else hand = continuous_servo_stop; */
 }
 
 void setHandShut()
@@ -537,52 +488,142 @@ void setHandOpen()
     }
 }
 
-int double_close_case = 0;
-bool8 double_close_hand_completed = 0;
-void doubleCloseHand()
-{
-    //TODO: handle being interupted
-    if(double_close_case == 0)
-    {
-        hand_open = false;
-        hand_time = 0;
-        double_close_case++;
-    }
-    switch(double_close_case)
-    {
-        case 1:
-        {
-            if(hand_time > hand_open_time)
-            {
-                setHandOpen();
-                double_close_case++;
-            }
-        } break;
-        case 2:
-        {
-            if(hand_time > hand_open_time)
-            {
-                setHandShut();
-                double_close_case++;
-            }
-        } break;
-        case 3:
-        {
-            if(hand_time > hand_open_time)
-            {
-                double_close_case = 0;
-                double_close_hand_completed = true;
-            }
-        } break;
-    }
-}
-
 #define shoulder_mode_threshold 1.9
 
 bool8 armOnIntakeSide()
 {
     return shoulder_theta > shoulder_mode_threshold && inside_elbow_theta > pi;
 }
+
+///////////////////////
+jmp_buf arm_jmp;
+jmp_buf arm_exit_jmp;
+
+//TODO: setcontext could be more robust than setjmp
+
+#define setArmJmp() {if(setjmp(arm_jmp) == 0) return;}
+
+void switchTasks()
+{
+    if(setjmp(arm_jmp) == 0) long_jmp(arm_exit_jmp, 1);
+}
+
+int score_mode = 0;
+
+void armTask()
+{
+    if(setjmp(arm_exit_jmp) == 0)
+    {
+        long_jmp(arm_jmp, 1);
+    }
+}
+
+void armUserControl()
+{
+    setArmJmp();
+    
+    for ever
+    {
+        if(score_mode)
+        {
+            armAtVelocity(target_arm_velocity);
+            
+            //set the unused target angle so it won't move when the mode is switched
+            target_shoulder_theta = shoulder_theta;
+            
+            armToPolarTarget();
+        }
+        else
+        {
+            armJointsAtVelocity(target_arm_velocity);
+            
+            //set the unused target angle so it won't move when the mode is switched
+            float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+                                              -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+            target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+            
+            armToJointTarget();
+        }
+        switchTasks();
+    }
+}
+
+void armToIntakeMode()
+{
+    setArmJmp();    
+    
+    if(score_mode) //is in score mode
+    {
+        score_mode = 0;
+        intake_out = true;
+        
+        float arm_time = 0;
+        
+        while(!armIsAtTarget(0.20, 0.20) || arm_time < 0.7)
+        {
+            arm_time += dt;
+            armToPreset(2.0, 4.0,
+                        1.0, 1.0);
+            
+            switchTasks();
+        }
+    }
+    
+    setIntakeOut();
+    setHandShut();
+    
+    while(!armIsAtTarget(0.1, 0.1) || hand_time < hand_open_time)
+    {
+        armToPreset(2.2, 4.3,
+                    0.8, 0.5, 0.25);
+        
+        switchTasks();
+    }
+    
+    while(!armIsAtTarget(0.1, 0.1))
+    {
+        armToPreset(2.35, 4.4,
+                    1.0, 0.5);
+        
+        switchTasks();
+    }
+    
+    while(!armIsAtTarget(0.1, 0.1))
+    {
+        armToPreset(2.46, 4.43,
+                    1.0, 0.5);
+        
+        switchTasks();
+    }
+    
+    setHandOpen();
+}
+
+void armToScoreMode()
+{
+    setArmJmp();
+    
+    score_mode = 1;
+    
+    if(armOnIntakeSide())
+    {
+        while(!armIsAtTarget(0.20, 0.20) || arm_time < 0.7)
+        {
+            arm_time += dt;
+            armToPreset(2.0, 4.0,
+                        1.0, 1.0);
+            
+            switchTasks();
+        }
+    }
+    else
+    {
+        setIntakeIn();
+    }
+    
+    //TODO: move arm to final position    
+}
+//////////////////////
 
 int arm_mode = 0;
 bool8 arm_switching = 0;
@@ -594,10 +635,6 @@ void armSwitchModes()
     
     #define arm_case(stage) case arm_##stage: arm_##stage##_case
     #define goto_arm_case(stage) {arm_stage = arm_##stage; goto arm_##stage##_case;}
-    
-    //TODO(eventually): just setup map of waypoints and connections and use A* to find the path to a desired target position
-    
-    //TODO: tune waypoints
     
     arm_time += dt;
     
@@ -739,5 +776,56 @@ void armSwitchModes()
     #undef arm_case
     #undef goto_arm_case
 }
+
+#if 0 //arm pathfinding. shelved for now, at least wait until arm simulation is done again
+struct arm_state
+{
+    float shoulder_theta;
+    float inside_elbow_theta;
+    float intake_theta;
+    int hopper_state;
+};
+
+bool8 is_valid_arm_position(arm_state s)
+{
+    
+}
+
+enum hopper_state_bits
+{
+    hand_bit,
+    wrist_bit,
+    hopper_state_bits
+};
+
+#define hand_wrist(hand_on, wrist_on) ((hand_on)<<hand_bit | (wrist_on)<<wrist_bit)
+
+arm_state arm_waypoints[] = {
+    {2.00, 4.00, 0.0, hand_wrist(0, 0)},
+    {2.20, 4.30, 0.0, hand_wrist(0, 0)},
+    {2.35, 4.40, 0.0, hand_wrist(0, 0)},
+    {2.46, 4.43, 0.0, hand_wrist(0, 0)},
+    {2.46, 4.43, 0.0, hand_wrist(1, 0)},
+};
+
+#define triangular_index(x, y) ((((y)*((y)-1))>>1) + (x))
+
+int * waypoint_connections = {
+    
+    0,
+    0,0,
+    0,0,0,
+    0,0,0,0,
+    0,0,0,0,0,
+}; //triangular array
+
+void next_waypoint
+{
+    
+}
+
+#undef hand_bit
+#undef wrist_bit
+#endif
 
 #endif

@@ -13,8 +13,6 @@
 #include "jni_functions.h"
 #endif
 
-#include <stdlib.h>
-
 //TODO: move these
 float *pintake = 0;
 #define intake (*pintake)
