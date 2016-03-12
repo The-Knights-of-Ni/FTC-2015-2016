@@ -454,6 +454,7 @@ void jniGenerate()
 
 JNIEnv * env;
 jobject self;
+jclass cls;
 
 jmethodID waitForStartID;
 jmethodID waitOneFullHardwareCycleID;
@@ -487,7 +488,7 @@ jbyteArray jrobot_state;
 
 void initJNI()
 {    
-    jclass cls = env->GetObjectClass(self);
+    cls = env->GetObjectClass(self);
     
     //functions
     waitForStartID = env->GetMethodID(cls, "waitForStart", "()V");
@@ -520,6 +521,7 @@ void updateRobot()
 {
     env->ReleaseByteArrayElements(jrobot_state, (jbyte *) robot_state.state, JNI_COMMIT);
     robotStateOut();
+    //waitOneFullHardwareCycle();
     waitForNextHardwareCycle();
     if(env->ExceptionOccurred() != 0)
     {

@@ -20,8 +20,6 @@ float hook_locked_position = 1.0f;
 //Hopper
 #define hand_open_toggle pad2.singlePress(RIGHT_TRIGGER)
 #define wrist_tilt_toggle pad2.singlePress(RIGHT_BUMPER)
-bool8 wrist_tilt = 0;
-float wrist_manual_control = 0;
 #define wrist_manual_increase pad2.press(X)
 #define wrist_manual_decrease pad2.press(B)
 
@@ -244,6 +242,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     target_shoulder_theta = pi*150/180;
     target_inside_elbow_theta = pi/6;
     
+    armFunction = armUserControl;
+    
     shoulder_omega = 0;
     winch_omega = 0;
     inside_elbow_omega = 0;
@@ -252,9 +252,9 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     wrist_tilt = 0;
     wrist_manual_control = 0;
+    wrist_time = 0;
     
-     //TODO: figure out a better way to have things reset to their initial values
-    arm_stage = 0;
+    //TODO: figure out a better way to have things reset to their initial values
     
     hand_time = 1000000;
     intake_time = 1000000;
@@ -271,9 +271,10 @@ void jniMain(JNIEnv * _env, jobject _self)
     right_drive_hold_theta = right_drive_theta;
     
     // updateArmSensors();
-    // float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+    // float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
     //                                   -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-    // target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+    // target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
+    // target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
     // target_shoulder_theta = shoulder_theta;
     // target_inside_elbow_theta = inside_elbow_theta;
     
@@ -356,72 +357,51 @@ void jniMain(JNIEnv * _env, jobject _self)
         shoulder_print_theta = shoulder_theta;
         forearm_print_theta = inside_elbow_theta;
         shoulder_active_print = shoulder_active;
-        arm_stage_print = arm_stage;
         
         if(arm_manual_toggle) //IK
         {
-            v2f target_arm_velocity = arm_stick;
+            target_arm_velocity = arm_stick;
             
             if(arm_score_mode_button)
             {
                 score_mode = true;
-                if(arm_stage != arm_idle) //cancel motion
+                if(armFunction != armUserControl) //cancel motion
                 {
-                    float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+                    float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                                       -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-                    target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+                    target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
+                    target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
                     
-                    arm_stage = arm_idle;
+                    armFunction = armUserControl;
                 }
-                else arm_stage = arm_retracting;
+                else
+                {
+                    arm_line = 0;
+                    armFunction = armToIntakeMode;
+                }
             }
             else if(arm_intake_mode_button)
             {
                 score_mode = false;
-                if(arm_stage != arm_idle) //cancel motion
+                if(armFunction != armUserControl) //cancel motion
                 {
                     target_shoulder_theta = shoulder_theta;
                     
-                    arm_stage = arm_idle;
-                }
-                else arm_stage = arm_pre_preparing;
-            }
-            
-            if(arm_stage != arm_idle)
-            {
-                armSwitchModes();
-            }
-            
-            if(arm_stage == arm_idle) //since arm_stage can change in armSwitchModes()
-            {
-                arm_switching = 0;
-                
-                target_arm_velocity.x = filterArmJoystick(target_arm_velocity.x);
-                target_arm_velocity.y = filterArmJoystick(target_arm_velocity.y);
-                if(shoulder_precision_mode) target_arm_velocity.x *= arm_slow_factor;
-                if(winch_precision_mode) target_arm_velocity.y *= arm_slow_factor;
-                
-                if(score_mode)
-                {
-                    armAtVelocity(target_arm_velocity);
-                    
-                    //set the unused target angle so it won't move when the mode is switched
-                    target_shoulder_theta = shoulder_theta;
-                    
-                    armToPolarTarget();
+                    armFunction = armUserControl;
                 }
                 else
                 {
-                    armJointsAtVelocity(target_arm_velocity);
-                    
-                    //set the unused target angle so it won't move when the mode is switched
-                    float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
-                                                      -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-                    target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
-                    
-                    armToJointTarget();
+                    arm_line = 0;
+                    armFunction = armToScoreMode;
                 }
             }
+            
+            target_arm_velocity.x = filterArmJoystick(target_arm_velocity.x);
+            target_arm_velocity.y = filterArmJoystick(target_arm_velocity.y);
+            if(shoulder_precision_mode) target_arm_velocity.x *= arm_slow_factor;
+            if(winch_precision_mode) target_arm_velocity.y *= arm_slow_factor;
+            
+            armFunction();
             
             //clamp the integral factors to stop integral build up
             shoulder_compensation = clamp(shoulder_compensation, -1.0, 1.0);
@@ -434,9 +414,10 @@ void jniMain(JNIEnv * _env, jobject _self)
         else //Manual
         {
             //set targets to current position so it will remember the current value when arm control is enabled
-            float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+            float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                               -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-            target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+            target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
+            target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
             target_shoulder_theta = shoulder_theta;
             target_inside_elbow_theta = inside_elbow_theta;
             
@@ -488,18 +469,8 @@ void jniMain(JNIEnv * _env, jobject _self)
             wrist_tilt = false;
         }
         
-        if(wrist_tilt)
-        {
-            if(current_color) wrist = wrist_red_position;
-            else              wrist = wrist_blue_position;
-        }
-        else
-        {
-            wrist = wrist_level_position;
-            wrist_manual_control = 0;
-        }
         wrist_manual_control += 0.5*((int) wrist_manual_increase - (int)wrist_manual_decrease)*dt;
-        wrist += wrist_manual_control;
+        doWrist();
         
         if(hand_open_toggle)
         {

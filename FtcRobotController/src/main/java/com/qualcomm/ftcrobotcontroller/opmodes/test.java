@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.nio.ByteBuffer;
+import android.os.Environment;
 
 
 public class test extends LinearOpMode {
@@ -26,13 +27,21 @@ int rsid_current = 0;
 public test()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[48];
+    robot_state = new byte[52];
 }
 
 
 public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
 {
     return ByteBuffer.wrap(joystick, 42, 4).getInt();
+}
+public boolean isExternalStorageWritable()
+{
+    String state = Environment.getExternalStorageState();
+    if (Environment.MEDIA_MOUNTED.equals(state)) {
+        return true;
+    }
+    return false;
 }
 
 public void setShort(int index, short a)
@@ -160,6 +169,8 @@ telemetry.addData("right drive",getFloat(40));
 
 telemetry.addData("time",getFloat(44));
 
+telemetry.addData("file pointer",getInt(48));
+
 
 }
 
@@ -175,17 +186,18 @@ rsid_current = 8;
 int gamepad1_buttons = 0;
 try
 {
-    //TODO: toByteArray() just copies all of the values into a byte buffer anyway
-    //      make custom function so this won't break again if they update
     gamepad1_buttons = updateButtons(gamepad1.toByteArray());
 }
 catch (RobotCoreException e)
 {
     e.printStackTrace();
 }
+telemetry.addData("gamepad1_buttons", String.format("%d", gamepad1_buttons));
 setRelative(gamepad1.left_stick_x);
 setRelative( gamepad1.left_stick_y);
-setRelative( gamepad1.left_trigger);
+setRelative(gamepad1.right_stick_x);
+setRelative( gamepad1.right_stick_y);
+setRelative(gamepad1.left_trigger);
 setRelative( gamepad1.right_trigger);
 setRelative( gamepad1_buttons);
 ;

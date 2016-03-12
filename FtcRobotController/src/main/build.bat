@@ -18,13 +18,13 @@ generator\Mk4Auto
 REM call ndk-build clean NDK_LIBS_OUT=.\jniLibs V=0
 call ndk-build NDK_LIBS_OUT=.\jniLibs -B V=0
 
-ndk build complete
+echo ndk build complete
 
-REM pushd ..\..\
-REM 
-REM REM call gradlew.bat assemble
-REM call gradlew.bat assembleDebug
-REM popd
-REM 
-REM call adb -d install -r ..\..\build\outputs\apk\FtcRobotController-debug.apk
-REM REM adb -s 10.0.0.4:5555 install -r ..\..\build\outputs\apk\FtcRobotController-debug.apk
+pushd ..\..\
+
+REM call gradlew.bat assemble
+call gradlew.bat assembleDebug
+popd
+
+call adb -d install -r ..\..\build\outputs\apk\FtcRobotController-debug.apk
+REM adb -s 10.0.0.4:5555 install -r ..\..\build\outputs\apk\FtcRobotController-debug.apk

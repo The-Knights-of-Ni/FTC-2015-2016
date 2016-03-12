@@ -13,17 +13,15 @@ void Mk4AutonomousDeployUpdate()
     shoulder = 0;
     winch = 0;
     
-    if(arm_stage != arm_idle)
+    armFunction();
+    if(armFunction == armUserControl)
     {
-        armSwitchModes();
-    }
-    if(arm_stage == arm_idle)
-    {
-        armToPreset(0.4, 1.00);
+        armFunction = armAutonomousControl;
     }
     
     doIntake();
     doHand();
+    doWrist();
     
     //clamp the integral factors to stop integral build up
     shoulder_compensation = clamp(shoulder_compensation, -1.0, 1.0);
@@ -314,6 +312,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     intake_out = true;
     intake_time = 1000;
     wrist = wrist_level_position;
+    wrist_tilt = false;
+    wrist_time = 0;
     hand_open = false;
     hand_time = 1000;
     hook_right = 0.0;
@@ -325,7 +325,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     shoulder_compensation = 0;
     
      //TODO: figure out a better way to have things reset to their initial values
-    arm_stage = 0;
+    armFunction = armAutonomousControl;
     
     score_mode = false;
 
@@ -357,9 +357,10 @@ void jniMain(JNIEnv * _env, jobject _self)
     {
         for(int i = 0; i < 2; i++)
         {
-            float shoudler_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+            float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                               -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-            target_arm_theta = shoulder_theta-asin(forearm_length/shoudler_axis_to_end*sin(inside_elbow_theta));
+            target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
+            target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
             target_shoulder_theta = shoulder_theta;
             target_inside_elbow_theta = inside_elbow_theta;
             
@@ -401,10 +402,10 @@ void jniMain(JNIEnv * _env, jobject _self)
         wait(0.2);
         
         score_mode = false;
-        arm_stage = arm_pre_preparing;
+        armFunction = armToScoreMode;
         
         float arm_timer = 0;
-        while(arm_stage != arm_idle)
+        while(armFunction != armAutonomousControl)
         {
             arm_timer += dt;
             if(arm_timer > 3)
@@ -415,7 +416,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                 intake = -1;
                 driveDistIn(10, -0.1);
                 intake = 0;
-                arm_stage = arm_idle;
+                armFunction = armAutonomousControl;
                 arm_timer = 0;
             }
             autonomousUpdate();
