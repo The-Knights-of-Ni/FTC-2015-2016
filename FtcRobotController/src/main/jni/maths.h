@@ -147,6 +147,23 @@ struct v5f
 };
 /*End of Vector Structs*/
 /*Start of Matrix Structs*/
+struct m2x2f
+{
+    union
+    {
+        float data[4];
+        struct
+        {
+            v2f r0;
+            v2f r1;
+        };
+        v2f rows[2];
+    };
+    inline float & operator[](int a)
+    {
+        return data[a];
+    }
+};
 struct m3x3f
 {
     union
@@ -221,6 +238,29 @@ struct m4x5f
             v5f r3;
         };
         v5f rows[4];
+    };
+
+    inline float & operator[](int a)
+    {
+        return data[a];
+    }
+};
+
+struct m5x5f
+{
+    union
+    {
+        float data[25];
+        struct
+        {
+            v5f r0;
+            v5f r1;
+            v5f r2;
+            v5f r3;
+            v5f r4;
+            v5f r5;
+        };
+        v5f rows[5];
     };
 
     inline float & operator[](int a)
@@ -498,8 +538,18 @@ v5f operator-(v5f a, v5f b)
     return output;
 }
 /* End of 5D Vector Functions */
-
+/* Start of 2x2 matrix functions */
+inline float m2x2determinant(m2x2f m)
+{
+    return m[0]*m[3] - m[1]*m[2];
+}
 /* Start of 3x3 matrix functions */
+inline float m3x3determinant(m3x3f m)
+{
+    return m[0]*m2x2determinant( (m2x2f) {m[4],m[5],m[7],m[8]})
+         - m[1]*m2x2determinant( (m2x2f) {m[3],m[5],m[6],m[8]})
+         + m[3]*m2x2determinant( (m2x2f) {m[3],m[4],m[6],m[7]});
+}
 inline m3x3f quaternionToMatrix(v4f q)
 {
     m3x3f matrix = {
@@ -511,6 +561,13 @@ inline m3x3f quaternionToMatrix(v4f q)
 }
 /* End of 3x3 matrix Functions */
 /* Start of 4x4 matrix Functions */
+inline float m4x4determinant(m4x4f m)
+{
+    return m[0]*m3x3determinant( (m3x3f) {m[5], m[6], m[7], m[9], m[10], m[11], m[13], m[14], m[15]})
+         - m[1]*m3x3determinant( (m3x3f) {m[4], m[6], m[7], m[8], m[10], m[11], m[12], m[14], m[15]})
+         + m[2]*m3x3determinant( (m3x3f) {m[4], m[5], m[7], m[8], m[9], m[11], m[12], m[13], m[15]})
+         - m[4]*m3x3determinant( (m3x3f) {m[4], m[5], m[6], m[8], m[9], m[10], m[12], m[13], m[14]});
+}
 inline m4x4f quaternionTo4x4Matrix(v4f q)
 {
     m4x4f matrix = {
@@ -673,7 +730,40 @@ v4f solve(m4x5f equations)
     return solutions;
 }
 /* End of 4x5 matrix Functions */
+/* Start of 5x5 matrix Functions */
+inline float m5x5determinant(m5x5f m)
+{
+    return m[0]*m4x4determinant( (m4x4f) { m[6], m[7], m[8], m[9], m[11], m[12], m[13], m[14], m[16], m[17], m[18], m[19], m[21], m[22], m[23], m[24]})
+         - m[0]*m4x4determinant( (m4x4f) { m[5], m[7], m[8], m[9], m[10], m[12], m[13], m[14], m[15], m[17], m[18], m[19], m[20], m[22], m[23], m[24]})
+         + m[0]*m4x4determinant( (m4x4f) { m[5], m[6], m[8], m[9], m[10], m[11], m[13], m[14], m[15], m[16], m[18], m[19], m[20], m[21], m[23], m[24]})
+         - m[0]*m4x4determinant( (m4x4f) { m[5], m[6], m[7], m[9], m[10], m[11], m[12], m[14], m[15], m[16], m[17], m[19], m[20], m[21], m[22], m[24]})
+         + m[0]*m4x4determinant( (m4x4f) { m[5], m[6], m[7], m[8], m[10], m[11], m[12], m[13], m[15], m[16], m[17], m[18], m[20], m[21], m[22], m[23]});
+}
 
+v5f solve5x5LinearSystem(m5x5f c, v5f a)//C = Coefficients, A = answers, cx = a
+{
+    float det = m5x5determinant(c);
+    if(det == 0)
+        return {0, 0, 0, 0, 0};//Unable to get unique solution
+    v5f answer;
+    answer[0] = m5x5determinant( (m5x5f) {a[0], c[1], c[2], c[3], c[4], a[1], c[6], c[7], c[8], c[9],
+                                  a[2], c[11], c[12], c[13], c[14], a[3], c[16], c[17], c[18], c[19],
+                                  a[4], c[21], c[22], c[23], c[24]})/det;
+    answer[1] = m5x5determinant( (m5x5f) {c[0], a[0], c[2], c[3], c[4], c[5], a[1], c[7], c[8], c[9],
+                                 c[10], a[2], c[12], c[13], c[14], c[15], a[3], c[17], c[18], c[19],
+                                 c[20], a[4], c[22], c[23], c[24]})/det;
+    answer[2] = m5x5determinant( (m5x5f) {c[0], c[1], a[0], c[3], c[4], c[5], c[6], a[1], c[8], c[9],
+                                 c[10], c[11], a[2], c[13], c[14], c[15], c[16], a[3], c[18], c[19],
+                                 c[20], c[21], a[4], c[23], c[24]})/det;
+    answer[3] = m5x5determinant( (m5x5f) {c[0], c[1], c[2], a[0], c[4], c[5], c[6], c[7], a[1], c[9],
+                                 c[10], c[11], c[12], a[2], c[14], c[15], c[16], c[17], a[3], c[19],
+                                 c[20], c[21], c[22], a[4], c[24]})/det;
+    answer[4] = m5x5determinant( (m5x5f) {c[0], c[1], c[2], c[3], a[0], c[5], c[6], c[7], c[8], a[1],
+                                 c[10], c[11], c[12], c[13], a[2], c[15], c[16], c[17], c[18], a[3],
+                                 c[20], c[21], c[22], c[23], a[4]})/det;
+    return answer;
+}
+/* End of 5x5 matrix Functions*/
 float lerp(float a, float b, float t)
 {
     if (t > 1.0f) return b;
@@ -689,6 +779,21 @@ bool isAngleGreaterDeg(float a, float b)//TODO: Better name
     else
         return a > (b-360);
 
+}
+
+float boundAngleNegPiToPiRadians(float angle) {
+   // Naive algorithm
+   while (angle >= pi) {
+       angle -= 2.0 * pi;
+   }
+   while (angle < -pi) {
+       angle += 2.0 * pi;
+   }
+   return angle;
+ }
+
+float getDifferenceInAngleRadians(float from, float to) {
+  return boundAngleNegPiToPiRadians(to - from);
 }
 
 float signedCanonicalizeAngleDeg(float a)

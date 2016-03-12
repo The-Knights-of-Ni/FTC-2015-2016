@@ -280,7 +280,10 @@ absi	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    int absi(int 
 acc_x	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public float acc_x = 0.0f;$/;"	f	class:IMU
 acc_y	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public float acc_y = 0.0f;$/;"	f	class:IMU
 acc_z	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public float acc_z = 0.0f;$/;"	f	class:IMU
+acceleration_time	.\jni\autonomous.h	/^        float v_cruise, max_acceleration, acceleration_time, distance_while_cruising, distance_while_accelerating, distance_while_deccelerating, totalDistance;$/;"	m	struct:trapezoidalMotionProfile
 acceptableAngleError	.\jni\drive.h	31;"	d
+accumulated_distance	.\jni\autonomous.h	/^        float accumulated_distance = 0;$/;"	m	struct:trapezoidalMotionProfile
+accumulated_velocity	.\jni\autonomous.h	/^        float accumulated_velocity = 0;$/;"	m	struct:trapezoidalMotionProfile
 action_flag	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IMU.java	/^    public static final int action_flag = 31;$/;"	f	class:IMU
 add	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^    static void add(float[] a, float[] b)$/;"	m	class:Mk2Teleop
 addListenerOnAligned	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    private void addListenerOnAligned() {$/;"	m	class:FtcRobotControllerActivity	file:
@@ -536,6 +539,9 @@ dim_digital_pin	.\jni\robotics.h	36;"	d
 dim_digital_pins	.\jni\robotics.h	35;"	d
 dimmer	.\java\com\qualcomm\ftcrobotcontroller\FtcRobotControllerActivity.java	/^    protected Dimmer dimmer;$/;"	f	class:FtcRobotControllerActivity
 dist_to_treads	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    public static final float dist_to_treads = (float) 7.04;\/\/Currently in inches, not sure if we have standard units$/;"	f	class:Drive
+distance_while_accelerating	.\jni\autonomous.h	/^        float v_cruise, max_acceleration, acceleration_time, distance_while_cruising, distance_while_accelerating, distance_while_deccelerating, totalDistance;$/;"	m	struct:trapezoidalMotionProfile
+distance_while_cruising	.\jni\autonomous.h	/^        float v_cruise, max_acceleration, acceleration_time, distance_while_cruising, distance_while_accelerating, distance_while_deccelerating, totalDistance;$/;"	m	struct:trapezoidalMotionProfile
+distance_while_deccelerating	.\jni\autonomous.h	/^        float v_cruise, max_acceleration, acceleration_time, distance_while_cruising, distance_while_accelerating, distance_while_deccelerating, totalDistance;$/;"	m	struct:trapezoidalMotionProfile
 doHand	.\jni\arm.h	/^void doHand()$/;"	f
 doIntake	.\jni\arm.h	/^void doIntake()$/;"	f
 dot	.\jni\maths.h	/^float dot(v2f a, v2f b)$/;"	f
@@ -545,6 +551,7 @@ double_close_case	.\jni\arm.h	/^int double_close_case = 0;$/;"	v
 double_close_hand_completed	.\jni\arm.h	/^bool8 double_close_hand_completed = 0;$/;"	v
 driveDistCm	.\jni\autonomous.h	/^inline void driveDistCm(float dist, float vIs, float max_acceleration = default_max_acceleration*cm)$/;"	f
 driveDistIn	.\jni\autonomous.h	/^void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acceleration)$/;"	f
+driveDistInFFWD	.\jni\autonomous.h	/^void driveDistInFFWD(float dist, float v_cruise, float max_acceleration = default_max_acceleration)$/;"	f
 driveOnCourseCm	.\jni\autonomous.h	/^inline void driveOnCourseCm(float dist, float vIs,$/;"	f
 driveOnCourseIn	.\jni\autonomous.h	/^void driveOnCourseIn(float dist, float vIs,$/;"	f
 driveStraight	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    public float[] driveStraight(float heading, float target)\/\/Call when stick is +- 1 y, need a state machine for this. (if stick forward, then set heading and run this)$/;"	m	class:Drive
@@ -618,6 +625,7 @@ getArmTargetsPolar	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java
 getArmTargetsRectangular	.\java\com\qualcomm\ftcrobotcontroller\opmodes\IK_solver.java	/^    public static float[] getArmTargetsRectangular(float[] hand, boolean mode)$/;"	m	class:IK_solver
 getBeaconColor	.\jni\vision.h	/^bool8 getBeaconColor()$/;"	f
 getControl	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk2Teleop.java	/^        float getControl(float p, float p2, float dt)$/;"	m	class:Mk2Teleop.PIDController
+getData	.\jni\autonomous.h	/^        v3f getData(float time_elapsed)$/;"	f	struct:trapezoidalMotionProfile
 getDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk4Auto.java	/^public double getDouble(int index)$/;"	m	class:Mk4Auto
 getDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk4AutoDeploy.java	/^public double getDouble(int index)$/;"	m	class:Mk4AutoDeploy
 getDouble	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk4Teleop.java	/^public double getDouble(int index)$/;"	m	class:Mk4Teleop
@@ -921,6 +929,7 @@ main	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Mk4Teleop.java	/^native void
 main	.\java\com\qualcomm\ftcrobotcontroller\opmodes\test.java	/^native void main();$/;"	m	class:test
 main	.\jni\jni_functions.h	/^int main(int n_args, char ** args)$/;"	f
 max	.\jni\misc.h	12;"	d
+max_acceleration	.\jni\autonomous.h	/^        float v_cruise, max_acceleration, acceleration_time, distance_while_cruising, distance_while_accelerating, distance_while_deccelerating, totalDistance;$/;"	m	struct:trapezoidalMotionProfile
 max_java_code	.\jni\jni_functions.h	40;"	d
 mc	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\MatrixControllerDemo.java	/^    private MatrixDcMotorController mc;$/;"	f	class:MatrixControllerDemo	file:
 megabyte	.\jni\misc.h	46;"	d
@@ -1442,9 +1451,13 @@ toggle	.\jni\Button.h	/^    bool toggle(int btn)$/;"	f	struct:Button
 toggleByte	.\jni\Button.h	/^    int toggleByte;$/;"	m	struct:Button
 tolerantEquals	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    private static boolean tolerantEquals(float val1, float val2, float absoluteTolerance)$/;"	m	class:Drive	file:
 tolerantEquals	.\jni\maths.h	/^bool tolerantEquals(float a, float b, float tolerance)$/;"	f
+totalDistance	.\jni\autonomous.h	/^        float v_cruise, max_acceleration, acceleration_time, distance_while_cruising, distance_while_accelerating, distance_while_deccelerating, totalDistance;$/;"	m	struct:trapezoidalMotionProfile
+total_time	.\jni\autonomous.h	/^        float total_time = 0;$/;"	m	struct:trapezoidalMotionProfile
 touchSensor	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotDriveTouch.java	/^    TouchSensor touchSensor;$/;"	f	class:PushBotDriveTouch
 tractionControl	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    public static float[] tractionControl(float rightVelocity, float leftVelocity, float omega, float v)$/;"	m	class:Drive
 traction_reduction_constant	.\java\com\qualcomm\ftcrobotcontroller\opmodes\Drive.java	/^    public static final float traction_reduction_constant = (float) 0.25;$/;"	f	class:Drive
+trapezoidalMotionProfile	.\jni\autonomous.h	/^        trapezoidalMotionProfile(v_cruise_in, max_acceleration_in, max_velocity_in, total_distance_in, final_velocity_in)$/;"	f	struct:trapezoidalMotionProfile
+trapezoidalMotionProfile	.\jni\autonomous.h	/^struct trapezoidalMotionProfile$/;"	s
 trigger_press_threshold	.\jni\Button.h	44;"	d
 turnRelDeg	.\jni\autonomous.h	/^void turnRelDeg(float angle, float vIs)$/;"	f
 turnTime	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\CompassCalibration.java	/^  private double turnTime = 20.0;$/;"	f	class:CompassCalibration	file:
@@ -1500,6 +1513,7 @@ v3s	.\jni\maths.h	/^struct v3s$/;"	s
 v4f	.\jni\maths.h	/^struct v4f$/;"	s
 v5f	.\jni\maths.h	/^struct v5f$/;"	s
 v_arm_state	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotAutoSensors.java	/^    private int v_arm_state = 0;$/;"	f	class:PushBotAutoSensors	file:
+v_cruise	.\jni\autonomous.h	/^        float v_cruise, max_acceleration, acceleration_time, distance_while_cruising, distance_while_accelerating, distance_while_deccelerating, totalDistance;$/;"	m	struct:trapezoidalMotionProfile
 v_motor_left_arm	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private DcMotor v_motor_left_arm;$/;"	f	class:PushBotHardware	file:
 v_motor_left_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private DcMotor v_motor_left_drive;$/;"	f	class:PushBotHardware	file:
 v_motor_right_drive	.\java\com\qualcomm\ftcrobotcontroller\opmodes\example opmodes\PushBotHardware.java	/^    private DcMotor v_motor_right_drive;$/;"	f	class:PushBotHardware	file:
