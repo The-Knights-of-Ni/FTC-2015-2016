@@ -17,7 +17,10 @@ import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+import android.os.Environment;
 
 
 public class Mk4Teleop extends LinearOpMode {
@@ -26,13 +29,18 @@ int rsid_current = 0;
 public Mk4Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[196];
+    robot_state = new byte[232];
 }
 
 
 public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
 {
     return ByteBuffer.wrap(joystick, 42, 4).getInt();
+}
+
+public void zeroIMU()
+{
+    imu.rezero();
 }
 
 public void setShort(int index, short a)
@@ -154,32 +162,35 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-left_drive.setPower(getFloat(56));
-right_drive.setPower(getFloat(60));
-winch.setPower(getFloat(64));
-shoulder.setPower(getFloat(68));
-intake.setPower(getFloat(72));
-hand.setPosition(getFloat(76));
-wrist.setPosition(getFloat(80));
-hook_left.setPosition(getFloat(84));
-hook_right.setPosition(getFloat(88));
-intake_tilt.setPosition(getFloat(92));
-score_hook.setPosition(getFloat(96));
-telemetry.addData("shoulder theta", getFloat(100));
-telemetry.addData("shoulder_compensation", getFloat(104));
-telemetry.addData("left_drive_compensation", getFloat(108));
-telemetry.addData("right_drive_compensation", getFloat(112));
-telemetry.addData("left_drive_theta", getFloat(116));
-telemetry.addData("right_drive_theta", getFloat(120));
-telemetry.addData("left_drive_active", getInt(124));
-telemetry.addData("shoulder_active", getInt(128));
-telemetry.addData("slider 0", getInt(36));
-telemetry.addData("slider 1", getInt(40));
-telemetry.addData("slider 2", getInt(44));
-telemetry.addData("slider 3", getInt(48));
-telemetry.addData("forearm theta", getFloat(132));
-telemetry.addData("shoulder power", getFloat(68));
-telemetry.addData("arm stage", getFloat(136));
+telemetry.addData("imu heading", getShort(68)/16.0);
+telemetry.addData("imu tilt", getShort(70)/16.0);
+telemetry.addData("imu roll", getShort(72)/16.0);
+left_drive.setPower(getFloat(92));
+right_drive.setPower(getFloat(96));
+winch.setPower(getFloat(100));
+shoulder.setPower(getFloat(104));
+intake.setPower(getFloat(108));
+hand.setPosition(getFloat(112));
+wrist.setPosition(getFloat(116));
+hook_left.setPosition(getFloat(120));
+hook_right.setPosition(getFloat(124));
+intake_tilt.setPosition(getFloat(128));
+score_hook.setPosition(getFloat(132));
+telemetry.addData("intake theta", getFloat(136));
+telemetry.addData("shoulder_compensation", getFloat(140));
+telemetry.addData("left_drive_compensation", getFloat(144));
+telemetry.addData("right_drive_compensation", getFloat(148));
+telemetry.addData("left_drive_theta", getFloat(152));
+telemetry.addData("right_drive_theta", getFloat(156));
+telemetry.addData("left_drive_active", getInt(160));
+telemetry.addData("shoulder_active", getInt(164));
+telemetry.addData("slider 0", getInt(48));
+telemetry.addData("slider 1", getInt(52));
+telemetry.addData("slider 2", getInt(56));
+telemetry.addData("slider 3", getInt(60));
+telemetry.addData("forearm theta", getFloat(168));
+telemetry.addData("shoulder power", getFloat(104));
+telemetry.addData("arm stage", getFloat(172));
 
 }
 
@@ -221,37 +232,68 @@ setInt(28, dim.getAnalogInputValue(shoulder_potentiometer_port));
 rsid_current = 32;
 }
 {
-setInt(32, (FtcRobotControllerActivity.red ? 1 : 0));
+setInt(32, dim.getAnalogInputValue(intake_potentiometer_port));
 
 rsid_current = 36;
 }
 {
-setInt(36, FtcRobotControllerActivity.slider_0);
+setFloat(36, (float)left_drive_voltage.getVoltage());
 
 rsid_current = 40;
 }
 {
-setInt(40, FtcRobotControllerActivity.slider_1);
+setFloat(40, (float)right_drive_voltage.getVoltage());
 
 rsid_current = 44;
 }
 {
-setInt(44, FtcRobotControllerActivity.slider_2);
+setInt(44, (FtcRobotControllerActivity.red ? 1 : 0));
 
 rsid_current = 48;
 }
 {
-setInt(48, FtcRobotControllerActivity.slider_3);
+setInt(48, FtcRobotControllerActivity.slider_0);
 
 rsid_current = 52;
 }
 {
-setInt(52, dim.getDigitalInputStateByte());
+setInt(52, FtcRobotControllerActivity.slider_1);
 
 rsid_current = 56;
 }
 {
-rsid_current = 140;
+setInt(56, FtcRobotControllerActivity.slider_2);
+
+rsid_current = 60;
+}
+{
+setInt(60, FtcRobotControllerActivity.slider_3);
+
+rsid_current = 64;
+}
+{
+setInt(64, dim.getDigitalInputStateByte());
+
+rsid_current = 68;
+}
+{
+rsid_current = 68;
+if(imu.checkForUpdate()) {
+    setRelative(imu.eul_x);
+setRelative( imu.eul_y);
+setRelative( imu.eul_z);
+setRelative( imu.gyr_x);
+setRelative( imu.gyr_y);
+setRelative( imu.gyr_z);
+setRelative( imu.vel_x);
+setRelative( imu.vel_y);
+setRelative( imu.vel_z);
+;
+}
+
+}
+{
+rsid_current = 176;
 int gamepad1_buttons = 0;
 try
 {
@@ -272,7 +314,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 168;
+rsid_current = 204;
 int gamepad2_buttons = 0;
 try
 {
@@ -294,9 +336,12 @@ setRelative( gamepad2_buttons);
 
 }
 /* Start Motor Definitions */
-int elbow_potentiometer_port = 7;
-int shoulder_potentiometer_port = 1;
+VoltageSensor left_drive_voltage;
+VoltageSensor right_drive_voltage;
 DeviceInterfaceModule dim;
+IMU imu;int elbow_potentiometer_port = 7;
+int shoulder_potentiometer_port = 1;
+int intake_potentiometer_port = 5;
 
 DcMotor left_drive;
 DcMotor right_drive;
@@ -310,7 +355,15 @@ Servo hook_left;
 Servo hook_right;
 Servo intake_tilt;
 Servo score_hook;
-/* End Motor Definitions */
+/* End Motor Definitions */public boolean isExternalStorageWritable()
+{
+    String state = Environment.getExternalStorageState();
+    if (Environment.MEDIA_MOUNTED.equals(state)) {
+        return true;
+    }
+    return false;
+}
+
 
 native void main();
 
@@ -321,7 +374,27 @@ static
 
 @Override public void runOpMode() throws InterruptedException
 {
+left_drive_voltage = hardwareMap.voltageSensor.get("Left Drive + Shoulder");
+right_drive_voltage = hardwareMap.voltageSensor.get("Intake + Right Drive");
 dim = hardwareMap.deviceInterfaceModule.get("dim");
+I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
+imu = new IMU(imu_i2c_device, this);
+int error = imu.init(IMU.mode_ndof,
+        (byte) (IMU.units_acc_m_per_s2 |
+                IMU.units_angle_deg |
+                IMU.units_angular_vel_deg_per_s |
+                IMU.units_temp_C |
+                IMU.units_pitch_convention_android));
+if (error != 0) {
+    for (; ; ) {
+        telemetry.addData("error initializing imu", 0);
+        waitOneFullHardwareCycle();
+    }
+}
+imu.vel_x = 0.0f;
+imu.vel_y = 0.0f;
+imu.vel_z = 0.0f; 
+
 left_drive  = hardwareMap.dcMotor.get("leftd");
 right_drive = hardwareMap.dcMotor.get("rightd");
 shoulder    = hardwareMap.dcMotor.get("shoulder");
@@ -350,6 +423,8 @@ hook_left.setDirection(Servo.Direction.REVERSE);
 intake_tilt = hardwareMap.servo.get("intake_tilt");
 //intake_tilt.setDirection(Servo.Direction.REVERSE);
 score_hook = hardwareMap.servo.get("score_hook");
+telemetry.addData("ready", "");
+
     main();
 }
 }

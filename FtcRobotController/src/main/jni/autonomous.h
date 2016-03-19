@@ -3,28 +3,6 @@
 #define BUTTON //This should make it so we don't have buttons we don't need in auto
 #include "white_rabbit.h"
 
-struct imu_state
-{
-    v3s orientation;
-    v3f velocity;
-};
-
-imu_state * pimu_values;
-//#define imu_heading (pimu_values->orientation.x)
-float imu_heading = 0;
-float imu_tilt = 0;
-float imu_roll = 0;
-float imu_heading_omega = 0;
-float imu_tilt_omega = 0;
-float imu_roll_omega = 0;
-/* #define imu_tilt (pimu_values->orientation.y) */
-/* #define imu_roll (pimu_values->orientation.z) */
-#define imu_vel (pimu_values->velocity)
-
-void (*customAutonomousUpdate)();
-
-v3f imu_orientation_offsets;
-
 void autonomousUpdate()
 {
     dt = time-current_time;
@@ -34,12 +12,8 @@ void autonomousUpdate()
     updateArmSensors();
     customAutonomousUpdate();
     updateRobot();
-    if(imu_heading_omega != imu_heading_omega) imu_heading_omega = 0;
-    v3f current_orientation = {pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};
-    v3f imu_orientation = current_orientation - imu_orientation_offsets;
-    lowpassFirstDerivativeUpdate(imu_orientation.x/-16.0, &imu_heading, &imu_heading_omega, 10);
-    lowpassFirstDerivativeUpdate(imu_orientation.y/-16.0, &imu_tilt, &imu_tilt_omega, 10);
-    lowpassFirstDerivativeUpdate(imu_orientation.z/-16.0, &imu_roll, &imu_roll_omega, 10);
+
+    updateIMU();    
 }
 
 void wait(float wait_time)

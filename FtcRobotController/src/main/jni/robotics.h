@@ -8,6 +8,7 @@
 #define ROBOTICS
 
 #include "maths.h"
+#include "logging.h"
 
 #ifndef USING_SIMULATOR
 #include "jni_functions.h"
@@ -150,5 +151,49 @@ enum Colors
     BLUE,
     RED
 };
+
+struct imu_state
+{
+    v3s orientation;
+    v3s angular_velocity;
+    v3f velocity;
+};
+
+v3f imu_orientation_offsets = {0, 0, 0};
+
+imu_state * pimu_values;
+float imu_heading = 0;
+float imu_tilt = 0;
+float imu_roll = 0;
+float imu_heading_omega = 0;
+float imu_tilt_omega = 0;
+float imu_roll_omega = 0;
+#define imu_vel (pimu_values->velocity)
+
+void (*customAutonomousUpdate)();
+
+void updateIMU()
+{
+    if(imu_heading_omega != imu_heading_omega) imu_heading_omega = 0;
+    v3f current_orientation = {pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};
+    v3f imu_orientation = current_orientation - imu_orientation_offsets;
+    #if 0
+    lowpassFirstDerivativeUpdate(imu_orientation.x/-16.0, &imu_heading, &imu_heading_omega, 138);
+    lowpassFirstDerivativeUpdate(imu_orientation.y/-16.0, &imu_tilt, &imu_tilt_omega, 138);
+    lowpassFirstDerivativeUpdate(imu_orientation.z/-16.0, &imu_roll, &imu_roll_omega, 138);
+    #else
+    imu_heading = imu_orientation.x/-16.0;
+    imu_tilt = imu_orientation.y/-16.0;
+    imu_roll = imu_orientation.z/-16.0;
+
+    imu_heading_omega = pimu_values->angular_velocity.x/-16.0;
+    imu_tilt_omega = pimu_values->angular_velocity.y/-16.0;
+    imu_roll_omega = pimu_values->angular_velocity.z/-16.0;
+    
+    #endif
+    
+    log("heading: %f, %f, tilt: %f, %f, roll: %f %f",
+        imu_heading, imu_heading_omega, imu_tilt, imu_tilt_omega, imu_roll, imu_roll_omega);
+}
 
 #endif //ROBOTICS

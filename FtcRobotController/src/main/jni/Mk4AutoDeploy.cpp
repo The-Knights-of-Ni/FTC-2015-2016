@@ -29,6 +29,12 @@ void Mk4AutonomousDeployUpdate()
     
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
+            
+    shoulder *= 14.0/left_drive_voltage;
+    winch *= 14.0/left_drive_voltage;
+    
+    shoulder = clamp(shoulder, -1.0, 1.0);
+    winch = clamp(winch, -1.0, 1.0);
     if(winch > 0.0 && !tension_switch) winch = 0.0;
     
     left_drive *= 14.0/left_drive_voltage;
@@ -262,6 +268,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     pshoulder_encoder = jniIntIn("return shoulder.getCurrentPosition();");
     pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
     pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
+    pintake_potentiometer = jniIntIn("return dim.getAnalogInputValue(intake_potentiometer_port);");
     pleft_drive_voltage = jniFloatIn("return (float)left_drive_voltage.getVoltage();");
     pright_drive_voltage = jniFloatIn("return (float)right_drive_voltage.getVoltage();");
     
@@ -270,7 +277,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     pimu_values = jniStructIn(
         imu_state,
         "if(imu.checkForUpdate()) {\n"
-        "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
+        "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.gyr_x, imu.gyr_y, imu.gyr_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
         "}\n");
     
     pcurrent_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
@@ -309,7 +316,6 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     jniGenerate();
     
-    intake_out = true;
     intake_time = 1000;
     wrist = wrist_level_position;
     wrist_tilt = false;
@@ -375,7 +381,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         #if 1 //enable arm
         suppress_arm = false;
         
-        intake_out = true;
+        setIntakeOut();
         intake_time = 0.0;
         wait(0.5);
         

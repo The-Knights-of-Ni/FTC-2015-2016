@@ -63,13 +63,20 @@ void jniMain(JNIEnv * _env, jobject _self)
                          "import com.qualcomm.robotcore.hardware.DcMotor;\n"
                          "import com.qualcomm.robotcore.hardware.DcMotorController;\n"
                          "import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;\n"
-                         "import com.qualcomm.robotcore.hardware.Servo;\n");
+                         "import com.qualcomm.robotcore.hardware.I2cDevice;\n"
+                         "import com.qualcomm.robotcore.hardware.Servo;\n"
+                         "import com.qualcomm.robotcore.hardware.VoltageSensor;\n"
+                         logging_jni_import_string);
     
     //TODO: shortcut for defining and declaring motors, servos, etc.
     jni_variables_string = ("/* Start Motor Definitions */\n"
+                            "VoltageSensor left_drive_voltage;\n"
+                            "VoltageSensor right_drive_voltage;\n"
+                            "DeviceInterfaceModule dim;\n"
+                            "IMU imu;"
                             "int elbow_potentiometer_port = 7;\n"
                             "int shoulder_potentiometer_port = 1;\n"
-                            "DeviceInterfaceModule dim;\n"
+                            "int intake_potentiometer_port = 5;\n"
                             "\n"
                             "DcMotor left_drive;\n"
                             "DcMotor right_drive;\n"
@@ -83,9 +90,30 @@ void jniMain(JNIEnv * _env, jobject _self)
                             "Servo hook_right;\n"
                             "Servo intake_tilt;\n"
                             "Servo score_hook;\n"
-                            "/* End Motor Definitions */");
+                            "/* End Motor Definitions */"
+                            logging_jni_misc_string);
     
-    jni_run_opmode_string = ("dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
+    jni_run_opmode_string = ("left_drive_voltage = hardwareMap.voltageSensor.get(\"Left Drive + Shoulder\");\n"
+                             "right_drive_voltage = hardwareMap.voltageSensor.get(\"Intake + Right Drive\");\n"
+                             "dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
+                             "I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get(\"imu\");\n"
+                             "imu = new IMU(imu_i2c_device, this);\n"
+                             "int error = imu.init(IMU.mode_ndof,\n"
+                             "        (byte) (IMU.units_acc_m_per_s2 |\n"
+                             "                IMU.units_angle_deg |\n"
+                             "                IMU.units_angular_vel_deg_per_s |\n"
+                             "                IMU.units_temp_C |\n"
+                             "                IMU.units_pitch_convention_android));\n"
+                             "if (error != 0) {\n"
+                             "    for (; ; ) {\n"
+                             "        telemetry.addData(\"error initializing imu\", 0);\n"
+                             "        waitOneFullHardwareCycle();\n"
+                             "    }\n"
+                             "}\n"
+                             "imu.vel_x = 0.0f;\n"
+                             "imu.vel_y = 0.0f;\n"
+                             "imu.vel_z = 0.0f; \n"
+                             "\n"
                              "left_drive  = hardwareMap.dcMotor.get(\"leftd\");\n"
                              "right_drive = hardwareMap.dcMotor.get(\"rightd\");\n"
                              "shoulder    = hardwareMap.dcMotor.get(\"shoulder\");\n"
@@ -113,12 +141,18 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "hook_left.setDirection(Servo.Direction.REVERSE);\n"
                              "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
                              "//intake_tilt.setDirection(Servo.Direction.REVERSE);\n"
-                             "score_hook = hardwareMap.servo.get(\"score_hook\");");
+                             "score_hook = hardwareMap.servo.get(\"score_hook\");\n"
+                             "telemetry.addData(\"ready\", \"\");\n");
     
     jni_misc_string = (
         "public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.\n"
         "{\n"
         "    return ByteBuffer.wrap(joystick, 42, 4).getInt();\n"
+        "}\n"
+        "\n"
+        "public void zeroIMU()\n"
+        "{\n"
+        "    imu.rezero();\n"
         "}\n");
     
     ptime = jniDoubleIn("return time;");
@@ -128,6 +162,10 @@ void jniMain(JNIEnv * _env, jobject _self)
     pshoulder_encoder = jniIntIn("return shoulder.getCurrentPosition();");
     pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
     pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
+    pintake_potentiometer = jniIntIn("return dim.getAnalogInputValue(intake_potentiometer_port);");
+    pleft_drive_voltage = jniFloatIn("return (float)left_drive_voltage.getVoltage();");
+    pright_drive_voltage = jniFloatIn("return (float)right_drive_voltage.getVoltage();");
+    
     pcurrent_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
     
     pslider0 = jniIntIn("return FtcRobotControllerActivity.slider_0;");
@@ -136,6 +174,18 @@ void jniMain(JNIEnv * _env, jobject _self)
     pslider3 = jniIntIn("return FtcRobotControllerActivity.slider_3;");
     
     pdim_digital_pins = jniIntIn("return dim.getDigitalInputStateByte();");
+    
+    pimu_values = jniStructIn(
+        imu_state,
+        "if(imu.checkForUpdate()) {\n"
+        "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.gyr_x, imu.gyr_y, imu.gyr_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
+        "}\n");
+    short * pimu_heading = &(pimu_values->orientation.x);
+    jniOut("telemetry.addData(\"imu heading\", ", pimu_heading, "/16.0);");
+    short * pimu_tilt = &(pimu_values->orientation.y);
+    jniOut("telemetry.addData(\"imu tilt\", ", pimu_tilt, "/16.0);");
+    short * pimu_roll = &(pimu_values->orientation.z);
+    jniOut("telemetry.addData(\"imu roll\", ", pimu_roll, "/16.0);");
     
     jniOut("left_drive.setPower(", pleft_drive, ");");
     jniOut("right_drive.setPower(", pright_drive, ");");
@@ -153,7 +203,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     //TODO: telemetry queue
     float * pshoulder_print_theta;
     #define shoulder_print_theta (*pshoulder_print_theta)
-    jniOut("telemetry.addData(\"shoulder theta\", ", pshoulder_print_theta,");");
+    jniOut("telemetry.addData(\"intake theta\", ", pshoulder_print_theta,");");
     
     float * pshoulder_compensation_print = 0;
     #define shoulder_compensation_print (*pshoulder_compensation_print)
@@ -174,7 +224,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     float * pright_drive_print_theta = 0;
     #define right_drive_print_theta (*pright_drive_print_theta)
     jniOut("telemetry.addData(\"right_drive_theta\", ", pright_drive_print_theta,");");
-
+    
     int * pleft_drive_print_active = 0;
     #define left_drive_print_active (*pleft_drive_print_active)
     jniOut("telemetry.addData(\"left_drive_active\", ", pleft_drive_print_active,");");
@@ -231,6 +281,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     jniGenerate();
     
+    initLogfile();
+    
     Button pad1 = {};
     Button pad2 = {};
     v2f pad1stick1;
@@ -250,6 +302,9 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     shoulder_compensation = 0;
     
+    arm_tilt_adjustment = 0;
+    arm_tilt_omega_adjustment = 0;
+    
     wrist_tilt = 0;
     wrist_manual_control = 0;
     wrist_time = 0;
@@ -261,9 +316,27 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     score_mode = true;
     
-    zeroDriveSensors();
+    #ifndef GENERATE
+    jmethodID imu_rezero_id;
+    jobject imu_object;
+    {//get imu.rezero() method id
+        jclass imu_class = env->FindClass("com/qualcomm/ftcrobotcontroller/opmodes/IMU");
+        imu_rezero_id = env->GetMethodID(imu_class, "rezero", "()V");
+        imu_object = env->GetObjectField(self, env->GetFieldID(cls, "imu", "Lcom/qualcomm/ftcrobotcontroller/opmodes/IMU;"));
+    }
+    #endif
     
     waitForStart();
+    
+    zeroDriveSensors();
+    
+    robotStateIn();
+    
+    imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};;
+
+    #ifndef GENERATE
+    env->CallVoidMethod(imu_object, imu_rezero_id); //rezero imu
+    #endif
     
     robotStateIn();
     updateDriveSensors();
@@ -299,21 +372,47 @@ void jniMain(JNIEnv * _env, jobject _self)
         pad2stick1.y = gamepad2.joystick1.y;
         pad2stick2.x = gamepad2.joystick2.x;
         pad2stick2.y = gamepad2.joystick2.y;
+
+//============================== IMU =============================        
+        updateIMU();
         
 //============================= Drive ============================
         updateDriveSensors();
         
         auto drive_control = smoothJoysticks(drive_stick, 0, 0.2, 0.8, 1.0);
-        
-        if(!drive_toggle)
+
+        #if 0
+        if(fabs(drive_control.x) > deadzone_radius)
         {
-            left_drive = -drive_control.y + drive_control.x;
-            right_drive = -drive_control.y - drive_control.x;
+            float max_turn_power = 1.0;//-fabs(drive_control.y);
+            float target_turn_power = max_turn_power*drive_control.x;
+            float max_turn_omega = pi;//sprocket_pitch_radius*neverest_max_omega/drive_gear_ratio/drive_radius;
+            float target_heading_omega = target_turn_power*max_turn_omega;
+            float heading_omega_error = target_heading_omega-imu_heading_omega*pi/180.0;
+            heading_omega_ifactor += 10.0*heading_omega_error*dt;
+            left_drive  = +(target_turn_power + heading_omega_ifactor);
+            right_drive = -(target_turn_power + heading_omega_ifactor);
         }
         else
         {
-            left_drive = drive_control.y + drive_control.x;
-            right_drive = drive_control.y - drive_control.x;
+            left_drive = 0;
+            right_drive = 0;
+            heading_omega_ifactor = 0;
+        }
+        #else
+        left_drive  = +drive_control.x;
+        right_drive = -drive_control.x;
+        #endif
+        
+        if(!drive_toggle)
+        {
+            left_drive -= drive_control.y;
+            right_drive -= drive_control.y;
+        }
+        else
+        {
+            left_drive += drive_control.y;
+            right_drive += drive_control.y;
         }
         
         // if(!drive_control.dead)
@@ -354,7 +453,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         updateArmSensors();
         
         shoulder_compensation_print = shoulder_compensation;
-        shoulder_print_theta = shoulder_theta;
+        shoulder_print_theta = intake_theta;
         forearm_print_theta = inside_elbow_theta;
         shoulder_active_print = shoulder_active;
         
@@ -377,7 +476,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                 else
                 {
                     arm_line = 0;
-                    armFunction = armToIntakeMode;
+                    armFunction = armToScoreMode;
                 }
             }
             else if(arm_intake_mode_button)
@@ -392,7 +491,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                 else
                 {
                     arm_line = 0;
-                    armFunction = armToScoreMode;
+                    armFunction = armToIntakeMode;
                 }
             }
             
@@ -409,6 +508,15 @@ void jniMain(JNIEnv * _env, jobject _self)
             
             shoulder = clamp(shoulder, -1.0, 1.0);
             winch = clamp(winch, -1.0, 1.0);
+            
+            shoulder *= 14.0/left_drive_voltage;
+            winch *= 14.0/left_drive_voltage;
+            
+            shoulder = clamp(shoulder, -1.0, 1.0);
+            winch = clamp(winch, -1.0, 1.0);
+            
+            log("shoulder: %f. winch %f, shoulder_theta: %f, inside_elbow_theta: %f, intake_theta: %f, arm_line: %d\n",
+                shoulder,      winch,    shoulder_theta,     inside_elbow_theta,     intake_theta,     arm_line);
             if(winch > 0.0 && !tension_switch && inside_elbow_theta > pi) winch = 0.0;
         }
         else //Manual
@@ -420,6 +528,10 @@ void jniMain(JNIEnv * _env, jobject _self)
             target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
             target_shoulder_theta = shoulder_theta;
             target_inside_elbow_theta = inside_elbow_theta;
+
+            shoulder_compensation = 0;
+            arm_tilt_adjustment = 0;
+            arm_tilt_omega_adjustment = 0;
             
             float shoulder_control = filterArmJoystick(arm_stick[0]);
             float winch_control = filterArmJoystick(arm_stick[1]);
@@ -453,11 +565,6 @@ void jniMain(JNIEnv * _env, jobject _self)
         if(armOnIntakeSide())
         {
             setIntakeOut();
-        }
-        else if(intake_out_toggle)
-        {
-            intake_out = !intake_out;
-            intake_time = 0;
         }
         doIntake();
         intake_tilt += intake_tilt_manual/2.0;

@@ -2,6 +2,7 @@
 #define DRIVE
 
 #include "robotics.h"
+#include "logging.h"
 //TODO: Traction control
 //TODO: D-PAD Turn macros (90, 180, 270, simulated shift)
 //TODO: Delete this comment
@@ -25,6 +26,7 @@ int * pright_drive_encoder;
 #define right_drive_encoder (*pright_drive_encoder)
 
 #define sprocket_pitch_radius (3.13/2.0) //inches
+#define drive_radius 7
 #define encoderticks_per_inch (sprocket_pitch_radius*encoderticks_per_radian)
 #define encoderticks_per_cm (sprocket_pitch_radius*2.54*encoderticks_per_radian)
 #define acceptableAngleError 3
@@ -54,6 +56,8 @@ int n_valid_left_drive_angles = 0;
 int n_valid_right_drive_angles = 0;
 
 //current state
+float heading_omega_ifactor = 0;
+
 float left_drive_theta = 0;
 float left_drive_omega = 0;
 

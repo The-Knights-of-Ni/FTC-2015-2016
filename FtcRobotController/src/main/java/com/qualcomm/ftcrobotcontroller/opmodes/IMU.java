@@ -36,6 +36,10 @@ public class IMU
     
     public static final byte ACC_CONFIG      = 0x08;
     
+    public static final byte GYR_DATA_X      = 0x14;
+    public static final byte GYR_DATA_Y      = 0x16;
+    public static final byte GYR_DATA_Z      = 0x18;
+    
     public static final byte EUL_DATA_X      = 0x1A;
     public static final byte EUL_DATA_Y      = 0x1C;
     public static final byte EUL_DATA_Z      = 0x1E;
@@ -98,6 +102,10 @@ public class IMU
     public final static byte bCHIP_ID_VALUE = (byte) 0xA0;
     //////////////////////end constants//////////////////////
     
+    public short gyr_x = 0;
+    public short gyr_y = 0;
+    public short gyr_z = 0;
+    
     public short eul_x = 0;
     public short eul_y = 0;
     public short eul_z = 0;
@@ -136,7 +144,7 @@ public class IMU
     public final Lock write_lock;
     
     public int highest_read_address = 0x2D;
-    public int lowest_read_address = 0x1A;
+    public int lowest_read_address = 0x14;
     
     public int n_reads = 0;
     
@@ -381,7 +389,7 @@ public class IMU
         if(t < 0.0f) return a;
         return a+(b-a)*t;
     }
-
+    
     public void rezero()
     {
         n_reads = 0;//might not want to reset this, not sure
@@ -517,11 +525,15 @@ public class IMU
             try
             {
                 read_lock.lock();
-
+                
                 //timer
                 long new_time = System.nanoTime();
                 dt = 0.000000001f*(float)(new_time-old_time);
                 old_time = new_time;
+                
+                gyr_x = shortFromCache(GYR_DATA_X);
+                gyr_y = shortFromCache(GYR_DATA_Y);
+                gyr_z = shortFromCache(GYR_DATA_Z);
                 
                 eul_x = shortFromCache(EUL_DATA_X);
                 eul_y = shortFromCache(EUL_DATA_Y);
@@ -531,6 +543,7 @@ public class IMU
                 qua_x = shortFromCache(QUA_DATA_X);
                 qua_y = shortFromCache(QUA_DATA_Y);
                 qua_z = shortFromCache(QUA_DATA_Z);
+                
                 
                 lia_x = shortFromCache(LIA_DATA_X);
                 lia_y = shortFromCache(LIA_DATA_Y);
