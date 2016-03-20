@@ -140,6 +140,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         "IMU imu;"
         "int elbow_potentiometer_port = 7;\n"
         "int shoulder_potentiometer_port = 1;\n"
+        "int intake_potentiometer_port = 5;\n"
+        "int wrist_potentiometer_port = 3;\n"
         "\n"
         "DcMotor left_drive;\n"
         "DcMotor right_drive;\n"

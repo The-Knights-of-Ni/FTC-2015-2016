@@ -77,6 +77,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                             "int elbow_potentiometer_port = 7;\n"
                             "int shoulder_potentiometer_port = 1;\n"
                             "int intake_potentiometer_port = 5;\n"
+                            "int wrist_potentiometer_port = 3;\n"
                             "\n"
                             "DcMotor left_drive;\n"
                             "DcMotor right_drive;\n"
@@ -163,6 +164,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
     pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
     pintake_potentiometer = jniIntIn("return dim.getAnalogInputValue(intake_potentiometer_port);");
+    pwrist_potentiometer = jniIntIn("return dim.getAnalogInputValue(wrist_potentiometer_port);");
     pleft_drive_voltage = jniFloatIn("return (float)left_drive_voltage.getVoltage();");
     pright_drive_voltage = jniFloatIn("return (float)right_drive_voltage.getVoltage();");
     
@@ -240,7 +242,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     float * pforearm_print_theta;
     #define forearm_print_theta (*pforearm_print_theta)
-    jniOut("telemetry.addData(\"forearm theta\", ", pforearm_print_theta,");");
+    jniOut("telemetry.addData(\"wrist theta\", ", pforearm_print_theta,");");
     
     jniOut("telemetry.addData(\"shoulder power\", ", pshoulder,");");
     
@@ -454,7 +456,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         
         shoulder_compensation_print = shoulder_compensation;
         shoulder_print_theta = intake_theta;
-        forearm_print_theta = inside_elbow_theta;
+        forearm_print_theta = wrist_theta;
         shoulder_active_print = shoulder_active;
         
         if(arm_manual_toggle) //IK

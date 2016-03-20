@@ -30,7 +30,7 @@ int rsid_current = 0;
 public Mk4Auto()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[140];
+    robot_state = new byte[148];
 
 camera = FtcRobotControllerActivity.camera_preview.camera;
 Camera.Parameters parameters = camera.getParameters();
@@ -190,27 +190,27 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-left_drive.setPower(getFloat(68));
-right_drive.setPower(getFloat(72));
-winch.setPower(getFloat(76));
-shoulder.setPower(getFloat(80));
-intake.setPower(getFloat(84));
-hand.setPosition(getFloat(88));
-wrist.setPosition(getFloat(92));
-hook_left.setPosition(getFloat(96));
-hook_right.setPosition(getFloat(100));
-intake_tilt.setPosition(getFloat(104));
-telemetry.addData("Indicator:", getInt(108));
+left_drive.setPower(getFloat(76));
+right_drive.setPower(getFloat(80));
+winch.setPower(getFloat(84));
+shoulder.setPower(getFloat(88));
+intake.setPower(getFloat(92));
+hand.setPosition(getFloat(96));
+wrist.setPosition(getFloat(100));
+hook_left.setPosition(getFloat(104));
+hook_right.setPosition(getFloat(108));
+intake_tilt.setPosition(getFloat(112));
+telemetry.addData("Indicator:", getInt(116));
 telemetry.addData("left_drive_encoder:", getInt(12));
 telemetry.addData("right_drive_encoder:", getInt(8));
-telemetry.addData("beacon right:", (getInt(112) == 1 ? "red" : "blue"));
-telemetry.addData("heading:", getShort(44));
-telemetry.addData("target time:", getFloat(116));
-telemetry.addData("acceleration time:", getFloat(120));
-telemetry.addData("slider 0", getInt(124));
-telemetry.addData("slider 1", getInt(128));
-telemetry.addData("slider 2", getInt(132));
-telemetry.addData("slider 3", getInt(136));
+telemetry.addData("beacon right:", (getInt(120) == 1 ? "red" : "blue"));
+telemetry.addData("heading:", getShort(48));
+telemetry.addData("target time:", getFloat(124));
+telemetry.addData("acceleration time:", getFloat(128));
+telemetry.addData("slider 0", getInt(132));
+telemetry.addData("slider 1", getInt(136));
+telemetry.addData("slider 2", getInt(140));
+telemetry.addData("slider 3", getInt(144));
 
 }
 
@@ -252,26 +252,34 @@ setInt(28, dim.getAnalogInputValue(shoulder_potentiometer_port));
 rsid_current = 32;
 }
 {
-setFloat(32, (float)left_drive_voltage.getVoltage());
+setInt(32, dim.getAnalogInputValue(intake_potentiometer_port));
 
 rsid_current = 36;
 }
 {
-setFloat(36, (float)right_drive_voltage.getVoltage());
+setFloat(36, (float)left_drive_voltage.getVoltage());
 
 rsid_current = 40;
 }
 {
-setInt(40, dim.getDigitalInputStateByte());
+setFloat(40, (float)right_drive_voltage.getVoltage());
 
 rsid_current = 44;
 }
 {
-rsid_current = 44;
+setInt(44, dim.getDigitalInputStateByte());
+
+rsid_current = 48;
+}
+{
+rsid_current = 48;
 if(imu.checkForUpdate()) {
     setRelative(imu.eul_x);
 setRelative( imu.eul_y);
 setRelative( imu.eul_z);
+setRelative( imu.gyr_x);
+setRelative( imu.gyr_y);
+setRelative( imu.gyr_z);
 setRelative( imu.vel_x);
 setRelative( imu.vel_y);
 setRelative( imu.vel_z);
@@ -280,29 +288,29 @@ setRelative( imu.vel_z);
 
 }
 {
-setInt(64, (FtcRobotControllerActivity.red ? 1 : 0));
+setInt(72, (FtcRobotControllerActivity.red ? 1 : 0));
 
-rsid_current = 68;
+rsid_current = 76;
 }
 {
-setInt(124, FtcRobotControllerActivity.slider_0);
-
-rsid_current = 128;
-}
-{
-setInt(128, FtcRobotControllerActivity.slider_1);
-
-rsid_current = 132;
-}
-{
-setInt(132, FtcRobotControllerActivity.slider_2);
+setInt(132, FtcRobotControllerActivity.slider_0);
 
 rsid_current = 136;
 }
 {
-setInt(136, FtcRobotControllerActivity.slider_3);
+setInt(136, FtcRobotControllerActivity.slider_1);
 
 rsid_current = 140;
+}
+{
+setInt(140, FtcRobotControllerActivity.slider_2);
+
+rsid_current = 144;
+}
+{
+setInt(144, FtcRobotControllerActivity.slider_3);
+
+rsid_current = 148;
 }
 
 }
@@ -312,6 +320,8 @@ VoltageSensor right_drive_voltage;
 DeviceInterfaceModule dim;
 IMU imu;int elbow_potentiometer_port = 7;
 int shoulder_potentiometer_port = 1;
+int intake_potentiometer_port = 5;
+int wrist_potentiometer_port = 3;
 
 DcMotor left_drive;
 DcMotor right_drive;

@@ -36,6 +36,9 @@ float * pintake_tilt = 0;
 int * pintake_potentiometer;
 #define intake_potentiometer (*pintake_potentiometer)
 
+int * pwrist_potentiometer;
+#define wrist_potentiometer (*pwrist_potentiometer)
+
 float * pscore_hook = 0;
 #define score_hook (*pscore_hook)
 
@@ -77,10 +80,17 @@ float intake_potentiometer_angle;
 float intake_theta = 0.0;
 float intake_omega = 0.0;
 
+float wrist_potentiometer_angle;
+
+float wrist_theta = 0.0;
+float wrist_omega = 0.0;
+
 int arm_line = 0;
 float arm_time = 0;
 
 //target values
+float target_wrist_theta = 0;
+
 float target_intake_theta = 0;
 
 const float vertical_arm_theta = pi/2;
@@ -130,6 +140,13 @@ void updateArmSensors()
     
     if(intake_omega != intake_omega) intake_omega = 0;
     lowpassFirstDerivativeUpdate(intake_potentiometer_angle, &intake_theta, &intake_omega, 10);
+    
+    //wrist
+    wrist_potentiometer_angle = ((180.0f-potentiometer_range*0.5f+potentiometer_range*(wrist_potentiometer/(1023.0f)))
+                                       +0.0f)*pi/180.0f;
+    
+    if(wrist_omega != wrist_omega) wrist_omega = 0;
+    lowpassFirstDerivativeUpdate(wrist_potentiometer_angle, &wrist_theta, &wrist_omega, 10);
 }
 
 float filterArmJoystick(float a)
@@ -405,7 +422,7 @@ void armToPolarTarget()
     
     float arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
     
-    arm_tilt_adjustment = lerp(-imu_tilt*pi/180.0, arm_tilt_adjustment, exp(-25*dt));
+    arm_tilt_adjustment = lerp(-imu_tilt*pi/180.0, arm_tilt_adjustment, exp(-12*dt)); //TODO: tune this
     
     armToAngle(&target_arm_theta, arm_theta+arm_tilt_adjustment);
     
@@ -507,15 +524,18 @@ void doWrist()
     
     if(wrist_tilt)
     {
-        if(current_color) wrist = wrist_red_position;
-        else              wrist = wrist_blue_position;
+        if(current_color) target_wrist_theta = 1.0; //wrist_red_position;
+        else              target_wrist_theta = -1.0; //wrist_blue_position;
+        target_wrist_theta += wrist_manual_control;
     }
     else
     {
-        wrist = wrist_level_position;
+        target_wrist_theta = 0.0;
         wrist_manual_control = 0;
     }
     
+    wrist = continuous_servo_stop;
+    wrist += 0.5*(target_wrist_theta-wrist_theta);
     wrist += wrist_manual_control;
 }
 

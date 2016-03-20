@@ -63,7 +63,7 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
     
     initLogfile();
     
-    *file_pointer = (int) logfile;
+    //*file_pointer = (int) logfile;
     
     Button pad1 = {};
     
