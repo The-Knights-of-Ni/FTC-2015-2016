@@ -200,6 +200,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "hand = hardwareMap.servo.get(\"hand\");\n"
         "hand.setDirection(Servo.Direction.REVERSE);\n"
         "wrist = hardwareMap.servo.get(\"wrist\");\n"
+        "wrist.setDirection(Servo.Direction.REVERSE);\n"
         "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
         "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
         "hook_left.setDirection(Servo.Direction.REVERSE);\n"
@@ -318,7 +319,6 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     jniGenerate();
     
-    intake_time = 1000;
     wrist = wrist_level_position;
     wrist_tilt = false;
     wrist_time = 0;
@@ -384,7 +384,6 @@ void jniMain(JNIEnv * _env, jobject _self)
         suppress_arm = false;
         
         setIntakeOut();
-        intake_time = 0.0;
         wait(0.5);
         
         // intake = -1;

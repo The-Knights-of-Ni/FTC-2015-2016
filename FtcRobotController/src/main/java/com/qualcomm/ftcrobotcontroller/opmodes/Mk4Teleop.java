@@ -423,6 +423,7 @@ shoulder.setDirection(DcMotor.Direction.REVERSE);
 hand = hardwareMap.servo.get("hand");
 hand.setDirection(Servo.Direction.REVERSE);
 wrist = hardwareMap.servo.get("wrist");
+wrist.setDirection(Servo.Direction.REVERSE);
 hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);

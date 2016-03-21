@@ -9,8 +9,10 @@
 
 //TODO: Get RED/BLUE Status
 
-float hook_level_position = 0.0f;
-float hook_locked_position = 1.0f;
+float hook_right_level_position = 70.0f/255.0f;
+float hook_right_locked_position = 290.0f/255.0f;
+float hook_left_level_position = 180.0f/255.0f;
+float hook_left_locked_position = 60.0f/255.0f;
 //KEYBINDS
 
 //Drive
@@ -40,6 +42,8 @@ float hook_locked_position = 1.0f;
 #define arm_intake_mode_button pad2.singlePress(LEFT_BUMPER)
 #define shoulder_precision_mode (!pad2.press(LEFT_STICK_BUTTON))
 #define winch_precision_mode (false)//(pad2.press(RIGHT_STICK_BUTTON))
+
+#define pullup_button pad2.singlePress(A)
 
 #define arm_slow_factor 0.4
 
@@ -137,6 +141,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "hand = hardwareMap.servo.get(\"hand\");\n"
                              "hand.setDirection(Servo.Direction.REVERSE);\n"
                              "wrist = hardwareMap.servo.get(\"wrist\");\n"
+                             "wrist.setDirection(Servo.Direction.REVERSE);\n"
                              "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
                              "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
                              "hook_left.setDirection(Servo.Direction.REVERSE);\n"
@@ -314,7 +319,6 @@ void jniMain(JNIEnv * _env, jobject _self)
     //TODO: figure out a better way to have things reset to their initial values
     
     hand_time = 1000000;
-    intake_time = 1000000;
     
     score_mode = true;
     
@@ -335,7 +339,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     robotStateIn();
     
     imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};;
-
+    
     #ifndef GENERATE
     env->CallVoidMethod(imu_object, imu_rezero_id); //rezero imu
     #endif
@@ -496,6 +500,24 @@ void jniMain(JNIEnv * _env, jobject _self)
                     armFunction = armToIntakeMode;
                 }
             }
+            else if(pullup_button)
+            {
+                if(armFunction != armUserControl) //cancel motion
+                {
+                    target_shoulder_theta = shoulder_theta;
+                    float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+                                                      -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+                    target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
+                    target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
+                    
+                    armFunction = armUserControl;
+                }
+                else
+                {
+                    arm_line = 0;
+                    armFunction = armPullup;
+                }                
+            }
             
             target_arm_velocity.x = filterArmJoystick(target_arm_velocity.x);
             target_arm_velocity.y = filterArmJoystick(target_arm_velocity.y);
@@ -604,15 +626,20 @@ void jniMain(JNIEnv * _env, jobject _self)
 //============================= Hook =============================
         if(hook_toggle)
         {
-            hook_left = hook_locked_position;
+            hook_left = hook_left_locked_position;
+            hook_right = hook_right_locked_position;
+
         }
         else
         {
-            hook_left = hook_level_position;
+            hook_left = hook_left_level_position;
+            hook_right = hook_right_level_position;
+
         }
         hook_left = clamp(hook_left, 0.0, 1.0);
+        hook_right = clamp(hook_right, 0.0, 1.0);
         
-//=========================Score Hook ============================
+//======================== Pullup Hook ============================
         if(score_hook_toggle)
         {
             score_hook = 1.0;
@@ -623,17 +650,17 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         score_hook = clamp(score_hook, 0.0, 1.0);
         
-//========================= Climber Release ======================
-        if(climber_release_toggle)
-        {
-            //TODO: rename to climber release
-            hook_right = 1.0;
-        }
-        else
-        {
-            hook_right = 0.0;
-        }
-        hook_right = clamp(hook_right, 0.0, 1.0);
+// //========================= Climber Release ======================
+//         if(climber_release_toggle)
+//         {
+//             //TODO: rename to climber release
+//             hook_right = 1.0;
+//         }
+//         else
+//         {
+//             hook_right = 0.0;
+//         }
+//         hook_right = clamp(hook_right, 0.0, 1.0);
         
 //============================ Updates ===========================
         
