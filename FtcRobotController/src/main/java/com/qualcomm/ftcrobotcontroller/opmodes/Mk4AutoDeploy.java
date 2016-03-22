@@ -386,7 +386,7 @@ hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
 intake_tilt = hardwareMap.servo.get("intake_tilt");
-//intake_tilt.setDirection(Servo.Direction.REVERSE);
+intake_tilt.setDirection(Servo.Direction.REVERSE);
 dim.setLED(0, false);
 dim.setLED(1, false);
 while (!FtcRobotControllerActivity.aligned || (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue))

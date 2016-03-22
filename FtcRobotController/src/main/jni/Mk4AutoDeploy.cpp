@@ -30,15 +30,15 @@ void Mk4AutonomousDeployUpdate()
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
             
-    shoulder *= 14.0/left_drive_voltage;
-    winch *= 14.0/left_drive_voltage;
+    shoulder *= 12.0/left_drive_voltage;
+    winch *= 12.0/left_drive_voltage;
     
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
     if(winch > 0.0 && !tension_switch) winch = 0.0;
     
-    left_drive *= 14.0/left_drive_voltage;
-    right_drive *= 14.0/right_drive_voltage;
+    left_drive *= 12.0/left_drive_voltage;
+    right_drive *= 12.0/right_drive_voltage;
     
     left_drive = clamp(left_drive, -1.0, 1.0);
     right_drive = clamp(right_drive, -1.0, 1.0);
@@ -205,7 +205,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
         "hook_left.setDirection(Servo.Direction.REVERSE);\n"
         "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
-        "//intake_tilt.setDirection(Servo.Direction.REVERSE);"
+        "intake_tilt.setDirection(Servo.Direction.REVERSE);"
         "\n"
         "dim.setLED(0, false);\n"
         "dim.setLED(1, false);\n"

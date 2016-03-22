@@ -54,8 +54,8 @@ float shoulder_gear_ratio = 6.75;
 float forearm_length = 16.0f; //TODO: this might have changed
 float shoulder_length = 16.5f;
 
-float intake_out_theta = -0.25;
-float intake_in_theta = 1.89;
+float intake_out_theta = -0.28;
+float intake_in_theta = 0.9;//1.89;
 
 //sliders
 int * pslider0;
@@ -150,7 +150,7 @@ void updateArmSensors()
     lowpassFirstDerivativeUpdate(intake_potentiometer_angle, &intake_theta, &intake_omega, 10);
     
     //wrist
-    wrist_potentiometer_angle = -(potentiometer_range*(wrist_potentiometer-483.0)/(1023.0f))*pi/180.0f;
+    wrist_potentiometer_angle = -(potentiometer_range*(wrist_potentiometer-505.0)/(1023.0f))*pi/180.0f;
     
     if(wrist_omega != wrist_omega) wrist_omega = 0;
     lowpassFirstDerivativeUpdate(wrist_potentiometer_angle, &wrist_theta, &wrist_omega, 10);
@@ -426,29 +426,29 @@ float arm_tilt_omega_adjustment = 0;
 
 void armIMUOmegaStabilize()
 {
-    float instantaneous_arm_tilt_omega_adjustment = (imu_tilt_omega*pi/180.0)*shoulder_gear_ratio/neverest_max_omega;
-    float low_passed_arm_tilt_omega_adjustment = lerp(instantaneous_arm_tilt_omega_adjustment,
-                                                      arm_tilt_omega_adjustment,
-                                                      exp(-15.5*dt));
-    if(fabs(instantaneous_arm_tilt_omega_adjustment) < fabs(low_passed_arm_tilt_omega_adjustment))
-    {
-        arm_tilt_omega_adjustment = instantaneous_arm_tilt_omega_adjustment;
-    }
-    else
-    {
-        arm_tilt_omega_adjustment = low_passed_arm_tilt_omega_adjustment;
-    }
+    /* float instantaneous_arm_tilt_omega_adjustment = (imu_tilt_omega*pi/180.0)*shoulder_gear_ratio/neverest_max_omega; */
+    /* float low_passed_arm_tilt_omega_adjustment = lerp(instantaneous_arm_tilt_omega_adjustment, */
+    /*                                                   arm_tilt_omega_adjustment, */
+    /*                                                   exp(-15.5*dt)); */
+    /* if(fabs(instantaneous_arm_tilt_omega_adjustment) < fabs(low_passed_arm_tilt_omega_adjustment)) */
+    /* { */
+    /*     arm_tilt_omega_adjustment = instantaneous_arm_tilt_omega_adjustment; */
+    /* } */
+    /* else */
+    /* { */
+    /*     arm_tilt_omega_adjustment = low_passed_arm_tilt_omega_adjustment; */
+    /* } */
 
     
-    if(fabs(imu_tilt) > min_arm_imu_tilt)
-    {        
-        shoulder += arm_tilt_omega_adjustment;
-    }
+    /* if(fabs(imu_tilt) > min_arm_imu_tilt) */
+    /* {         */
+    /*     shoulder += arm_tilt_omega_adjustment; */
+    /* } */
 }
 
 float armIMUThetaAdjustment()
 {
-    return lerp(-imu_tilt*pi/180.0, arm_tilt_adjustment, exp(-(slider0)*dt));
+    return 0;//lerp(-imu_tilt*pi/180.0, arm_tilt_adjustment, exp(-(slider0)*dt));
 }
 
 void armToPolarTarget(float shoulder_power = 1.0, float winch_power = 1.0)
@@ -461,7 +461,7 @@ void armToPolarTarget(float shoulder_power = 1.0, float winch_power = 1.0)
     arm_tilt_adjustment = armIMUThetaAdjustment();
     
     armToAngle(&target_arm_theta, arm_theta+arm_tilt_adjustment);
-
+    
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
     shoulder *= shoulder_power;
@@ -478,12 +478,12 @@ void armToJointTarget()
 }
 
 bool8 armIsAtTarget(float shoulder_tolerance, float inside_elbow_tolerance)
-{        
+{
     return (fabs(inside_elbow_theta-target_inside_elbow_theta) < shoulder_tolerance &&
             fabs(shoulder_theta-target_shoulder_theta)         < inside_elbow_tolerance);
 }
 
-void armToPreset(float shoulder_speed, float winch_speed, float tolerance = 0.5, float winch_preset_kp = 0.99, float winch_preset_ki = 0.9)
+void armToPreset(float shoulder_speed, float winch_speed, float tolerance = 0.5, float winch_preset_kp = 0.99, float winch_preset_ki = 0.9, float shoulder_preset_ki = 0.53)
 {
     float shoulder_error = target_shoulder_theta-shoulder_theta;
     
@@ -503,7 +503,7 @@ void armToPreset(float shoulder_speed, float winch_speed, float tolerance = 0.5,
         #elif 1 //normal pid
         //2.4, .69, .25
         //1.98, .18, .20
-        shoulder_compensation += 0.18*shoulder_error*dt;
+        shoulder_compensation += shoulder_preset_ki*shoulder_error*dt;
         shoulder = 1.98*shoulder_error+shoulder_compensation-0.2*shoulder_omega;
         #else //this was what was running at the tournament
         shoulder_compensation += shoulder_ki*shoulder_error*dt;
@@ -545,19 +545,23 @@ void armToPresetWithIMU(float shoulder_speed, float winch_speed, float tolerance
 
 #define intake_swing_time 1.3
 
+bool intake_out = 0;
 void doIntake()
 {
     intake_tilt = continuous_servo_stop;
-    intake_tilt += 1.0*(target_intake_theta-intake_theta);
+    intake_tilt += 0.8*(target_intake_theta-intake_theta);
+    if(intake_tilt < 0.1) intake_tilt = 0;
 }
 
 void setIntakeIn()
 {
+    intake_out = 0;
     target_intake_theta = intake_in_theta;
 }
 
 void setIntakeOut()
 {
+    intake_out = 1;
     target_intake_theta = intake_out_theta;
 }
 
@@ -582,6 +586,7 @@ void doWrist()
     
     wrist = continuous_servo_stop;
     wrist += 1.5*(target_wrist_theta-wrist_theta)-0.2*wrist_omega;
+    if(wrist < 0.1) wrist = 0;
     wrist += wrist_manual_control;
 }
 
@@ -693,35 +698,40 @@ void armToIntakeMode()
         setHandShut();
         setWristIn();
         
-        while(fabs(target_wrist_theta-wrist_theta) > 0.2 || fabs(target_intake_theta-intake_theta) > 0.2)
+        while(fabs(target_wrist_theta-wrist_theta) > 0.1 || fabs(target_intake_theta-intake_theta) > 0.1)
         {
             armToPreset(1.0, 1.0);
             switchTasks();
         }
-
-        arm_time = 0;
-        while(arm_time < 0.5)
-        {
-            arm_time += dt;
-            armToPreset(1.0, 1.0);
-            switchTasks();
-        }
+        
+        /* arm_time = 0; */
+        /* while(arm_time < 0.5) */
+        /* { */
+        /*     arm_time += dt; */
+        /*     armToPreset(1.0, 1.0); */
+        /*     switchTasks(); */
+        /* } */
         
         if(score_mode) //is in score mode
         {
             score_mode = 0;
             setIntakeOut();
             
-            arm_time = 0;
-            
             target_shoulder_theta = 2.0;
-            target_inside_elbow_theta = 4.0;
-            while(!armIsAtTarget(0.20, 0.20) || arm_time < 0.7)
+            target_inside_elbow_theta = pi*2.0/3.0;
+            while(!armIsAtTarget(0.10, 0.10))
             {
-                arm_time += dt;
-                
                 armToPreset(1.0, 1.0, 1.0);
                 
+                switchTasks();
+            }
+            
+            arm_time = 0;
+            
+            while(arm_time < 0.1)
+            {
+                arm_time += dt;
+                armToPreset(1.0, 1.0);
                 switchTasks();
             }
         }
@@ -730,7 +740,7 @@ void armToIntakeMode()
         target_inside_elbow_theta = 4.3;
         while(!armIsAtTarget(0.1, 0.1) || hand_time < hand_open_time)
         {
-            armToPreset(0.8, 0.5, 0.5, 2.68, 2.28);
+            armToPreset(0.8, 0.5, 0.5, 2.68, 2.28, 0.69);
             
             switchTasks();
         }
@@ -739,7 +749,7 @@ void armToIntakeMode()
         target_inside_elbow_theta = 4.4;
         while(!armIsAtTarget(0.1, 0.1))
         {
-            armToPreset(1.0, 0.5, 0.5, 2.68, 2.28);
+            armToPreset(1.0, 0.5, 0.5, 2.68, 2.28, 0.69);
             
             switchTasks();
         }
@@ -748,7 +758,18 @@ void armToIntakeMode()
         target_inside_elbow_theta = 4.43;
         while(!armIsAtTarget(0.1, 0.1))
         {
-            armToPreset(1.0, 0.5, 0.5, 2.68, 2.28);
+            armToPreset(1.0, 0.5, 0.5, 2.68, 2.28, 0.69);
+            
+            switchTasks();
+        }
+        
+        arm_time = 0;
+            
+        while(!armIsAtTarget(0.1, 0.1) || arm_time < 0.2)
+        {
+            arm_time += dt;
+            
+            armToPreset(1.0, 0.5, 0.5, 2.68, 2.28, 0.69);
             
             switchTasks();
         }
@@ -797,17 +818,15 @@ void armToScoreMode()
                 
                 switchTasks();
             }
-            
-            setIntakeIn();
-            
+                        
             armFunction = armUserControl;
         }
         else
         {
-            setIntakeIn();
-                        
+            //setIntakeIn();
+
             target_shoulder_theta = 1.0;
-            target_inside_elbow_theta = pi*7/8;
+            target_inside_elbow_theta = 2.02;
             while(!armIsAtTarget(0.1, 0.1))
             {
                 armToPreset(1.0, 1.0, 1.0);
@@ -816,11 +835,35 @@ void armToScoreMode()
             }
             
             setWristOut();
+            
+            while(fabs(target_wrist_theta - wrist_theta) > 0.1)
+            {
+                armToPreset(0.7, 1.0, 1.0, 0.99, 0.9, 0.6);
+                
+                switchTasks();
+            }
+            
+            arm_time = 0;
+            while(arm_time < 0.25)
+            {
+                arm_time += dt;
+                armToPreset(0.7, 1.0, 1.0, 0.99, 0.9, 0.6);
+                switchTasks();
+            }
+            
+            target_shoulder_theta = 0.78;
+            target_inside_elbow_theta = 2.02;
+            while(!armIsAtTarget(0.1, 0.1))
+            {
+                armToPreset(0.7, 1.0, 1.0, 0.99, 0.9, 0.6);
+                
+                switchTasks();
+            }
         }
         
         float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
                                           -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-        target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta))+imu_tilt*pi/180.0;
+        target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));//+imu_tilt*pi/180.0;
         target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
         
         armFunction = armUserControl;

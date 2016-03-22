@@ -29,7 +29,7 @@ int rsid_current = 0;
 public Mk4Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[236];
+    robot_state = new byte[244];
 }
 
 
@@ -176,7 +176,7 @@ hook_left.setPosition(getFloat(124));
 hook_right.setPosition(getFloat(128));
 intake_tilt.setPosition(getFloat(132));
 score_hook.setPosition(getFloat(136));
-telemetry.addData("intake theta", getFloat(140));
+telemetry.addData("shoulder theta", getFloat(140));
 telemetry.addData("shoulder_compensation", getFloat(144));
 telemetry.addData("left_drive_compensation", getFloat(148));
 telemetry.addData("right_drive_compensation", getFloat(152));
@@ -188,9 +188,11 @@ telemetry.addData("slider 0", getInt(52));
 telemetry.addData("slider 1", getInt(56));
 telemetry.addData("slider 2", getInt(60));
 telemetry.addData("slider 3", getInt(64));
-telemetry.addData("wrist theta", getFloat(172));
+telemetry.addData("forearm theta", getFloat(172));
 telemetry.addData("shoulder power", getFloat(108));
 telemetry.addData("arm stage", getFloat(176));
+telemetry.addData("drive direction", getFloat(180));
+telemetry.addData("wrist theta", getFloat(184));
 
 }
 
@@ -298,7 +300,7 @@ setRelative( imu.vel_z);
 
 }
 {
-rsid_current = 180;
+rsid_current = 188;
 int gamepad1_buttons = 0;
 try
 {
@@ -319,7 +321,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 208;
+rsid_current = 216;
 int gamepad2_buttons = 0;
 try
 {
@@ -428,7 +430,7 @@ hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
 intake_tilt = hardwareMap.servo.get("intake_tilt");
-//intake_tilt.setDirection(Servo.Direction.REVERSE);
+intake_tilt.setDirection(Servo.Direction.REVERSE);
 score_hook = hardwareMap.servo.get("score_hook");
 telemetry.addData("ready", "");
 

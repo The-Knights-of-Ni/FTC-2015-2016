@@ -11,8 +11,8 @@
 
 float hook_right_level_position = 70.0f/255.0f;
 float hook_right_locked_position = 290.0f/255.0f;
-float hook_left_level_position = 180.0f/255.0f;
-float hook_left_locked_position = 60.0f/255.0f;
+float hook_left_level_position = 60.0f/255.0f;
+float hook_left_locked_position = 180.0f/255.0f;
 //KEYBINDS
 
 //Drive
@@ -48,7 +48,7 @@ float hook_left_locked_position = 60.0f/255.0f;
 #define arm_slow_factor 0.4
 
 //Hook
-#define hook_toggle pad1.toggle(B)
+#define hook_toggle pad1.singlePress(B)
 #define score_hook_toggle pad1.toggle(RIGHT_TRIGGER)
     
 //Climber Release    
@@ -146,7 +146,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                              "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
                              "hook_left.setDirection(Servo.Direction.REVERSE);\n"
                              "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
-                             "//intake_tilt.setDirection(Servo.Direction.REVERSE);\n"
+                             "intake_tilt.setDirection(Servo.Direction.REVERSE);\n"
                              "score_hook = hardwareMap.servo.get(\"score_hook\");\n"
                              "telemetry.addData(\"ready\", \"\");\n");
     
@@ -210,7 +210,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     //TODO: telemetry queue
     float * pshoulder_print_theta;
     #define shoulder_print_theta (*pshoulder_print_theta)
-    jniOut("telemetry.addData(\"intake theta\", ", pshoulder_print_theta,");");
+    jniOut("telemetry.addData(\"shoulder theta\", ", pshoulder_print_theta,");");
     
     float * pshoulder_compensation_print = 0;
     #define shoulder_compensation_print (*pshoulder_compensation_print)
@@ -247,13 +247,21 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     float * pforearm_print_theta;
     #define forearm_print_theta (*pforearm_print_theta)
-    jniOut("telemetry.addData(\"wrist theta\", ", pforearm_print_theta,");");
+    jniOut("telemetry.addData(\"forearm theta\", ", pforearm_print_theta,");");
     
     jniOut("telemetry.addData(\"shoulder power\", ", pshoulder,");");
     
     float * parm_stage_print;
     #define arm_stage_print (*parm_stage_print)
     jniOut("telemetry.addData(\"arm stage\", ", parm_stage_print,");");
+
+    float * pdrive_direction_print;
+    #define drive_direction_print (*pdrive_direction_print)
+    jniOut("telemetry.addData(\"drive direction\", ", pdrive_direction_print,");");
+
+    float * pdrive_theta_print;
+    #define drive_theta_print (*pdrive_theta_print)
+    jniOut("telemetry.addData(\"wrist theta\", ", pdrive_theta_print,");");
     
     pgamepad1 = jniStructIn(
         gamepad,
@@ -322,6 +330,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     score_mode = true;
     
+    setIntakeOut();
+    
     #ifndef GENERATE
     jmethodID imu_rezero_id;
     jobject imu_object;
@@ -356,7 +366,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     // target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
     // target_shoulder_theta = shoulder_theta;
     // target_inside_elbow_theta = inside_elbow_theta;
-    
+        
     interruptable for ever
     {
         dt = time - current_time;
@@ -387,6 +397,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         
         auto drive_control = smoothJoysticks(drive_stick, 0, 0.2, 0.8, 1.0);
 
+        #if 1
         #if 0
         if(fabs(drive_control.x) > deadzone_radius)
         {
@@ -407,7 +418,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         #else
         left_drive  = +drive_control.x;
-        right_drive = -drive_control.x;
+        right_drive = -drive_control.x;        
         #endif
         
         if(!drive_toggle)
@@ -420,6 +431,44 @@ void jniMain(JNIEnv * _env, jobject _self)
             left_drive += drive_control.y;
             right_drive += drive_control.y;
         }
+        #else
+        float drive_control_norm = norm(drive_control.stick);
+        float drive_control_theta = atan2(-drive_control.x, (drive_toggle ? 1.0 : -1.0)*drive_control.y)+pi-pi/8;
+        int octant =
+            +(drive_control_theta > pi* 1/12 + 2*pi/8)
+            +(drive_control_theta > pi* 5/12 + 2*pi/8)
+            +(drive_control_theta > pi* 7/12 + 2*pi/8)
+            +(drive_control_theta > pi*11/12 + 2*pi/8)
+            +(drive_control_theta > pi*13/12 + 2*pi/8)
+            +(drive_control_theta > pi*17/12 + 2*pi/8)
+            +(drive_control_theta > pi*19/12 + 2*pi/8);
+        
+        left_drive  = ((octant>>2&1) ? -1.0 : 1.0);
+        right_drive = ((octant>>2&1) ? -1.0 : 1.0);
+        
+        if(octant&1)
+        { //x
+            left_drive  -= ((octant>>1&1) ? -0.5 : 0.5);
+            right_drive += ((octant>>1&1) ? -0.5 : 0.5);
+        }
+        else
+        { //+
+            if(octant>>1&1)
+            {
+                left_drive  = +((octant>>2&1) ? -1.0 : 1.0);
+                right_drive = -((octant>>2&1) ? -1.0 : 1.0);
+            }
+        }
+        
+        left_drive = clamp(left_drive, -1.0, 1.0);
+        right_drive = clamp(right_drive, -1.0, 1.0);
+
+        left_drive *= drive_control_norm;
+        right_drive *= drive_control_norm;
+        
+        drive_direction_print = octant;
+        drive_theta_print = drive_control_theta
+        #endif
         
         // if(!drive_control.dead)
         // {
@@ -442,7 +491,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         //                               drive_kp, 0, drive_ki, drive_kslow,
         //                               &right_drive_hold_theta,
         //                               false);
-        
+            
         left_drive_compensation = clamp(left_drive_compensation, -1.0, 1.0);
         right_drive_compensation = clamp(right_drive_compensation, -1.0, 1.0);
         
@@ -459,8 +508,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         updateArmSensors();
         
         shoulder_compensation_print = shoulder_compensation;
-        shoulder_print_theta = intake_theta;
-        forearm_print_theta = wrist_theta;
+        shoulder_print_theta = shoulder_theta;
+        forearm_print_theta = inside_elbow_theta;
         shoulder_active_print = shoulder_active;
         
         if(arm_manual_toggle) //IK
@@ -487,7 +536,6 @@ void jniMain(JNIEnv * _env, jobject _self)
             }
             else if(arm_intake_mode_button)
             {
-                score_mode = false;
                 if(armFunction != armUserControl) //cancel motion
                 {
                     target_shoulder_theta = shoulder_theta;
@@ -533,8 +581,8 @@ void jniMain(JNIEnv * _env, jobject _self)
             shoulder = clamp(shoulder, -1.0, 1.0);
             winch = clamp(winch, -1.0, 1.0);
             
-            shoulder *= 14.0/left_drive_voltage;
-            winch *= 14.0/left_drive_voltage;
+            shoulder *= 12.0/left_drive_voltage;
+            winch *= 12.0/left_drive_voltage;
             
             shoulder = clamp(shoulder, -1.0, 1.0);
             winch = clamp(winch, -1.0, 1.0);
@@ -552,7 +600,7 @@ void jniMain(JNIEnv * _env, jobject _self)
             target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
             target_shoulder_theta = shoulder_theta;
             target_inside_elbow_theta = inside_elbow_theta;
-
+            
             shoulder_compensation = 0;
             arm_tilt_adjustment = 0;
             arm_tilt_omega_adjustment = 0;
@@ -590,8 +638,30 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             setIntakeOut();
         }
-        doIntake();
-        intake_tilt += intake_tilt_manual/2.0;
+        
+        if(hook_toggle)
+        {
+            if(intake_out)
+            {
+                setIntakeIn();
+            }
+            else
+            {
+                setIntakeOut();
+            }
+        }
+        
+        target_intake_theta = clamp(target_intake_theta, intake_out_theta, 2.0);
+
+        if(fabs(intake_tilt_manual) > deadzone_radius)
+        {
+            intake_tilt = intake_tilt_manual;
+            target_intake_theta = intake_theta;
+        }
+        else
+        {
+            doIntake();
+        }
         
         if(wrist_tilt_toggle) wrist_tilt = !wrist_tilt;
         
@@ -624,7 +694,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         //TODO: Tilt
         
 //============================= Hook =============================
-        if(hook_toggle)
+        if(!intake_out)
         {
             hook_left = hook_left_locked_position;
             hook_right = hook_right_locked_position;
@@ -642,11 +712,11 @@ void jniMain(JNIEnv * _env, jobject _self)
 //======================== Pullup Hook ============================
         if(score_hook_toggle)
         {
-            score_hook = 1.0;
+            score_hook = 0.0;
         }
         else
         {
-            score_hook = 0.0;
+            score_hook = 1.0;
         }
         score_hook = clamp(score_hook, 0.0, 1.0);
         
