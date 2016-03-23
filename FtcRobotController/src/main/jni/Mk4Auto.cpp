@@ -14,7 +14,6 @@ float start_time = 0;
 void Mk4AutonomousUpdate()
 {
     //if(time-start_time > 20.0) longjmp(exit_jump, 1);
-
     shoulder = 0;
     winch = 0;
 
