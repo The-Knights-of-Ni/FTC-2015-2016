@@ -35,10 +35,16 @@ void Mk4AutonomousUpdate()
     
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
+            
+    shoulder *= 12.0/left_drive_voltage;
+    winch *= 12.0/left_drive_voltage;
+    
+    shoulder = clamp(shoulder, -1.0, 1.0);
+    winch = clamp(winch, -1.0, 1.0);
     if(winch > 0.0 && !tension_switch) winch = 0.0;
     
-    left_drive *= 14.0/left_drive_voltage;
-    right_drive *= 14.0/right_drive_voltage;
+    left_drive *= 12.0/left_drive_voltage;
+    right_drive *= 12.0/right_drive_voltage;
     
     left_drive = clamp(left_drive, -1.0, 1.0);
     right_drive = clamp(right_drive, -1.0, 1.0);
@@ -140,6 +146,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         "IMU imu;"
         "int elbow_potentiometer_port = 7;\n"
         "int shoulder_potentiometer_port = 1;\n"
+        "int intake_potentiometer_port = 5;\n"
+        "int wrist_potentiometer_port = 3;\n"
         "\n"
         "DcMotor left_drive;\n"
         "DcMotor right_drive;\n"
@@ -198,11 +206,12 @@ void jniMain(JNIEnv * _env, jobject _self)
         "hand = hardwareMap.servo.get(\"hand\");\n"
         "hand.setDirection(Servo.Direction.REVERSE);\n"
         "wrist = hardwareMap.servo.get(\"wrist\");\n"
+        "wrist.setDirection(Servo.Direction.REVERSE);\n"
         "hook_left = hardwareMap.servo.get(\"hook_left\");\n"
         "hook_right = hardwareMap.servo.get(\"hook_right\");\n"
         "hook_left.setDirection(Servo.Direction.REVERSE);\n"
         "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
-        "//intake_tilt.setDirection(Servo.Direction.REVERSE);"
+        "intake_tilt.setDirection(Servo.Direction.REVERSE);"
         "\n"
         "dim.setLED(0, false);\n"
         "dim.setLED(1, false);\n"
@@ -260,13 +269,13 @@ void jniMain(JNIEnv * _env, jobject _self)
                               "\n"
                               "camera.setPreviewCallbackWithBuffer(camera_preview_callback);\n"
                               "camera.addCallbackBuffer(camera_buffer);\n"
-                                "parameters.setPreviewFormat(ImageFormat.NV21);\n"
-                                "parameters.setExposureCompensation(0);\n"
-                                "parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);\n"
-                               "parameters.set(\"iso\", \"ISO100\");\n"
-                                  "parameters.set(\"max-exposure-time\", 2000000);\n"
-                                   "parameters.set(\"min-exposure-time\", 2000000);\n"
-                                   "        DbgLog.error(\"Camera parameters: \"+parameters.flatten());");
+                              "parameters.setPreviewFormat(ImageFormat.NV21);\n"
+                              "parameters.setExposureCompensation(0);\n"
+                              "parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);\n"
+                              "parameters.set(\"iso\", \"ISO100\");\n"
+                              "parameters.set(\"max-exposure-time\", 2000000);\n"
+                              "parameters.set(\"min-exposure-time\", 2000000);\n"
+                              "        DbgLog.error(\"Camera parameters: \"+parameters.flatten());");
 
     ptime = jniDoubleIn("return time;");
     pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
@@ -275,6 +284,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     pshoulder_encoder = jniIntIn("return shoulder.getCurrentPosition();");
     pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
     pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
+    pintake_potentiometer = jniIntIn("return dim.getAnalogInputValue(intake_potentiometer_port);");
     pleft_drive_voltage = jniFloatIn("return (float)left_drive_voltage.getVoltage();");
     pright_drive_voltage = jniFloatIn("return (float)right_drive_voltage.getVoltage();");
     
@@ -283,7 +293,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     pimu_values = jniStructIn(
         imu_state,
         "if(imu.checkForUpdate()) {\n"
-        "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
+        "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.gyr_x, imu.gyr_y, imu.gyr_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
         "}\n");
     
     pcurrent_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
@@ -322,8 +332,6 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     jniGenerate();
     
-    intake_out = true;
-    intake_time = 1000;
     wrist = wrist_level_position;
     wrist_tilt = false;
     wrist_time = 0;
@@ -493,8 +501,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         #if 1 //enable arm
         suppress_arm = false;
         
-        intake_out = true;
-        intake_time = 0.0;
+        setIntakeOut();
         wait(0.5);
         
         // intake = -1;
