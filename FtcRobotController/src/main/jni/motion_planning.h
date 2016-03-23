@@ -794,7 +794,7 @@ struct TrajectoryFollower
 		}
 		else
 		{
-				return 0;
+				return -5206;
 		}
 	}
 
