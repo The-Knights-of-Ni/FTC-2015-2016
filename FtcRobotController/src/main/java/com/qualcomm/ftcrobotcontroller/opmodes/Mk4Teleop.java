@@ -192,7 +192,7 @@ telemetry.addData("forearm theta", getFloat(172));
 telemetry.addData("shoulder power", getFloat(108));
 telemetry.addData("arm stage", getFloat(176));
 telemetry.addData("drive direction", getFloat(180));
-telemetry.addData("wrist theta", getFloat(184));
+telemetry.addData("drive theta", getFloat(184));
 
 }
 

@@ -49,7 +49,7 @@ void Mk4AutonomousDeployUpdate()
     hand = clamp(hand, 0.0, 1.0);
     hook_left = clamp(hook_left, 0.0, 1.0);
     hook_right = clamp(hook_right, 0.0, 1.0);
-
+    
     if(suppress_arm)
     {
         shoulder = 0;

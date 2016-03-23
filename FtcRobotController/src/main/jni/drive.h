@@ -119,20 +119,19 @@ void updateDriveSensors()
 
 //Bounds and Smooths joystick values for better handling.
 
-float raw_x;
-float raw_y;
-
 #define smoothConstant 0.6 //Set this to something the driver likes
 
 v2f smoothJoysticks254Style(v2f stick)//TODO: Fix this
 {
+    stick = deadzone(stick);
     v2f smoothed;
-    raw_x = clamp(raw_x, -1, 1);//Clamp between -1 and 1
-    raw_y = clamp(raw_y, -1, 1);
-    smoothed.data[0] = sin((pi * smoothConstant * raw_x / 2.0) /
+    float raw_x = clamp(stick.x, -1, 1);//Clamp between -1 and 1
+    float raw_y = clamp(stick.y, -1, 1);
+    smoothed.x = sin((pi * smoothConstant * raw_x / 2.0) /
                            (pi / 2.0)); //Sin wave: https://www.desmos.com/calculator/4hd9ovg7el
-    smoothed.data[1] = sin((pi * smoothConstant * raw_y / 2.0) / (pi / 2.0));
-    return smoothed;//Give back smooth x and y values
+    smoothed.y = sin((pi * smoothConstant * raw_y / 2.0) /
+                           (pi / 2.0));
+    return smoothed; //Give back smooth x and y values
 }
 
 #endif //DRIVE
