@@ -16,6 +16,7 @@ smoothed_joystick smoothJoysticks(v2f stick, float min_power, float x_mod, float
     out.y = (out.y < 0 ? -1 : 1) * quadraticBezier(out.y, min_power, y_mod, max_power);
     return out;
 }
+
 //Deadzones, bounds, and smooths an axis completely.
 float smoothAxis(float axis, float min_power, float mod, float max_power)
 {

@@ -91,8 +91,8 @@ v2f deadzone(v2f stick)
     float stick_norm = norm(stick);
     if (stick_norm < deadzone_radius)
     {
-        stick.data[0] = 0;
-        stick.data[1] = 0;
+        stick.x = 0;
+        stick.y = 0;
     }
     else
     {

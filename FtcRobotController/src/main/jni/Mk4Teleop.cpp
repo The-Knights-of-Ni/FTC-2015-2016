@@ -54,6 +54,8 @@ float hook_left_locked_position = 180.0f/255.0f;
 //Climber Release    
 #define climber_release_toggle pad1.toggle(A)
 
+float drive_straight_component = 0;
+
 extern "C"
 void jniMain(JNIEnv * _env, jobject _self)
 {
@@ -261,7 +263,7 @@ void jniMain(JNIEnv * _env, jobject _self)
 
     float * pdrive_theta_print;
     #define drive_theta_print (*pdrive_theta_print)
-    jniOut("telemetry.addData(\"wrist theta\", ", pdrive_theta_print,");");
+    jniOut("telemetry.addData(\"drive theta\", ", pdrive_theta_print,");");
     
     pgamepad1 = jniStructIn(
         gamepad,
@@ -342,6 +344,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     }
     #endif
     
+    drive_straight_component = 0;
+    
     waitForStart();
     
     zeroDriveSensors();
@@ -366,7 +370,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     // target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
     // target_shoulder_theta = shoulder_theta;
     // target_inside_elbow_theta = inside_elbow_theta;
-        
+    
     interruptable for ever
     {
         dt = time - current_time;
@@ -395,9 +399,9 @@ void jniMain(JNIEnv * _env, jobject _self)
 //============================= Drive ============================
         updateDriveSensors();
         
-        auto drive_control = smoothJoysticks(drive_stick, 0, 0.2, 0.8, 1.0);
-
-        #if 1
+        v2f drive_control = smoothJoysticks254Style(drive_stick);
+        
+        #if 0
         #if 0
         if(fabs(drive_control.x) > deadzone_radius)
         {
@@ -418,7 +422,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         #else
         left_drive  = +drive_control.x;
-        right_drive = -drive_control.x;        
+        right_drive = -drive_control.x;
         #endif
         
         if(!drive_toggle)
@@ -431,43 +435,60 @@ void jniMain(JNIEnv * _env, jobject _self)
             left_drive += drive_control.y;
             right_drive += drive_control.y;
         }
-        #else
-        float drive_control_norm = norm(drive_control.stick);
-        float drive_control_theta = atan2(-drive_control.x, (drive_toggle ? 1.0 : -1.0)*drive_control.y)+pi-pi/8;
-        int octant =
-            +(drive_control_theta > pi* 1/12 + 2*pi/8)
-            +(drive_control_theta > pi* 5/12 + 2*pi/8)
-            +(drive_control_theta > pi* 7/12 + 2*pi/8)
-            +(drive_control_theta > pi*11/12 + 2*pi/8)
-            +(drive_control_theta > pi*13/12 + 2*pi/8)
-            +(drive_control_theta > pi*17/12 + 2*pi/8)
-            +(drive_control_theta > pi*19/12 + 2*pi/8);
+
+        #else //discretized drive control
         
-        left_drive  = ((octant>>2&1) ? -1.0 : 1.0);
-        right_drive = ((octant>>2&1) ? -1.0 : 1.0);
+        float drive_control_norm = norm(drive_control);
+        float drive_control_theta = atan2(drive_control.y, drive_control.x);
+        if(drive_control_theta < 0) drive_control_theta += 2*pi;
+        int octant =
+            +(drive_control_theta > pi* 2/12)
+            +(drive_control_theta > pi* 5/12)
+            +(drive_control_theta > pi* 7/12)
+            +(drive_control_theta > pi*10/12)
+            +(drive_control_theta > pi*14/12)
+            +(drive_control_theta > pi*17/12)
+            +(drive_control_theta > pi*19/12)
+            +(drive_control_theta > pi*22/12);
+        octant = octant % 8;
+        
+        float target_straight_component = (drive_toggle ? 1.0 : -1.0)*(((octant>>2)&1) ? -1.0 : 1.0);
+        
+        float turn_component = 0.0;
         
         if(octant&1)
-        { //x
-            left_drive  -= ((octant>>1&1) ? -0.5 : 0.5);
-            right_drive += ((octant>>1&1) ? -0.5 : 0.5);
+        { //diagonal
+            turn_component = (((((octant>>1)^(octant>>2)))&1) ? -0.75 : 0.75);
         }
         else
-        { //+
-            if(octant>>1&1)
+        { //straight
+            if(((octant>>1)&1) == 0)
             {
-                left_drive  = +((octant>>2&1) ? -1.0 : 1.0);
-                right_drive = -((octant>>2&1) ? -1.0 : 1.0);
+                target_straight_component = 0;
+                turn_component = (((octant>>2)&1) ? -1.0 : 1.0);
             }
         }
         
-        left_drive = clamp(left_drive, -1.0, 1.0);
-        right_drive = clamp(right_drive, -1.0, 1.0);
+        target_straight_component *= drive_control_norm;
+        turn_component            *= drive_control_norm;
 
-        left_drive *= drive_control_norm;
-        right_drive *= drive_control_norm;
+        drive_straight_component = target_straight_component;
+        // float max_accel = 10.0;
+        // if(fabs(target_straight_component - drive_straight_component) < max_accel*dt)
+        // {
+        //     drive_straight_component = target_straight_component;
+        // }
+        // else
+        // {
+        //     drive_straight_component += sign(target_straight_component - drive_straight_component)*max_accel*dt;
+        // }
+        
+        left_drive  = drive_straight_component + turn_component;
+        right_drive = drive_straight_component - turn_component;
         
         drive_direction_print = octant;
-        drive_theta_print = drive_control_theta
+        drive_theta_print = drive_control_theta;
+        
         #endif
         
         // if(!drive_control.dead)
@@ -491,12 +512,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         //                               drive_kp, 0, drive_ki, drive_kslow,
         //                               &right_drive_hold_theta,
         //                               false);
-            
-        left_drive_compensation = clamp(left_drive_compensation, -1.0, 1.0);
-        right_drive_compensation = clamp(right_drive_compensation, -1.0, 1.0);
         
-        left_drive_compensation_print = left_drive_compensation;
-        right_drive_compensation_print = right_drive_compensation;
         left_drive_print_theta = left_drive_theta;
         right_drive_print_theta = right_drive_theta;
         left_drive_print_active = left_drive_active;
@@ -655,7 +671,7 @@ void jniMain(JNIEnv * _env, jobject _self)
 
         if(fabs(intake_tilt_manual) > deadzone_radius)
         {
-            intake_tilt = intake_tilt_manual;
+            intake_tilt = -intake_tilt_manual;
             target_intake_theta = intake_theta;
         }
         else
@@ -704,7 +720,6 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             hook_left = hook_left_level_position;
             hook_right = hook_right_level_position;
-
         }
         hook_left = clamp(hook_left, 0.0, 1.0);
         hook_right = clamp(hook_right, 0.0, 1.0);
