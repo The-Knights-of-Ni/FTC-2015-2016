@@ -124,36 +124,46 @@ void updateArmSensors()
     elbow_potentiometer_angle = (((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))
                                   -8.050688f))*pi/180.0f;
     
+    log("I");
     shoulder_potentiometer_angle = (-90+((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))
                                          -2.1190f))*pi/180.0f;
     
+    log("I");
     if(shoulder_omega != shoulder_omega) shoulder_omega = 0;
     lowpassFirstDerivativeUpdate(shoulder_potentiometer_angle, &shoulder_theta, &shoulder_omega, 138);
     
+    log("I");
     if(winch_omega != winch_omega) winch_omega = 0;
     lowpassFirstDerivativeUpdate(winch_encoder/winch_gear_ratio/encoderticks_per_radian, &winch_theta, &winch_omega, 138);
     
+    log("I");
     if(inside_elbow_omega != inside_elbow_omega) inside_elbow_omega = 0;
     lowpassFirstDerivativeUpdate(elbow_potentiometer_angle, &inside_elbow_theta, &inside_elbow_omega, 138);
     
+    log("I");
     past_shoulder_thetas[current_arm_frame] = shoulder_theta;
     past_inside_elbow_thetas[current_arm_frame] = inside_elbow_theta;
     current_arm_frame = (current_arm_frame+1)%past_buffers_size;
     if(n_valid_shoulder_angles < past_buffers_size) n_valid_shoulder_angles++;
     if(n_valid_inside_elbow_angles < past_buffers_size) n_valid_inside_elbow_angles++;
     
+    log("I");
     low_passed_inside_elbow_theta = lerp(inside_elbow_theta, low_passed_inside_elbow_theta, exp(-17*dt));
     
+    log("I");
     //intake
     intake_potentiometer_angle = -(potentiometer_range*(intake_potentiometer-646.0)/(1023.0f))*pi/180.0f;     
     if(intake_omega != intake_omega) intake_omega = 0;
     lowpassFirstDerivativeUpdate(intake_potentiometer_angle, &intake_theta, &intake_omega, 138);
     
+    log("I");
     //wrist
     wrist_potentiometer_angle = -(potentiometer_range*(wrist_potentiometer-505.0)/(1023.0f))*pi/180.0f;
     
+    log("I");
     if(wrist_omega != wrist_omega) wrist_omega = 0;
     lowpassFirstDerivativeUpdate(wrist_potentiometer_angle, &wrist_theta, &wrist_omega, 138);
+    log("I\n");
 }
 
 float filterArmJoystick(float a)
@@ -666,7 +676,7 @@ v2f target_arm_velocity;
 
 void armAutonomousControl()
 {
-    armToPreset(0.4, 1.00);
+    armToPreset(1.0, 1.00);
 }
 
 void armUserControl()

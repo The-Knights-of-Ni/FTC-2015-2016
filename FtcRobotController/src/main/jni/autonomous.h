@@ -2,7 +2,6 @@
 #define AUTONOMOUS
 #define BUTTON //This should make it so we don't have buttons we don't need in auto
 #include "white_rabbit.h"
-#include "motion_planning.h"
 const float robot_max_velocity = 21;//In/s
 const float robot_max_accleration = 84;//In/s^2
 const float robot_max_jerk = 168;//In/s^2
@@ -11,7 +10,7 @@ void autonomousUpdate()
 {
     dt = time-current_time;
     current_time = time;
-
+    
     updateDriveSensors();
     updateArmSensors();
     customAutonomousUpdate();
@@ -19,6 +18,8 @@ void autonomousUpdate()
 
     updateIMU();
 }
+
+#include "motion_planning.h"
 
 void wait(float wait_time)
 {
@@ -302,15 +303,18 @@ void spline()
     Config config;
     config.dt = 0.01;
     config.max_jerk = robot_max_jerk;
-    config.max_acceleration = robot_max_accleration;
+    config.max_acc = robot_max_accleration;
     config.max_vel = robot_max_velocity;
-
+    
+    log("making path\n");
     waypointSequence splineWaypoints(5);
     splineWaypoints.addWaypoint(waypoint(0, 0, 0));
     splineWaypoints.addWaypoint(waypoint(5, 0, 0));
     splineWaypoints.addWaypoint(waypoint(10, 0, 0));
     path drivePath = makePath(splineWaypoints, config, robot_wheelbase);
-
+    
+    log("made path\n");
+    
     TrajectoryFollower leftTraj;
     TrajectoryFollower rightTraj;
     leftTraj.setTrajectory(drivePath.go_left_pair.left);
@@ -319,19 +323,23 @@ void spline()
     rightTraj.configure(0, 0, 0, 1/robot_max_velocity, 0);
 
     float pwmCalc;
+    float left_dist = 0.001;
+    float right_dist = 0.001;
+    float left_start_drive_theta = left_drive_theta;
+    float right_start_drive_theta = right_drive_theta;
     while(pwmCalc != 5206)
     {
-        leftPwm = leftTraj.calculate(left_dist);
-        rightPwm = rightTraj.calculate(right_dist);
+        float leftPwm = leftTraj.calculate(left_dist);
+        float rightPwm = rightTraj.calculate(right_dist);
 
         pwmCalc = fabs(left_drive);
 
-        left_drive = leftPwm;
-        right_drive = rightPwm;
-
+        left_drive = leftPwm/100.0;
+        right_drive = rightPwm/100.0;
+        
         autonomousUpdate();
-        left_dist =  sign(vIs)*(left_drive_theta-start_drive_theta)*sprocket_pitch_radius;
-        right_dist = sign(vIs)*(right_drive_theta-start_drive_theta)*sprocket_pitch_radius;
+        left_dist =  (left_drive_theta-left_start_drive_theta)*sprocket_pitch_radius;
+        right_dist = (right_drive_theta-right_start_drive_theta)*sprocket_pitch_radius;
     }
 
 }

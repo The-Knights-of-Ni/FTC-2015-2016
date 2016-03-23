@@ -22,6 +22,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import android.hardware.Camera;
 import android.graphics.ImageFormat;
+import android.os.Environment;
 
 
 public class Mk4Auto extends LinearOpMode {
@@ -30,7 +31,7 @@ int rsid_current = 0;
 public Mk4Auto()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[148];
+    robot_state = new byte[156];
 
 camera = FtcRobotControllerActivity.camera_preview.camera;
 Camera.Parameters parameters = camera.getParameters();
@@ -49,7 +50,7 @@ parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);
 parameters.set("iso", "ISO100");
 parameters.set("max-exposure-time", 2000000);
 parameters.set("min-exposure-time", 2000000);
-        DbgLog.error("Camera parameters: "+parameters.flatten());
+DbgLog.error("Camera parameters: "+parameters.flatten());
 }
 
 
@@ -69,6 +70,14 @@ class CameraPreviewCallback implements Camera.PreviewCallback
     {
         camera.addCallbackBuffer(camera_buffer);
     }
+}
+public boolean isExternalStorageWritable()
+{
+    String state = Environment.getExternalStorageState();
+    if (Environment.MEDIA_MOUNTED.equals(state)) {
+        return true;
+    }
+    return false;
 }
 
 public void setShort(int index, short a)
@@ -190,27 +199,30 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-left_drive.setPower(getFloat(76));
-right_drive.setPower(getFloat(80));
-winch.setPower(getFloat(84));
-shoulder.setPower(getFloat(88));
-intake.setPower(getFloat(92));
-hand.setPosition(getFloat(96));
-wrist.setPosition(getFloat(100));
-hook_left.setPosition(getFloat(104));
-hook_right.setPosition(getFloat(108));
-intake_tilt.setPosition(getFloat(112));
-telemetry.addData("Indicator:", getInt(116));
+telemetry.addData("imu heading", getShort(52)/16.0);
+telemetry.addData("imu tilt", getShort(54)/16.0);
+telemetry.addData("imu roll", getShort(56)/16.0);
+left_drive.setPower(getFloat(80));
+right_drive.setPower(getFloat(84));
+winch.setPower(getFloat(88));
+shoulder.setPower(getFloat(92));
+intake.setPower(getFloat(96));
+hand.setPosition(getFloat(100));
+wrist.setPosition(getFloat(104));
+hook_left.setPosition(getFloat(108));
+hook_right.setPosition(getFloat(112));
+intake_tilt.setPosition(getFloat(116));
+score_hook.setPosition(getFloat(120));
+telemetry.addData("Indicator:", getInt(124));
 telemetry.addData("left_drive_encoder:", getInt(12));
 telemetry.addData("right_drive_encoder:", getInt(8));
-telemetry.addData("beacon right:", (getInt(120) == 1 ? "red" : "blue"));
-telemetry.addData("heading:", getShort(48));
-telemetry.addData("target time:", getFloat(124));
-telemetry.addData("acceleration time:", getFloat(128));
-telemetry.addData("slider 0", getInt(132));
-telemetry.addData("slider 1", getInt(136));
-telemetry.addData("slider 2", getInt(140));
-telemetry.addData("slider 3", getInt(144));
+telemetry.addData("beacon right:", (getInt(128) == 1 ? "red" : "blue"));
+telemetry.addData("target time:", getFloat(132));
+telemetry.addData("acceleration time:", getFloat(136));
+telemetry.addData("slider 0", getInt(140));
+telemetry.addData("slider 1", getInt(144));
+telemetry.addData("slider 2", getInt(148));
+telemetry.addData("slider 3", getInt(152));
 
 }
 
@@ -257,22 +269,27 @@ setInt(32, dim.getAnalogInputValue(intake_potentiometer_port));
 rsid_current = 36;
 }
 {
-setFloat(36, (float)left_drive_voltage.getVoltage());
+setInt(36, dim.getAnalogInputValue(wrist_potentiometer_port));
 
 rsid_current = 40;
 }
 {
-setFloat(40, (float)right_drive_voltage.getVoltage());
+setFloat(40, (float)left_drive_voltage.getVoltage());
 
 rsid_current = 44;
 }
 {
-setInt(44, dim.getDigitalInputStateByte());
+setFloat(44, (float)right_drive_voltage.getVoltage());
 
 rsid_current = 48;
 }
 {
-rsid_current = 48;
+setInt(48, dim.getDigitalInputStateByte());
+
+rsid_current = 52;
+}
+{
+rsid_current = 52;
 if(imu.checkForUpdate()) {
     setRelative(imu.eul_x);
 setRelative( imu.eul_y);
@@ -288,29 +305,29 @@ setRelative( imu.vel_z);
 
 }
 {
-setInt(72, (FtcRobotControllerActivity.red ? 1 : 0));
+setInt(76, (FtcRobotControllerActivity.red ? 1 : 0));
 
-rsid_current = 76;
+rsid_current = 80;
 }
 {
-setInt(132, FtcRobotControllerActivity.slider_0);
-
-rsid_current = 136;
-}
-{
-setInt(136, FtcRobotControllerActivity.slider_1);
-
-rsid_current = 140;
-}
-{
-setInt(140, FtcRobotControllerActivity.slider_2);
+setInt(140, FtcRobotControllerActivity.slider_0);
 
 rsid_current = 144;
 }
 {
-setInt(144, FtcRobotControllerActivity.slider_3);
+setInt(144, FtcRobotControllerActivity.slider_1);
 
 rsid_current = 148;
+}
+{
+setInt(148, FtcRobotControllerActivity.slider_2);
+
+rsid_current = 152;
+}
+{
+setInt(152, FtcRobotControllerActivity.slider_3);
+
+rsid_current = 156;
 }
 
 }
@@ -334,6 +351,7 @@ Servo wrist;
 Servo hook_left;
 Servo hook_right;
 Servo intake_tilt;
+Servo score_hook;
 /* End Motor Definitions */
 
 native void main();
@@ -393,7 +411,8 @@ hook_left = hardwareMap.servo.get("hook_left");
 hook_right = hardwareMap.servo.get("hook_right");
 hook_left.setDirection(Servo.Direction.REVERSE);
 intake_tilt = hardwareMap.servo.get("intake_tilt");
-intake_tilt.setDirection(Servo.Direction.REVERSE);
+intake_tilt.setDirection(Servo.Direction.REVERSE);score_hook = hardwareMap.servo.get("score_hook");
+
 dim.setLED(0, false);
 dim.setLED(1, false);
 while (!FtcRobotControllerActivity.aligned || (!FtcRobotControllerActivity.red && !FtcRobotControllerActivity.blue))
@@ -416,8 +435,6 @@ else
     dim.setLED(0, false);
     dim.setLED(1, false);
 }telemetry.addData("ready", "");
-waitForStart();
-imu.rezero();
 
     main();
 }

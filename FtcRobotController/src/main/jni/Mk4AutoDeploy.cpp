@@ -154,6 +154,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "Servo hook_left;\n"
         "Servo hook_right;\n"
         "Servo intake_tilt;\n"
+        "Servo score_hook;\n"
         "/* End Motor Definitions */");
     
     jni_run_opmode_string = (
@@ -206,6 +207,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "hook_left.setDirection(Servo.Direction.REVERSE);\n"
         "intake_tilt = hardwareMap.servo.get(\"intake_tilt\");\n"
         "intake_tilt.setDirection(Servo.Direction.REVERSE);"
+        "score_hook = hardwareMap.servo.get(\"score_hook\");\n"
         "\n"
         "dim.setLED(0, false);\n"
         "dim.setLED(1, false);\n"
@@ -272,6 +274,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     pelbow_potentiometer = jniIntIn("return dim.getAnalogInputValue(elbow_potentiometer_port);");
     pshoulder_potentiometer = jniIntIn("return dim.getAnalogInputValue(shoulder_potentiometer_port);");
     pintake_potentiometer = jniIntIn("return dim.getAnalogInputValue(intake_potentiometer_port);");
+    pwrist_potentiometer = jniIntIn("return dim.getAnalogInputValue(wrist_potentiometer_port);");
     pleft_drive_voltage = jniFloatIn("return (float)left_drive_voltage.getVoltage();");
     pright_drive_voltage = jniFloatIn("return (float)right_drive_voltage.getVoltage();");
     
@@ -296,6 +299,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("hook_left.setPosition(", phook_left,");");
     jniOut("hook_right.setPosition(", phook_right,");");
     jniOut("intake_tilt.setPosition(", pintake_tilt,");");
+    jniOut("score_hook.setPosition(", pscore_hook,");");
     
     jniOut("telemetry.addData(\"Indicator:\", ", pindicator, ");");
     jniOut("telemetry.addData(\"left_drive_encoder:\", ", pleft_drive_encoder, ");");

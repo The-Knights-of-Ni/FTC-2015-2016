@@ -189,6 +189,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "if(imu.checkForUpdate()) {\n"
         "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.gyr_x, imu.gyr_y, imu.gyr_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
         "}\n");
+    
     short * pimu_heading = &(pimu_values->orientation.x);
     jniOut("telemetry.addData(\"imu heading\", ", pimu_heading, "/16.0);");
     short * pimu_tilt = &(pimu_values->orientation.y);
@@ -256,7 +257,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     float * parm_stage_print;
     #define arm_stage_print (*parm_stage_print)
     jniOut("telemetry.addData(\"arm stage\", ", parm_stage_print,");");
-
+    
     float * pdrive_direction_print;
     #define drive_direction_print (*pdrive_direction_print)
     jniOut("telemetry.addData(\"drive direction\", ", pdrive_direction_print,");");
@@ -392,7 +393,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         pad2stick1.y = gamepad2.joystick1.y;
         pad2stick2.x = gamepad2.joystick2.x;
         pad2stick2.y = gamepad2.joystick2.y;
-
+        
 //============================== IMU =============================        
         updateIMU();
         
@@ -471,7 +472,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         
         target_straight_component *= drive_control_norm;
         turn_component            *= drive_control_norm;
-
+        
         drive_straight_component = target_straight_component;
         // float max_accel = 10.0;
         // if(fabs(target_straight_component - drive_straight_component) < max_accel*dt)
