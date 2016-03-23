@@ -21,6 +21,8 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import android.hardware.Camera;
+import android.graphics.ImageFormat;
+import android.os.Environment;
 
 
 public class Mk4AutoDeploy extends LinearOpMode {
@@ -42,7 +44,13 @@ camera_preview_callback = new CameraPreviewCallback();
 
 camera.setPreviewCallbackWithBuffer(camera_preview_callback);
 camera.addCallbackBuffer(camera_buffer);
-
+parameters.setPreviewFormat(ImageFormat.NV21);
+parameters.setExposureCompensation(0);
+parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);
+parameters.set("iso", "ISO100");
+parameters.set("max-exposure-time", 2000000);
+parameters.set("min-exposure-time", 2000000);
+DbgLog.error("Camera parameters: "+parameters.flatten());
 }
 
 
@@ -62,6 +70,14 @@ class CameraPreviewCallback implements Camera.PreviewCallback
     {
         camera.addCallbackBuffer(camera_buffer);
     }
+}
+public boolean isExternalStorageWritable()
+{
+    String state = Environment.getExternalStorageState();
+    if (Environment.MEDIA_MOUNTED.equals(state)) {
+        return true;
+    }
+    return false;
 }
 
 public void setShort(int index, short a)
@@ -183,6 +199,9 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
+telemetry.addData("imu heading", getShort(52)/16.0);
+telemetry.addData("imu tilt", getShort(54)/16.0);
+telemetry.addData("imu roll", getShort(56)/16.0);
 left_drive.setPower(getFloat(80));
 right_drive.setPower(getFloat(84));
 winch.setPower(getFloat(88));
@@ -198,7 +217,6 @@ telemetry.addData("Indicator:", getInt(124));
 telemetry.addData("left_drive_encoder:", getInt(12));
 telemetry.addData("right_drive_encoder:", getInt(8));
 telemetry.addData("beacon right:", (getInt(128) == 1 ? "red" : "blue"));
-telemetry.addData("heading:", getShort(52));
 telemetry.addData("target time:", getFloat(132));
 telemetry.addData("acceleration time:", getFloat(136));
 telemetry.addData("slider 0", getInt(140));
@@ -417,8 +435,6 @@ else
     dim.setLED(0, false);
     dim.setLED(1, false);
 }telemetry.addData("ready", "");
-waitForStart();
-imu.rezero();
 
     main();
 }

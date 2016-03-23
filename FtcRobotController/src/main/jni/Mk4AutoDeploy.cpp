@@ -9,7 +9,6 @@
 //stuff that need to be constantly updated in the background but is not intensive enough to deserve a seperate thread
 void Mk4AutonomousDeployUpdate()
 {    
-    //TODO: make this sensor filter stuff a function in arm.h    
     shoulder = 0;
     winch = 0;
     
@@ -50,15 +49,22 @@ void Mk4AutonomousDeployUpdate()
     hook_left = clamp(hook_left, 0.0, 1.0);
     hook_right = clamp(hook_right, 0.0, 1.0);
     
+    log("%f %f  ", 1.0f, 1.0f)
+    log("%f %f %f  ",
+        imu_heading, imu_tilt, imu_roll);
+    log("%f %f %f  ",
+        imu_vel.x, imu_vel.y, imu_vel.z);
+    log("%d %d  ",
+        left_drive_encoder, right_drive_encoder);
+    log("%f %f\n",
+        left_drive, right_drive);
+    
+    // intake = 0;
     if(suppress_arm)
     {
         shoulder = 0;
         winch = 0;
     }
-    
-    // intake = 0;
-    // shoulder = 0;
-    // winch = 0;
     // //intake_tilt = continuous_servo_stop;
     // wrist = wrist_level_position;
     // hand = 0;
@@ -129,7 +135,9 @@ void jniMain(JNIEnv * _env, jobject _self)
         "import com.qualcomm.robotcore.hardware.I2cDevice;\n"
         "import com.qualcomm.robotcore.hardware.Servo;\n"
         "import com.qualcomm.robotcore.hardware.VoltageSensor;\n"
-        "import android.hardware.Camera;\n");
+        "import android.hardware.Camera;\n"
+        "import android.graphics.ImageFormat;\n"
+        logging_jni_import_string);
     
     //TODO: shortcut for defining and declaring motors, servos, etc.
     jni_variables_string = (
@@ -231,9 +239,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    dim.setLED(0, false);\n"
         "    dim.setLED(1, false);\n"
         "}"
-        "telemetry.addData(\"ready\", \"\");\n"
-        "waitForStart();\n"
-        "imu.rezero();\n");
+        "telemetry.addData(\"ready\", \"\");\n");
     
     jni_misc_string = (
         "Camera camera = null;\n"
@@ -252,7 +258,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    {\n"
         "        camera.addCallbackBuffer(camera_buffer);\n"
         "    }\n"
-        "}\n");
+        "}\n"
+        logging_jni_misc_string);
     
     jni_constructor_string = ("camera = FtcRobotControllerActivity.camera_preview.camera;\n"
                               "Camera.Parameters parameters = camera.getParameters();\n"
@@ -264,7 +271,14 @@ void jniMain(JNIEnv * _env, jobject _self)
                               "camera_preview_callback = new CameraPreviewCallback();\n"
                               "\n"
                               "camera.setPreviewCallbackWithBuffer(camera_preview_callback);\n"
-                              "camera.addCallbackBuffer(camera_buffer);\n");
+                              "camera.addCallbackBuffer(camera_buffer);\n"
+                              "parameters.setPreviewFormat(ImageFormat.NV21);\n"
+                              "parameters.setExposureCompensation(0);\n"
+                              "parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);\n"
+                              "parameters.set(\"iso\", \"ISO100\");\n"
+                              "parameters.set(\"max-exposure-time\", 2000000);\n"
+                              "parameters.set(\"min-exposure-time\", 2000000);\n"
+                              "DbgLog.error(\"Camera parameters: \"+parameters.flatten());");
     
     ptime = jniDoubleIn("return time;");
     pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
@@ -286,6 +300,13 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.gyr_x, imu.gyr_y, imu.gyr_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
         "}\n");
     
+    short * pimu_heading = &(pimu_values->orientation.x);
+    jniOut("telemetry.addData(\"imu heading\", ", pimu_heading, "/16.0);");
+    short * pimu_tilt = &(pimu_values->orientation.y);
+    jniOut("telemetry.addData(\"imu tilt\", ", pimu_tilt, "/16.0);");
+    short * pimu_roll = &(pimu_values->orientation.z);
+    jniOut("telemetry.addData(\"imu roll\", ", pimu_roll, "/16.0);");
+    
     pcurrent_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
     
     jniOut("left_drive.setPower(", pleft_drive, ");");
@@ -305,8 +326,6 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("telemetry.addData(\"left_drive_encoder:\", ", pleft_drive_encoder, ");");
     jniOut("telemetry.addData(\"right_drive_encoder:\", ", pright_drive_encoder, ");");
     jniOut("telemetry.addData(\"beacon right:\", (", pbeacon_right," == 1 ? \"red\" : \"blue\"));");
-    short * pimu_heading = &(pimu_values->orientation.x);
-    jniOut("telemetry.addData(\"heading:\", ", pimu_heading, ");");
     
     jniOut("telemetry.addData(\"target time:\", ", pdrive_time, ");");
     jniOut("telemetry.addData(\"acceleration time:\", ", pacceleration_time, ");");
@@ -323,13 +342,18 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     jniGenerate();
     
-    wrist = wrist_level_position;
-    wrist_tilt = false;
+    initLogfile();
+    
+    wrist_tilt = 0;
+    wrist_manual_control = 0;
     wrist_time = 0;
     hand_open = false;
     hand_time = 1000;
     hook_right = 0.0;
-    
+
+    shoulder_theta = 0;
+    winch_theta = 0;
+    inside_elbow_theta = 0;
     shoulder_omega = 0;
     winch_omega = 0;
     inside_elbow_omega = 0;
@@ -339,32 +363,42 @@ void jniMain(JNIEnv * _env, jobject _self)
      //TODO: figure out a better way to have things reset to their initial values
     armFunction = armAutonomousControl;
     
+    hand_time = 1000000;
+    
     score_mode = false;
 
     suppress_arm = true;
     
     initCamera();
     
-    // char * log_file_name = "autonomous_log_0.txt";
+    #ifndef GENERATE
+    jmethodID imu_rezero_id;
+    jobject imu_object;
+    {//get imu.rezero() method id
+        jclass imu_class = env->FindClass("com/qualcomm/ftcrobotcontroller/opmodes/IMU");
+        imu_rezero_id = env->GetMethodID(imu_class, "rezero", "()V");
+        imu_object = env->GetObjectField(self, env->GetFieldID(cls, "imu", "Lcom/qualcomm/ftcrobotcontroller/opmodes/IMU;"));
+    }
+    #endif
+
+    waitForStart();
     
-    // for(int i = 1; access(log_file_name, F_OK) != -1; i++)
-    // {
-    //     sprintf(log_file_name, "autonomus_log_%d.txt", i);
-    // }
-    // log_file = fopen(log_file_name, "w");
-    
-    //waitForStart(); //NOTE: needs to be called in java until IMU code is ported
     zeroDriveSensors();
     //enableKillerAI();
-    
-    imu_orientation_offsets = (v3f){0, 0, 0};
-    updateRobot();
-    imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};
+        
+    robotStateIn();
+    imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};;
     current_time = time;
+    
+    #ifndef GENERATE
+    env->CallVoidMethod(imu_object, imu_rezero_id); //rezero imu
+    #endif
+    
     //Config
     //hopper down
     #define colorAdjustedAngle(a) ((current_color) ? (a) : -(a))
     #define blocks_in_hopper 1
+    
     interruptable
     {
         for(int i = 0; i < 2; i++)
@@ -375,18 +409,33 @@ void jniMain(JNIEnv * _env, jobject _self)
             target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
             target_shoulder_theta = shoulder_theta;
             target_inside_elbow_theta = inside_elbow_theta;
-            
+
             autonomousUpdate();
         }
-        
+
+        #if 0 //temporarily disabling drive code for testing
         wait(10.0);
         
         driveOnCourseIn(10, -1.0, 0);
         turnRelDeg(colorAdjustedAngle(45), 1.0);
+        #endif
         
         #if 1 //enable arm
         suppress_arm = false;
         
+        setIntakeOut();
+        wait(0.25);
+        target_shoulder_theta = 2.2;
+        while(!armIsAtTarget(0.1, 0.25))
+        {
+            autonomousUpdate();
+        }
+        target_shoulder_theta = 2.39;
+        while(!armIsAtTarget(0.1, 0.25))
+        {
+            autonomousUpdate();
+        }
+        wait(0.5);
         setIntakeOut();
         wait(0.5);
         
@@ -404,7 +453,14 @@ void jniMain(JNIEnv * _env, jobject _self)
         wait(0.5);
         
         target_shoulder_theta = 1.5;
-        target_inside_elbow_theta = 4.0;
+        target_inside_elbow_theta = pi;
+        while(!armIsAtTarget(0.1, 0.1))
+        {
+            autonomousUpdate();
+        }
+        
+        target_shoulder_theta = 1.8;
+        target_inside_elbow_theta = pi;
         while(!armIsAtTarget(0.1, 0.1))
         {
             autonomousUpdate();
@@ -413,7 +469,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         wait(0.2);
         
         score_mode = false;
-        armFunction = armToScoreMode;
+        armFunction = armToIntakeMode;
         
         float arm_timer = 0;
         while(armFunction != armAutonomousControl)
@@ -433,11 +489,13 @@ void jniMain(JNIEnv * _env, jobject _self)
             autonomousUpdate();
         }
         wait(0.2);
-        
+
+        #if 0
         intake = 1;
         driveDistIn(30, -0.8);
         driveDistIn(30, 0.8);
         intake = 0;
+        #endif
         
         #endif
         

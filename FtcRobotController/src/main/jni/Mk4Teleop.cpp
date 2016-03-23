@@ -22,8 +22,8 @@ float hook_left_locked_position = 180.0f/255.0f;
 //Hopper
 #define hand_open_toggle pad2.singlePress(RIGHT_TRIGGER)
 #define wrist_tilt_toggle pad2.singlePress(RIGHT_BUMPER)
-#define wrist_manual_increase pad2.press(X)
-#define wrist_manual_decrease pad2.press(B)
+#define wrist_manual_decrease pad2.press(X)
+#define wrist_manual_increase pad2.press(B)
 
 //Intake
 #define intake_toggle pad1.toggle(LEFT_BUMPER)

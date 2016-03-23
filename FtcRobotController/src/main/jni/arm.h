@@ -124,46 +124,36 @@ void updateArmSensors()
     elbow_potentiometer_angle = (((180.0f-potentiometer_range*0.5f+potentiometer_range*(elbow_potentiometer/(1023.0f)))
                                   -8.050688f))*pi/180.0f;
     
-    log("I");
     shoulder_potentiometer_angle = (-90+((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))
                                          -2.1190f))*pi/180.0f;
     
-    log("I");
     if(shoulder_omega != shoulder_omega) shoulder_omega = 0;
     lowpassFirstDerivativeUpdate(shoulder_potentiometer_angle, &shoulder_theta, &shoulder_omega, 138);
     
-    log("I");
     if(winch_omega != winch_omega) winch_omega = 0;
     lowpassFirstDerivativeUpdate(winch_encoder/winch_gear_ratio/encoderticks_per_radian, &winch_theta, &winch_omega, 138);
     
-    log("I");
     if(inside_elbow_omega != inside_elbow_omega) inside_elbow_omega = 0;
     lowpassFirstDerivativeUpdate(elbow_potentiometer_angle, &inside_elbow_theta, &inside_elbow_omega, 138);
     
-    log("I");
     past_shoulder_thetas[current_arm_frame] = shoulder_theta;
     past_inside_elbow_thetas[current_arm_frame] = inside_elbow_theta;
     current_arm_frame = (current_arm_frame+1)%past_buffers_size;
     if(n_valid_shoulder_angles < past_buffers_size) n_valid_shoulder_angles++;
     if(n_valid_inside_elbow_angles < past_buffers_size) n_valid_inside_elbow_angles++;
     
-    log("I");
     low_passed_inside_elbow_theta = lerp(inside_elbow_theta, low_passed_inside_elbow_theta, exp(-17*dt));
     
-    log("I");
     //intake
     intake_potentiometer_angle = -(potentiometer_range*(intake_potentiometer-646.0)/(1023.0f))*pi/180.0f;     
     if(intake_omega != intake_omega) intake_omega = 0;
     lowpassFirstDerivativeUpdate(intake_potentiometer_angle, &intake_theta, &intake_omega, 138);
     
-    log("I");
     //wrist
     wrist_potentiometer_angle = -(potentiometer_range*(wrist_potentiometer-505.0)/(1023.0f))*pi/180.0f;
     
-    log("I");
     if(wrist_omega != wrist_omega) wrist_omega = 0;
     lowpassFirstDerivativeUpdate(wrist_potentiometer_angle, &wrist_theta, &wrist_omega, 138);
-    log("I\n");
 }
 
 float filterArmJoystick(float a)
@@ -489,8 +479,8 @@ void armToJointTarget()
 
 bool8 armIsAtTarget(float shoulder_tolerance, float inside_elbow_tolerance)
 {
-    return (fabs(inside_elbow_theta-target_inside_elbow_theta) < shoulder_tolerance &&
-            fabs(shoulder_theta-target_shoulder_theta)         < inside_elbow_tolerance);
+    return (fabs(shoulder_theta-target_shoulder_theta)         < shoulder_tolerance &&
+            fabs(inside_elbow_theta-target_inside_elbow_theta) < inside_elbow_tolerance);
 }
 
 void armToPreset(float shoulder_speed, float winch_speed, float tolerance = 0.5, float winch_preset_kp = 0.99, float winch_preset_ki = 0.9, float shoulder_preset_kp = 1.98, float shoulder_preset_ki = 0.53)
@@ -597,41 +587,41 @@ float wrist_time = 0;
 void doWrist()
 {
     wrist_time += dt;
-    
-    if(wrist_tilt)
+
+    wrist = continuous_servo_stop;
+    if(fabs(wrist_manual_control) > 0.1)
     {
-        if(current_color) target_wrist_theta = 1.396; //wrist_red_position;
-        else              target_wrist_theta = -1.396; //wrist_blue_position;
-        target_wrist_theta += wrist_manual_control;
+        wrist += wrist_manual_control;
+        target_wrist_theta += wrist_theta;
     }
     else
     {
-        target_wrist_theta = 0.0;
-        wrist_manual_control = 0;
+        wrist += 1.5*(target_wrist_theta-wrist_theta)-0.2*wrist_omega;
+        if(wrist < 0.1) wrist = 0;
     }
-    
-    wrist = continuous_servo_stop;
-    wrist += 1.5*(target_wrist_theta-wrist_theta)-0.2*wrist_omega;
-    if(wrist < 0.1) wrist = 0;
-    wrist += wrist_manual_control;
 }
 
 void setWristIn()
 {
     if(wrist_tilt)
     {
-        wrist_tilt = false;
         wrist_time = 0;
     }
+    
+    wrist_tilt = false;
+    target_wrist_theta = 0; //wrist_red_position;
 }
 
 void setWristOut()
 {
     if(!wrist_tilt)
     {
-        wrist_tilt = true;
         wrist_time = 0;
     }
+    
+    wrist_tilt = true;
+    if(current_color) target_wrist_theta = -1.396; //wrist_red_position;
+    else              target_wrist_theta = 1.396; //wrist_blue_position;
 }
 
 #define hand_open_time 0.5

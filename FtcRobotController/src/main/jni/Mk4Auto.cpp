@@ -13,8 +13,6 @@ float start_time = 0;
 //stuff that need to be constantly updated in the background but is not intensive enough to deserve a seperate thread
 void Mk4AutonomousUpdate()
 {
-    //if(time-start_time > 20.0) longjmp(exit_jump, 1);
-    
     shoulder = 0;
     winch = 0;
     
