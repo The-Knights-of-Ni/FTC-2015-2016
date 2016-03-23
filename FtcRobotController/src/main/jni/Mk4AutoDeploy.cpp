@@ -468,7 +468,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         
         wait(0.2);
         
-        score_mode = false;
+        score_mode = true;
         armFunction = armToIntakeMode;
         
         float arm_timer = 0;
