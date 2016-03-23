@@ -31,10 +31,10 @@ void initLogfile__file__(const char * __file__)
     {
         return;
     }
-        
+
     jclass environmentClass = env->FindClass("android/os/Environment");
     jclass fileClass = env->FindClass("java/io/File");
-    
+
     jstring jpath = (jstring) env->CallObjectMethod(
         env->CallStaticObjectMethod(
             environmentClass,
@@ -43,31 +43,31 @@ void initLogfile__file__(const char * __file__)
                 environmentClass,
                 env->GetStaticFieldID(environmentClass, "DIRECTORY_DOWNLOADS", "Ljava/lang/String;"))),
         env->GetMethodID(fileClass, "getAbsolutePath", "()Ljava/lang/String;"));
-    
+
     logfile = 0;
     if(env->ExceptionOccurred() == 0)
     {
         jsize path_len =  env->GetStringUTFLength(jpath);
         const char * path = env->GetStringUTFChars(jpath, 0);
-            
+
         //NOTE: this does not handle if the total filename is longer than 100 chars
         char * filepath = (char *) malloc(path_len + 100);
-        
+
         sprintf(filepath, "%.*s/%.*s_log_%d.txt",
                 path_len, path,
                 (strrchr(__file__, '/') ? ((uint)strrchr(__file__, '.'))-((uint)strrchr(__file__, '/')+1) : sizeof(__file__)),
                 (strrchr(__file__, '/') ? strrchr(__file__, '/') + 1 : __file__),
                 (uint) time(0));
-        
+
         //int logfile = open(filepath, O_CREAT | O_WRONLY | O_EXCL | O_NONBLOCK,
         //                   S_IRUST | S_IWUSR);
         //NOTE: this is more secure since it does not allow a file to be created between checking and obtaining a filehandle
-        
+
         if(access(filepath, F_OK) == -1)
         {
             logfile = fopen(filepath, "w");
         }
-        
+
         env->ReleaseStringUTFChars(jpath, path);
     }
     else

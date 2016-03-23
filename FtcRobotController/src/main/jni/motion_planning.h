@@ -47,7 +47,7 @@ struct waypointSequence
     waypoint getWaypoint(int n)
     {
         if(n >= 0 && n < current_amount) return sequence[n];
-                
+
         else assert(0); //throw 1
     }
 
@@ -456,8 +456,9 @@ trajectory secondOrderFilter(int f1_length, int f2_length, float dt, float start
     float f2;
     for (int i = 0; i < length; ++i)
     {
+		#ifndef USING_SIMULATOR
         autonomousUpdate();
-        
+        #endif
         // Apply input
         float input = min(total_impulse, 1);
         if (input < 1)

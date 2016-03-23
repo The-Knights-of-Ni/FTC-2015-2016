@@ -2,7 +2,6 @@
 #define DRIVE
 
 #include "robotics.h"
-#include "logging.h"
 //TODO: Traction control
 //TODO: D-PAD Turn macros (90, 180, 270, simulated shift)
 //TODO: Delete this comment

@@ -10,7 +10,7 @@ void autonomousUpdate()
 {
     dt = time-current_time;
     current_time = time;
-    
+
     updateDriveSensors();
     updateArmSensors();
     customAutonomousUpdate();
@@ -298,33 +298,45 @@ void turnRelDeg(float angle, float vIs)
     left_drive = 0;
 }
 
-void spline()
+void driveSpline(waypointSequence &splineWaypoints, bool color)// 1 = red, 0 = blue
 {
     Config config;
     config.dt = 0.01;
     config.max_jerk = robot_max_jerk;
     config.max_acc = robot_max_accleration;
     config.max_vel = robot_max_velocity;
-    
+
+    const float kV = 1/robot_max_velocity;//Might need to be 1/config.max_vel;
+    const float kA = 1/robot_max_accleration;
+    const float kP = 0;
+    const float kI = 0;
+    const float kD = 0;
+
     log("making path\n");
-    waypointSequence splineWaypoints(5);
-    splineWaypoints.addWaypoint(waypoint(0, 0, 0));
-    splineWaypoints.addWaypoint(waypoint(5, 0, 0));
-    splineWaypoints.addWaypoint(waypoint(10, 0, 0));
     path drivePath = makePath(splineWaypoints, config, robot_wheelbase);
-    
+    if(color)
+    {
+        drivePath.goRight();
+    }
+    else
+    {
+        drivePath.goLeft();
+    }
     log("made path\n");
-    
+
     TrajectoryFollower leftTraj;
     TrajectoryFollower rightTraj;
     leftTraj.setTrajectory(drivePath.go_left_pair.left);
     rightTraj.setTrajectory(drivePath.go_left_pair.right);
-    leftTraj.configure(0, 0, 0, 1/robot_max_velocity, 0);
-    rightTraj.configure(0, 0, 0, 1/robot_max_velocity, 0);
+
+    leftTraj.configure(kP, kI, kD, kV, kA);
+    rightTraj.configure(kP, kI, kD, kV, kA);
 
     float pwmCalc;
-    float left_dist = 0.001;
-    float right_dist = 0.001;
+
+    float left_dist = 0;
+    float right_dist = 0;
+
     float left_start_drive_theta = left_drive_theta;
     float right_start_drive_theta = right_drive_theta;
     while(pwmCalc != 5206)
@@ -332,11 +344,11 @@ void spline()
         float leftPwm = leftTraj.calculate(left_dist);
         float rightPwm = rightTraj.calculate(right_dist);
 
-        pwmCalc = fabs(left_drive);
+        pwmCalc = fabs(leftPwm);
 
         left_drive = leftPwm/100.0;
         right_drive = rightPwm/100.0;
-        
+
         autonomousUpdate();
         left_dist =  (left_drive_theta-left_start_drive_theta)*sprocket_pitch_radius;
         right_dist = (right_drive_theta-right_start_drive_theta)*sprocket_pitch_radius;

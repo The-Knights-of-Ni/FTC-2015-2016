@@ -2,10 +2,12 @@
 #define WHITE_RABBIT
 
 #include "drive.h"
-#include "arm.h"
 #include "Button.h"
-#include "spline.h"
+#ifndef USING_SIMULATOR
+#include "arm.h"
 
+#include "spline.h"
+#endif
 //Deadzones, bounds, and smooths the joysticks completely.
 smoothed_joystick smoothJoysticks(v2f stick, float min_power, float x_mod, float y_mod, float max_power)
 {

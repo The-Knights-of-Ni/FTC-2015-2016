@@ -8,9 +8,9 @@
 #define ROBOTICS
 
 #include "maths.h"
-#include "logging.h"
 
 #ifndef USING_SIMULATOR
+#include "logging.h"
 #include "jni_functions.h"
 #endif
 
@@ -189,11 +189,11 @@ void updateIMU()
     imu_heading_omega = pimu_values->angular_velocity.x/-16.0;
     imu_tilt_omega = pimu_values->angular_velocity.y/-16.0;
     imu_roll_omega = pimu_values->angular_velocity.z/-16.0;
-    
+
     #endif
-    
-    log("heading: %f, %f, tilt: %f, %f, roll: %f %f",
-        imu_heading, imu_heading_omega, imu_tilt, imu_tilt_omega, imu_roll, imu_roll_omega);
+
+    //log("heading: %f, %f, tilt: %f, %f, roll: %f %f",
+    //    imu_heading, imu_heading_omega, imu_tilt, imu_tilt_omega, imu_roll, imu_roll_omega);
 }
 
 #endif //ROBOTICS
