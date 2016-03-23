@@ -346,9 +346,15 @@ void driveSpline(waypointSequence &splineWaypoints, bool color)// 1 = red, 0 = b
 
         pwmCalc = fabs(leftPwm);
 
+<<<<<<< Updated upstream
         left_drive = leftPwm/100.0;
         right_drive = rightPwm/100.0;
 
+=======
+        left_drive = leftPwm;
+        right_drive = rightPwm;
+        
+>>>>>>> Stashed changes
         autonomousUpdate();
         left_dist =  (left_drive_theta-left_start_drive_theta)*sprocket_pitch_radius;
         right_dist = (right_drive_theta-right_start_drive_theta)*sprocket_pitch_radius;

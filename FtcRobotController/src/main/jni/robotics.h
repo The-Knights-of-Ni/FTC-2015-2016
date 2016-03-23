@@ -191,9 +191,15 @@ void updateIMU()
     imu_roll_omega = pimu_values->angular_velocity.z/-16.0;
 
     #endif
+<<<<<<< Updated upstream
 
     //log("heading: %f, %f, tilt: %f, %f, roll: %f %f",
     //    imu_heading, imu_heading_omega, imu_tilt, imu_tilt_omega, imu_roll, imu_roll_omega);
+=======
+    
+    /* log("heading: %f, %f, tilt: %f, %f, roll: %f %f", */
+    /*     imu_heading, imu_heading_omega, imu_tilt, imu_tilt_omega, imu_roll, imu_roll_omega); */
+>>>>>>> Stashed changes
 }
 
 #endif //ROBOTICS

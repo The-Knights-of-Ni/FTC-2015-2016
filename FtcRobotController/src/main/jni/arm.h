@@ -592,12 +592,11 @@ void doWrist()
     if(fabs(wrist_manual_control) > 0.1)
     {
         wrist += wrist_manual_control;
-        target_wrist_theta += wrist_theta;
+        target_wrist_theta = wrist_theta;
     }
     else
     {
-        wrist += 1.5*(target_wrist_theta-wrist_theta)-0.2*wrist_omega;
-        if(wrist < 0.1) wrist = 0;
+        if(fabs(target_wrist_theta-wrist_theta) > 0.1) wrist += 1.5*(target_wrist_theta-wrist_theta)-0.2*wrist_omega;
     }
 }
 

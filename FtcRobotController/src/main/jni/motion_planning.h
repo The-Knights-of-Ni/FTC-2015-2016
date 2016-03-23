@@ -793,6 +793,7 @@ struct TrajectoryFollower
             current_heading = seg.heading;
             current_segment++;
             //System.out.println("so far: " + distance_so_far + "; output: " + output);
+            log("output: %f\n", output);
             return output;
         }
         else

@@ -503,4 +503,5 @@ void jniMain(JNIEnv * _env, jobject _self)
     }
     
     cleanupCamera();
+    closeLogfile();
 }
