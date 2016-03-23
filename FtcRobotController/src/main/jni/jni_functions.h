@@ -32,7 +32,67 @@ char * jni_variables_string = 0;
 char * jni_run_opmode_string = 0;
 char * jni_misc_string = 0;
 char * jni_constructor_string = 0;
+////////////////////////////
+#ifdef USING_SIMULATOR
+////////////////////////////
+#include <string.h>
+#define max_java_code 5*kilobyte
 
+//dummy jni stuff
+typedef byte jobject;
+typedef byte jbyteArray;
+typedef byte jclass;
+typedef byte jfieldID;
+typedef byte jbyte;
+
+struct JNIEnv
+{
+    jfieldID GetFieldID(jclass, const char *, const char *){return 0;}
+    jclass GetObjectField(jobject, jfieldID){return 0;}
+    jclass GetObjectClass(jobject){return 0;}
+    void * GetByteArrayElements(jbyteArray, void *){return 0;}
+    int GetIntField(jclass, jfieldID){return 0;}
+    void ReleaseByteArrayElements(jbyteArray, jbyte *, int){}
+};
+
+JNIEnv * env;
+jobject self;
+
+#define waitForStart()
+#define waitOneFullHardwareCycle()
+#define waitForNextHardwareCycle()
+#define robotStateIn()
+#define robotStateOut()
+#define initJNI()
+#define cleanupJNI()
+#define JNI_COMMIT 0
+#define jniDoubleIn(...) (&((double*) 0))
+#define jniIntIn(...) (&((int*) 0))
+#define jniOut(...)
+#define jniGenerate()
+
+void updateRobot()
+{
+    longjmp(simulationPoint, 1);
+}
+//new empty 0 terminated string
+char * str_malloc(uint max_string_size)
+{
+    char * out = (char *) malloc(max_string_size);
+    *out = 0;
+    return out;
+}
+
+char * rsout_code = str_malloc(max_java_code); //TODO: expand if limit is reached
+char * rsout_code_current = rsout_code;
+char * rsin_code = str_malloc(max_java_code);
+char * rsin_code_current = rsin_code;
+
+#define constStrncmp(a, constant_string, max_len) (strncmp((a), (constant_string), min((max_len), sizeof(constant_string)-1)))
+
+#define constStrcmp(a, constant_string) (strncmp((a), (constant_string), sizeof(constant_string)-1))
+
+#else
 //////////////////////////////////////////////
 #ifdef GENERATE //compiling in generate mode//
 //////////////////////////////////////////////
@@ -173,7 +233,7 @@ void * jniStructIn_line(int struct_size, const char * s, const char * filename, 
                     return 0;
                 }
             }
-            
+
             int n_return_chars = 0;
             for ever
             {
@@ -205,13 +265,13 @@ void * jniStructIn_line(int struct_size, const char * s, const char * filename, 
                 assert(n_printed >= 0);
                 rsin_code_current += n_printed;
                 t += n_return_chars+1;
-                
+
                 if(end_reached) break;
             }
-            
+
             n_printed = sprintf(rsin_code_current, "%s\n}\n", t);
             assert(n_printed >= 0);
-            rsin_code_current += n_printed;           
+            rsin_code_current += n_printed;
             break;
         }
     }
@@ -278,17 +338,17 @@ int main(int n_args, char ** args)
             }
         }
     }
-    
+
     for(int l = 0; input_filename[l]; l++)
     {
         if(input_filename[l] == '/') input_path_part_len = l+1;
     }
-    
+
     for(int l = 0; input_filename[l]; l++)
     {
         if(input_filename[l] == '.') input_name_part_len = l;
     }
-    
+
     {
         if(java_output_filename == 0)
         {
@@ -299,7 +359,7 @@ int main(int n_args, char ** args)
             strncpy(java_output_filename+sizeof(java_out_file_prefix)-1, input_filename+input_path_part_len, input_name_part_len-input_path_part_len);
             strncpy(java_output_filename+sizeof(java_out_file_prefix)-1+input_name_part_len-input_path_part_len, java_out_file_suffix, sizeof(java_out_file_suffix));
         }
-        
+
         java_output_file = fopen(java_output_filename, "w+");
         if(!java_output_file)
         {
@@ -307,20 +367,20 @@ int main(int n_args, char ** args)
             exit(EXIT_SUCCESS);
         }
     }
-    
+
     java_output_path_part_len = 0;
     for(int l = 0; java_output_filename[l]; l++)
     {
         if(java_output_filename[l] == '/') java_output_path_part_len = l+1;
     }
-    
+
     java_output_name_part_len = 0;
     for(int l = 0; java_output_filename[l]; l++)
     {
         if(java_output_filename[l] == '.') java_output_name_part_len = l;
     }
     ////////////////////////////////////////////////////
-    
+
     jniMain(0, 0);
     return 0;
 }
@@ -345,7 +405,7 @@ void jniGenerate()
             "package com.qualcomm.ftcrobotcontroller.opmodes;\n"
             ""
             "\n");
-    
+
     fprintf(java_output_file,
             "\n"
             "import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\n"
@@ -355,7 +415,7 @@ void jniGenerate()
             "import java.nio.ByteBuffer;\n"
             "import java.nio.ByteOrder;\n");
     if(jni_import_string) fprintf(java_output_file, "\n%s\n", jni_import_string);
-    
+
     fprintf(java_output_file,
             "\n"
             "public class %.*s extends LinearOpMode {\n"
@@ -373,17 +433,17 @@ void jniGenerate()
     fprintf(java_output_file,
             "}\n"
             "\n");
-    
+
     if(jni_misc_string) fprintf(java_output_file, "\n%s\n", jni_misc_string);
-    
+
     //TODO: make bools work, and bytes
     for(int i = 2; i < n_types; i++)
     {
         const char * type = type_java_names[i];
         #define Type type[0]+'A'-'a', (type+1)
-        
+
         uint buffer_read_size = type_sizes[i];
-        
+
         fprintf(java_output_file,
                 "public void set%c%s(int index, %s a)\n"
                 "{\n"
@@ -412,20 +472,20 @@ void jniGenerate()
                 type, Type, buffer_read_size, buffer_read_size, Type,
                 type, Type, type, buffer_read_size, Type, buffer_read_size);
     }
-    
+
     fprintf(java_output_file, "\n"
             "void robotStateOut()\n"
             "{\n"
             "rsid_current = 0;\n"
             "%s\n"
             "}\n", rsout_code);
-    
+
     fprintf(java_output_file, "\n"
             "void robotStateIn()\n"
             "{\n"
             "%s\n"
             "}\n" , rsin_code);
-    
+
     if(jni_variables_string) fprintf(java_output_file, "%s\n", jni_variables_string);
     fprintf(java_output_file, "\n"
             "native void main();\n"
@@ -442,7 +502,7 @@ void jniGenerate()
     fprintf(java_output_file,
             "    main();\n"
             "}\n");
-    
+
     fprintf(java_output_file, "}\n");
     exit(EXIT_SUCCESS);
 }
@@ -487,18 +547,18 @@ void cleanupJNI();
 jbyteArray jrobot_state;
 
 void initJNI()
-{    
+{
     cls = env->GetObjectClass(self);
-    
+
     //functions
     waitForStartID = env->GetMethodID(cls, "waitForStart", "()V");
-    
+
     waitOneFullHardwareCycleID = env->GetMethodID(cls, "waitOneFullHardwareCycle", "()V");
     waitForNextHardwareCycleID = env->GetMethodID(cls, "waitForNextHardwareCycle", "()V");
-    
+
     robotStateInID = env->GetMethodID(cls, "robotStateIn", "()V");
     robotStateOutID = env->GetMethodID(cls, "robotStateOut", "()V");
-    
+
     //setup pinned array
     jfieldID jrobot_stateID = env->GetStaticFieldID(cls, "robot_state", "[B");
     jrobot_state = (jbyteArray) env->GetStaticObjectField(cls, jrobot_stateID);
@@ -506,14 +566,14 @@ void initJNI()
     /* { */
     /*     //TODO: give error */
     /* } */
-    
+
     robot_state.state = (byte *) env->GetByteArrayElements(jrobot_state, &robot_state.is_copy);
     assert(robot_state.state);
     if(robot_state.is_copy)
     {
         //TODO: give warning that the GC did not pin the array and perfomance may be impacted
     }
-    
+
     rsid_current = 0;
 }
 
@@ -603,4 +663,5 @@ defineJni(double, Double)
 
 #define jniStructIn(type, s) ((type *) jniStructIn_line(sizeof(type), s, __FILE__, __LINE__))
 
+#endif
 #endif

@@ -17,8 +17,8 @@ float * pleft_drive_voltage;
 float * pright_drive_voltage;
 #define right_drive_voltage (*pright_drive_voltage)
 
-float * pheading;
-#define heading (*pheading)
+//float * pheading;
+//#define heading (*pheading)
 int * pleft_drive_encoder;
 #define left_drive_encoder (*pleft_drive_encoder)
 int * pright_drive_encoder;

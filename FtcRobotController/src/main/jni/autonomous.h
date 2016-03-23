@@ -2,6 +2,7 @@
 #define AUTONOMOUS
 #define BUTTON //This should make it so we don't have buttons we don't need in auto
 #include "white_rabbit.h"
+#include "motion_planning.h"
 
 struct imu_state
 {
@@ -164,8 +165,8 @@ struct trapezoidalMotionProfile
         }
 
 };
-//TODO: Add filtering, Maximum jerk, and imu stabilization 
-void driveDistInFFWD(float dist, float vIs, float max_acceleration = default_max_acceleration)
+//TODO: Add filtering, Maximum jerk, and imu stabilization
+void driveDistOnCourseInFFWD(float dist, float vIs, float target_heading, float max_acceleration = default_max_acceleration)
 {
     if (dist < 0.0)
     {
@@ -174,30 +175,47 @@ void driveDistInFFWD(float dist, float vIs, float max_acceleration = default_max
     }
     trapezoidalMotionProfile path(vIs*max_robot_velocity, max_robot_velocity, dist, 0);
     float current_dist = 0;
-    float error = 0;
-    float error_deriv = 0;
-    float error_last = 0;
+    //Error in direction of motion
+    float tangent_error = 0;
+    float tangent_error_deriv = 0;
+    float tangent_error_last = 0;
+    //Error in direction normal to motion
+    float normal_error = 0;
+    float normal_error_deriv = 0;
+    float normal_error_last = 0;
+    float angular_error;
     float drive_time = 0;
 
     const float Kv = 0.0555;//About 1/18"/s, total guess
     const float Ka = 0.0; //Set to 0 for bashing of Kv
-    const float Kp = 0.0; //Error? Nah.
-    const float Kd = 0.0;
+    const float Ktp = 0.0; //Error? Nah.
+    const float Ktd = 0.0;
+    const float Knp = 0.0;
+    const float Knd = 0.0;
 
-    //timing or distance, whichever comes later, this is probably better than ignoring time.
+    //timing or distance, whichever comes later, this is probably better than ignoring time. (If ending early it means velocity constants aren't tuned properly)
     while(drive_time < path.target_time || fabs(dist-current_dist) > drive_dist_tolerance)
     {
         drive_time += dt;
         v3f bot = path.getData(drive_time);
-        error = bot.x - current_dist;
-        error_deriv = (error - error_last)/dt;
-        left_drive = Kv*bot.y + Ka*bot.z + Kp*error + Kd*error_deriv;
-        right_drive = Kv*bot.y + Ka*bot.z + Kp*error + Kd*error_deriv;
-        error_last = error;
+        angular_error = signedCanonicalizeAngleDeg(target_heading-imu_heading)-normal_error;
+        tangent_error = bot.x - current_dist*cos(angular_error);
+        tangent_error_deriv = (tangent_error - tangent_error_last)/dt;
+        normal_error_deriv = (normal_error - normal_error_last)/dt;
+
+        left_drive =  Kv*bot.y + Ka*bot.z + Ktp*tangent_error + Ktd*tangent_error_deriv + Knp*normal_error + Knd*normal_error_deriv;
+        right_drive = Kv*bot.y + Ka*bot.z + Ktp*tangent_error + Ktd*tangent_error_deriv - Knp*normal_error - Knd*normal_error_deriv;
+
+        tangent_error_last = tangent_error;
+        normal_error_last = normal_error;
         autonomousUpdate();
     }
 }
 
+inline void driveDistInFFWD(float dist, float vIs, float max_acceleration = default_max_acceleration)
+{
+    driveDistOnCourseInFFWD(dist, vIs, imu_heading, max_acceleration);
+}
 inline void driveDistCm(float dist, float vIs, float max_acceleration = default_max_acceleration*cm)
 {
     driveDistIn(dist/cm, vIs, max_acceleration/cm);

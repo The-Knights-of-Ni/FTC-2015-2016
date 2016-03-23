@@ -648,6 +648,7 @@ void armToIntakeMode()
     }
 }
 
+
 void armToScoreMode()
 {    
     switch(arm_line)

@@ -46,4 +46,9 @@ typedef double float64;
 #define megabyte 1024*1024
 #define gigabyte 1024*1024*1024
 
+#ifdef USING_SIMULATOR
+#include <setjmp.h>
+static jmp_buf simulationPoint;
+#endif
+
 #endif

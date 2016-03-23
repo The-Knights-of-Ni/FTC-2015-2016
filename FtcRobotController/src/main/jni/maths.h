@@ -792,6 +792,18 @@ float boundAngleNegPiToPiRadians(float angle) {
    return angle;
  }
 
+float boundAngle0to2PiRadians(float angle) {
+  // Naive algorithm
+  while (angle >= 2.0 * pi) {
+    angle -= 2.0 * pi;
+  }
+  while (angle < 0.0) {
+    angle += 2.0 * pi;
+  }
+  return angle;
+}
+
+
 float getDifferenceInAngleRadians(float from, float to) {
   return boundAngleNegPiToPiRadians(to - from);
 }
