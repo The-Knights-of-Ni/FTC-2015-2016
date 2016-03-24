@@ -441,7 +441,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         wait(0.5);
         setIntakeOut();
         wait(0.5);
-        #if 0
+
         intake = -1;
         waypointSequence deployPath(5);
         deployPath.addWaypoint(waypoint(0,0,0));
@@ -450,7 +450,7 @@ void jniMain(JNIEnv * _env, jobject _self)
 
         drivePath(deployPath, current_color);
         intake = 0;
-        #endif
+
         target_shoulder_theta = 1.4;
         target_inside_elbow_theta = 9.0*pi/8.0;
         while(!armIsAtTarget(0.25, 0.25))
