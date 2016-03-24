@@ -680,11 +680,21 @@ void jniMain(JNIEnv * _env, jobject _self)
             doIntake();
         }
         
-        if(wrist_tilt_toggle) wrist_tilt = !wrist_tilt;
+        if(wrist_tilt_toggle)
+        {
+            if(wrist_tilt)
+            {
+                setWristIn();
+            }
+            else
+            {
+                setWristOut();
+            }
+        }
         
         if(shoulder_theta > 1.3 && inside_elbow_theta > pi)
         {
-            wrist_tilt = false;
+            setWristIn();
         }
         
         wrist_manual_control += 0.5*((int) wrist_manual_increase - (int)wrist_manual_decrease)*dt;

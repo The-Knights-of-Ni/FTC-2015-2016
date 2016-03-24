@@ -33,7 +33,11 @@ void Mk4AutonomousUpdate()
 
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
+<<<<<<< Updated upstream
 
+=======
+    
+>>>>>>> Stashed changes
     shoulder *= 12.0/left_drive_voltage;
     winch *= 12.0/left_drive_voltage;
 
