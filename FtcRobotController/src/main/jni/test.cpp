@@ -2,6 +2,7 @@
 #include "button.h"
 #include "drive.h"
 #include "logging.h"
+#include "vision.h"
 
 #ifndef GENERATE
 #undef JNI_main
@@ -21,6 +22,8 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
                          "import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;\n"
                          "import com.qualcomm.robotcore.hardware.Servo;\n"
                          "import java.nio.ByteBuffer;\n"
+                         "import android.hardware.Camera;\n"
+                         "import android.graphics.ImageFormat;\n"
                          logging_jni_import_string);
     
     jni_misc_string = (
@@ -28,7 +31,44 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
         "{\n"
         "    return ByteBuffer.wrap(joystick, 42, 4).getInt();\n"
         "}\n"
+        "\n"
+        "Camera camera = null;\n"
+        "int camera_w = 0;\n"
+        "int camera_h = 0;\n"
+        "CameraPreviewCallback camera_preview_callback;\n"
+        "\n"
+        "byte[] camera_buffer = null;\n"
+        "\n"
+        "class CameraPreviewCallback implements Camera.PreviewCallback\n"
+        "{\n"
+        "    \n"
+        "    \n"
+        "    CameraPreviewCallback(){}\n"
+        "    public void onPreviewFrame(byte[] data, Camera camera)\n"
+        "    {\n"
+        "        camera.addCallbackBuffer(camera_buffer);\n"
+        "    }\n"
+        "}\n"
         logging_jni_misc_string);
+    
+    jni_constructor_string = ("camera = FtcRobotControllerActivity.camera_preview.camera;\n"
+                              "Camera.Parameters parameters = camera.getParameters();\n"
+                              "Camera.Size camera_size = parameters.getPreviewSize();\n"
+                              "camera_w = camera_size.width;\n"
+                              "camera_h = camera_size.height;\n"
+                              "\n"
+                              "camera_buffer = new byte[camera_w*camera_h*4];\n"
+                              "camera_preview_callback = new CameraPreviewCallback();\n"
+                              "\n"
+                              "camera.setPreviewCallbackWithBuffer(camera_preview_callback);\n"
+                              "camera.addCallbackBuffer(camera_buffer);\n"
+                              "parameters.setPreviewFormat(ImageFormat.NV21);\n"
+                              "parameters.setExposureCompensation(0);\n"
+                              "parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);\n"
+                              "parameters.set(\"iso\", \"ISO100\");\n"
+                              "parameters.set(\"max-exposure-time\", 2000000);\n"
+                              "parameters.set(\"min-exposure-time\", 2000000);\n"
+                              "DbgLog.error(\"Camera parameters: \"+parameters.flatten());");
     
     // pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
     // pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
@@ -56,16 +96,16 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
     jniOut("telemetry.addData(\"right drive\",", pright_drive, ");\n");
     float * pdt;
     jniOut("telemetry.addData(\"time\",", pdt, ");\n");
-    int * file_pointer;
-    jniOut("telemetry.addData(\"file pointer\",", file_pointer, ");\n");
+    int * beacon;
+    jniOut("telemetry.addData(\"beacon\",", beacon, ");\n");
     
     jniGenerate();
     
     initLogfile();
-    
-    //*file_pointer = (int) logfile;
-    
+        
     Button pad1 = {};
+    
+    initCamera();
     
     waitForStart();
     
@@ -75,7 +115,9 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
         *pdt = dt;
         current_time = time;
         
-        log("dt: %f\n", dt);
+        *beacon = getBeaconColor();
+        
+        log("beacon: %d  dt: %f\n", *beacon, dt);
         
         left_drive = gamepad1.joystick1.y-gamepad1.joystick1.x;
         right_drive = gamepad1.joystick1.y+gamepad1.joystick1.x;
@@ -84,5 +126,6 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
         updateRobot();
     }
     
+    cleanupCamera();
     closeLogfile();
 }

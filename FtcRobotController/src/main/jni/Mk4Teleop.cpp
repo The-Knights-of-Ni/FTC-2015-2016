@@ -43,7 +43,7 @@ float hook_left_locked_position = 180.0f/255.0f;
 #define shoulder_precision_mode (!pad2.press(LEFT_STICK_BUTTON))
 #define winch_precision_mode (false)//(pad2.press(RIGHT_STICK_BUTTON))
 
-#define pullup_button pad2.singlePress(A)
+//#define pullup_button pad2.singlePress(A)
 
 #define arm_slow_factor 0.4
 
@@ -79,7 +79,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                             "VoltageSensor left_drive_voltage;\n"
                             "VoltageSensor right_drive_voltage;\n"
                             "DeviceInterfaceModule dim;\n"
-                            "IMU imu;"
+                            //"IMU imu;"
                             "int elbow_potentiometer_port = 7;\n"
                             "int shoulder_potentiometer_port = 1;\n"
                             "int intake_potentiometer_port = 5;\n"
@@ -103,23 +103,23 @@ void jniMain(JNIEnv * _env, jobject _self)
     jni_run_opmode_string = ("left_drive_voltage = hardwareMap.voltageSensor.get(\"Left Drive + Shoulder\");\n"
                              "right_drive_voltage = hardwareMap.voltageSensor.get(\"Intake + Right Drive\");\n"
                              "dim = hardwareMap.deviceInterfaceModule.get(\"dim\");\n"
-                             "I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get(\"imu\");\n"
-                             "imu = new IMU(imu_i2c_device, this);\n"
-                             "int error = imu.init(IMU.mode_ndof,\n"
-                             "        (byte) (IMU.units_acc_m_per_s2 |\n"
-                             "                IMU.units_angle_deg |\n"
-                             "                IMU.units_angular_vel_deg_per_s |\n"
-                             "                IMU.units_temp_C |\n"
-                             "                IMU.units_pitch_convention_android));\n"
-                             "if (error != 0) {\n"
-                             "    for (; ; ) {\n"
-                             "        telemetry.addData(\"error initializing imu\", 0);\n"
-                             "        waitOneFullHardwareCycle();\n"
-                             "    }\n"
-                             "}\n"
-                             "imu.vel_x = 0.0f;\n"
-                             "imu.vel_y = 0.0f;\n"
-                             "imu.vel_z = 0.0f; \n"
+                             // "I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get(\"imu\");\n"
+                             // "imu = new IMU(imu_i2c_device, this);\n"
+                             // "int error = imu.init(IMU.mode_ndof,\n"
+                             // "        (byte) (IMU.units_acc_m_per_s2 |\n"
+                             // "                IMU.units_angle_deg |\n"
+                             // "                IMU.units_angular_vel_deg_per_s |\n"
+                             // "                IMU.units_temp_C |\n"
+                             // "                IMU.units_pitch_convention_android));\n"
+                             // "if (error != 0) {\n"
+                             // "    for (; ; ) {\n"
+                             // "        telemetry.addData(\"error initializing imu\", 0);\n"
+                             // "        waitOneFullHardwareCycle();\n"
+                             // "    }\n"
+                             // "}\n"
+                             // "imu.vel_x = 0.0f;\n"
+                             // "imu.vel_y = 0.0f;\n"
+                             // "imu.vel_z = 0.0f; \n"
                              "\n"
                              "left_drive  = hardwareMap.dcMotor.get(\"leftd\");\n"
                              "right_drive = hardwareMap.dcMotor.get(\"rightd\");\n"
@@ -158,10 +158,11 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    return ByteBuffer.wrap(joystick, 42, 4).getInt();\n"
         "}\n"
         "\n"
-        "public void zeroIMU()\n"
-        "{\n"
-        "    imu.rezero();\n"
-        "}\n");
+        // "public void zeroIMU()\n"
+        // "{\n"
+        // "    imu.rezero();\n"
+        // "}\n"
+        );
     
     ptime = jniDoubleIn("return time;");
     pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");
@@ -184,18 +185,18 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     pdim_digital_pins = jniIntIn("return dim.getDigitalInputStateByte();");
     
-    pimu_values = jniStructIn(
-        imu_state,
-        "if(imu.checkForUpdate()) {\n"
-        "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.gyr_x, imu.gyr_y, imu.gyr_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
-        "}\n");
+    // pimu_values = jniStructIn(
+    //     imu_state,
+    //     "if(imu.checkForUpdate()) {\n"
+    //     "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.gyr_x, imu.gyr_y, imu.gyr_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
+    //     "}\n");
     
-    short * pimu_heading = &(pimu_values->orientation.x);
-    jniOut("telemetry.addData(\"imu heading\", ", pimu_heading, "/16.0);");
-    short * pimu_tilt = &(pimu_values->orientation.y);
-    jniOut("telemetry.addData(\"imu tilt\", ", pimu_tilt, "/16.0);");
-    short * pimu_roll = &(pimu_values->orientation.z);
-    jniOut("telemetry.addData(\"imu roll\", ", pimu_roll, "/16.0);");
+    // short * pimu_heading = &(pimu_values->orientation.x);
+    // jniOut("telemetry.addData(\"imu heading\", ", pimu_heading, "/16.0);");
+    // short * pimu_tilt = &(pimu_values->orientation.y);
+    // jniOut("telemetry.addData(\"imu tilt\", ", pimu_tilt, "/16.0);");
+    // short * pimu_roll = &(pimu_values->orientation.z);
+    // jniOut("telemetry.addData(\"imu roll\", ", pimu_roll, "/16.0);");
     
     jniOut("left_drive.setPower(", pleft_drive, ");");
     jniOut("right_drive.setPower(", pright_drive, ");");
@@ -335,15 +336,15 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     setIntakeOut();
     
-    #ifndef GENERATE
-    jmethodID imu_rezero_id;
-    jobject imu_object;
-    {//get imu.rezero() method id
-        jclass imu_class = env->FindClass("com/qualcomm/ftcrobotcontroller/opmodes/IMU");
-        imu_rezero_id = env->GetMethodID(imu_class, "rezero", "()V");
-        imu_object = env->GetObjectField(self, env->GetFieldID(cls, "imu", "Lcom/qualcomm/ftcrobotcontroller/opmodes/IMU;"));
-    }
-    #endif
+    // #ifndef GENERATE
+    // jmethodID imu_rezero_id;
+    // jobject imu_object;
+    // {//get imu.rezero() method id
+    //     jclass imu_class = env->FindClass("com/qualcomm/ftcrobotcontroller/opmodes/IMU");
+    //     imu_rezero_id = env->GetMethodID(imu_class, "rezero", "()V");
+    //     imu_object = env->GetObjectField(self, env->GetFieldID(cls, "imu", "Lcom/qualcomm/ftcrobotcontroller/opmodes/IMU;"));
+    // }
+    // #endif
     
     drive_straight_component = 0;
     
@@ -353,11 +354,11 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     robotStateIn();
     
-    imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};;
+    // imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};;
     
-    #ifndef GENERATE
-    env->CallVoidMethod(imu_object, imu_rezero_id); //rezero imu
-    #endif
+    // #ifndef GENERATE
+    // env->CallVoidMethod(imu_object, imu_rezero_id); //rezero imu
+    // #endif
     
     robotStateIn();
     updateDriveSensors();
@@ -395,7 +396,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         pad2stick2.y = gamepad2.joystick2.y;
         
 //============================== IMU =============================        
-        updateIMU();
+        //updateIMU();
         
 //============================= Drive ============================
         updateDriveSensors();
@@ -565,24 +566,24 @@ void jniMain(JNIEnv * _env, jobject _self)
                     armFunction = armToIntakeMode;
                 }
             }
-            else if(pullup_button)
-            {
-                if(armFunction != armUserControl) //cancel motion
-                {
-                    target_shoulder_theta = shoulder_theta;
-                    float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
-                                                      -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-                    target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
-                    target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
+            // else if(pullup_button)
+            // {
+            //     if(armFunction != armUserControl) //cancel motion
+            //     {
+            //         target_shoulder_theta = shoulder_theta;
+            //         float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+            //                                           -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+            //         target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
+            //         target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
                     
-                    armFunction = armUserControl;
-                }
-                else
-                {
-                    arm_line = 0;
-                    armFunction = armPullup;
-                }                
-            }
+            //         armFunction = armUserControl;
+            //     }
+            //     else
+            //     {
+            //         arm_line = 0;
+            //         armFunction = armPullup;
+            //     }                
+            // }
             
             target_arm_velocity.x = filterArmJoystick(target_arm_velocity.x);
             target_arm_velocity.y = filterArmJoystick(target_arm_velocity.y);
@@ -697,7 +698,7 @@ void jniMain(JNIEnv * _env, jobject _self)
             setWristIn();
         }
         
-        wrist_manual_control += 0.5*((int) wrist_manual_increase - (int)wrist_manual_decrease)*dt;
+        wrist_manual_control = 0.5*((int) wrist_manual_increase - (int)wrist_manual_decrease);
         doWrist();
         
         if(hand_open_toggle)

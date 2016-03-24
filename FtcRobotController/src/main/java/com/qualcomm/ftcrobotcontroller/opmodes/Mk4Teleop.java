@@ -29,7 +29,7 @@ int rsid_current = 0;
 public Mk4Teleop()
 {
     DbgLog.error("opmode constructor");
-    robot_state = new byte[244];
+    robot_state = new byte[220];
 }
 
 
@@ -38,10 +38,6 @@ public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks 
     return ByteBuffer.wrap(joystick, 42, 4).getInt();
 }
 
-public void zeroIMU()
-{
-    imu.rezero();
-}
 
 public void setShort(int index, short a)
 {
@@ -162,37 +158,34 @@ public double getRelativeDouble()
 void robotStateOut()
 {
 rsid_current = 0;
-telemetry.addData("imu heading", getShort(72)/16.0);
-telemetry.addData("imu tilt", getShort(74)/16.0);
-telemetry.addData("imu roll", getShort(76)/16.0);
-left_drive.setPower(getFloat(96));
-right_drive.setPower(getFloat(100));
-winch.setPower(getFloat(104));
-shoulder.setPower(getFloat(108));
-intake.setPower(getFloat(112));
-hand.setPosition(getFloat(116));
-wrist.setPosition(getFloat(120));
-hook_left.setPosition(getFloat(124));
-hook_right.setPosition(getFloat(128));
-intake_tilt.setPosition(getFloat(132));
-score_hook.setPosition(getFloat(136));
-telemetry.addData("shoulder theta", getFloat(140));
-telemetry.addData("shoulder_compensation", getFloat(144));
-telemetry.addData("left_drive_compensation", getFloat(148));
-telemetry.addData("right_drive_compensation", getFloat(152));
-telemetry.addData("left_drive_theta", getFloat(156));
-telemetry.addData("right_drive_theta", getFloat(160));
-telemetry.addData("left_drive_active", getInt(164));
-telemetry.addData("shoulder_active", getInt(168));
+left_drive.setPower(getFloat(72));
+right_drive.setPower(getFloat(76));
+winch.setPower(getFloat(80));
+shoulder.setPower(getFloat(84));
+intake.setPower(getFloat(88));
+hand.setPosition(getFloat(92));
+wrist.setPosition(getFloat(96));
+hook_left.setPosition(getFloat(100));
+hook_right.setPosition(getFloat(104));
+intake_tilt.setPosition(getFloat(108));
+score_hook.setPosition(getFloat(112));
+telemetry.addData("shoulder theta", getFloat(116));
+telemetry.addData("shoulder_compensation", getFloat(120));
+telemetry.addData("left_drive_compensation", getFloat(124));
+telemetry.addData("right_drive_compensation", getFloat(128));
+telemetry.addData("left_drive_theta", getFloat(132));
+telemetry.addData("right_drive_theta", getFloat(136));
+telemetry.addData("left_drive_active", getInt(140));
+telemetry.addData("shoulder_active", getInt(144));
 telemetry.addData("slider 0", getInt(52));
 telemetry.addData("slider 1", getInt(56));
 telemetry.addData("slider 2", getInt(60));
 telemetry.addData("slider 3", getInt(64));
-telemetry.addData("forearm theta", getFloat(172));
-telemetry.addData("shoulder power", getFloat(108));
-telemetry.addData("arm stage", getFloat(176));
-telemetry.addData("drive direction", getFloat(180));
-telemetry.addData("drive theta", getFloat(184));
+telemetry.addData("forearm theta", getFloat(148));
+telemetry.addData("shoulder power", getFloat(84));
+telemetry.addData("arm stage", getFloat(152));
+telemetry.addData("drive direction", getFloat(156));
+telemetry.addData("drive theta", getFloat(160));
 
 }
 
@@ -284,23 +277,7 @@ setInt(68, dim.getDigitalInputStateByte());
 rsid_current = 72;
 }
 {
-rsid_current = 72;
-if(imu.checkForUpdate()) {
-    setRelative(imu.eul_x);
-setRelative( imu.eul_y);
-setRelative( imu.eul_z);
-setRelative( imu.gyr_x);
-setRelative( imu.gyr_y);
-setRelative( imu.gyr_z);
-setRelative( imu.vel_x);
-setRelative( imu.vel_y);
-setRelative( imu.vel_z);
-;
-}
-
-}
-{
-rsid_current = 188;
+rsid_current = 164;
 int gamepad1_buttons = 0;
 try
 {
@@ -321,7 +298,7 @@ setRelative( gamepad1_buttons);
 ;
 }
 {
-rsid_current = 216;
+rsid_current = 192;
 int gamepad2_buttons = 0;
 try
 {
@@ -346,7 +323,7 @@ setRelative( gamepad2_buttons);
 VoltageSensor left_drive_voltage;
 VoltageSensor right_drive_voltage;
 DeviceInterfaceModule dim;
-IMU imu;int elbow_potentiometer_port = 7;
+int elbow_potentiometer_port = 7;
 int shoulder_potentiometer_port = 1;
 int intake_potentiometer_port = 5;
 int wrist_potentiometer_port = 3;
@@ -385,23 +362,6 @@ static
 left_drive_voltage = hardwareMap.voltageSensor.get("Left Drive + Shoulder");
 right_drive_voltage = hardwareMap.voltageSensor.get("Intake + Right Drive");
 dim = hardwareMap.deviceInterfaceModule.get("dim");
-I2cDevice imu_i2c_device = hardwareMap.i2cDevice.get("imu");
-imu = new IMU(imu_i2c_device, this);
-int error = imu.init(IMU.mode_ndof,
-        (byte) (IMU.units_acc_m_per_s2 |
-                IMU.units_angle_deg |
-                IMU.units_angular_vel_deg_per_s |
-                IMU.units_temp_C |
-                IMU.units_pitch_convention_android));
-if (error != 0) {
-    for (; ; ) {
-        telemetry.addData("error initializing imu", 0);
-        waitOneFullHardwareCycle();
-    }
-}
-imu.vel_x = 0.0f;
-imu.vel_y = 0.0f;
-imu.vel_z = 0.0f; 
 
 left_drive  = hardwareMap.dcMotor.get("leftd");
 right_drive = hardwareMap.dcMotor.get("rightd");

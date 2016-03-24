@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.nio.ByteBuffer;
+import android.hardware.Camera;
+import android.graphics.ImageFormat;
 import android.os.Environment;
 
 
@@ -28,12 +30,49 @@ public test()
 {
     DbgLog.error("opmode constructor");
     robot_state = new byte[52];
+
+camera = FtcRobotControllerActivity.camera_preview.camera;
+Camera.Parameters parameters = camera.getParameters();
+Camera.Size camera_size = parameters.getPreviewSize();
+camera_w = camera_size.width;
+camera_h = camera_size.height;
+
+camera_buffer = new byte[camera_w*camera_h*4];
+camera_preview_callback = new CameraPreviewCallback();
+
+camera.setPreviewCallbackWithBuffer(camera_preview_callback);
+camera.addCallbackBuffer(camera_buffer);
+parameters.setPreviewFormat(ImageFormat.NV21);
+parameters.setExposureCompensation(0);
+parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);
+parameters.set("iso", "ISO100");
+parameters.set("max-exposure-time", 2000000);
+parameters.set("min-exposure-time", 2000000);
+DbgLog.error("Camera parameters: "+parameters.flatten());
 }
 
 
 public int updateButtons(byte[] joystick) //TODO: Add lookup method that checks if currentByte == sum of a button combination and then makes it 0 if needed.
 {
     return ByteBuffer.wrap(joystick, 42, 4).getInt();
+}
+
+Camera camera = null;
+int camera_w = 0;
+int camera_h = 0;
+CameraPreviewCallback camera_preview_callback;
+
+byte[] camera_buffer = null;
+
+class CameraPreviewCallback implements Camera.PreviewCallback
+{
+    
+    
+    CameraPreviewCallback(){}
+    public void onPreviewFrame(byte[] data, Camera camera)
+    {
+        camera.addCallbackBuffer(camera_buffer);
+    }
 }
 public boolean isExternalStorageWritable()
 {
@@ -169,7 +208,7 @@ telemetry.addData("right drive",getFloat(40));
 
 telemetry.addData("time",getFloat(44));
 
-telemetry.addData("file pointer",getInt(48));
+telemetry.addData("beacon",getInt(48));
 
 
 }

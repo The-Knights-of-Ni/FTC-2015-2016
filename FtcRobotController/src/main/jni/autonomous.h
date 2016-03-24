@@ -2,9 +2,11 @@
 #define AUTONOMOUS
 #define BUTTON //This should make it so we don't have buttons we don't need in auto
 #include "white_rabbit.h"
-const float robot_max_velocity = 21;//In/s
-const float robot_max_accleration = 84;//In/s^2
-const float robot_max_jerk = 168;//In/s^2
+#include "motion_planning.h"
+
+const float robot_max_velocity = 32.34;//In/s
+const float robot_max_accleration = 100;//In/s^2
+const float robot_max_jerk = 110;//In/s^2
 const float robot_wheelbase = 14.325;
 void autonomousUpdate()
 {
@@ -18,8 +20,6 @@ void autonomousUpdate()
 
     updateIMU();
 }
-
-#include "motion_planning.h"
 
 void wait(float wait_time)
 {
@@ -298,21 +298,23 @@ void turnRelDeg(float angle, float vIs)
     left_drive = 0;
 }
 
-void driveSpline(waypointSequence &splineWaypoints, bool color)// 1 = red, 0 = blue
+void driveSpline(waypointSequence &splineWaypoints, bool color, float direction)// 1 = red, 0 = blue
 {
     Config config;
     config.dt = 0.01;
     config.max_jerk = robot_max_jerk;
     config.max_acc = robot_max_accleration;
-    config.max_vel = robot_max_velocity;
-
+    config.max_vel = 0.7*robot_max_velocity;
+    
     const float kV = 1/robot_max_velocity;//Might need to be 1/config.max_vel;
     const float kA = 1/robot_max_accleration;
-    const float kP = 0;
+    const float left_kP = 0.1;
+    const float right_kP = 0.1;
     const float kI = 0;
     const float kD = 0;
-
-    log("making path\n");
+    const float kH = direction*4;
+    
+    //log("making path, time: %d\n", (int)time(0));
     path drivePath = makePath(splineWaypoints, config, robot_wheelbase);
     if(color)
     {
@@ -322,44 +324,42 @@ void driveSpline(waypointSequence &splineWaypoints, bool color)// 1 = red, 0 = b
     {
         drivePath.goLeft();
     }
-    log("made path\n");
-
+    //log("made path, time: %d\n", (uint)time(0));
+    
     TrajectoryFollower leftTraj;
     TrajectoryFollower rightTraj;
     leftTraj.setTrajectory(drivePath.go_left_pair.left);
     rightTraj.setTrajectory(drivePath.go_left_pair.right);
-
-    leftTraj.configure(kP, kI, kD, kV, kA);
-    rightTraj.configure(kP, kI, kD, kV, kA);
-
-    float pwmCalc;
-
+    
+    leftTraj.configure(left_kP, kI, kD, kV, kA, -kH);
+    rightTraj.configure(right_kP, kI, kD, kV, kA, kH);
+    
     float left_dist = 0;
     float right_dist = 0;
-
+    
     float left_start_drive_theta = left_drive_theta;
     float right_start_drive_theta = right_drive_theta;
-    while(pwmCalc != 5206)
+    float start_heading = imu_heading;
+    for ever
     {
-        float leftPwm = leftTraj.calculate(left_dist);
-        float rightPwm = rightTraj.calculate(right_dist);
-
-        pwmCalc = fabs(leftPwm);
-
-<<<<<<< Updated upstream
-        left_drive = leftPwm/100.0;
-        right_drive = rightPwm/100.0;
-
-=======
-        left_drive = leftPwm;
-        right_drive = rightPwm;
+        float leftPwm = leftTraj.calculate(left_dist, (imu_heading-start_heading));
+        float rightPwm = rightTraj.calculate(right_dist, (imu_heading-start_heading));
         
->>>>>>> Stashed changes
+        if(leftPwm == -5206) break;
+        
+        left_drive = direction*leftPwm;
+        right_drive = direction*rightPwm;
+        
         autonomousUpdate();
-        left_dist =  (left_drive_theta-left_start_drive_theta)*sprocket_pitch_radius;
-        right_dist = (right_drive_theta-right_start_drive_theta)*sprocket_pitch_radius;
+        left_dist =  direction*(left_drive_theta-left_start_drive_theta)*sprocket_pitch_radius*7.0/6.0;
+        right_dist = direction*(right_drive_theta-right_start_drive_theta)*sprocket_pitch_radius*7.0/6.0;
     }
-
+    float target_heading = 180.0/pi*leftTraj.getHeading();
+    
+    turnRelDeg(signedCanonicalizeAngleDeg(target_heading-imu_heading), 1.0);
+    
+    left_drive = 0;
+    right_drive = 0;
 }
 
 #endif

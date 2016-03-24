@@ -456,9 +456,6 @@ trajectory secondOrderFilter(int f1_length, int f2_length, float dt, float start
     float f2;
     for (int i = 0; i < length; ++i)
     {
-		#ifndef USING_SIMULATOR
-        autonomousUpdate();
-        #endif
         // Apply input
         float input = min(total_impulse, 1);
         if (input < 1)
@@ -553,11 +550,13 @@ trajectory generate(Config &config,float start_vel,float start_heading, float go
     // Don't do any wrapping because we don't know units.
     float total_heading_change = goal_heading - start_heading;
     for (int i = 0; i < traj.num_segments; ++i)
-    {
+    {        
         segment seg = traj.getSegment(i);
         traj.segments[i].heading = start_heading + total_heading_change * (traj.segments[i].pos) / traj.segments[traj.num_segments - 1].pos;
+        
+        if(seg.vel == -5206) break;
     }
-
+    
     return traj;
 }
 
@@ -749,23 +748,25 @@ struct TrajectoryFollower
     float kd;
     float kv;
     float ka;
+    float kh;
     float last_error;
     float current_heading;
     int current_segment;
     trajectory profile;
-
+    
     TrajectoryFollower()
     {
         current_segment = 1;
     }
 
-    void configure(float kp_in, float ki_in, float kd_in, float kv_in, float ka_in)
+    void configure(float kp_in, float ki_in, float kd_in, float kv_in, float ka_in, float kh_in)
     {
         kp = kp_in;
         ki = ki_in;
         kd = kd_in;
         kv = kv_in;
         ka = ka_in;
+        kh = kh_in;
     }
 
     void reset()
@@ -779,25 +780,29 @@ struct TrajectoryFollower
         profile = profile_in;
     }
 
-    float calculate(float distance_so_far)
+    float calculate(float distance_so_far, float heading)
     {
         if (current_segment < profile.num_segments)
         {
             segment seg = profile.getSegment(current_segment);
             float error = seg.pos - distance_so_far;
-            float output = kp * error + kd * ((error - last_error)
-                                              / seg.dt - seg.vel) + (kv * seg.vel
-                                                                     + ka * seg.acc);
-
+            float heading_error = pi/180.0*signedCanonicalizeAngleDeg(180.0*seg.heading/pi - heading);
+            float output = kh * heading_error
+                +kp * error /*+ kd * ((error - last_error)
+                             / seg.dt - seg.vel)*/ + (kv * seg.vel
+                                                      + ka * seg.acc);
+            
             last_error = error;
             current_heading = seg.heading;
             current_segment++;
             //System.out.println("so far: " + distance_so_far + "; output: " + output);
-            log("output: %f\n", output);
+            log("seg pos: %f  seg vel: %f  seg acc: %f  error: %f  heading error: %f  output: %f\n",
+                seg.pos, seg.vel, seg.acc, error, 180.0/pi*heading_error, output);
             return output;
         }
         else
         {
+            log("current_segment >= profile.num_segments\n");
             return -5206;
         }
     }

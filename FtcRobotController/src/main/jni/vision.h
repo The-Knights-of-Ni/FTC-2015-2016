@@ -133,7 +133,7 @@ bool8 getBeaconColor()
     int red_pos[2] = {0, 0};
     int blue_pos[2] = {0, 0};
     HSL value;
-    for(int i = 0; i < camera_w/2-5; i+=5)
+    for(int i = 0; i < camera_w-5; i+=5)
     {
         red_pixel_count[1] = 0;
         blue_pixel_count[1] = 0;
@@ -154,6 +154,7 @@ bool8 getBeaconColor()
                     red_pixel_count[1] = 0;
                     red_pos[0] = i;
                     red_pos[1] = j;
+                    log("r");
                 }
             }
             else if((hue > 170 && hue < 200) && ((saturation + light) > 140))
@@ -168,6 +169,7 @@ bool8 getBeaconColor()
                     blue_pixel_count[1] = 0;
                     blue_pos[0] = i;
                     blue_pos[1] = j;
+                    log("b");
                 }
             }
             else
@@ -176,10 +178,11 @@ bool8 getBeaconColor()
                 //				highlight.draw_point(i, j, colorz,1.0f);//There has to be a better way than this
             }
         }
-        autonomousUpdate();
     }
     //TODO: Add beacon not found case
     #undef image
+
+    log("%d, %d, ", red_pos[0], blue_pos[0]);
     
     return red_pos[0] > blue_pos[0];
 }

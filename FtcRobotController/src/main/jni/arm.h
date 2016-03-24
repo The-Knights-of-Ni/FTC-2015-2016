@@ -850,27 +850,28 @@ void armToScoreMode()
             }
             
             setWristOut();
-            
-            while(fabs(target_wrist_theta - wrist_theta) > 0.1)
+
+            arm_time = 0;
+            while(arm_time < 0.5/* fabs(target_wrist_theta - wrist_theta) > 0.1 */)
             {
-                armToPreset(0.7, 1.0, 1.0, 0.99, 0.9, 0.6);
-                
+                arm_time += dt;
+                armToPreset(0.7, 1.0, 1.0, 0.99, 0.9, 1.98, 0.6);
                 switchTasks();
             }
             
             arm_time = 0;
-            while(arm_time < 0.25)
+            while(arm_time < 0.2)
             {
                 arm_time += dt;
-                armToPreset(0.7, 1.0, 1.0, 0.99, 0.9, 0.6);
+                armToPreset(0.7, 1.0, 1.0, 0.99, 0.9, 1.98, 0.6);
                 switchTasks();
             }
             
             target_shoulder_theta = 0.78;
-            target_inside_elbow_theta = 2.02;
+            target_inside_elbow_theta = 2.07;
             while(!armIsAtTarget(0.1, 0.1))
             {
-                armToPreset(0.7, 1.0, 1.0, 0.99, 0.9, 0.6);
+                armToPreset(1.0, 1.0, 1.0, 0.99, 0.9, 1.98, 0.6);
                 
                 switchTasks();
             }
