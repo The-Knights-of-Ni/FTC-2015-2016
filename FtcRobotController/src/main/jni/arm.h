@@ -538,7 +538,7 @@ float intake_stopped_timer = 0;
 
 void doIntake()
 {
-    if(fabs(old_target_intake_theta - target_intake_theta))
+    if(fabs(old_target_intake_theta - target_intake_theta) > 0.1)
     {
         intake_running = true;
         old_target_intake_theta = target_intake_theta;
@@ -558,7 +558,7 @@ void doIntake()
             intake_stopped_timer = 0.0;
         }
         
-        if(fabs(target_intake_theta - intake_theta) < 0.1 || intake_stopped_timer > 0.25)
+        if(fabs(target_intake_theta - intake_theta) < 0.1 || intake_stopped_timer > 0.1)
         {
             intake_running = false;
             target_intake_theta = intake_theta;
@@ -749,28 +749,33 @@ void armToIntakeMode()
                 switchTasks();
             }
         }
-        
+
+        arm_time = 0;
         target_shoulder_theta = 2.2;
         target_inside_elbow_theta = 4.3;
-        while(!armIsAtTarget(0.1, 0.1) || hand_time < hand_open_time)
+        while(!(armIsAtTarget(0.1, 0.1) || arm_time > 1.0) || hand_time < hand_open_time)
         {
+            arm_time += dt;
             armToPreset(0.8, 0.5, 0.5, 2.68, 2.28, 2.61, 0.8);
             
             switchTasks();
         }
-        
+
+        arm_time = 0;
         target_shoulder_theta = 2.35;
         target_inside_elbow_theta = 4.4;
-        while(!armIsAtTarget(0.1, 0.1))
+        while(!(armIsAtTarget(0.1, 0.1) || arm_time > 1.0))
         {
+            arm_time += dt;
             armToPreset(1.0, 0.5, 0.5, 2.68, 2.28, 2.61, 0.8);
             
             switchTasks();
         }
-        
+
+        arm_time = 0;
         target_shoulder_theta = 2.46;
         target_inside_elbow_theta = 4.43;
-        while(!armIsAtTarget(0.1, 0.1))
+        while(!(armIsAtTarget(0.1, 0.1) || arm_time > 1.0))
         {
             armToPreset(1.0, 0.5, 0.5, 2.68, 2.28, 2.61, 0.8);
             
@@ -778,7 +783,7 @@ void armToIntakeMode()
         }
         
         arm_time = 0;
-            
+        
         while(!armIsAtTarget(0.1, 0.1) || arm_time < 0.2)
         {
             arm_time += dt;
@@ -860,7 +865,7 @@ void armToScoreMode()
             }
             
             arm_time = 0;
-            while(arm_time < 0.2)
+            while(arm_time < 0.25)
             {
                 arm_time += dt;
                 armToPreset(0.7, 1.0, 1.0, 0.99, 0.9, 1.98, 0.6);

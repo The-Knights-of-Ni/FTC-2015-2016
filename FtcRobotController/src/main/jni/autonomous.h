@@ -275,7 +275,7 @@ void turnRelDeg(float angle, float vIs)
     {
         float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading);
         float turning_factor = turn_kp*heading_error;
-
+        
         if(left_drive_omega < 0.5 && right_drive_omega < 0.5)
         {
             turning_compensation += turn_ki*heading_error*dt;
@@ -312,7 +312,7 @@ void driveSpline(waypointSequence &splineWaypoints, bool color, float direction)
     const float right_kP = 0.1;
     const float kI = 0;
     const float kD = 0;
-    const float kH = direction*4;
+    const float kH = direction*3.5;
     
     //log("making path, time: %d\n", (int)time(0));
     path drivePath = makePath(splineWaypoints, config, robot_wheelbase);

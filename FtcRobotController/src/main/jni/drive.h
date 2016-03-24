@@ -40,7 +40,7 @@ int * pright_drive_encoder;
 
 #define drive_kslow 0.15
 
-#define turn_kp 0.025 //0.1*(slider0/100.0)
+#define turn_kp 0.020 //0.025 //0.1*(slider0/100.0)
 #define turn_ki 0.05 //0.05  //0.1*(slider1/100.0)
 #define turn_kd 0.0   //0.1*(slider2/100.0)
 

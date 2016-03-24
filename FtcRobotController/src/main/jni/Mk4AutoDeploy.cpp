@@ -260,7 +260,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    }\n"
         "}\n"
         logging_jni_misc_string);
-
+    
     jni_constructor_string = ("camera = FtcRobotControllerActivity.camera_preview.camera;\n"
                               "Camera.Parameters parameters = camera.getParameters();\n"
                               "Camera.Size camera_size = parameters.getPreviewSize();\n"
@@ -393,7 +393,9 @@ void jniMain(JNIEnv * _env, jobject _self)
     #ifndef GENERATE
     env->CallVoidMethod(imu_object, imu_rezero_id); //rezero imu
     #endif
-
+    
+    score_hook = 1.0;
+    
     //Config
     //hopper down
     #define colorAdjustedAngle(a) ((current_color) ? (a) : -(a))
@@ -413,21 +415,18 @@ void jniMain(JNIEnv * _env, jobject _self)
             autonomousUpdate();
         }
 
-        #if 0 //temporarily disabling drive code for testing
         wait(10.0);
 
         driveOnCourseIn(10, -1.0, 0);
-
-
-
-
-        #endif
-
+        
         #if 1 //enable arm
         suppress_arm = false;
 
+        //deploy intake
+        setHandOpen();
         setIntakeOut();
         wait(0.25);
+        setHandShut();
         target_shoulder_theta = 2.2;
         while(!armIsAtTarget(0.1, 0.25))
         {
@@ -441,16 +440,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         wait(0.5);
         setIntakeOut();
         wait(0.5);
-
-        intake = -1;
-        waypointSequence deployPath(5);
-        deployPath.addWaypoint(waypoint(0,0,0));
-        deployPath.addWaypoint(waypoint(20, 10, 3*pi/8));
-        deployPath.addWaypoint(waypoint(50, 17, 0));
-
-        drivePath(deployPath, current_color);
-        intake = 0;
-
+                
+        //shake hopper out
         target_shoulder_theta = 1.4;
         target_inside_elbow_theta = 9.0*pi/8.0;
         while(!armIsAtTarget(0.25, 0.25))
@@ -472,7 +463,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             autonomousUpdate();
         }
-
+        
         wait(0.2);
 
         score_mode = true;
@@ -496,16 +487,25 @@ void jniMain(JNIEnv * _env, jobject _self)
             autonomousUpdate();
         }
         wait(0.2);
-
+        
+        intake = -1;
+        waypointSequence deployPath(5);
+        deployPath.addWaypoint(waypoint(0,0,0));
+        deployPath.addWaypoint(waypoint(20, 10, 3*pi/8));
+        deployPath.addWaypoint(waypoint(50, 17, 0));
+        
+        driveSpline(deployPath, current_color, -1.0);
+        intake = 0;
+        
         #if 0
         intake = 1;
         driveDistIn(30, -0.8);
         driveDistIn(30, 0.8);
         intake = 0;
         #endif
-
+        
         #endif
-
+        
         waitForEnd();
     }
 
