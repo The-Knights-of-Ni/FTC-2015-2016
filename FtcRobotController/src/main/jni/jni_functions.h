@@ -57,6 +57,7 @@ struct JNIEnv
 
 JNIEnv * env;
 jobject self;
+jclass cls;
 
 #define waitForStart()
 #define waitOneFullHardwareCycle()
@@ -118,6 +119,7 @@ struct JNIEnv
 
 JNIEnv * env;
 jobject self;
+jclass cls;
 
 #define waitForStart()
 #define waitOneFullHardwareCycle()
@@ -552,13 +554,13 @@ void initJNI()
 
     //functions
     waitForStartID = env->GetMethodID(cls, "waitForStart", "()V");
-
+    
     waitOneFullHardwareCycleID = env->GetMethodID(cls, "waitOneFullHardwareCycle", "()V");
     waitForNextHardwareCycleID = env->GetMethodID(cls, "waitForNextHardwareCycle", "()V");
-
+    
     robotStateInID = env->GetMethodID(cls, "robotStateIn", "()V");
     robotStateOutID = env->GetMethodID(cls, "robotStateOut", "()V");
-
+    
     //setup pinned array
     jfieldID jrobot_stateID = env->GetStaticFieldID(cls, "robot_state", "[B");
     jrobot_state = (jbyteArray) env->GetStaticObjectField(cls, jrobot_stateID);
@@ -566,14 +568,14 @@ void initJNI()
     /* { */
     /*     //TODO: give error */
     /* } */
-
+    
     robot_state.state = (byte *) env->GetByteArrayElements(jrobot_state, &robot_state.is_copy);
     assert(robot_state.state);
     if(robot_state.is_copy)
     {
         //TODO: give warning that the GC did not pin the array and perfomance may be impacted
     }
-
+    
     rsid_current = 0;
 }
 

@@ -63,12 +63,14 @@ extern "C" void jniMain(JNIEnv * _env, jobject _self)
                               "camera.setPreviewCallbackWithBuffer(camera_preview_callback);\n"
                               "camera.addCallbackBuffer(camera_buffer);\n"
                               "parameters.setPreviewFormat(ImageFormat.NV21);\n"
-                              "parameters.setExposureCompensation(0);\n"
-                              "parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);\n"
+                              "parameters.setExposureCompensation(-2);\n"
+                              "parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_FLUORESCENT);\n"
                               "parameters.set(\"iso\", \"ISO100\");\n"
                               "parameters.set(\"max-exposure-time\", 2000000);\n"
                               "parameters.set(\"min-exposure-time\", 2000000);\n"
-                              "DbgLog.error(\"Camera parameters: \"+parameters.flatten());");
+                              "parameters.set(\"contrast\", 2);\n"
+                              "DbgLog.error(\"Camera parameters: \"+parameters.flatten());\n"
+                              "camera.setParameters(parameters);");
     
     // pleft_drive_encoder = jniIntIn("return left_drive.getCurrentPosition();");
     // pright_drive_encoder = jniIntIn("return right_drive.getCurrentPosition();");

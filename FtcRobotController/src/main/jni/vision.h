@@ -1,4 +1,4 @@
-#ifndef VISION
+ #ifndef VISION
 #define VISION
 
 #include "jni_functions.h"
@@ -12,8 +12,8 @@ int * pbeacon_right;
 byte * camera_buffer = 0;
 jbyteArray jcamera_buffer;
 
-int camera_w;
-int camera_h;
+int camera_w = 0;
+int camera_h = 0;
 
 byte * camera_buffer_rgb;
 
@@ -21,23 +21,21 @@ byte * camera_buffer_rgb;
 
 void initCamera()
 {
-    jclass cls = env->GetObjectClass(self);
+    //jclass cls = env->GetObjectClass(self);
     
     camera_buffer = 0;
     {//get camera buffer
         jfieldID jcamera_bufferID = env->GetFieldID(cls, "camera_buffer", "[B");
         jcamera_buffer = (jbyteArray) env->GetObjectField(self, jcamera_bufferID);
-
+        
         camera_buffer = (byte *) env->GetByteArrayElements(jcamera_buffer, 0);
         assert(camera_buffer);
     }
-
-    jfieldID jcamera_bufferID = env->GetFieldID(cls, "camera_buffer", "[B");
-
+    
     jfieldID camera_wID = env->GetFieldID(cls, "camera_w", "I");
-    camera_w = env->GetIntField(cls, camera_wID);
+    camera_w = env->GetIntField(self, camera_wID);
     jfieldID camera_hID = env->GetFieldID(cls, "camera_h", "I");
-    camera_h = env->GetIntField(cls, camera_hID);
+    camera_h = env->GetIntField(self, camera_hID);
     camera_buffer_rgb = (byte *) malloc(camera_w*camera_h*camera_bytes_per_pixel);
 }
 
@@ -127,9 +125,8 @@ bool8 getBeaconColor()
     
     #define reqPixelz (camera_w*camera_h/512) //TODO: Make this smarter
     int reqPixels = reqPixelz;
-    int red_pixel_count[2], blue_pixel_count[2];
-    red_pixel_count[0] = 0;
-    blue_pixel_count[0] = 0;
+    int red_pixel_count[2] = {0, 0};
+    int blue_pixel_count[2] = {0, 0};
     int red_pos[2] = {0, 0};
     int blue_pos[2] = {0, 0};
     HSL value;
@@ -146,6 +143,7 @@ bool8 getBeaconColor()
             if((hue > 300 || hue < 45) && ((saturation + light) > 140)){//If at some point there is a pixel that is sufficiently red and not blue
                 red_pixel_count[1]++;
                 red_pixel_count[0]++;
+                log("r pixel count %d ", red_pixel_count[0]*red_pixel_count[1]);
                 //highlight.draw_circle(i,j,5,red,1.0f).display(main_disp);
                 if(red_pixel_count[0]*red_pixel_count[1] > reqPixels)//If there are enough pixels in this row
                 {
@@ -161,6 +159,7 @@ bool8 getBeaconColor()
             {
                 blue_pixel_count[1]++;
                 blue_pixel_count[0]++;
+                log("b pixel count %d ", blue_pixel_count[0]*blue_pixel_count[1]);
                 //highlight.draw_circle(i,j,5,blue,1.0f).display(main_disp);
                 if(blue_pixel_count[0]*blue_pixel_count[1] > reqPixels)//If there are enough pixels in this row TODO: add y dim to this for more accuracy
                 {

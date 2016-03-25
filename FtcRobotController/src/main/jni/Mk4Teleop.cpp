@@ -37,13 +37,13 @@ float hook_left_locked_position = 180.0f/255.0f;
 // #define elbow_manual pad2stick2
 //                       [0] shoulder, [1] winch/elbow
 #define arm_stick ((v2f){pad2stick1.y, -pad2stick2.y})
-#define arm_manual_toggle pad2.toggle(Y)
+#define arm_manual_toggle pad2.singlePress(Y)
 #define arm_score_mode_button pad2.singlePress(LEFT_TRIGGER)
 #define arm_intake_mode_button pad2.singlePress(LEFT_BUMPER)
 #define shoulder_precision_mode (!pad2.press(LEFT_STICK_BUTTON))
 #define winch_precision_mode (false)//(pad2.press(RIGHT_STICK_BUTTON))
 
-//#define pullup_button pad2.singlePress(A)
+#define pullup_mode_button pad2.singlePress(A)
 
 #define arm_slow_factor 0.4
 
@@ -332,7 +332,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     
     hand_time = 1000000;
     
-    score_mode = true;
+    score_mode = false;
     
     setIntakeOut();
     
@@ -347,6 +347,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     // #endif
     
     drive_straight_component = 0;
+    
+    float arm_manual_mode = 0;
     
     waitForStart();
     
@@ -364,6 +366,10 @@ void jniMain(JNIEnv * _env, jobject _self)
     updateDriveSensors();
     left_drive_hold_theta = left_drive_theta;
     right_drive_hold_theta = right_drive_theta;
+
+    updateArmSensors();
+    target_intake_theta = intake_theta;
+    old_target_intake_theta = intake_theta;    
     
     // updateArmSensors();
     // float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
@@ -530,7 +536,25 @@ void jniMain(JNIEnv * _env, jobject _self)
         forearm_print_theta = inside_elbow_theta;
         shoulder_active_print = shoulder_active;
         
-        if(arm_manual_toggle) //IK
+        if(arm_manual_toggle)
+        {
+            if(arm_manual_mode != 0)
+            {
+                arm_manual_mode = 0;
+            }
+            else
+            {
+                arm_manual_mode = 1;
+            }
+        }
+        
+        if(pullup_mode_button)
+        {
+            arm_manual_mode = 2;
+        }
+        if(arm_manual_mode == 2 && (arm_score_mode_button || arm_intake_mode_button)) arm_manual_mode = 1;
+        
+        if(arm_manual_mode == 1) //IK
         {
             target_arm_velocity = arm_stick;
             
@@ -609,7 +633,7 @@ void jniMain(JNIEnv * _env, jobject _self)
                 shoulder,      winch,    shoulder_theta,     inside_elbow_theta,     intake_theta,     arm_line);
             if(winch > 0.0 && !tension_switch && inside_elbow_theta > pi) winch = 0.0;
         }
-        else //Manual
+        else //Manual or pullup
         {
             //set targets to current position so it will remember the current value when arm control is enabled
             float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
@@ -632,9 +656,18 @@ void jniMain(JNIEnv * _env, jobject _self)
             shoulder = shoulder_control;
             winch = winch_control;
             
-            //filter low power to remove annoying buzzing noise and ensure the motor powers remain in bounds
-            shoulder = debuzz(clamp(shoulder, -1.0, 1.0));
-            winch = debuzz(clamp(winch, -1.0, 1.0));
+            if(arm_manual_mode == 2)
+            {
+                const float shoulder_clamp_theta = pi/4;
+                if(shoulder_theta < shoulder_clamp_theta)
+                {
+                    shoulder = shoulder_kp*(shoulder_clamp_theta-shoulder_theta);
+                }
+            }
+            
+            // //filter low power to remove annoying buzzing noise and ensure the motor powers remain in bounds
+            // shoulder = debuzz(clamp(shoulder, -1.0, 1.0));
+            // winch = debuzz(clamp(winch, -1.0, 1.0));
         }
         
 //TODO: Feed-Forward

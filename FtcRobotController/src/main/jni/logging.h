@@ -43,7 +43,7 @@ void initLogfile__file__(const char * __file__)
                 environmentClass,
                 env->GetStaticFieldID(environmentClass, "DIRECTORY_DOWNLOADS", "Ljava/lang/String;"))),
         env->GetMethodID(fileClass, "getAbsolutePath", "()Ljava/lang/String;"));
-
+    
     logfile = 0;
     if(env->ExceptionOccurred() == 0)
     {

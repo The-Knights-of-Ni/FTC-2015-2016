@@ -500,11 +500,13 @@ void jniMain(JNIEnv * _env, jobject _self)
             autonomousUpdate();
         }
         
-        driveOnCourseIn(10, 1.0, pi/4);
+        driveOnCourseIn(10, 1.0, imu_heading);
         
         setHandOpen();
         
         wait(2.0);
+        
+        //arm to intake mode
         
         score_mode = true;
         armFunction = armToIntakeMode;
@@ -537,7 +539,8 @@ void jniMain(JNIEnv * _env, jobject _self)
         
         //spline
         
-        waitForEnd();        
+        
+        waitForEnd();
     }
     
     cleanupCamera();

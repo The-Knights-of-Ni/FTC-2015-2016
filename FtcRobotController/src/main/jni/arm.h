@@ -549,7 +549,7 @@ void doIntake()
 
     if(intake_running)
     {
-        if(fabs(intake_omega) < 0.1)
+        if(fabs(intake_omega) < 0.05)
         {
             intake_stopped_timer += dt;
         }
@@ -558,7 +558,7 @@ void doIntake()
             intake_stopped_timer = 0.0;
         }
         
-        if(fabs(target_intake_theta - intake_theta) < 0.1 || intake_stopped_timer > 0.1)
+        if(fabs(target_intake_theta - intake_theta) < 0.1 || intake_stopped_timer > 0.2)
         {
             intake_running = false;
             target_intake_theta = intake_theta;
@@ -749,7 +749,7 @@ void armToIntakeMode()
                 switchTasks();
             }
         }
-
+        
         arm_time = 0;
         target_shoulder_theta = 2.2;
         target_inside_elbow_theta = 4.3;
@@ -773,8 +773,8 @@ void armToIntakeMode()
         }
 
         arm_time = 0;
-        target_shoulder_theta = 2.46;
-        target_inside_elbow_theta = 4.43;
+        target_shoulder_theta = 2.433;
+        target_inside_elbow_theta = 4.495;
         while(!(armIsAtTarget(0.1, 0.1) || arm_time > 1.0))
         {
             armToPreset(1.0, 0.5, 0.5, 2.68, 2.28, 2.61, 0.8);

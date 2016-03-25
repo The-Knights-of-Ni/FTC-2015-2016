@@ -181,7 +181,7 @@ public class FtcRobotControllerActivity extends Activity {
             {
                 try
                 {
-                    camera = Camera.open(1);
+                    camera = Camera.open(0);
                 } catch (Exception e) {
                     DbgLog.error("could not open camera, camera is in use or does not exist");
                 }

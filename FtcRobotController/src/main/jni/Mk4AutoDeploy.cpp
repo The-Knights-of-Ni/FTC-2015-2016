@@ -380,21 +380,24 @@ void jniMain(JNIEnv * _env, jobject _self)
         imu_object = env->GetObjectField(self, env->GetFieldID(cls, "imu", "Lcom/qualcomm/ftcrobotcontroller/opmodes/IMU;"));
     }
     #endif
-
+    
     waitForStart();
-
+    
     zeroDriveSensors();
     //enableKillerAI();
-
+    
     robotStateIn();
     imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};;
     current_time = time;
-
+    
     #ifndef GENERATE
     env->CallVoidMethod(imu_object, imu_rezero_id); //rezero imu
     #endif
     
     score_hook = 1.0;
+
+    target_intake_theta = intake_theta;
+    old_target_intake_theta = intake_theta;
     
     //Config
     //hopper down
@@ -416,7 +419,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
 
         wait(10.0);
-
+        
         driveOnCourseIn(10, -1.0, 0);
         
         #if 1 //enable arm
@@ -425,22 +428,30 @@ void jniMain(JNIEnv * _env, jobject _self)
         //deploy intake
         setHandOpen();
         setIntakeOut();
-        wait(0.25);
+        wait(0.5);
         setHandShut();
-        target_shoulder_theta = 2.2;
-        while(!armIsAtTarget(0.1, 0.25))
+        wait(0.7);
+        setHandOpen();
+        wait(0.7);
+        setHandShut();
+        for(int i = 0; i < 2; i++)
         {
-            autonomousUpdate();
+            target_shoulder_theta = 2.2;
+            while(!armIsAtTarget(0.1, 0.25))
+            {
+                autonomousUpdate();
+            }
+            target_shoulder_theta = 2.39;
+            while(!armIsAtTarget(0.1, 0.25))
+            {
+                autonomousUpdate();
+            }
+            wait(0.5);
+            setIntakeOut();
         }
-        target_shoulder_theta = 2.39;
-        while(!armIsAtTarget(0.1, 0.25))
-        {
-            autonomousUpdate();
-        }
-        wait(0.5);
+        wait(1.0);
         setIntakeOut();
-        wait(0.5);
-                
+        
         //shake hopper out
         target_shoulder_theta = 1.4;
         target_inside_elbow_theta = 9.0*pi/8.0;
@@ -449,14 +460,14 @@ void jniMain(JNIEnv * _env, jobject _self)
             autonomousUpdate();
         }
         wait(0.5);
-
+        
         target_shoulder_theta = 1.5;
         target_inside_elbow_theta = pi;
         while(!armIsAtTarget(0.1, 0.1))
         {
             autonomousUpdate();
         }
-
+        
         target_shoulder_theta = 1.8;
         target_inside_elbow_theta = pi;
         while(!armIsAtTarget(0.1, 0.1))
@@ -465,25 +476,26 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         
         wait(0.2);
-
+        
+        //arm to intake mode
         score_mode = true;
         armFunction = armToIntakeMode;
-
+        
         float arm_timer = 0;
         while(armFunction != armAutonomousControl)
         {
             arm_timer += dt;
-            if(arm_timer > 3)
-            {
-                target_shoulder_theta = 2.0;
-                target_inside_elbow_theta = 4.43;
-                wait(0.5);
-                intake = -1;
-                driveDistIn(10, -0.1);
-                intake = 0;
-                armFunction = armAutonomousControl;
-                arm_timer = 0;
-            }
+            // if(arm_timer > 3)
+            // {
+            //     target_shoulder_theta = 2.0;
+            //     target_inside_elbow_theta = 4.43;
+            //     wait(0.5);
+            //     intake = -1;
+            //     driveDistIn(10, -0.1);
+            //     intake = 0;
+            //     armFunction = armAutonomousControl;
+            //     arm_timer = 0;
+            // }
             autonomousUpdate();
         }
         wait(0.2);
@@ -497,12 +509,10 @@ void jniMain(JNIEnv * _env, jobject _self)
         driveSpline(deployPath, current_color, -1.0);
         intake = 0;
         
-        #if 0
         intake = 1;
         driveDistIn(30, -0.8);
         driveDistIn(30, 0.8);
         intake = 0;
-        #endif
         
         #endif
         

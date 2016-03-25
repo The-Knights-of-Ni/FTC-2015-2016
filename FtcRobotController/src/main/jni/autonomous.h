@@ -286,10 +286,10 @@ void turnRelDeg(float angle, float vIs)
         }
         turning_compensation = clamp(turning_compensation, -2.0, 2.0);
         turning_factor += turning_compensation;
-
+        
         left_drive = -turning_factor;
         right_drive = +turning_factor;
-
+        
         left_drive = clamp(left_drive, -vIs, vIs);
         right_drive = clamp(right_drive, -vIs, vIs);
         autonomousUpdate();
@@ -340,12 +340,22 @@ void driveSpline(waypointSequence &splineWaypoints, bool color, float direction)
     float left_start_drive_theta = left_drive_theta;
     float right_start_drive_theta = right_drive_theta;
     float start_heading = imu_heading;
+    float leftPwm;
+    float rightPwm;
+    while(fabs(leftPwm) < 0.05 && (rightPwm) < 0.05)
+    {
+        leftPwm = leftTraj.calculate(left_dist, (imu_heading-start_heading));
+        rightPwm = rightTraj.calculate(right_dist, (imu_heading-start_heading));
+        
+        if(leftPwm == -5206) goto end_drive_spline;
+    }
+    
     for ever
     {
         float leftPwm = leftTraj.calculate(left_dist, (imu_heading-start_heading));
         float rightPwm = rightTraj.calculate(right_dist, (imu_heading-start_heading));
         
-        if(leftPwm == -5206) break;
+        if(leftPwm == -5206) goto end_drive_spline;
         
         left_drive = direction*leftPwm;
         right_drive = direction*rightPwm;
@@ -354,6 +364,7 @@ void driveSpline(waypointSequence &splineWaypoints, bool color, float direction)
         left_dist =  direction*(left_drive_theta-left_start_drive_theta)*sprocket_pitch_radius*7.0/6.0;
         right_dist = direction*(right_drive_theta-right_start_drive_theta)*sprocket_pitch_radius*7.0/6.0;
     }
+end_drive_spline:;
     float target_heading = 180.0/pi*leftTraj.getHeading();
     
     turnRelDeg(signedCanonicalizeAngleDeg(target_heading-imu_heading), 1.0);

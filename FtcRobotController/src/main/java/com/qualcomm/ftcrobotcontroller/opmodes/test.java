@@ -43,12 +43,14 @@ camera_preview_callback = new CameraPreviewCallback();
 camera.setPreviewCallbackWithBuffer(camera_preview_callback);
 camera.addCallbackBuffer(camera_buffer);
 parameters.setPreviewFormat(ImageFormat.NV21);
-parameters.setExposureCompensation(0);
-parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_INCANDESCENT);
+parameters.setExposureCompensation(-2);
+parameters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_FLUORESCENT);
 parameters.set("iso", "ISO100");
 parameters.set("max-exposure-time", 2000000);
 parameters.set("min-exposure-time", 2000000);
+parameters.set("contrast", 2);
 DbgLog.error("Camera parameters: "+parameters.flatten());
+camera.setParameters(parameters);
 }
 
 
