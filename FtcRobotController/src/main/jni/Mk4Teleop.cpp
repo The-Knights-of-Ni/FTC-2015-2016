@@ -249,6 +249,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("telemetry.addData(\"slider 2\", ", pslider2,");");
     jniOut("telemetry.addData(\"slider 3\", ", pslider3,");");
     
+    jniOut("telemetry.addData(\"tension switch\", (dim.getDigitalInputStateByte()>>7)&1);");
+    
     float * pforearm_print_theta;
     #define forearm_print_theta (*pforearm_print_theta)
     jniOut("telemetry.addData(\"forearm theta\", ", pforearm_print_theta,");");

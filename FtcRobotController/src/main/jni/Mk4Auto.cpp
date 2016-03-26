@@ -244,7 +244,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    dim.setLED(0, false);\n"
         "    dim.setLED(1, false);\n"
         "}"
-        "telemetry.addData(\"ready\", \"\");\n");
+        "telemetry.addData(\"imu ready\", \"\");\n");
     
     jni_misc_string = (
         "Camera camera = null;\n"
@@ -264,8 +264,13 @@ void jniMain(JNIEnv * _env, jobject _self)
         "        camera.addCallbackBuffer(camera_buffer);\n"
         "    }\n"
         "}\n"
+        "\n"
+        "void saySplineIsReady()\n"
+        "{\n"
+        "    telemetry.addData(\"spline ready\", \"\");\n"
+        "}\n"
         logging_jni_misc_string);
-
+    
     jni_constructor_string = ("camera = FtcRobotControllerActivity.camera_preview.camera;\n"
                               "Camera.Parameters parameters = camera.getParameters();\n"
                               "Camera.Size camera_size = parameters.getPreviewSize();\n"
@@ -373,6 +378,28 @@ void jniMain(JNIEnv * _env, jobject _self)
     score_mode = false;
 
     suppress_arm = true;
+
+    waypointSequence waypoint_path1(5);//Start right up against line
+    if(current_color)
+    { //red
+        waypoint_path1.addWaypoint(waypoint(  0,   0,     0));//First must be 0
+        waypoint_path1.addWaypoint(waypoint( 90,   0,     0));
+        waypoint_path1.addWaypoint(waypoint(130, -15, -pi/4));
+    }
+    else
+    { //blue
+        waypoint_path1.addWaypoint(waypoint(  0,   0,     0));//First must be 0
+        waypoint_path1.addWaypoint(waypoint( 55,   0,     0));
+        waypoint_path1.addWaypoint(waypoint( 95, -28, -pi/4));
+    }
+    path path1 = generateSpline(waypoint_path1, -1);
+
+    #ifndef GENERATE
+    {//get imu.rezero() method id
+        jmethodID saySplineIsReady_id = env->GetMethodID(cls, "saySplineIsReady", "()V");
+        env->CallVoidMethod(self, saySplineIsReady_id); //rezero imu
+    }
+    #endif
     
     initCamera();
     
@@ -385,15 +412,16 @@ void jniMain(JNIEnv * _env, jobject _self)
         imu_object = env->GetObjectField(self, env->GetFieldID(cls, "imu", "Lcom/qualcomm/ftcrobotcontroller/opmodes/IMU;"));
     }
     #endif
-
+    
     waitForStart();
     
     zeroDriveSensors();
     //enableKillerAI();
-
-    start_time = time;
-
+    
     robotStateIn();
+    
+    start_time = time;
+    
     imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};;
     current_time = time;
 
@@ -424,26 +452,29 @@ void jniMain(JNIEnv * _env, jobject _self)
             
             autonomousUpdate();
         }
+        log("auto starting 2: %f\n", time);
         
-        waypointSequence path1(5);//Start right up against line
-        path1.addWaypoint(waypoint(  0,   0,     0));//First must be 0
-        path1.addWaypoint(waypoint( 68,   0,     0));
-        path1.addWaypoint(waypoint(100, -10, -pi/4));
-        driveSpline(path1, current_color, -1);
+        driveSplinePrecomputed(path1, current_color, -1);
         
-        turnRelDeg(90, -1.0);
+        //turnRelDeg(90, -1.0);
         
         suppress_arm = false;
         
         //deploy intake
         setHandOpen();
-        setIntakeOut();
         wait(0.5);
         setHandShut();
-        wait(0.7);
+        wait(0.3);
         setHandOpen();
-        wait(0.7);
+        wait(0.3);
         setHandShut();
+
+        intake = 1;
+        wait(0.5);
+        intake = 0;
+        
+        setIntakeOut();
+        
         for(int i = 0; i < 2; i++)
         {
             target_shoulder_theta = 2.2;
@@ -462,6 +493,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         wait(1.0);
         setIntakeOut();
         
+        #if 0
         //shake hopper out
         target_shoulder_theta = 1.4;
         target_inside_elbow_theta = 9.0*pi/8.0;
@@ -472,44 +504,48 @@ void jniMain(JNIEnv * _env, jobject _self)
         wait(0.5);
         
         target_shoulder_theta = 1.5;
-        target_inside_elbow_theta = pi;
-        while(!armIsAtTarget(0.1, 0.1))
+        target_inside_elbow_theta = pi*3.0/4.0;
+        while(!armIsAtTarget(0.25, 0.1))
         {
             autonomousUpdate();
         }
+        #endif 
         
         target_shoulder_theta = 1.8;
-        target_inside_elbow_theta = pi;
-        while(!armIsAtTarget(0.1, 0.1))
+        target_inside_elbow_theta = pi*3.0/4.0;
+        while(!armIsAtTarget(0.25, 0.1))
         {
             autonomousUpdate();
         }
-        
-        turnRelDeg(90, -1.0);
+        turnRelDeg(180, -1.0);
         
         wait(0.2);
         
         //score climbers
-        target_wrist_theta = pi/4;
+        target_wrist_theta = colorAdjustedAngle(pi/4);
         wait(0.5);
         
         target_shoulder_theta = 1.9;
-        target_inside_elbow_theta = .808;
+        target_inside_elbow_theta = .9;
         while(!armIsAtTarget(0.1, 0.1))
         {
             autonomousUpdate();
         }
         
         driveOnCourseIn(10, 1.0, imu_heading);
-        
+
+        wait(0.5);
         setHandOpen();
-        
-        wait(2.0);
+
+        wait(1.0);
         
         //arm to intake mode
         
         score_mode = true;
         armFunction = armToIntakeMode;
+        
+        driveDistIn(10, -0.8);
+        turnRelDeg(colorAdjustedAngle(45), 1.0);
         
         float arm_timer = 0;
         while(armFunction != armAutonomousControl)
@@ -528,17 +564,16 @@ void jniMain(JNIEnv * _env, jobject _self)
             // }
             autonomousUpdate();
         }
-        driveDistIn(10, -0.8);
-        
-        turnRelDeg(180, 1.0);
-        
+                
         intake = 1;
-        driveDistIn(10, -0.8);
-        driveDistIn(10, 0.8);
+        driveDistIn(50, -0.8);
+
+        turnRelDeg(colorAdjustedAngle(-45), 1.0);
+        driveDistIn(30, -0.8);
+        
         intake = 0;
         
         //spline
-        
         
         waitForEnd();
     }

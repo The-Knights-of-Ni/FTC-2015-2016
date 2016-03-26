@@ -58,7 +58,7 @@ void Mk4AutonomousDeployUpdate()
         left_drive_encoder, right_drive_encoder);
     log("%f %f\n",
         left_drive, right_drive);
-
+    
     // intake = 0;
     if(suppress_arm)
     {
@@ -427,13 +427,19 @@ void jniMain(JNIEnv * _env, jobject _self)
 
         //deploy intake
         setHandOpen();
-        setIntakeOut();
         wait(0.5);
         setHandShut();
-        wait(0.7);
+        wait(0.3);
         setHandOpen();
-        wait(0.7);
+        wait(0.3);
         setHandShut();
+
+        intake = 1;
+        wait(0.5);
+        intake = 0;
+        
+        setIntakeOut();
+        
         for(int i = 0; i < 2; i++)
         {
             target_shoulder_theta = 2.2;
@@ -452,6 +458,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         wait(1.0);
         setIntakeOut();
         
+        #if 0
         //shake hopper out
         target_shoulder_theta = 1.4;
         target_inside_elbow_theta = 9.0*pi/8.0;
@@ -462,30 +469,27 @@ void jniMain(JNIEnv * _env, jobject _self)
         wait(0.5);
         
         target_shoulder_theta = 1.5;
-        target_inside_elbow_theta = pi;
-        while(!armIsAtTarget(0.1, 0.1))
+        target_inside_elbow_theta = pi*3.0/4.0;
+        while(!armIsAtTarget(0.25, 0.1))
         {
             autonomousUpdate();
         }
-        
-        target_shoulder_theta = 1.8;
-        target_inside_elbow_theta = pi;
-        while(!armIsAtTarget(0.1, 0.1))
-        {
-            autonomousUpdate();
-        }
+        #endif
         
         wait(0.2);
         
         //arm to intake mode
+        
         score_mode = true;
         armFunction = armToIntakeMode;
+        
+        driveDistIn(10, -0.8);
         
         float arm_timer = 0;
         while(armFunction != armAutonomousControl)
         {
             arm_timer += dt;
-            // if(arm_timer > 3)
+            // if(arm_timer > 5)
             // {
             //     target_shoulder_theta = 2.0;
             //     target_inside_elbow_theta = 4.43;
@@ -498,7 +502,6 @@ void jniMain(JNIEnv * _env, jobject _self)
             // }
             autonomousUpdate();
         }
-        wait(0.2);
         
         intake = -1;
         waypointSequence deployPath(5);

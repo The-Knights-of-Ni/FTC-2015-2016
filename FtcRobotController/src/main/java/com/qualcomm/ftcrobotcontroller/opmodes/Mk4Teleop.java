@@ -181,6 +181,7 @@ telemetry.addData("slider 0", getInt(52));
 telemetry.addData("slider 1", getInt(56));
 telemetry.addData("slider 2", getInt(60));
 telemetry.addData("slider 3", getInt(64));
+telemetry.addData("tension switch", (dim.getDigitalInputStateByte()>>7)&1);
 telemetry.addData("forearm theta", getFloat(148));
 telemetry.addData("shoulder power", getFloat(84));
 telemetry.addData("arm stage", getFloat(152));

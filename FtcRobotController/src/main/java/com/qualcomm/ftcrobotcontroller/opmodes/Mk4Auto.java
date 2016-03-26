@@ -66,6 +66,11 @@ class CameraPreviewCallback implements Camera.PreviewCallback
         camera.addCallbackBuffer(camera_buffer);
     }
 }
+
+void saySplineIsReady()
+{
+    telemetry.addData("spline ready", "");
+}
 public boolean isExternalStorageWritable()
 {
     String state = Environment.getExternalStorageState();
@@ -429,7 +434,7 @@ else
 {
     dim.setLED(0, false);
     dim.setLED(1, false);
-}telemetry.addData("ready", "");
+}telemetry.addData("imu ready", "");
 
     main();
 }

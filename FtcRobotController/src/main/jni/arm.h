@@ -125,7 +125,7 @@ void updateArmSensors()
                                   -8.050688f))*pi/180.0f;
     
     shoulder_potentiometer_angle = (-90+((180.0f-potentiometer_range*0.5f+potentiometer_range*(shoulder_potentiometer/(1023.0f)))
-                                         -2.1190f))*pi/180.0f;
+                                         -2.1190f+0.017f-0.122f-0.108f))*pi/180.0f-.1008;
     
     if(shoulder_omega != shoulder_omega) shoulder_omega = 0;
     lowpassFirstDerivativeUpdate(shoulder_potentiometer_angle, &shoulder_theta, &shoulder_omega, 138);

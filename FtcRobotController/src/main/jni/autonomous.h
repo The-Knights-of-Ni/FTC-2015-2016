@@ -298,6 +298,99 @@ void turnRelDeg(float angle, float vIs)
     left_drive = 0;
 }
 
+path generateSpline(waypointSequence &splineWaypoints, float direction)
+{
+    Config config;
+    config.dt = 0.01;
+    config.max_jerk = robot_max_jerk;
+    config.max_acc = robot_max_accleration;
+    config.max_vel = 0.7*robot_max_velocity;
+    
+    const float kV = 1/robot_max_velocity;//Might need to be 1/config.max_vel;
+    const float kA = 1/robot_max_accleration;
+    const float left_kP = 0.1;
+    const float right_kP = 0.1;
+    const float kI = 0;
+    const float kD = 0;
+    const float kH = direction*3.5;
+
+    path drivePath = makePath(splineWaypoints, config, robot_wheelbase);
+    return drivePath;
+}
+
+void driveSplinePrecomputed(path &drivePath, bool color, float direction)// 1 = red, 0 = blue
+{    
+    Config config;
+    config.dt = 0.01;
+    config.max_jerk = robot_max_jerk;
+    config.max_acc = robot_max_accleration;
+    config.max_vel = 0.7*robot_max_velocity;
+    
+    const float kV = 1/robot_max_velocity;//Might need to be 1/config.max_vel;
+    const float kA = 1/robot_max_accleration;
+    const float left_kP = 0.1;
+    const float right_kP = 0.1;
+    const float kI = 0;
+    const float kD = 0;
+    const float kH = direction*3.5;
+    
+    if(color)
+    {
+        drivePath.goRight();
+    }
+    else
+    {
+        drivePath.goLeft();
+    }
+    
+    TrajectoryFollower leftTraj;
+    TrajectoryFollower rightTraj;
+    leftTraj.setTrajectory(drivePath.go_left_pair.left);
+    rightTraj.setTrajectory(drivePath.go_left_pair.right);
+    
+    leftTraj.configure(left_kP, kI, kD, kV, kA, -kH);
+    rightTraj.configure(right_kP, kI, kD, kV, kA, kH);
+    
+    float left_dist = 0;
+    float right_dist = 0;
+    
+    float left_start_drive_theta = left_drive_theta;
+    float right_start_drive_theta = right_drive_theta;
+    float start_heading = imu_heading;
+    float leftPwm = 0;
+    float rightPwm = 0;
+    
+    while(fabs(leftPwm) < 0.1 && (rightPwm) < 0.1)
+    {
+        leftPwm = leftTraj.calculate(left_dist, (imu_heading-start_heading));
+        rightPwm = rightTraj.calculate(right_dist, (imu_heading-start_heading));
+        
+        if(leftPwm == -5206) goto end_drive_spline;
+    }
+    
+    for ever
+    {
+        leftPwm = leftTraj.calculate(left_dist, (imu_heading-start_heading));
+        rightPwm = rightTraj.calculate(right_dist, (imu_heading-start_heading));
+        
+        if(leftPwm == -5206) goto end_drive_spline;
+        
+        left_drive = direction*leftPwm;
+        right_drive = direction*rightPwm;
+        
+        autonomousUpdate();
+        left_dist =  direction*(left_drive_theta-left_start_drive_theta)*sprocket_pitch_radius*7.0/6.0;
+        right_dist = direction*(right_drive_theta-right_start_drive_theta)*sprocket_pitch_radius*7.0/6.0;
+    }
+end_drive_spline:;
+    float target_heading = 180.0/pi*leftTraj.getHeading();
+    
+    turnRelDeg(signedCanonicalizeAngleDeg(target_heading-imu_heading), 1.0);
+    
+    left_drive = 0;
+    right_drive = 0;
+}
+
 void driveSpline(waypointSequence &splineWaypoints, bool color, float direction)// 1 = red, 0 = blue
 {
     Config config;
@@ -314,7 +407,6 @@ void driveSpline(waypointSequence &splineWaypoints, bool color, float direction)
     const float kD = 0;
     const float kH = direction*3.5;
     
-    //log("making path, time: %d\n", (int)time(0));
     path drivePath = makePath(splineWaypoints, config, robot_wheelbase);
     if(color)
     {
@@ -324,7 +416,6 @@ void driveSpline(waypointSequence &splineWaypoints, bool color, float direction)
     {
         drivePath.goLeft();
     }
-    //log("made path, time: %d\n", (uint)time(0));
     
     TrajectoryFollower leftTraj;
     TrajectoryFollower rightTraj;
@@ -340,9 +431,10 @@ void driveSpline(waypointSequence &splineWaypoints, bool color, float direction)
     float left_start_drive_theta = left_drive_theta;
     float right_start_drive_theta = right_drive_theta;
     float start_heading = imu_heading;
-    float leftPwm;
-    float rightPwm;
-    while(fabs(leftPwm) < 0.05 && (rightPwm) < 0.05)
+    float leftPwm = 0;
+    float rightPwm = 0;
+    
+    while(fabs(leftPwm) < 0.1 && (rightPwm) < 0.1)
     {
         leftPwm = leftTraj.calculate(left_dist, (imu_heading-start_heading));
         rightPwm = rightTraj.calculate(right_dist, (imu_heading-start_heading));
@@ -352,8 +444,8 @@ void driveSpline(waypointSequence &splineWaypoints, bool color, float direction)
     
     for ever
     {
-        float leftPwm = leftTraj.calculate(left_dist, (imu_heading-start_heading));
-        float rightPwm = rightTraj.calculate(right_dist, (imu_heading-start_heading));
+        leftPwm = leftTraj.calculate(left_dist, (imu_heading-start_heading));
+        rightPwm = rightTraj.calculate(right_dist, (imu_heading-start_heading));
         
         if(leftPwm == -5206) goto end_drive_spline;
         
