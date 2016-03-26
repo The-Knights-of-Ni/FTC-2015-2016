@@ -533,7 +533,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         }
         
         driveOnCourseIn(10, 1.0, imu_heading);
-
+        
         wait(0.5);
         setHandOpen();
 
@@ -567,8 +567,8 @@ void jniMain(JNIEnv * _env, jobject _self)
                 
         intake = 1;
         driveDistIn(50, -0.8);
-
-        turnRelDeg(colorAdjustedAngle(-45), 1.0);
+        
+        turnRelDeg(colorAdjustedAngle(45), 1.0);
         driveDistIn(30, -0.8);
         
         intake = 0;
