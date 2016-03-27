@@ -324,32 +324,32 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("winch.setPower(", pwinch, ");");
     jniOut("shoulder.setPower(", pshoulder, ");");
     jniOut("intake.setPower(", pintake, ");");
-
+    
     jniOut("hand.setPosition(", phand,");");
     jniOut("wrist.setPosition(", pwrist,");");
     jniOut("hook_left.setPosition(", phook_left,");");
     jniOut("hook_right.setPosition(", phook_right,");");
     jniOut("intake_tilt.setPosition(", pintake_tilt,");");
     jniOut("score_hook.setPosition(", pscore_hook,");");
-
+    
     jniOut("telemetry.addData(\"Indicator:\", ", pindicator, ");");
     jniOut("telemetry.addData(\"left_drive_encoder:\", ", pleft_drive_encoder, ");");
     jniOut("telemetry.addData(\"right_drive_encoder:\", ", pright_drive_encoder, ");");
     jniOut("telemetry.addData(\"beacon right:\", (", pbeacon_right," == 1 ? \"red\" : \"blue\"));");
-
+    
     jniOut("telemetry.addData(\"target time:\", ", pdrive_time, ");");
     jniOut("telemetry.addData(\"acceleration time:\", ", pacceleration_time, ");");
-
+    
     pslider0 = jniIntIn("return FtcRobotControllerActivity.slider_0;");
     pslider1 = jniIntIn("return FtcRobotControllerActivity.slider_1;");
     pslider2 = jniIntIn("return FtcRobotControllerActivity.slider_2;");
     pslider3 = jniIntIn("return FtcRobotControllerActivity.slider_3;");
-
+    
     jniOut("telemetry.addData(\"slider 0\", ", pslider0,");");
     jniOut("telemetry.addData(\"slider 1\", ", pslider1,");");
     jniOut("telemetry.addData(\"slider 2\", ", pslider2,");");
     jniOut("telemetry.addData(\"slider 3\", ", pslider3,");");
-
+    
     jniGenerate();
 
     initLogfile();
@@ -383,8 +383,8 @@ void jniMain(JNIEnv * _env, jobject _self)
     if(current_color)
     { //red
         waypoint_path1.addWaypoint(waypoint(  0,   0,     0));//First must be 0
-        waypoint_path1.addWaypoint(waypoint( 90,   0,     0));
-        waypoint_path1.addWaypoint(waypoint(130, -15, -pi/4));
+        waypoint_path1.addWaypoint(waypoint( 80,   0,     0));
+        waypoint_path1.addWaypoint(waypoint(120, -15, -pi/4));
     }
     else
     { //blue
@@ -393,7 +393,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         waypoint_path1.addWaypoint(waypoint( 95, -28, -pi/4));
     }
     path path1 = generateSpline(waypoint_path1, -1);
-
+    
     #ifndef GENERATE
     {//get imu.rezero() method id
         jmethodID saySplineIsReady_id = env->GetMethodID(cls, "saySplineIsReady", "()V");
@@ -568,7 +568,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         intake = 1;
         driveDistIn(50, -0.8);
         
-        turnRelDeg(colorAdjustedAngle(45), 1.0);
+        turnRelDeg(colorAdjustedAngle(-45), 1.0);
         driveDistIn(30, -0.8);
         
         intake = 0;

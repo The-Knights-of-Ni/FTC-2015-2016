@@ -546,7 +546,7 @@ void doIntake()
     }
     
     intake_tilt = continuous_servo_stop;
-
+    
     if(intake_running)
     {
         if(fabs(intake_omega) < 0.05)

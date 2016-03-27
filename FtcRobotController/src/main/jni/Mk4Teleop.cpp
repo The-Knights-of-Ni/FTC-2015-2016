@@ -368,10 +368,11 @@ void jniMain(JNIEnv * _env, jobject _self)
     updateDriveSensors();
     left_drive_hold_theta = left_drive_theta;
     right_drive_hold_theta = right_drive_theta;
-
+    
     updateArmSensors();
     target_intake_theta = intake_theta;
-    old_target_intake_theta = intake_theta;    
+    old_target_intake_theta = target_intake_theta;
+    intake_running = false;
     
     // updateArmSensors();
     // float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
@@ -686,11 +687,12 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             intake = 0;
         }
-        
-        if(armOnIntakeSide())
-        {
-            setIntakeOut();
-        }
+
+        //NOTE: do not uncomment unless the arm catching on the four-bar is a major problem this can cause the intake to unroll at the start
+        // if(armOnIntakeSide())
+        // {
+        //     setIntakeOut();
+        // }
         
         if(hook_toggle)
         {

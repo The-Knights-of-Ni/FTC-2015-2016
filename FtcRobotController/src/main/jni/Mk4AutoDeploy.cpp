@@ -11,44 +11,44 @@ void Mk4AutonomousDeployUpdate()
 {
     shoulder = 0;
     winch = 0;
-
+    
     armFunction();
     if(armFunction == armUserControl)
     {
         armFunction = armAutonomousControl;
     }
-
+    
     doIntake();
     doHand();
     doWrist();
-
+    
     //clamp the integral factors to stop integral build up
     shoulder_compensation = clamp(shoulder_compensation, -1.0, 1.0);
     winch_compensation = clamp(winch_compensation, -1.0, 1.0);
-
+    
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
-
+    
     shoulder *= 12.0/left_drive_voltage;
     winch *= 12.0/left_drive_voltage;
-
+    
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
     if(winch > 0.0 && !tension_switch) winch = 0.0;
-
+    
     left_drive *= 12.0/left_drive_voltage;
     right_drive *= 12.0/right_drive_voltage;
-
+    
     left_drive = clamp(left_drive, -1.0, 1.0);
     right_drive = clamp(right_drive, -1.0, 1.0);
     intake = clamp(intake, -1.0, 1.0);
-
+    
     intake_tilt = clamp(intake_tilt, 0.0, 1.0);
     wrist = clamp(wrist, 0.0, 1.0);
     hand = clamp(hand, 0.0, 1.0);
     hook_left = clamp(hook_left, 0.0, 1.0);
     hook_right = clamp(hook_right, 0.0, 1.0);
-
+    
     log("%f %f  ", 1.0f, 1.0f)
     log("%f %f %f  ",
         imu_heading, imu_tilt, imu_roll);
@@ -259,6 +259,11 @@ void jniMain(JNIEnv * _env, jobject _self)
         "        camera.addCallbackBuffer(camera_buffer);\n"
         "    }\n"
         "}\n"
+        "\n"
+        "void saySplineIsReady()\n"
+        "{\n"
+        "    telemetry.addData(\"spline ready\", \"\");\n"
+        "}\n"
         logging_jni_misc_string);
     
     jni_constructor_string = ("camera = FtcRobotControllerActivity.camera_preview.camera;\n"
@@ -339,38 +344,38 @@ void jniMain(JNIEnv * _env, jobject _self)
     jniOut("telemetry.addData(\"slider 1\", ", pslider1,");");
     jniOut("telemetry.addData(\"slider 2\", ", pslider2,");");
     jniOut("telemetry.addData(\"slider 3\", ", pslider3,");");
-
+    
     jniGenerate();
-
+    
     initLogfile();
-
+    
     wrist_tilt = 0;
     wrist_manual_control = 0;
     wrist_time = 0;
     hand_open = false;
     hand_time = 1000;
     hook_right = 0.0;
-
+    
     shoulder_theta = 0;
     winch_theta = 0;
     inside_elbow_theta = 0;
     shoulder_omega = 0;
     winch_omega = 0;
     inside_elbow_omega = 0;
-
+    
     shoulder_compensation = 0;
-
+    
      //TODO: figure out a better way to have things reset to their initial values
     armFunction = armAutonomousControl;
-
+    
     hand_time = 1000000;
-
+    
     score_mode = false;
-
+    
     suppress_arm = true;
-
+    
     initCamera();
-
+    
     #ifndef GENERATE
     jmethodID imu_rezero_id;
     jobject imu_object;
@@ -378,6 +383,19 @@ void jniMain(JNIEnv * _env, jobject _self)
         jclass imu_class = env->FindClass("com/qualcomm/ftcrobotcontroller/opmodes/IMU");
         imu_rezero_id = env->GetMethodID(imu_class, "rezero", "()V");
         imu_object = env->GetObjectField(self, env->GetFieldID(cls, "imu", "Lcom/qualcomm/ftcrobotcontroller/opmodes/IMU;"));
+    }
+    #endif
+    
+    waypointSequence waypoint_path1(5);//Start right up against line
+    waypoint_path1.addWaypoint(waypoint(0,0,0));
+    waypoint_path1.addWaypoint(waypoint(30, -10, -3*pi/8));
+    waypoint_path1.addWaypoint(waypoint(60, -17, 0));
+    path deployPath = generateSpline(waypoint_path1, -1);
+    
+    #ifndef GENERATE
+    {//get imu.rezero() method id
+        jmethodID saySplineIsReady_id = env->GetMethodID(cls, "saySplineIsReady", "()V");
+        env->CallVoidMethod(self, saySplineIsReady_id); //rezero imu
     }
     #endif
     
@@ -395,7 +413,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     #endif
     
     score_hook = 1.0;
-
+    
     target_intake_theta = intake_theta;
     old_target_intake_theta = intake_theta;
     
@@ -427,13 +445,13 @@ void jniMain(JNIEnv * _env, jobject _self)
 
         //deploy intake
         setHandOpen();
-        wait(0.5);
+        wait(0.3);
         setHandShut();
         wait(0.3);
         setHandOpen();
         wait(0.3);
         setHandShut();
-
+        
         intake = 1;
         wait(0.5);
         intake = 0;
@@ -455,8 +473,8 @@ void jniMain(JNIEnv * _env, jobject _self)
             wait(0.5);
             setIntakeOut();
         }
-        wait(1.0);
-        setIntakeOut();
+        wait(0.5);
+        // setIntakeOut();
         
         #if 0
         //shake hopper out
@@ -474,9 +492,9 @@ void jniMain(JNIEnv * _env, jobject _self)
         {
             autonomousUpdate();
         }
-        #endif
-        
         wait(0.2);
+        
+        #endif
         
         //arm to intake mode
         
@@ -503,25 +521,17 @@ void jniMain(JNIEnv * _env, jobject _self)
             autonomousUpdate();
         }
         
-        intake = -1;
-        waypointSequence deployPath(5);
-        deployPath.addWaypoint(waypoint(0,0,0));
-        deployPath.addWaypoint(waypoint(20, 10, 3*pi/8));
-        deployPath.addWaypoint(waypoint(50, 17, 0));
+        // intake = 1;
         
-        driveSpline(deployPath, current_color, -1.0);
-        intake = 0;
-        
-        intake = 1;
-        driveDistIn(30, -0.8);
-        driveDistIn(30, 0.8);
-        intake = 0;
+        // //driveSplinePrecomputed(deployPath, current_color, -1.0);
+        // driveDistIn(30, -0.6);
+        // intake = 0;
         
         #endif
         
         waitForEnd();
     }
-
+    
     cleanupCamera();
     closeLogfile();
 }
