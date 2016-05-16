@@ -16,24 +16,24 @@ void Mk4AutonomousUpdate()
     //if(time-start_time > 20.0) longjmp(exit_jump, 1);
     shoulder = 0;
     winch = 0;
-    
+
     armFunction();
     if(armFunction == armUserControl)
     {
         armFunction = armAutonomousControl;
     }
-    
+
     doIntake();
     doHand();
     doWrist();
-    
+
     //clamp the integral factors to stop integral build up
     shoulder_compensation = clamp(shoulder_compensation, -1.0, 1.0);
     winch_compensation = clamp(winch_compensation, -1.0, 1.0);
-    
+
     shoulder = clamp(shoulder, -1.0, 1.0);
     winch = clamp(winch, -1.0, 1.0);
-    
+
     shoulder *= 12.0/left_drive_voltage;
     winch *= 12.0/left_drive_voltage;
 
@@ -43,11 +43,11 @@ void Mk4AutonomousUpdate()
 
     // left_drive *= 12.0/left_drive_voltage;
     // right_drive *= 12.0/right_drive_voltage;
-    
+
     left_drive = clamp(left_drive, -1.0, 1.0);
     right_drive = clamp(right_drive, -1.0, 1.0);
     intake = clamp(intake, -1.0, 1.0);
-    
+
     intake_tilt = clamp(intake_tilt, 0.0, 1.0);
     wrist = clamp(wrist, 0.0, 1.0);
     hand = clamp(hand, 0.0, 1.0);
@@ -75,6 +75,22 @@ void Mk4AutonomousUpdate()
     // hand = 0;
     // hook_left = 0;
     // hook_right = 0;
+}
+
+void moveForAuto (int distance)
+{
+  const float circumference = 3.13 * pi;
+  float current;
+  float error = distance;
+  float atStart = left_drive_theta;
+
+  while (error > 0)
+  {
+    current = (left_drive_theta - atStart) * (3.13/2);
+    left_drive = 0.5;
+    right_drive = 0.5;
+    error = error - current;
+  }
 }
 
 #ifndef GENERATE
@@ -129,7 +145,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     // }
 
     customAutonomousUpdate = Mk4AutonomousUpdate;
-    
+
     jni_import_string = (
         "import com.qualcomm.ftcrobotcontroller.FtcRobotControllerActivity;\n"
         "import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;\n"
@@ -143,7 +159,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "import android.hardware.Camera;\n"
         "import android.graphics.ImageFormat;\n"
         logging_jni_import_string);
-    
+
     //TODO: shortcut for defining and declaring motors, servos, etc.
     jni_variables_string = (
         "/* Start Motor Definitions */\n"
@@ -169,7 +185,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "Servo intake_tilt;\n"
         "Servo score_hook;\n"
         "/* End Motor Definitions */");
-    
+
     jni_run_opmode_string = (
         "left_drive_voltage = hardwareMap.voltageSensor.get(\"Left Drive + Shoulder\");\n"
         "right_drive_voltage = hardwareMap.voltageSensor.get(\"Intake + Right Drive\");\n"
@@ -245,7 +261,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    dim.setLED(1, false);\n"
         "}"
         "telemetry.addData(\"imu ready\", \"\");\n");
-    
+
     jni_misc_string = (
         "Camera camera = null;\n"
         "int camera_w = 0;\n"
@@ -270,7 +286,7 @@ void jniMain(JNIEnv * _env, jobject _self)
         "    telemetry.addData(\"spline ready\", \"\");\n"
         "}\n"
         logging_jni_misc_string);
-    
+
     jni_constructor_string = ("camera = FtcRobotControllerActivity.camera_preview.camera;\n"
                               "Camera.Parameters parameters = camera.getParameters();\n"
                               "Camera.Size camera_size = parameters.getPreviewSize();\n"
@@ -301,55 +317,55 @@ void jniMain(JNIEnv * _env, jobject _self)
     pwrist_potentiometer = jniIntIn("return dim.getAnalogInputValue(wrist_potentiometer_port);");
     pleft_drive_voltage = jniFloatIn("return (float)left_drive_voltage.getVoltage();");
     pright_drive_voltage = jniFloatIn("return (float)right_drive_voltage.getVoltage();");
-    
+
     pdim_digital_pins = jniIntIn("return dim.getDigitalInputStateByte();");
-    
+
     pimu_values = jniStructIn(
         imu_state,
         "if(imu.checkForUpdate()) {\n"
         "    return {imu.eul_x, imu.eul_y, imu.eul_z, imu.gyr_x, imu.gyr_y, imu.gyr_z, imu.vel_x, imu.vel_y, imu.vel_z};\n"
         "}\n");
-    
+
     short * pimu_heading = &(pimu_values->orientation.x);
     jniOut("telemetry.addData(\"imu heading\", ", pimu_heading, "/16.0);");
     short * pimu_tilt = &(pimu_values->orientation.y);
     jniOut("telemetry.addData(\"imu tilt\", ", pimu_tilt, "/16.0);");
     short * pimu_roll = &(pimu_values->orientation.z);
     jniOut("telemetry.addData(\"imu roll\", ", pimu_roll, "/16.0);");
-    
+
     pcurrent_color = jniIntIn("return (FtcRobotControllerActivity.red ? 1 : 0);");
-    
+
     jniOut("left_drive.setPower(", pleft_drive, ");");
     jniOut("right_drive.setPower(", pright_drive, ");");
     jniOut("winch.setPower(", pwinch, ");");
     jniOut("shoulder.setPower(", pshoulder, ");");
     jniOut("intake.setPower(", pintake, ");");
-    
+
     jniOut("hand.setPosition(", phand,");");
     jniOut("wrist.setPosition(", pwrist,");");
     jniOut("hook_left.setPosition(", phook_left,");");
     jniOut("hook_right.setPosition(", phook_right,");");
     jniOut("intake_tilt.setPosition(", pintake_tilt,");");
     jniOut("score_hook.setPosition(", pscore_hook,");");
-    
+
     jniOut("telemetry.addData(\"Indicator:\", ", pindicator, ");");
     jniOut("telemetry.addData(\"left_drive_encoder:\", ", pleft_drive_encoder, ");");
     jniOut("telemetry.addData(\"right_drive_encoder:\", ", pright_drive_encoder, ");");
     jniOut("telemetry.addData(\"beacon right:\", (", pbeacon_right," == 1 ? \"red\" : \"blue\"));");
-    
+
     jniOut("telemetry.addData(\"target time:\", ", pdrive_time, ");");
     jniOut("telemetry.addData(\"acceleration time:\", ", pacceleration_time, ");");
-    
+
     pslider0 = jniIntIn("return FtcRobotControllerActivity.slider_0;");
     pslider1 = jniIntIn("return FtcRobotControllerActivity.slider_1;");
     pslider2 = jniIntIn("return FtcRobotControllerActivity.slider_2;");
     pslider3 = jniIntIn("return FtcRobotControllerActivity.slider_3;");
-    
+
     jniOut("telemetry.addData(\"slider 0\", ", pslider0,");");
     jniOut("telemetry.addData(\"slider 1\", ", pslider1,");");
     jniOut("telemetry.addData(\"slider 2\", ", pslider2,");");
     jniOut("telemetry.addData(\"slider 3\", ", pslider3,");");
-    
+
     jniGenerate();
 
     initLogfile();
@@ -360,7 +376,7 @@ void jniMain(JNIEnv * _env, jobject _self)
     hand_open = false;
     hand_time = 1000;
     hook_right = 0.0;
-    
+
     shoulder_theta = 0;
     winch_theta = 0;
     inside_elbow_theta = 0;
@@ -379,30 +395,16 @@ void jniMain(JNIEnv * _env, jobject _self)
 
     suppress_arm = true;
 
-    waypointSequence waypoint_path1(5);//Start right up against line
-    if(current_color)
-    { //red
-        waypoint_path1.addWaypoint(waypoint(  0,   0,     0));//First must be 0
-        waypoint_path1.addWaypoint(waypoint( 80,   0,     0));
-        waypoint_path1.addWaypoint(waypoint(120, -15, -pi/4));
-    }
-    else
-    { //blue
-        waypoint_path1.addWaypoint(waypoint(  0,   0,     0));//First must be 0
-        waypoint_path1.addWaypoint(waypoint( 55,   0,     0));
-        waypoint_path1.addWaypoint(waypoint( 95, -28, -pi/4));
-    }
-    path path1 = generateSpline(waypoint_path1, -1);
-    
+
     #ifndef GENERATE
     {//get imu.rezero() method id
         jmethodID saySplineIsReady_id = env->GetMethodID(cls, "saySplineIsReady", "()V");
         env->CallVoidMethod(self, saySplineIsReady_id); //rezero imu
     }
     #endif
-    
+
     initCamera();
-    
+
     #ifndef GENERATE
     jmethodID imu_rezero_id;
     jobject imu_object;
@@ -412,172 +414,41 @@ void jniMain(JNIEnv * _env, jobject _self)
         imu_object = env->GetObjectField(self, env->GetFieldID(cls, "imu", "Lcom/qualcomm/ftcrobotcontroller/opmodes/IMU;"));
     }
     #endif
-    
+
     waitForStart();
-    
+
     zeroDriveSensors();
     //enableKillerAI();
-    
+
     robotStateIn();
-    
+
     start_time = time;
-    
+
     imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};;
     current_time = time;
 
     #ifndef GENERATE
     env->CallVoidMethod(imu_object, imu_rezero_id); //rezero imu
     #endif
-    
+
     score_hook = 1.0;
-    
+
     target_intake_theta = intake_theta;
     old_target_intake_theta = intake_theta;
-    
+
     //Config
     //hopper down
     #define colorAdjustedAngle(a) ((current_color) ? (a) : -(a))
     #define blocks_in_hopper 1
-    
+
     interruptable
     {
-        for(int i = 0; i < 2; i++)
-        {
-            float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
-                                              -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
-            target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
-            target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
-            target_shoulder_theta = shoulder_theta;
-            target_inside_elbow_theta = inside_elbow_theta;
-            
-            autonomousUpdate();
-        }
-        log("auto starting 2: %f\n", time);
-        
-        driveSplinePrecomputed(path1, current_color, -1);
-        
-        //turnRelDeg(90, -1.0);
-        
-        suppress_arm = false;
-        
-        //deploy intake
-        setHandOpen();
-        wait(0.5);
-        setHandShut();
-        wait(0.3);
-        setHandOpen();
-        wait(0.3);
-        setHandShut();
+        moveForAuto(29);
 
-        intake = 1;
-        wait(0.5);
-        intake = 0;
-        
-        setIntakeOut();
-        
-        for(int i = 0; i < 2; i++)
-        {
-            target_shoulder_theta = 2.2;
-            while(!armIsAtTarget(0.1, 0.25))
-            {
-                autonomousUpdate();
-            }
-            target_shoulder_theta = 2.39;
-            while(!armIsAtTarget(0.1, 0.25))
-            {
-                autonomousUpdate();
-            }
-            wait(0.5);
-            setIntakeOut();
-        }
-        wait(1.0);
-        setIntakeOut();
-        
-        #if 0
-        //shake hopper out
-        target_shoulder_theta = 1.4;
-        target_inside_elbow_theta = 9.0*pi/8.0;
-        while(!armIsAtTarget(0.25, 0.25))
-        {
-            autonomousUpdate();
-        }
-        wait(0.5);
-        
-        target_shoulder_theta = 1.5;
-        target_inside_elbow_theta = pi*3.0/4.0;
-        while(!armIsAtTarget(0.25, 0.1))
-        {
-            autonomousUpdate();
-        }
-        #endif 
-        
-        target_shoulder_theta = 1.8;
-        target_inside_elbow_theta = pi*3.0/4.0;
-        while(!armIsAtTarget(0.25, 0.1))
-        {
-            autonomousUpdate();
-        }
-        turnRelDeg(180, -1.0);
-        
-        wait(0.2);
-        
-        //score climbers
-        target_wrist_theta = colorAdjustedAngle(pi/4);
-        wait(0.5);
-        
-        target_shoulder_theta = 1.9;
-        target_inside_elbow_theta = .9;
-        while(!armIsAtTarget(0.1, 0.1))
-        {
-            autonomousUpdate();
-        }
-        
-        driveOnCourseIn(10, 1.0, imu_heading);
-        
-        wait(0.5);
-        setHandOpen();
 
-        wait(1.0);
-        
-        //arm to intake mode
-        
-        score_mode = true;
-        armFunction = armToIntakeMode;
-        
-        driveDistIn(10, -0.8);
-        turnRelDeg(colorAdjustedAngle(45), 1.0);
-        
-        float arm_timer = 0;
-        while(armFunction != armAutonomousControl)
-        {
-            arm_timer += dt;
-            // if(arm_timer > 5)
-            // {
-            //     target_shoulder_theta = 2.0;
-            //     target_inside_elbow_theta = 4.43;
-            //     wait(0.5);
-            //     intake = -1;
-            //     driveDistIn(10, -0.1);
-            //     intake = 0;
-            //     armFunction = armAutonomousControl;
-            //     arm_timer = 0;
-            // }
-            autonomousUpdate();
-        }
-                
-        intake = 1;
-        driveDistIn(50, -0.8);
-        
-        turnRelDeg(colorAdjustedAngle(-45), 1.0);
-        driveDistIn(30, -0.8);
-        
-        intake = 0;
-        
-        //spline
-        
         waitForEnd();
     }
-    
+
     cleanupCamera();
     closeLogfile();
 }

@@ -710,7 +710,7 @@ void jniMain(JNIEnv * _env, jobject _self)
 
         if(fabs(intake_tilt_manual) > deadzone_radius)
         {
-            intake_tilt = -intake_tilt_manual;
+            intake_tilt = continuous_servo_stop-0.5*intake_tilt_manual;
             target_intake_theta = intake_theta;
         }
         else
