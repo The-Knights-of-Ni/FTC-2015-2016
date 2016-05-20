@@ -224,8 +224,8 @@ void driveOnCourseIn(float dist, float vIs,
         left_drive = clamp(left_drive, -fabs(vIs), fabs(vIs));
         right_drive = clamp(right_drive, -fabs(vIs), fabs(vIs));
 
-        float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading)-horizontal_error;
-        float turning_factor = 0.04*heading_error;
+        float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading)+horizontal_error;
+        float turning_factor = 0.06*heading_error;
 
         if(false)//heading_error > turning_deadband)
         {
@@ -243,8 +243,9 @@ void driveOnCourseIn(float dist, float vIs,
 
         autonomousUpdate();
         current_dist = sign(vIs)*(avg_drive_theta-start_drive_theta)*sprocket_pitch_radius;
-        horizontal_error = (current_dist-old_dist)*sin(heading_error);
+        //horizontal_error += (current_dist-old_dist)*sin(heading_error);
         old_dist = current_dist;
+        log("%f, %f, %f\n", heading_error, horizontal_error, left_drive, right_drive, current_dist);
     }
 
     right_drive = 0;

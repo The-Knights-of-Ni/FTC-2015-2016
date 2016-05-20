@@ -422,6 +422,9 @@ void jniMain(JNIEnv * _env, jobject _self)
 
     robotStateIn();
 
+    updateDriveSensors();
+    updateArmSensors();
+
     start_time = time;
 
     imu_orientation_offsets = (v3f){pimu_values->orientation.x, pimu_values->orientation.y, pimu_values->orientation.z};;
@@ -443,23 +446,26 @@ void jniMain(JNIEnv * _env, jobject _self)
 
     interruptable
     {
-        driveDistIn(50, -0.8);
-        //driveOnCourseIn(50, 1, 0);
-        //driveOnCourseIn(110, 1, 0); // drive toward shelter
-		//driveDistIn(-12, .75); // backup to clear any debris in front of robot
-		//turnRelDeg(45, .75); // turn to face shelter
-		//driveDistIn(34, .75); // drive
-		//score_hook = 1.0;
+        const float distanceMultiplier = 0.8197;
 
-		//autonomousUpdate();
+        driveOnCourseIn(10*distanceMultiplier, -.5, 0); // try no IMU for this instead?
+        driveOnCourseIn(111*distanceMultiplier, -1, 0);
+        //driveOnCourseIn((85+colorAdjustedAngle(17)+8)*distanceMultiplier, -1, 0);
+        wait(0.3);
+		driveDistIn(7.3*distanceMultiplier, .4); // backup to clear any debris in front of robot
+		turnRelDeg(colorAdjustedAngle(45), .75); // turn to face shelter
+		driveDistIn(14.6*distanceMultiplier, -.75); // drive toward shelter
 
-		//wait(0.5);
+        score_hook = 0.0; // drop climbers in shelter
+        autonomousUpdate();
 
-		//score_hook = 0.0;
+		wait(1.0);
+		score_hook = 1.0; // bring climber mechanism back;
+		autonomousUpdate();
 
-		//autonomousUpdate();
-
-		//driveDistIn(-40, .8);
+        driveDistIn(7*distanceMultiplier, .75);
+        turnRelDeg(-colorAdjustedAngle(180), .75);
+        driveDistIn(30*distanceMultiplier, -.8); // drive away from shelter
 
 		// Arm Deploy Code
 
