@@ -443,7 +443,115 @@ void jniMain(JNIEnv * _env, jobject _self)
 
     interruptable
     {
-        moveForAuto(29);
+        driveDistIn(50, -0.8);
+        //driveOnCourseIn(50, 1, 0);
+        //driveOnCourseIn(110, 1, 0); // drive toward shelter
+		//driveDistIn(-12, .75); // backup to clear any debris in front of robot
+		//turnRelDeg(45, .75); // turn to face shelter
+		//driveDistIn(34, .75); // drive
+		//score_hook = 1.0;
+
+		//autonomousUpdate();
+
+		//wait(0.5);
+
+		//score_hook = 0.0;
+
+		//autonomousUpdate();
+
+		//driveDistIn(-40, .8);
+
+		// Arm Deploy Code
+
+		float shoulder_axis_to_end = sqrt(sq(forearm_length)+sq(shoulder_length)
+										  -2*forearm_length*shoulder_length*cos(inside_elbow_theta));
+		target_arm_theta = shoulder_theta-asin(forearm_length/shoulder_axis_to_end*sin(inside_elbow_theta));
+		target_arm_y = shoulder_axis_to_end*cos(target_arm_theta-vertical_arm_theta);
+		target_shoulder_theta = shoulder_theta;
+		target_inside_elbow_theta = inside_elbow_theta;
+    		
+        #if 0 //enable arm
+        suppress_arm = false;
+
+        //deploy intake
+        setHandOpen();
+        wait(0.3);
+        setHandShut();
+        wait(0.3);
+        setHandOpen();
+        wait(0.3);
+        setHandShut();
+        
+        intake = 1;
+        wait(0.5);
+        intake = 0;
+        
+        setIntakeOut();
+        
+        for(int i = 0; i < 2; i++)
+        {
+            target_shoulder_theta = 2.2;
+            while(!armIsAtTarget(0.1, 0.25))
+            {
+                autonomousUpdate();
+            }
+            target_shoulder_theta = 2.39;
+            while(!armIsAtTarget(0.1, 0.25))
+            {
+                autonomousUpdate();
+            }
+            wait(0.5);
+            setIntakeOut();
+        }
+        wait(0.5);
+        // setIntakeOut();
+        
+        #if 0
+        //shake hopper out
+        target_shoulder_theta = 1.4;
+        target_inside_elbow_theta = 9.0*pi/8.0;
+        while(!armIsAtTarget(0.25, 0.25))
+        {
+            autonomousUpdate();
+        }
+        wait(0.5);
+        
+        target_shoulder_theta = 1.5;
+        target_inside_elbow_theta = pi*3.0/4.0;
+        while(!armIsAtTarget(0.25, 0.1))
+        {
+            autonomousUpdate();
+        }
+        wait(0.2);
+        
+        #endif
+        
+        //arm to intake mode
+        
+        score_mode = true;
+        armFunction = armToIntakeMode;
+        
+        driveDistIn(10, -0.8);
+        
+        float arm_timer = 0;
+        while(armFunction != armAutonomousControl)
+        {
+            arm_timer += dt;
+            // if(arm_timer > 5)
+            // {
+            //     target_shoulder_theta = 2.0;
+            //     target_inside_elbow_theta = 4.43;
+            //     wait(0.5);
+            //     intake = -1;
+            //     driveDistIn(10, -0.1);
+            //     intake = 0;
+            //     armFunction = armAutonomousControl;
+            //     arm_timer = 0;
+            // }
+            autonomousUpdate();
+        }
+        
+        #endif
 
 
         waitForEnd();
