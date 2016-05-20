@@ -448,13 +448,124 @@ void jniMain(JNIEnv * _env, jobject _self)
     {
         const float distanceMultiplier = 0.8197;
 
-        driveOnCourseIn(10*distanceMultiplier, -.5, 0); // try no IMU for this instead?
-        driveOnCourseIn(111*distanceMultiplier, -1, 0);
-        //driveOnCourseIn((85+colorAdjustedAngle(17)+8)*distanceMultiplier, -1, 0);
-        wait(0.3);
-		driveDistIn(7.3*distanceMultiplier, .4); // backup to clear any debris in front of robot
-		turnRelDeg(colorAdjustedAngle(45), .75); // turn to face shelter
-		driveDistIn(14.6*distanceMultiplier, -.75); // drive toward shelter
+        driveDistIn(10*distanceMultiplier, -.5, 0);
+        if(current_color) { // RED
+            /*driveOnCourseIn((42.3)*distanceMultiplier, -0.85, 0); // drive to other side of field along tape
+            turnAbsDeg(20, .4);
+            //turnRelDeg(colorAdjustedAngle(10), .8); // turn to face shelter
+            driveOnCourseIn(47.6*distanceMultiplier, -0.85, 10);
+
+            left_drive = -0.25;
+            right_drive = -0.25;
+            autonomousUpdate();
+            wait(1);
+            left_drive = 0.0;
+            right_drive = 0.0;
+            autonomousUpdate();*/
+
+            driveOnCourseIn((103.1+7.3)*distanceMultiplier, -0.85, 0); // drive to other side of field along tape
+            autonomousUpdate();
+            wait(0.3);
+            driveDistIn(7.3*distanceMultiplier, .4); // backup to clear any debris in front of robot
+            turnAbsDeg(45, .75); // turn to face shelter
+
+            left_drive = -0.75;
+            right_drive = -0.75;
+            autonomousUpdate();
+            wait(1.75);
+            left_drive = 0.0;
+            right_drive = 0.0;
+            autonomousUpdate();
+
+            score_hook = 0.0; // drop climbers in shelter
+            autonomousUpdate();
+
+            wait(1.0);
+            score_hook = 1.0; // bring climber mechanism back;
+            autonomousUpdate();
+
+            driveDistIn(7*distanceMultiplier, .75); // move away from wall
+            turnRelDeg(-135, .75);
+            left_drive = -0.9;
+            right_drive = -0.9;
+            autonomousUpdate();
+            wait(1.75);
+            left_drive = 0.0;
+            right_drive = 0.0;
+            autonomousUpdate();
+            driveDistIn(14*distanceMultiplier, .8); // drive back to line
+
+            turnAbsDeg(-180, .75);
+            driveDistIn(8*distanceMultiplier, .75);
+        }
+        else { // BLUE
+            driveOnCourseIn(100.25*distanceMultiplier, -0.85, 0); // drive to other side of field along tape
+            turnAbsDeg(-90, .4);
+            driveOnCourseIn(17*distanceMultiplier, -0.85, -90);
+            autonomousUpdate();
+
+            left_drive = -0.25;
+            right_drive = -0.25;
+            autonomousUpdate();
+            wait(1);
+            left_drive = 0.0;
+            right_drive = 0.0;
+            autonomousUpdate();
+
+            score_hook = 0.0; // drop climbers in shelter
+            autonomousUpdate();
+
+            wait(1.0);
+            score_hook = 1.0; // bring climber mechanism back;
+            autonomousUpdate();
+
+            driveDistIn(6*distanceMultiplier, .5);
+
+            turnRelDeg(-180, .75);
+            left_drive = -0.9;
+            right_drive = -0.9;
+            autonomousUpdate();
+            wait(1.75);
+            left_drive = 0.0;
+            right_drive = 0.0;
+            autonomousUpdate();
+            driveDistIn(14*distanceMultiplier, .8); // drive back to line
+
+            turnAbsDeg(-colorAdjustedAngle(180), .75);
+            driveDistIn(8*distanceMultiplier, .75);
+        }
+
+        /*const float distanceMultiplier = 0.8197;
+        float driveTowardShelterTime;
+
+        driveDistIn(10*distanceMultiplier, -.5, 0);
+        if(current_color) { // RED
+            driveOnCourseIn((103.1+7.3)*distanceMultiplier, -0.85, 0); // drive to other side of field along tape
+            autonomousUpdate();
+            wait(0.3);
+            driveDistIn(7.3*distanceMultiplier, .4); // backup to clear any debris in front of robot
+            turnRelDeg(colorAdjustedAngle(45), .75); // turn to face shelter
+            driveTowardShelterTime = 1.75;
+        }
+        else { // BLUE
+            driveOnCourseIn((72.75+7.3)*distanceMultiplier, -0.85, 0); // drive to other side of field along tape
+            autonomousUpdate();
+            wait(0.3);
+            driveDistIn(7.3*distanceMultiplier, .4); // backup to clear any debris in front of robot
+            turnRelDeg(colorAdjustedAngle(45), .75); // turn to face shelter
+            driveOnCourseIn(18, -0.85, -45);
+            driveTowardShelterTime = 1.5;
+        }
+
+        float drive_timer = 0;
+
+        left_drive = -0.75;
+        right_drive = -0.75;
+        autonomousUpdate();
+        wait(driveTowardShelterTime);
+        left_drive = 0.0;
+        right_drive = 0.0;
+        autonomousUpdate();
 
         score_hook = 0.0; // drop climbers in shelter
         autonomousUpdate();
@@ -463,9 +574,31 @@ void jniMain(JNIEnv * _env, jobject _self)
 		score_hook = 1.0; // bring climber mechanism back;
 		autonomousUpdate();
 
-        driveDistIn(7*distanceMultiplier, .75);
-        turnRelDeg(-colorAdjustedAngle(180), .75);
-        driveDistIn(30*distanceMultiplier, -.8); // drive away from shelter
+        driveDistIn(7*distanceMultiplier, .75); // move away from wall
+        if(current_color) { // RED
+            turnRelDeg(-135, .75);
+            left_drive = -0.9;
+            right_drive = -0.9;
+            autonomousUpdate();
+            wait(1.75);
+            left_drive = 0.0;
+            right_drive = 0.0;
+            autonomousUpdate();
+            driveDistIn(14*distanceMultiplier, .8); // drive back to line
+        }
+        else {
+            turnRelDeg(120, .75);
+            left_drive = -0.9;
+            right_drive = -0.9;
+            autonomousUpdate();
+            wait(2.75);
+            left_drive = 0.0;
+            right_drive = 0.0;
+            autonomousUpdate();
+            driveDistIn(24*distanceMultiplier, .8); // drive back to line
+        }
+        turnRelDeg(-colorAdjustedAngle(90), .75);
+        driveDistIn(8*distanceMultiplier, .75);*/
 
 		// Arm Deploy Code
 
@@ -476,7 +609,7 @@ void jniMain(JNIEnv * _env, jobject _self)
 		target_shoulder_theta = shoulder_theta;
 		target_inside_elbow_theta = inside_elbow_theta;
     		
-        #if 0 //enable arm
+        #if 1 //enable arm
         suppress_arm = false;
 
         //deploy intake

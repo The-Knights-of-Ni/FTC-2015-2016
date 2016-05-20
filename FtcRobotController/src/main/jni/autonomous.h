@@ -46,6 +46,7 @@ float * pdrive_time = 0;
 float * pacceleration_time = 0;
 
 //TODO: go 0-100 for vis instead of 0-1, for clarity //NOTE (Kyler): I like 0-1
+
 void driveDistIn(float dist, float vIs, float max_acceleration = default_max_acceleration)
 {
     if (dist < 0.0)
@@ -225,7 +226,7 @@ void driveOnCourseIn(float dist, float vIs,
         right_drive = clamp(right_drive, -fabs(vIs), fabs(vIs));
 
         float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading)+horizontal_error;
-        float turning_factor = 0.06*heading_error;
+        float turning_factor = 0.06*(fabs(vIs)/1.0)*heading_error;
 
         if(false)//heading_error > turning_deadband)
         {
@@ -245,7 +246,7 @@ void driveOnCourseIn(float dist, float vIs,
         current_dist = sign(vIs)*(avg_drive_theta-start_drive_theta)*sprocket_pitch_radius;
         //horizontal_error += (current_dist-old_dist)*sin(heading_error);
         old_dist = current_dist;
-        log("%f, %f, %f\n", heading_error, horizontal_error, left_drive, right_drive, current_dist);
+        log("%f, %f, %f, %f\n", heading_error, left_drive, right_drive, current_dist);
     }
 
     right_drive = 0;
@@ -257,6 +258,45 @@ inline void driveOnCourseCm(float dist, float vIs,
                             float max_acceleration = default_max_acceleration*cm)
 {
     driveOnCourseIn(dist / 2.54, vIs, target_heading, max_acceleration);
+}
+
+void turnAbsDeg(float angle, float vIs)
+{
+    if(vIs < 0)
+    {
+        vIs = fabs(vIs);
+        angle = -angle;
+    }
+
+    float target_heading = angle;
+    float turning_compensation = 0;
+
+    while (fabs(signedCanonicalizeAngleDeg(imu_heading-target_heading)) > acceptableAngleError
+           || fabs(imu_heading_omega) > 2)
+    {
+        float heading_error = signedCanonicalizeAngleDeg(target_heading-imu_heading);
+        float turning_factor = turn_kp*heading_error;
+
+        if(left_drive_omega < 0.5 && right_drive_omega < 0.5)
+        {
+            turning_compensation += turn_ki*heading_error*dt;
+        }
+        else
+        {
+            turning_compensation = lerp(0.0, turning_compensation, exp(-1.0*dt));
+        }
+        turning_compensation = clamp(turning_compensation, -2.0, 2.0);
+        turning_factor += turning_compensation;
+
+        left_drive = -turning_factor;
+        right_drive = +turning_factor;
+
+        left_drive = clamp(left_drive, -vIs, vIs);
+        right_drive = clamp(right_drive, -vIs, vIs);
+        autonomousUpdate();
+    }
+    right_drive = 0;
+    left_drive = 0;
 }
 
 //TODO: predict when to start decelerating (drive feedforward)
